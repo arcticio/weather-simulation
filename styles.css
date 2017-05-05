@@ -33,3 +33,19 @@ body {
   width: 100%;
   height: 100%;
 }
+#info{
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  max-width: 400px;
+  height: 100%;
+  overflow: auto;
+  pointer-events: none;
+}
+#info a, .action{
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  pointer-events: auto;
+  font-weight: 700;
+}
