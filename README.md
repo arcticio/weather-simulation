@@ -1,6 +1,6 @@
 # weather-simulation
 Renders current weather parameters onto a 3D sphere
 
-## Test
+## Credits
 
-## Test 2
+## Data

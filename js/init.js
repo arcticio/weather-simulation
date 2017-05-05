@@ -11,7 +11,7 @@ var textureFBO;
 var helper;
 
 var streakType = 1;
-var streakType = 0;
+var streakType = 0;  // thin
 
 var isMobile = {
   any: false
@@ -26,7 +26,7 @@ document.getElementById( 'toggleStreakBtn' ).addEventListener( 'click', function
 
 
 var cameraPosition = 0;
-var cameraPosition = 1;
+var cameraPosition = 1; //outside
 
 document.getElementById( 'toggleCamBtn' ).addEventListener( 'click', function( e ){
 
