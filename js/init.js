@@ -1,22 +1,66 @@
 'use strict';
 
+var SCENE = (function () {
+
+  var 
+    self,
+    renderer,
+    camera,
+
+    frame
+
+    ;
+
+
+  return {
+    boot: function () {
+      return self = this;
+    },
+    init: function () {
+      
+    },
+    activate: function () {
+      window.addEventListener(self.resize);
+    },
+    resize: function () {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    },
+    render: function () {
+
+    }
+  };
+
+}()).boot();
+
+
+
+var frame = 0;
+
 // Scene, Camera, Renderer
 var renderer = new THREE.WebGLRenderer();
 var scene = new THREE.Scene();
-var aspect = window.innerWidth / window.innerHeight;
-var camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1500);
-// var camera = new THREE.PerspectiveCamera(100, aspect, 0.1, 1500);
-var cameraRotation = 0;
-// var cameraRotationSpeed = 0.001;
-var cameraRotationSpeed = 0.000;
-var cameraAutoRotation = true;
-var orbitControls = new THREE.OOrbitControls(camera);
-
-// Lights
-var spotLight = new THREE.SpotLight(0xffffff, 1, 0, 10, 2);
-
-// Texture Loader
 var textureLoader = new THREE.TextureLoader();
+
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+var camera = CFG.Cameras.perspective.cam;
+camera.position.copy(CFG.Cameras.perspective.pos);
+
+var orbitControls = new THREE.OOrbitControls(camera, renderer.domElement);
+orbitControls.enabled = true; //!cameraAutoRotation;
+orbitControls.enableDamping = true;
+orbitControls.dampingFactor = 0.88;
+orbitControls.constraint.smoothZoom = true;
+orbitControls.constraint.zoomDampingFactor = 0.2;
+orbitControls.constraint.smoothZoomSpeed = 5.0;
+orbitControls.constraint.minDistance = 1;
+orbitControls.constraint.maxDistance = 8;
+orbitControls.enabled = true;
+
 
 // Planet Proto
 var planetProto = {
@@ -102,11 +146,13 @@ var createPlanet = function createPlanet(options) {
 
   // Nest the planet's Surface and Atmosphere into a planet object
   var planet = new THREE.Object3D();
+
   surface.name = 'surface';
   atmosphere.name = 'atmosphere';
   atmosphericGlow.name = 'atmosphericGlow';
+
   planet.add(surface);
-  // planet.add(atmosphere);
+  planet.add(atmosphere);
   // planet.add(atmosphericGlow);
 
   // Load the Surface's textures
@@ -162,116 +208,31 @@ var earth = createPlanet({
   }
 });
 
-// Marker Proto
-var markerProto = {
-  latLongToVector3: function latLongToVector3(latitude, longitude, radius, height) {
-    var phi = latitude * Math.PI / 180;
-    var theta = (longitude - 180) * Math.PI / 180;
 
-    var x = -(radius + height) * Math.cos(phi) * Math.cos(theta);
-    var y = (radius + height) * Math.sin(phi);
-    var z = (radius + height) * Math.cos(phi) * Math.sin(theta);
+scene.add( CFG.Lights.ambient );
+scene.add( CFG.Lights.spot.light );
+CFG.Lights.spot.light.position.copy(CFG.Lights.spot.pos); // lon=90
 
-    return new THREE.Vector3(x, y, z);
-  },
-  marker: function marker(size, color, vector3Position) {
-    var markerGeometry = new THREE.SphereGeometry(size);
-    var markerMaterial = new THREE.MeshLambertMaterial({
-      color: color
-    });
-    var markerMesh = new THREE.Mesh(markerGeometry, markerMaterial);
-    markerMesh.position.copy(vector3Position);
+scene.add(camera);
+scene.add(earth);
 
-    return markerMesh;
-  }
-};
-
-// Place Marker
-var placeMarker = function placeMarker(object, options) {
-
-  var position = markerProto.latLongToVector3(options.latitude, options.longitude, options.radius, options.height);
-  var marker = markerProto.marker(options.size, options.color, position);
-  object.add(marker);
-
-};
-
-// Place Marker At Address
-var placeMarkerAtAddress = function placeMarkerAtAddress(address, color) {
-
-  var encodedLocation = address.replace(/\s/g, '+');
-  var httpRequest = new XMLHttpRequest();
-
-  httpRequest.open('GET', 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodedLocation);
-  httpRequest.send(null);
-  httpRequest.onreadystatechange = function () {
-    if (httpRequest.readyState == 4 && httpRequest.status == 200) {
-      var result = JSON.parse(httpRequest.responseText);
-
-      if (result.results.length > 0) {
-        var latitude = result.results[0].geometry.location.lat;
-        var longitude = result.results[0].geometry.location.lng;
-
-        placeMarker(earth.getObjectByName('surface'), {
-          latitude: latitude,
-          longitude: longitude,
-          radius: 0.5,
-          height: 0,
-          size: 0.01,
-          color: color
-        });
-      }
-    }
-  };
-};
 
 // Galaxy
-var galaxyGeometry = new THREE.SphereGeometry(100, 32, 32);
-var galaxyMaterial = new THREE.MeshBasicMaterial({
-  side: THREE.BackSide
-});
-var galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial);
-
-// Load Galaxy Textures
-textureLoader.crossOrigin = true;
-// textureLoader.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/141228/starfield.png', function (texture) {
-textureLoader.load('images/starfield.png', function (texture) {
-  galaxyMaterial.map = texture;
+var galaxy = CFG.Galaxy.mesh;
+textureLoader.load(CFG.Galaxy.texture, function (texture) {
+  galaxy.material.map = texture;
   scene.add(galaxy);
 });
 
-// Scene, Camera, Renderer Configuration
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
 
-// camera.position.set(1, 1, 1);
-camera.position.set(0,0,0);
+// Markers
+CFG.Markers.forEach(marker => TOOLS.placeMarker(earth.getObjectByName('surface'), marker));
 
-orbitControls.enabled = !cameraAutoRotation;
-orbitControls.enableDamping = true;
-orbitControls.dampingFactor = 0.25;
-orbitControls.dampingFactor = 0.75;
-orbitControls.dampingFactor = 0.01;
-orbitControls.dampingFactor = 0.88;
 
-orbitControls.constraint.smoothZoom = true;
-orbitControls.constraint.zoomDampingFactor = 0.2;
-orbitControls.constraint.smoothZoomSpeed = 5.0;
-
-var ambientLight = new THREE.AmbientLight( 0x606060 ); // soft white light
-scene.add( ambientLight );
-
-scene.add(camera);
-scene.add(spotLight);
-scene.add(earth);
-
-// Light Configurations
-// spotLight.position.set(2, 0, 1);
-// spotLight.position.set(2, 0, 0);  // lon=0
-spotLight.position.set(0, 2, 0);  // lon=90
 
 // Mesh Configurations
-earth.receiveShadow = true;
-earth.castShadow = true;
+// earth.receiveShadow = true;
+// earth.castShadow = true;
 earth.getObjectByName('surface').geometry.center();
 
 // On window resize, adjust camera aspect ratio and renderer size
@@ -281,41 +242,41 @@ window.addEventListener('resize', function () {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+// Trails
 
-// placeMarkerAtAddress("cologne, germany", 0x93cfef)
-// placeMarkerAtAddress("Northpole", 0x93cfef)
+var trails = [];
 
-placeMarker(earth.getObjectByName('surface'), {
-  latitude: 90,
-  longitude: 0,
-  radius: 0.5,
-  height: 0,
-  size: 0.01,
-  color: 0xff0000
-});
+
+
+var lats = Array.concat(
+  H.linspace(  0,  89, 90),
+  H.linspace( 90,   1, 90),
+  H.linspace(  0, -89, 90),
+  H.linspace(-90,  -1, 90)
+);
+var lons = lats.map( (lat, idx) => idx < 90 | idx > 270 ? 0 : 180 );
+
+var sim = new THREE.Object3D();
+trails.push(new Trail(lats, lons));
+trails.forEach( trail => sim.add(trail.mesh));
+scene.add( sim );
+
 
 // Main render function
 var render = function render() {
 
-  earth.getObjectByName('surface').rotation.y += 1 / 32 * 0.01;
-  // earth.getObjectByName('atmosphere').rotation.y += 1 / 16 * 0.01;
+  frame += 1;
 
-  if (cameraAutoRotation) {
-    cameraRotation += cameraRotationSpeed;
-    camera.position.y = 1;
-    camera.position.x = 0.5 * Math.sin(cameraRotation);
-    camera.position.z = 0.5 * Math.cos(cameraRotation);
-    camera.lookAt(earth.position);
-  }
+  var idx = (frame % 360);
+
+  trails.forEach(trail => trail.advance(idx));
 
   orbitControls.update();
 
-  requestAnimationFrame(render);
   renderer.render(scene, camera);
+
+  requestAnimationFrame(render);
 
 };
 
 render();
-
-cameraAutoRotation = false;
-orbitControls.enabled = true;

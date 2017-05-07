@@ -8,10 +8,10 @@ var guiAtmosphere = gui.addFolder('Atmosphere');
 var guiAtmosphericGlow = guiAtmosphere.addFolder('Glow');
 
 // dat.gui controls object
-var cameraControls = new function () {
-  this.speed = cameraRotationSpeed;
-  this.orbitControls = !cameraAutoRotation;
-}();
+// var cameraControls = new function () {
+//   this.speed = cameraRotationSpeed;
+//   this.orbitControls = !cameraAutoRotation;
+// }();
 
 var surfaceControls = new function () {
   this.rotation = 0;
@@ -38,13 +38,13 @@ var atmosphericGlowControls = new function () {
 }();
 
 // dat.gui controls
-guiCamera.add(cameraControls, 'speed', 0, 0.1).step(0.001).onChange(function (value) {
-  cameraRotationSpeed = value;
-});
-guiCamera.add(cameraControls, 'orbitControls').onChange(function (value) {
-  cameraAutoRotation = !value;
-  orbitControls.enabled = value;
-});
+// guiCamera.add(cameraControls, 'speed', 0, 0.1).step(0.001).onChange(function (value) {
+//   cameraRotationSpeed = value;
+// });
+// guiCamera.add(cameraControls, 'orbitControls').onChange(function (value) {
+//   cameraAutoRotation = !value;
+//   orbitControls.enabled = value;
+// });
 
 guiSurface.add(surfaceControls, 'rotation', 0, 6).onChange(function (value) {
   earth.getObjectByName('surface').rotation.y = value;
@@ -60,7 +60,8 @@ guiMarkers.add(markersControls, 'address');
 guiMarkers.addColor(markersControls, 'color');
 guiMarkers.add(markersControls, 'placeMarker');
 
-guiAtmosphere.add(atmosphereControls, 'opacity', 0, 1).onChange(function (value) {
+// guiAtmosphere.add(atmosphereControls, 'opacity', 0, 1).onChange(function (value) {
+guiAtmosphere.add({opacity: 0.8}, 'opacity', 0, 1).onChange(function (value) {
   earth.getObjectByName('atmosphere').material.opacity = value;
 });
 
