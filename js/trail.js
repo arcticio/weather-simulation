@@ -9,7 +9,7 @@ function Trail (lats, lons) {
 
   var geometry   = new THREE.Geometry();
   var line       = new MeshLine();
-  var vertices   = H.zip(lats, lons, (lat, lon) => TOOLS.latLongToVector3(lat, lon, 0.5, 0.01));
+  var vertices   = H.zip(lats, lons, (lat, lon) => TOOLS.latLongToVector3(lat, lon, 0.5, 0.02));
   var material   = new MeshLineMaterial( {
     blending:        THREE.AdditiveBlending,
     color:           new THREE.Color( "rgb(255, 2, 2)" ),

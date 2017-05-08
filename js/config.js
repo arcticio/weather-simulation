@@ -1,45 +1,58 @@
 
+const 
+  RADIUS = 0.5,
+  DISTANCE_OVERLAY  = 0.01,
+  DISTANCE_TRAILS = 0.03
+
+
+;
+
 var CFG = {
 
   earth: {
-    radius: 0.5,
+
+    radius: RADIUS,
+
     surface: {
-      size: 0.5,
-      material: {
-        bumpScale:     0.02,
-        specular:      new THREE.Color('grey'),
-        shininess:     2
-      },
+
+      mesh: new THREE.Mesh(
+        new THREE.SphereGeometry(RADIUS, 128, 128),                  
+        new THREE.MeshPhongMaterial({
+          bumpScale: 0.02,
+        })
+      ),
       textures: {
         map:           'images/earth.bathy.grey.jpg',
         bumpMap:       'images/srtm_ramp2.world.4096x2048.jpg',
-        specularMap:   'images/earthspec1k.jpg'
+        // specularMap:   'images/earthspec1k.jpg'
       }
     },
-    atmosphere: {
-      size: 0.003,
-      material: {
-        opacity: 0.8
-      },
+
+    overlay:  {
+      mesh: new THREE.Mesh(
+        new THREE.SphereGeometry(RADIUS + DISTANCE_OVERLAY, 128, 128), 
+        new THREE.MeshPhongMaterial({
+          side:        THREE.FrontSide, //THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.8
+        })
+      ),
       textures: {
-        map:           'images/earthcloudmap.jpg',
-        alphaMap:      'images/earthcloudmaptrans.jpg'
-      },
-      glow: {
-        size: 0.02,
-        intensity: 0.7,
-        fade: 7,
-        color: 0x93cfef
+        map:      'images/earthcloudmap.jpg', 
+        alphaMap: 'images/earthcloudmaptrans.jpg'
       }
-    }
+    },
+
   },
 
   Galaxy: {
-    texture: 'images/starfield.png',
     mesh: new THREE.Mesh(
       new THREE.SphereGeometry(100, 32, 32),                  // SphereGeometry(radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength)
       new THREE.MeshBasicMaterial({side: THREE.BackSide})
-    )
+    ),
+    textures: {
+      map: 'images/starfield.png'
+    },
   },
 
   orbitControls: {

@@ -30,8 +30,20 @@
   <script src="js/trail.js"></script>
   <script src="js/simulation.js"></script>
 
-	<script src="js/init.js"></script>
+	<script src="js/scene.js"></script>
 	<script src="js/gui.js"></script>
+
+  <script type="text/javascript">
+    
+  window.onload = function () {
+
+    SCENE.init();
+    SCENE.activate();
+    SCENE.render();
+
+  }
+
+  </script>
 
 </body>
 </html>
