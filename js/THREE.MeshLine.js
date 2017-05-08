@@ -388,24 +388,24 @@ function MeshLineMaterial( parameters ) {
 
 	var material = new THREE.RawShaderMaterial( {
 		uniforms:{
-			lineWidth: { type: 'f', value: this.lineWidth },
-			map: { type: 't', value: this.map },
-			useMap: { type: 'f', value: this.useMap },
-			alphaMap: { type: 't', value: this.alphaMap },
-			useAlphaMap: { type: 'f', value: this.useAlphaMap },
-			color: { type: 'c', value: this.color },
-			opacity: { type: 'f', value: this.opacity },
-			resolution: { type: 'v2', value: this.resolution },
-			sizeAttenuation: { type: 'f', value: this.sizeAttenuation },
-			near: { type: 'f', value: this.near },
-			far: { type: 'f', value: this.far },
-			dashArray: { type: 'v2', value: new THREE.Vector2( this.dashArray[ 0 ], this.dashArray[ 1 ] ) },
-			useDash: { type: 'f', value: this.useDash },
-			visibility: {type: 'f', value: this.visibility},
-			alphaTest: {type: 'f', value: this.alphaTest},
-			repeat: { type: 'v2', value: this.repeat }
+			lineWidth: 		    { type: 'f',  value: this.lineWidth },
+			map: 					    { type: 't',  value: this.map },
+			useMap: 			    { type: 'f',  value: this.useMap },
+			alphaMap: 		    { type: 't',  value: this.alphaMap },
+			useAlphaMap: 	    { type: 'f',  value: this.useAlphaMap },
+			color: 				    { type: 'c',  value: this.color },
+			opacity: 			    { type: 'f',  value: this.opacity },
+			resolution: 	    { type: 'v2', value: this.resolution },
+			sizeAttenuation:  { type: 'f',  value: this.sizeAttenuation },
+			near: 				    { type: 'f',  value: this.near },
+			far: 					    { type: 'f',  value: this.far },
+			dashArray: 		    { type: 'v2', value: new THREE.Vector2( this.dashArray[ 0 ], this.dashArray[ 1 ] ) },
+			useDash: 			    { type: 'f',  value: this.useDash },
+			visibility: 	    { type: 'f',  value: this.visibility},
+			alphaTest: 		    { type: 'f',  value: this.alphaTest},
+			repeat: 			    { type: 'v2', value: this.repeat }
 		},
-		vertexShader: vertexShaderSource.join( '\r\n' ),
+		vertexShader:   vertexShaderSource.join( '\r\n' ),
 		fragmentShader: fragmentShaderSource.join( '\r\n' )
 	});
 

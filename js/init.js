@@ -79,38 +79,38 @@ var planetProto = {
 
     return material;
   },
-  glowMaterial: function glowMaterial(intensity, fade, color) {
-    // Custom glow shader from https://github.com/stemkoski/stemkoski.github.com/tree/master/Three.js
-    var glowMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        'c': {
-          type: 'f',
-          value: intensity
-        },
-        'p': {
-          type: 'f',
-          value: fade
-        },
-        glowColor: {
-          type: 'c',
-          value: new THREE.Color(color)
-        },
-        viewVector: {
-          type: 'v3',
-          value: camera.position
-        }
-      },
-      vertexShader: '\n        uniform vec3 viewVector;\n        uniform float c;\n        uniform float p;\n        varying float intensity;\n        void main() {\n          vec3 vNormal = normalize( normalMatrix * normal );\n          vec3 vNormel = normalize( normalMatrix * viewVector );\n          intensity = pow( c - dot(vNormal, vNormel), p );\n          gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n        }',
+  // glowMaterial: function glowMaterial(intensity, fade, color) {
+    //   // Custom glow shader from https://github.com/stemkoski/stemkoski.github.com/tree/master/Three.js
+    //   var glowMaterial = new THREE.ShaderMaterial({
+    //     uniforms: {
+    //       'c': {
+    //         type: 'f',
+    //         value: intensity
+    //       },
+    //       'p': {
+    //         type: 'f',
+    //         value: fade
+    //       },
+    //       glowColor: {
+    //         type: 'c',
+    //         value: new THREE.Color(color)
+    //       },
+    //       viewVector: {
+    //         type: 'v3',
+    //         value: camera.position
+    //       }
+    //     },
+    //     vertexShader: '\n        uniform vec3 viewVector;\n        uniform float c;\n        uniform float p;\n        varying float intensity;\n        void main() {\n          vec3 vNormal = normalize( normalMatrix * normal );\n          vec3 vNormel = normalize( normalMatrix * viewVector );\n          intensity = pow( c - dot(vNormal, vNormel), p );\n          gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n        }',
 
-      fragmentShader: '\n        uniform vec3 glowColor;\n        varying float intensity;\n        void main() \n        {\n          vec3 glow = glowColor * intensity;\n          gl_FragColor = vec4( glow, 1.0 );\n        }',
+    //     fragmentShader: '\n        uniform vec3 glowColor;\n        varying float intensity;\n        void main() \n        {\n          vec3 glow = glowColor * intensity;\n          gl_FragColor = vec4( glow, 1.0 );\n        }',
 
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true
-    });
+    //     side: THREE.BackSide,
+    //     blending: THREE.AdditiveBlending,
+    //     transparent: true
+    //   });
 
-    return glowMaterial;
-  },
+    //   return glowMaterial;
+    // },
   texture: function texture(material, property, uri) {
     var textureLoader = new THREE.TextureLoader();
     textureLoader.crossOrigin = true;
@@ -139,17 +139,14 @@ var createPlanet = function createPlanet(options) {
   var atmosphereMaterial = planetProto.material(atmosphereMaterialOptions);
   var atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
 
-  // Create the planet's Atmospheric glow
-  var atmosphericGlowGeometry = planetProto.sphere(options.surface.size + options.atmosphere.size + options.atmosphere.glow.size);
-  var atmosphericGlowMaterial = planetProto.glowMaterial(options.atmosphere.glow.intensity, options.atmosphere.glow.fade, options.atmosphere.glow.color);
-  var atmosphericGlow = new THREE.Mesh(atmosphericGlowGeometry, atmosphericGlowMaterial);
 
   // Nest the planet's Surface and Atmosphere into a planet object
   var planet = new THREE.Object3D();
 
   surface.name = 'surface';
-  atmosphere.name = 'atmosphere';
-  atmosphericGlow.name = 'atmosphericGlow';
+
+  // atmosphere.name = 'atmosphere';
+  // atmosphericGlow.name = 'atmosphericGlow';
 
   planet.add(surface);
   planet.add(atmosphere);
@@ -169,52 +166,109 @@ var createPlanet = function createPlanet(options) {
 
 };
 
-var earth = createPlanet({
-  surface: {
-    size: 0.5,
-    material: {
-      bumpScale: 0.02,
-      specular: new THREE.Color('grey'),
-      // shininess: 10
-      shininess: 2
-    },
-    textures: {
-      // map: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/141228/earthmap1k.jpg',
-      // bumpMap: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/141228/earthbump1k.jpg',
-      // specularMap: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/141228/earthspec1k.jpg'
-      // map: 'images/earthmap1k.jpg',
-      // map: 'images/bathymetry.4096.jpg',
-      map: 'images/earth.bathy.grey.jpg',
-      // bumpMap: 'images/earthbump1k.jpg',
-      bumpMap: 'images/srtm_ramp2.world.4096x2048.jpg',
-      specularMap: 'images/earthspec1k.jpg'
-    }
-  },
-  atmosphere: {
-    size: 0.003,
-    material: {
-      opacity: 0.8
-    },
-    textures: {
-      map: 'images/earthcloudmap.jpg',
-      alphaMap: 'images/earthcloudmaptrans.jpg'
-    },
-    glow: {
-      size: 0.02,
-      intensity: 0.7,
-      fade: 7,
-      color: 0x93cfef
-    }
-  }
+// var earth = createPlanet({
+  //   surface: {
+  //     size: 0.5,
+  //     material: {
+  //       bumpScale: 0.02,
+  //       specular: new THREE.Color('grey'),
+  //       // shininess: 10
+  //       shininess: 2
+  //     },
+  //     textures: {
+  //       // map: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/141228/earthmap1k.jpg',
+  //       // bumpMap: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/141228/earthbump1k.jpg',
+  //       // specularMap: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/141228/earthspec1k.jpg'
+  //       // map: 'images/earthmap1k.jpg',
+  //       // map: 'images/bathymetry.4096.jpg',
+  //       map: 'images/earth.bathy.grey.jpg',
+  //       // bumpMap: 'images/earthbump1k.jpg',
+  //       bumpMap: 'images/srtm_ramp2.world.4096x2048.jpg',
+  //       specularMap: 'images/earthspec1k.jpg'
+  //     }
+  //   },
+  //   atmosphere: {
+  //     size: 0.003,
+  //     material: {
+  //       opacity: 0.8
+  //     },
+  //     textures: {
+  //       map: 'images/earthcloudmap.jpg',
+  //       alphaMap: 'images/earthcloudmaptrans.jpg'
+  //     },
+  //     glow: {
+  //       size: 0.02,
+  //       intensity: 0.7,
+  //       fade: 7,
+  //       color: 0x93cfef
+  //     }
+  //   }
+  // });
+
+var textures = {
+  map: 'images/earth.bathy.grey.jpg',
+  bumpMap: 'images/srtm_ramp2.world.4096x2048.jpg',
+  specularMap: 'images/earthspec1k.jpg'
+}
+
+var sphere   = new THREE.SphereGeometry(CFG.earth.radius, 128, 128);
+var material = new THREE.MeshPhongMaterial({
+  bumpScale: 0.02,
+  specular: new THREE.Color('grey'),
+  shininess: 2
 });
 
+var surface = new THREE.Mesh(sphere, material);
+surface.name = 'surface';
+
+H.each(textures, function (property, uri) {
+
+  var textureLoader = new THREE.TextureLoader();
+
+  textureLoader.crossOrigin = true;
+  textureLoader.load(uri, function (texture) {
+    material[property] = texture;
+    material.needsUpdate = true;
+    surface.geometry.center();
+  });
+
+});
+
+
+// Sim Layer
+
+var simulation = new THREE.Mesh(
+  new THREE.SphereGeometry(CFG.earth.radius + 0.03, 128, 128), 
+  new THREE.MeshPhongMaterial({
+    side:        THREE.DoubleSide,
+    transparent: true,
+  })
+);
+
+H.each({map: 'images/earthcloudmap.jpg', alphaMap: 'images/earthcloudmaptrans.jpg'}, (property, uri) => {
+
+  var textureLoader = new THREE.TextureLoader();
+
+  textureLoader.crossOrigin = true;
+  textureLoader.load(uri, function (texture) {
+    simulation.material[property] = texture;
+    simulation.material.needsUpdate = true;
+    simulation.geometry.center();
+  });
+
+});
+
+simulation.name ="simulation";
+
+scene.add( simulation);
 
 scene.add( CFG.Lights.ambient );
 scene.add( CFG.Lights.spot.light );
 CFG.Lights.spot.light.position.copy(CFG.Lights.spot.pos); // lon=90
 
 scene.add(camera);
-scene.add(earth);
+// scene.add(earth);
+scene.add(surface);
 
 
 // Galaxy
@@ -226,14 +280,15 @@ textureLoader.load(CFG.Galaxy.texture, function (texture) {
 
 
 // Markers
-CFG.Markers.forEach(marker => TOOLS.placeMarker(earth.getObjectByName('surface'), marker));
+// CFG.Markers.forEach(marker => TOOLS.placeMarker(earth.getObjectByName('surface'), marker));
+CFG.Markers.forEach(marker => TOOLS.placeMarker(surface, marker));
 
 
 
 // Mesh Configurations
 // earth.receiveShadow = true;
 // earth.castShadow = true;
-earth.getObjectByName('surface').geometry.center();
+// earth.getObjectByName('surface').geometry.center();
 
 // On window resize, adjust camera aspect ratio and renderer size
 window.addEventListener('resize', function () {
@@ -245,8 +300,6 @@ window.addEventListener('resize', function () {
 // Trails
 
 var trails = [];
-
-
 
 var lats = Array.concat(
   H.linspace(  0,  89, 90),

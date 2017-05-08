@@ -5,6 +5,7 @@ var TOOLS = {
 
     var position = TOOLS.latLongToVector3(options.latitude, options.longitude, options.radius, options.height);
     var marker   = TOOLS.createMarker(options.size, options.color, position);
+    
     object.add(marker);
 
   },
