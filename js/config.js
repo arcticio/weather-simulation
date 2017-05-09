@@ -1,10 +1,8 @@
 
 const 
-  RADIUS = 0.5,
+  RADIUS = 1.0,
   DISTANCE_OVERLAY  = 0.01,
   DISTANCE_TRAILS = 0.03
-
-
 ;
 
 var CFG = {
@@ -81,7 +79,7 @@ var CFG = {
   Lights: {
     ambient:           new THREE.AmbientLight( 0xffffff, 0.2 ),
     spot:    {
-      light:           new THREE.SpotLight(0xffffff, 0.5, 0, 0.18, 1.8),
+      light:           new THREE.SpotLight(0xffffff, 0.5, 0, 0.6, 0.1),
       pos:             new THREE.Vector3(0, 2, 0)
     } 
   },
@@ -89,7 +87,7 @@ var CFG = {
   Cameras: {
     perspective: {
       cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
-      pos:             new THREE.Vector3(0.5, 1.5, 0.5), // Greenland centered
+      pos:             new THREE.Vector3(0.5, 3.4, 0.5), // Greenland centered
     } 
   } 
 

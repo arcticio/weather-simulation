@@ -6,12 +6,16 @@
 
 var SCENE = (function () {
 
+
+  const TRAIL_LEN = 5;
+
   var 
     self,
     frame         = 0,
     loader        = new THREE.TextureLoader(),
 
-    renderer      = new THREE.WebGLRenderer({antialias: true}),
+    // renderer      = new THREE.WebGLRenderer({antialias: true}),
+    renderer      = new THREE.WebGLRenderer(),
     camera        = CFG.Cameras.perspective.cam,
     scene         = new THREE.Scene(),
     orbitControls = new THREE.OOrbitControls(camera, renderer.domElement),
@@ -20,6 +24,7 @@ var SCENE = (function () {
     galaxy,
     surface,
     overlay,
+    sim,
     trails        = []
   ;
 
@@ -50,9 +55,9 @@ var SCENE = (function () {
       surface.name = 'surface';
       self.texturize(surface, CFG.earth.surface.textures);
 
-      overlay = CFG.earth.overlay.mesh;
-      overlay.name = 'overlay';
-      self.texturize(overlay, CFG.earth.overlay.textures);
+      // overlay = CFG.earth.overlay.mesh;
+      // overlay.name = 'overlay';
+      // self.texturize(overlay, CFG.earth.overlay.textures);
 
       // Galaxy
       galaxy = CFG.Galaxy.mesh;
@@ -79,16 +84,28 @@ var SCENE = (function () {
     },
     addTrails: function () {
 
-      var lats = Array.prototype.concat(
-        H.linspace(  0,  89, 90),
-        H.linspace( 90,   1, 90),
-        H.linspace(  0, -89, 90),
-        H.linspace(-90,  -1, 90)
-      );
-      var lons = lats.map( (lat, idx) => idx < 90 | idx > 270 ? 0 : 180 );
+      // first lat/lon [0/0] is last of trail
 
-      var sim = new THREE.Object3D();
-      trails.push(new Trail(lats, lons));
+      function genLons (lats, start) {
+        return lats.map( (lat, idx) => idx < 90 | idx > 270 ? start : 180 + start );
+      }
+
+      var 
+        lats = Array.prototype.concat(
+          H.linspace(  0,  89, 90),
+          H.linspace( 90,   1, 90),
+          H.linspace(  0, -89, 90),
+          H.linspace(-90,  -1, 90)
+        );
+
+      sim = new THREE.Object3D();
+
+      H.linspace(0, 359, 360).forEach(start => {
+
+        trails.push(new Trail(lats, genLons(lats, start), TRAIL_LEN));
+
+      });
+
       trails.forEach( trail => sim.add(trail.mesh));
       scene.add( sim );
 
@@ -116,14 +133,18 @@ var SCENE = (function () {
     },
     render: function render () {
 
-      var idx = (frame % 360);
+      var idx = (frame + TRAIL_LEN) % 360;
 
       requestAnimationFrame(render);
 
-      trails.forEach(trail => trail.advance(idx));
+      stats.begin();
 
-      orbitControls.update();
-      renderer.render(scene, camera);
+        trails.forEach(trail => trail.advance(idx));
+
+        orbitControls.update();
+        renderer.render(scene, camera);
+
+      stats.end();
 
       frame += 1;
 

@@ -17,9 +17,14 @@
 
 <body>
 
+  <div style="display:none">
+    <img src="images/line.alpha.png">
+  </div>
+
 	<script src='libs/three.js'></script>
 	<script src='libs/OOrbitControls.js'></script>
   <script src="libs/THREE.MeshLine.js"></script>
+  <script src="libs/stats.js"></script>
 
 	<script src='libs/dat.gui.min.js'></script>
 
@@ -35,6 +40,12 @@
 
   <script type="text/javascript">
     
+    // https://github.com/mrdoob/stats.js/
+
+    var stats = new Stats();
+    stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild( stats.dom );
+
     window.onload = function () {
 
       SCENE.init();

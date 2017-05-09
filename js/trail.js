@@ -1,37 +1,48 @@
 
-function Trail (lats, lons) {
+// https://github.com/spite/THREE.MeshLine
+
+function Trail (lats, lons, length) {
+
+  var 
+    width  = CFG.earth.radius / 90;
+    cutoff = 0.4;
 
   function calcWidth (cutoff) {
     return function (percent) {
-      return percent > cutoff ? 1 - (percent - cutoff) / (1 - cutoff) : 1;
+      var  res = percent < cutoff ? 1 - (cutoff - percent) / 0.2 : 1;
+      return res ;
     };
   }
 
   var geometry   = new THREE.Geometry();
   var line       = new MeshLine();
-  var vertices   = H.zip(lats, lons, (lat, lon) => TOOLS.latLongToVector3(lat, lon, 0.5, 0.02));
+  var vertices   = H.zip(lats, lons, (lat, lon) => TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, CFG.earth.radius / 45));
   var material   = new MeshLineMaterial( {
+    alphaMap:        new THREE.TextureLoader().load('images/line.alpha.png'),
+    useAlphaMap:     1,
     blending:        THREE.AdditiveBlending,
-    color:           new THREE.Color( "rgb(255, 2, 2)" ),
-    depthTest:   true,
-    far:        100000,
-    lineWidth:       0.01,
-    near:            0,
-    opacity:         0.8,
+    color:           new THREE.Color( 'rgb(250, 0, 0)' ),
+    depthTest:       true,    // false ignores planet
+    lineWidth:       width,
+    opacity:         1.0,
     resolution:      new THREE.Vector2( window.innerWidth, window.innerHeight ),
-    side:            THREE.DoubleSide,
-    sizeAttenuation: 1, // 0 | 1
-    transparent:     true,
+    side:            THREE.FrontSide,
+    sizeAttenuation: 1,
+    transparent:     true, // needed for alphamap
   });
 
-  geometry.vertices = vertices;
-  line.setGeometry( geometry,  calcWidth(0.8) ); // makes width taper
+  geometry.vertices = vertices.slice(0, length);
+
+  line.setGeometry( geometry,  calcWidth(cutoff) ); // makes width taper
 
   this.mesh = new THREE.Mesh( line.geometry, material ); 
   this.mesh.frustumCulled = false;
-
+   
   this.advance = function (index) {
     line.advance(vertices[index]);
   }
+
+  // console.log('lats', lats.length);
+  // console.log('trail.vertices', vertices.length);
 
 }

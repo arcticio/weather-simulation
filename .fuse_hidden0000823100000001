@@ -1,2 +1,0 @@
-## cd /Daten/Projects/Osiris/ps/trunk/binaries/data/mods
-python -m SimpleHTTPServer 8765
