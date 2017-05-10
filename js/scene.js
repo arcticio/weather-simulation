@@ -7,7 +7,7 @@
 var SCENE = (function () {
 
 
-  const TRAIL_LEN = 5;
+  const TRAIL_LEN = 45;
 
   var 
     self,
@@ -34,11 +34,14 @@ var SCENE = (function () {
     },
     init: function () {
 
-      renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
-      renderer.domElement.style.width  = '100%';
-      renderer.domElement.style.height = '100%';
+      self.resize();
+
+      // renderer.setSize(window.innerWidth, window.innerHeight);
+
+      // renderer.domElement.style.width  = window.innerWidth  + 'px';
+      // renderer.domElement.style.height = window.innerHeight + 'px';
 
       camera.position.copy(CFG.Cameras.perspective.pos);
 
@@ -111,12 +114,17 @@ var SCENE = (function () {
 
     },
     activate: function () {
-      window.addEventListener('load', self.resize, false);
+      window.addEventListener('resize', self.resize, false);
     },
     resize: function () {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.domElement.style.width  = window.innerWidth  + 'px';
+      renderer.domElement.style.height = window.innerHeight + 'px';
+      renderer.domElement.width        = window.innerWidth;
+      renderer.domElement.height       = window.innerHeight;
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      console.log(window.innerWidth, window.innerHeight);
     },
     texturize: function (mesh, textures) {
 

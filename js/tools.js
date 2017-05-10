@@ -14,7 +14,7 @@ var TOOLS = {
 
     var markerGeometry = new THREE.SphereGeometry(size);
     var markerMaterial = new THREE.MeshLambertMaterial({color: color});
-    var markerMesh = new THREE.Mesh(markerGeometry, markerMaterial);
+    var markerMesh     = new THREE.Mesh(markerGeometry, markerMaterial);
 
     markerMesh.position.copy(vector3Position);
 

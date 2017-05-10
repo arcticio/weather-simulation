@@ -42,6 +42,7 @@ function Trail (lats, lons, length) {
     line.advance(vertices[index]);
   }
 
+  // console.log('length', length);
   // console.log('lats', lats.length);
   // console.log('trail.vertices', vertices.length);
 
