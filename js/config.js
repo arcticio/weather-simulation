@@ -77,7 +77,7 @@ var CFG = {
   ],
 
   Lights: {
-    ambient:           new THREE.AmbientLight( 0xffffff, 0.2 ),
+    ambient:           new THREE.AmbientLight( 0xffffff, 0.9 ),
     spot:    {
       light:           new THREE.SpotLight(0xffffff, 0.5, 0, 0.6, 0.1),
       pos:             new THREE.Vector3(0, 2, 0)
@@ -89,7 +89,16 @@ var CFG = {
       cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
       pos:             new THREE.Vector3(0.5, 3.4, 0.5), // Greenland centered
     } 
-  } 
+  },
+
+  axes: new THREE.AxisHelper( RADIUS * 4 ),
+
+  arrowHelper: new THREE.ArrowHelper( 
+    new THREE.Vector3( 1, 1,  1), 
+    new THREE.Vector3( 0,  0,  0), 
+    RADIUS + 0.08, 
+    0xffff00
+  ),
 
 };
 

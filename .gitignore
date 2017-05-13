@@ -2,3 +2,8 @@
 appengine-generated/
 stuff/
 docs/
+
+xml/*.png
+xml/*.jpg
+xml/*.tiff
+xml/*.tif

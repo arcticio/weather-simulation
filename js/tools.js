@@ -22,7 +22,18 @@ var TOOLS = {
 
   },
 
-  latLongToVector3: function latLongToVector3(latitude, longitude, radius, height) {
+  vector3ToLatLong: function (v, radius) {
+
+    // var lon = ((270 + (Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360) - 180;
+
+    return {
+      lat: 90 - (Math.acos(v.y / radius))  * 180 / Math.PI,
+      lon: ((Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360
+    };
+
+  },
+
+  latLongToVector3: function (latitude, longitude, radius, height) {
 
     var phi   = latitude * Math.PI / 180;
     var theta = (longitude - 180) * Math.PI / 180;

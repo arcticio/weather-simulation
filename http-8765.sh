@@ -1,1 +1,3 @@
-python -m SimpleHTTPServer 8765
+# python -m SimpleHTTPServer 8765
+http-server -p 8765
+

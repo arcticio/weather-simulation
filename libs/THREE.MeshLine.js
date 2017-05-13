@@ -91,14 +91,12 @@ MeshLine.prototype.process = function() {
 	this.width    = [];
 
 	for( j = 0; j < l; j++ ) {
-		this.side.push( 1 );
+		this.side.push(  1 );
 		this.side.push( -1 );
 	}
 
 	for( j = 0; j < l; j++ ) {
 		w = this.widthCallback ? this.widthCallback( j / ( l -1 ) ) : 1;
-		// if( this.widthCallback ) w = this.widthCallback( j / ( l -1 ) );
-		// else w = 1;
 		this.width.push( w );
 		this.width.push( w );
 	}
@@ -116,6 +114,7 @@ MeshLine.prototype.process = function() {
 
 	this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
 	this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+
 	for( j = 0; j < l - 1; j++ ) {
 		v = this.copyV3( j );
 		this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
@@ -443,6 +442,7 @@ function MeshLineMaterial( parameters ) {
 
 	material.type = 'MeshLineMaterial';
 
+	// blending, depthTest, side, transparent
 	material.setValues( parameters );
 
 	return material;

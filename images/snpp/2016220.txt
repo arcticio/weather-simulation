@@ -1,0 +1,2 @@
+https://gibs.earthdata.nasa.gov/image-download?TIME=2016220&extent=-180,-90,180,90&epsg=4326&layers=VIIRS_SNPP_CorrectedReflectance_TrueColor&opacities=1&worldfile=false&format=image/tif&width=8192&height=4096
+

@@ -4,8 +4,8 @@
 
     <link rel="stylesheet" href="css/style.css">
 	 
-    <title>weather-simulation</title>
-    <meta name="description" content="Visualizes a set cryosphereric parameters provides by the Global Forecasing System (GFS)" />
+    <title>Simulator</title>
+    <meta name="description" content="Visualizes a set of cryosphereric parameters provide by NOAA's Global Forecasing System (GFS)" />
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
@@ -21,6 +21,7 @@
     <img src="images/line.alpha.png">
   </div>
 
+  <script src='libs/Tween.js'></script>
 	<script src='libs/three.js'></script>
 	<script src='libs/OOrbitControls.js'></script>
   <script src="libs/THREE.MeshLine.js"></script>
@@ -35,6 +36,7 @@
   <script src="js/trail.js"></script>
   <script src="js/simulation.js"></script>
 
+  <script src="js/interface.js"></script>
 	<script src="js/scene.js"></script>
 	<script src="js/gui.js"></script>
 
@@ -48,8 +50,12 @@
 
     window.onload = function () {
 
+      IFC.init();
       SCENE.init();
+
+      IFC.activate(); 
       SCENE.activate();
+
       SCENE.render();
 
     }

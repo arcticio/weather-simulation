@@ -1,7 +1,7 @@
 
 // https://github.com/spite/THREE.MeshLine
 
-function Trail (lats, lons, length) {
+function Trail (lats, lons, length, alphamap) {
 
   var 
     width  = CFG.earth.radius / 90;
@@ -18,7 +18,7 @@ function Trail (lats, lons, length) {
   var line       = new MeshLine();
   var vertices   = H.zip(lats, lons, (lat, lon) => TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, CFG.earth.radius / 45));
   var material   = new MeshLineMaterial( {
-    alphaMap:        new THREE.TextureLoader().load('images/line.alpha.png'),
+    alphaMap:        alphamap, //
     useAlphaMap:     1,
     blending:        THREE.AdditiveBlending,
     color:           new THREE.Color( 'rgb(250, 0, 0)' ),
