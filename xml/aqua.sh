@@ -80,6 +80,7 @@ cp earth.top.gibs.2048.jpg ../images/earth.top.gibs.2048.jpg
 
 https://trac.osgeo.org/gdal/ticket/4627
 http://www.gdal.org/gdalwarp.html
+https://github.com/k9/globe-viewer/blob/master/script/process-images.sh
 
 exit
 

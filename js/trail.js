@@ -27,7 +27,6 @@ function Trail (lats, lons, length, alphamap) {
     opacity:         1.0,
     resolution:      new THREE.Vector2( window.innerWidth, window.innerHeight ),
     side:            THREE.FrontSide,
-    sizeAttenuation: 1,
     transparent:     true, // needed for alphamap
   });
 

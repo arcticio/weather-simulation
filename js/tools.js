@@ -33,10 +33,10 @@ var TOOLS = {
 
   },
 
-  latLongToVector3: function (latitude, longitude, radius, height) {
+  latLongToVector3: function (lat, lon, radius, height) {
 
-    var phi   = latitude * Math.PI / 180;
-    var theta = (longitude - 180) * Math.PI / 180;
+    var phi   = lat * Math.PI / 180;
+    var theta = (lon - 180) * Math.PI / 180;
 
     var x = -(radius + height) * Math.cos(phi) * Math.cos(theta);
     var y =  (radius + height) * Math.sin(phi);
