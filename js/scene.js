@@ -4,15 +4,18 @@
 
 var SCENE = (function () {
 
-  const TRAIL_LEN = 45;
+  const TRAIL_LEN = 30;
+  const TRAIL_NUM = 720;
 
   var 
     self,
     frame         = 0,
     loader        = new THREE.TextureLoader(),
 
+    renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true }),
     // renderer      = new THREE.WebGLRenderer({antialias: true}),
-    renderer      = new THREE.WebGLRenderer(),
+    // renderer      = new THREE.WebGLRenderer(),
+
     camera        = CFG.Cameras.perspective.cam,
     scene         = new THREE.Scene(),
     orbitControls = new THREE.OOrbitControls(camera, renderer.domElement),
@@ -113,7 +116,7 @@ var SCENE = (function () {
 
       // Lights
       scene.add( CFG.Lights.ambient );
-      scene.add( CFG.Lights.spot.light );
+      // scene.add( CFG.Lights.spot.light );
       CFG.Lights.spot.light.position.copy( CFG.Lights.spot.pos ); // lon=90
 
       // Extras
@@ -135,12 +138,12 @@ var SCENE = (function () {
       scene.add(camera);
 
     },
-    addTrails: function () {
+    addTrails: function (num) {
 
       // first lat/lon [0/0] is last of trail
 
       function genLons (lats, start) {
-        return lats.map( (lat, idx) => idx < 90 | idx > 270 ? start : 180 + start );
+        return lats.map( (lat, idx) => idx <= 90 | idx > 270 ? start : 180 + start );
       }
 
       var 
@@ -150,17 +153,18 @@ var SCENE = (function () {
           H.linspace(  0, -89, 90),
           H.linspace(-90,  -1, 90)
         ),
-        alphamap = loader.load('images/line.alpha.png');
+        alphamap = loader.load('images/line.alpha.16.png');
 
       sim = new THREE.Object3D();
 
-      H.linspace(0, 359, 360).forEach(start => {
+      H.linspace(0, 359, num).forEach(start => {
 
         trails.push(new Trail(lats, genLons(lats, start), TRAIL_LEN, alphamap));
 
       });
 
       trails.forEach( trail => sim.add(trail.mesh));
+      sim.name = 'sim';
       scene.add( sim );
 
     },
@@ -190,6 +194,19 @@ var SCENE = (function () {
       });
 
     },
+    logInfo: function render () {
+
+      console.log('renderer', JSON.stringify({
+        trails:     TRAIL_NUM,
+        length:     TRAIL_LEN,
+        geometries: renderer.info.memory.geometries,
+        textures:   renderer.info.memory.textures,
+        calls:      renderer.info.render.calls,
+        faces:      renderer.info.render.faces,
+        vertices:   renderer.info.render.vertices,
+      }, null, 2));
+
+    },
     render: function render () {
 
       var intersection, intersections, idx = (frame + TRAIL_LEN) % 360;
@@ -197,6 +214,8 @@ var SCENE = (function () {
       requestAnimationFrame(render);
 
       stats.begin();
+
+      if (frame % 2) {
 
         if ( IFC.mouse.down ) {
 
@@ -211,10 +230,14 @@ var SCENE = (function () {
 
         }
 
-        trails.forEach(trail => trail.advance(idx));
+        // trails.forEach(trail => trail.advance(idx));
+
+        // trails.forEach(trail => trail.step());
 
         orbitControls.update();
         renderer.render(scene, camera);
+
+      }
 
       stats.end();
 

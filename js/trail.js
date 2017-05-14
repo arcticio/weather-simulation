@@ -4,8 +4,9 @@
 function Trail (lats, lons, length, alphamap) {
 
   var 
-    width  = CFG.earth.radius / 90;
-    cutoff = 0.4;
+    width  = CFG.earth.radius / 180;
+    cutoff = 0.4,
+    frame  = 0;
 
   function calcWidth (cutoff) {
     return function (percent) {
@@ -28,17 +29,27 @@ function Trail (lats, lons, length, alphamap) {
     resolution:      new THREE.Vector2( window.innerWidth, window.innerHeight ),
     side:            THREE.FrontSide,
     transparent:     true, // needed for alphamap
+    head:            0,
+    // wireframe:       true,
   });
 
   geometry.vertices = vertices.slice(0, length);
 
-  line.setGeometry( geometry,  calcWidth(cutoff) ); // makes width taper
+  // line.setGeometry( geometry,  calcWidth(cutoff) ); // makes width taper
+  line.setGeometry( geometry); // makes width taper
 
   this.mesh = new THREE.Mesh( line.geometry, material ); 
+  this.mesh.name = 'simline';
   this.mesh.frustumCulled = false;
    
   this.advance = function (index) {
     line.advance(vertices[index]);
+  }
+
+  this.step = function () {
+    frame += 1;
+    material.uniforms.head = frame % length;
+    material.uniforms.head.needsUpdate = true;
   }
 
   // console.log('length', length);

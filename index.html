@@ -2,6 +2,31 @@
 <html>
 <head>
 
+    <script type="text/javascript">
+
+      var DEVELOP = "False" === "True"   ? true : false;
+      var DEBUG   = "False"   === "True" ? true : false;
+      // var ADMIN   = "False"   === "True" ? true : false;
+      var VERSION = "3.4.1";
+
+      var TIM = (function(){
+        
+        var fill = new Array(18).join(" "), 
+            pad  = function(s){return (s+fill).substr(0, fill.length);},
+            now  = function( ){return (window.performance.now() / 1000).toFixed(2);}
+
+        return {
+          now: now,
+          step: function(key, com){
+            console.log (pad(key), "-", now() + "s", (com) ? com : "-");
+          }
+        };
+        
+      })();
+
+    </script>
+
+
     <link rel="stylesheet" href="css/style.css">
 	 
     <title>Simulator</title>
@@ -18,9 +43,18 @@
 <body>
 
   <div style="display:none">
-    <img src="images/line.alpha.png">
+    <img src="images/line.alpha.64.png">
+    <img src="images/line.alpha.32.png">
+    <img src="images/line.alpha.16.png">
   </div>
 
+
+  <script src='timeranges.js'></script>
+  
+
+  <script src='libs/async.min.js'></script>
+  <script src='libs/proj4.js'></script>
+  <script src='libs/jquery.js'></script>
   <script src='libs/Tween.js'></script>
 	<script src='libs/three.js'></script>
 	<script src='libs/OOrbitControls.js'></script>
@@ -35,6 +69,11 @@
 
   <script src="js/trail.js"></script>
   <script src="js/simulation.js"></script>
+  <script src="js/simulation.js"></script>
+  <script src="js/simulator.js"></script>
+  <script src="js/sim.vars.js"></script>
+  <script src="js/sim.model.js"></script>
+  <script src="js/sim.marray.js"></script>
 
   <script src="js/interface.js"></script>
 	<script src="js/scene.js"></script>
@@ -53,10 +92,14 @@
       IFC.init();
       SCENE.init();
 
+      Simulator.onload();
+
       IFC.activate(); 
       SCENE.activate();
 
       SCENE.render();
+
+      setTimeout(SCENE.logInfo, 500);
 
     }
 

@@ -310,9 +310,9 @@
 			'    if      ( nextP == currP ) dir = normalize( currP - prevP );',
 			'    else if ( prevP == currP ) dir = normalize( nextP - currP );',
 			'    else {',
-			'      dir1 = normalize( currP - prevP );',
-			'      dir2 = normalize( nextP - currP );',
-			'      dir  = normalize( dir1 + dir2 );',
+			'        dir1 = normalize( currP - prevP );',
+			'        dir2 = normalize( nextP - currP );',
+			'        dir  = normalize( dir1 + dir2 );',
 			'    }',
 
 			'    normal = vec2( -dir.y, dir.x );',
@@ -330,90 +330,76 @@
 
 		var fragmentShaderSource = [
 
-			'#extension GL_OES_standard_derivatives : enable',
 			'precision mediump float;',
-			'',
-			'uniform sampler2D map;',
+
 			'uniform sampler2D alphaMap;',
 
-			'uniform float useMap;',
 			'uniform float useAlphaMap;',
-			// 'uniform float useDash;',
-			'uniform vec2  dashArray;',
 			'uniform float visibility;',
-			'uniform float alphaTest;',
 			'uniform vec2  repeat;',
-			'',
+
 			'varying vec2  vUV;',
 			'varying vec4  vColor;',
 			'varying float vCounters;',
-			'',
-			'void main() {',
-			'',
-			'  vec4 c = vColor;',
-			'',
-			'  if( useMap      == 1. ) c   *= texture2D( map,      vUV * repeat );',
-			'  if( useAlphaMap == 1. ) c.a *= texture2D( alphaMap, vUV * repeat ).a;',
-			'	 if( c.a <   alphaTest ) discard;',
 
-			'  gl_FragColor    = c;',
-			'	 gl_FragColor.a *= step(vCounters, visibility);',
-			'',
+			'void main() {',
+
+			'    vec4 c = vColor;',
+
+			'    if( useAlphaMap == 1. ) c.a *= texture2D( alphaMap, vUV * repeat ).a;',
+
+			'    gl_FragColor    = c;',
+			'	   gl_FragColor.a *= step(vCounters, visibility);',
+
 			'}' 
 
 		];
 
 		function check( v, d ) {
-			if( v === undefined ) return d;
-			return v;
+			return v === undefined ? d : v;
 		}
 
 		THREE.Material.call( this );
 
 		parameters = parameters || {};
 
-		this.alphaMap        = check( parameters.alphaMap, null );
-		this.alphaTest       = check( parameters.alphaTest, 0 );
-		this.color           = check( parameters.color, new THREE.Color( 0xffffff ) );
-		this.dashArray       = check( parameters.dashArray, [] );
-		this.lineWidth       = check( parameters.lineWidth, 1 );
-		this.map             = check( parameters.map, null );
-		this.opacity         = check( parameters.opacity, 1 );
-		this.repeat          = check( parameters.repeat, new THREE.Vector2( 1, 1 ) );
-		this.resolution      = check( parameters.resolution, new THREE.Vector2( 1, 1 ) );
+		this.alphaMap        = check( parameters.alphaMap,    null );
+		this.color           = check( parameters.color,       new THREE.Color( 0xffffff ) );
+		this.dashArray       = check( parameters.dashArray,   [] );
+		this.lineWidth       = check( parameters.lineWidth,   1 );
+		this.opacity         = check( parameters.opacity,     1 );
+		this.repeat          = check( parameters.repeat,      new THREE.Vector2( 1, 1 ) );
+		this.resolution      = check( parameters.resolution,  new THREE.Vector2( 1, 1 ) );
 		this.useAlphaMap     = check( parameters.useAlphaMap, 0 );
-		this.useMap          = check( parameters.useMap, 0 );
-		this.visibility      = check( parameters.visibility, 1 );
+		this.visibility      = check( parameters.visibility,  1 );
+
+		this.head            = check( parameters.head,        0 );
 
 		var material = new THREE.RawShaderMaterial( {
 			uniforms:{
 				lineWidth: 		    { type: 'f',  value: this.lineWidth },
-				map: 					    { type: 't',  value: this.map },
-				useMap: 			    { type: 'f',  value: this.useMap },
 				alphaMap: 		    { type: 't',  value: this.alphaMap },
 				useAlphaMap: 	    { type: 'f',  value: this.useAlphaMap },
 				color: 				    { type: 'c',  value: this.color },
 				opacity: 			    { type: 'f',  value: this.opacity },
 				resolution: 	    { type: 'v2', value: this.resolution },
 				visibility: 	    { type: 'f',  value: this.visibility},
-				alphaTest: 		    { type: 'f',  value: this.alphaTest},
-				repeat: 			    { type: 'v2', value: this.repeat }
+				repeat: 			    { type: 'v2', value: this.repeat },
+				head:             { type: 'f',  value: this.head },
 			},
 			vertexShader:   vertexShaderSource.join( '\r\n' ),
 			fragmentShader: fragmentShaderSource.join( '\r\n' )
 		});
 
 		delete parameters.lineWidth;
-		delete parameters.map;
-		delete parameters.useMap;
 		delete parameters.alphaMap;
 		delete parameters.useAlphaMap;
 		delete parameters.color;
 		delete parameters.opacity;
 		delete parameters.resolution;
 		delete parameters.visibility;
-		delete parameters.alphaTest;
 		delete parameters.repeat;
+		delete parameters.head;
 
 		material.type = 'MeshLineMaterial';
 
@@ -432,15 +418,12 @@
 		THREE.Material.prototype.copy.call( this, source );
 
 		this.alphaMap    = source.alphaMap;
-		this.alphaTest   = source.alphaTest;
 		this.color.copy( source.color );
 		this.lineWidth   = source.lineWidth;
-		this.map         = source.map;
 		this.opacity     = source.opacity;
 		this.repeat.copy( source.repeat );
 		this.resolution.copy( source.resolution );
 		this.useAlphaMap = source.useAlphaMap;
-		this.useMap      = source.useMap;
 		this.visibility  = source.visibility;
 
 		return this;

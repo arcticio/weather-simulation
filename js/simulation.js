@@ -7,16 +7,22 @@ var SIM = (function () {
     renderer,
     camera,
 
-    frame
+    frame,
 
-    ;
+    variables,
+
+    stuff;
 
 
   return {
     boot: function () {
       return self = this;
     },
-    init: function () {
+    init: function (data) {
+
+      variables = data;
+
+      TIM.step('SIM.init.out', variables);
       
     },
     activate: function () {

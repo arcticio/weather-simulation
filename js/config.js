@@ -77,7 +77,7 @@ var CFG = {
   ],
 
   Lights: {
-    ambient:           new THREE.AmbientLight( 0xffffff, 0.9 ),
+    ambient:           new THREE.AmbientLight( 0xffffff, 0.5 ),
     spot:    {
       light:           new THREE.SpotLight(0xffffff, 0.5, 0, 0.6, 0.1),
       pos:             new THREE.Vector3(0, 2, 0)
