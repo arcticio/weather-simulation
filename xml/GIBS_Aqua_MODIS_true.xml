@@ -1,13 +1,13 @@
 <GDAL_WMS>
     <Service name="TMS">
-        <ServerUrl>https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Aqua_CorrectedReflectance_TrueColor/default/2013-08-21/250m/${z}/${y}/${x}.jpg</ServerUrl>
+        <ServerUrl>https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/MODIS_Aqua_CorrectedReflectance_TrueColor/default/2017-05-13/250m/${z}/${y}/${x}.jpg</ServerUrl>
     </Service>
     <DataWindow>
         <UpperLeftX>-180.0</UpperLeftX>
         <UpperLeftY>90</UpperLeftY>
         <LowerRightX>396.0</LowerRightX>
         <LowerRightY>-198</LowerRightY>
-        <TileLevel>8</TileLevel>
+        <TileLevel>2</TileLevel>
         <TileCountX>2</TileCountX>
         <TileCountY>1</TileCountY>
         <YOrigin>top</YOrigin>

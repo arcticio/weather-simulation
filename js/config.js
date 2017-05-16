@@ -77,7 +77,7 @@ var CFG = {
   ],
 
   Lights: {
-    ambient:           new THREE.AmbientLight( 0xffffff, 0.5 ),
+    ambient:           new THREE.AmbientLight( 0xffffff, 0.9 ),
     spot:    {
       light:           new THREE.SpotLight(0xffffff, 0.5, 0, 0.6, 0.1),
       pos:             new THREE.Vector3(0, 2, 0)
@@ -99,6 +99,34 @@ var CFG = {
     RADIUS + 0.08, 
     0xffff00
   ),
+
+
+  'gui.dat' : {
+    Loading: 0,
+    Render: true,
+    Camera: {
+      reset: function () {console.log('click.reset')},
+    },
+    Ambient: {
+      toggle: true,
+      intensity: {val: 0.5, min: 0, max: 1},
+      color: '#ffffff'
+    },
+    Directional: {
+      toggle: true,
+      intensity: {val: 0.5, min: 0, max: 1},
+      color: '#ffffff'
+    },
+    Layers: {
+      layer: {
+        val: 'SNPP', 
+        choose: ['SNPP', 'Topo'],
+      }
+    }, 
+    DateTime : {
+      choose: {val: 0.5, min: 0, max: 1},
+    }
+  }
 
 };
 

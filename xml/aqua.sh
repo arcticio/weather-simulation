@@ -1,5 +1,28 @@
 #!/bin/bash
 
+gdalwarp -overwrite -wo SAMPLE_GRID=YES  -wo SOURCE_EXTRA=500 -ts 2048 2048:             \
+    -t_srs "+proj=gnom  +lon_0=0  +lat_0=90  +datum=WGS84 +units=degrees"    \
+    -te -6378137 -6378137 6378137 6378137                                    \
+    GIBS_Globe_SNPP.xml  globe.snpp.top.2048.tif    
+
+gdal_translate -of JPEG -co "QUALITY=80" globe.snpp.top.2048.tif  globe.snpp.top.2048.jpg
+
+exit
+
+
+gdalwarp -r cubic -overwrite -wo SAMPLE_GRID=YES  -ts 2048 2048:             \
+    -t_srs "+proj=gnom  +lon_0=0  +lat_0=90  +datum=WGS84 +units=degrees"    \
+    -te -6378137 -6378137 6378137 6378137                                    \
+    GIBS_Terra_MODIS_true.xml  earth.top.globe.2048.tif    
+
+gdal_translate -of JPEG -co "QUALITY=94" earth.top.globe.2048.tif   earth.top.globe.2048.jpg
+gdal_translate -of JPEG -outsize 500 250 GIBS_Aqua_MODIS_true.xml onearth_global_mosaic.jpg
+
+exit 
+
+    GIBS_Aqua_MODIS_true.xml    -overwrite earth.top.1024.tif     
+
+
 echo ""
 echo bottom
 gdalwarp -r cubic -overwrite -wo SOURCE_EXTRA=100 -wo SAMPLE_GRID=YES       \

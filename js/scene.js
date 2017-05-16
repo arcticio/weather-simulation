@@ -87,10 +87,12 @@ var SCENE = (function () {
         var surface = 'images/mask/earth.' + face + '.2048.jpg';
         var bumpmap = 'images/topo/earth.' + face + '.topo.2048.jpg';
 
+        var surface = 'images/snpp/globe.snpp.' + face + '.2048.jpg';
+
         return new THREE.MeshPhongMaterial( { 
           map:      loader.load( surface ),
-          bumpMap:  loader.load( bumpmap ),
-          bumpScale: 0.08,
+          // bumpMap:  loader.load( bumpmap ),
+          // bumpScale: 0.08,
           // shininess: 2,
         });
 
@@ -120,7 +122,7 @@ var SCENE = (function () {
       CFG.Lights.spot.light.position.copy( CFG.Lights.spot.pos ); // lon=90
 
       // Extras
-      self.addTrails();
+      // self.addTrails();
 
       // Markers, depend on surface
       // CFG.Markers.forEach(marker => TOOLS.placeMarker(surface, marker));

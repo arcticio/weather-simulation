@@ -1,76 +1,74 @@
 
 // dat.gui
 var gui = new dat.GUI();
-var guiCamera = gui.addFolder('Camera');
-var guiSurface = gui.addFolder('Surface');
-var guiMarkers = guiSurface.addFolder('Markers');
-var guiAtmosphere = gui.addFolder('Atmosphere');
-var guiAtmosphericGlow = guiAtmosphere.addFolder('Glow');
 
-// dat.gui controls object
-// var cameraControls = new function () {
-//   this.speed = cameraRotationSpeed;
-//   this.orbitControls = !cameraAutoRotation;
-// }();
+var guiFolders = {};
 
-var surfaceControls = new function () {
-  this.rotation = 0;
-  this.bumpScale = 0.05;
-  this.shininess = 10;
-}();
+H.each(CFG['gui.dat'], (folder, options) => {
 
-var markersControls = new function () {
-  this.address = '';
-  this.color = 0xff0000;
-  this.placeMarker = function () {
-    placeMarkerAtAddress(this.address, this.color);
-  };
-}();
+  var defs = {};
 
-var atmosphereControls = new function () {
-  this.opacity = 0.8;
-}();
+  // root params
+  if (typeof options !== 'object') {
+    defs[folder] = options;
+    gui.add(defs, folder, options);
 
-var atmosphericGlowControls = new function () {
-  this.intensity = 0.7;
-  this.fade = 7;
-  this.color = 0x93cfef;
-}();
+  } else {
 
-// dat.gui controls
-// guiCamera.add(cameraControls, 'speed', 0, 0.1).step(0.001).onChange(function (value) {
-//   cameraRotationSpeed = value;
-// });
-// guiCamera.add(cameraControls, 'orbitControls').onChange(function (value) {
-//   cameraAutoRotation = !value;
-//   orbitControls.enabled = value;
-// });
+    // prep folders
+    H.each(options, (option, value) => {
+      defs[option] = value.val ? value.val : value;
+    });
 
-guiSurface.add(surfaceControls, 'rotation', 0, 6).onChange(function (value) {
-  earth.getObjectByName('surface').rotation.y = value;
-});
-guiSurface.add(surfaceControls, 'bumpScale', 0, 1).step(0.01).onChange(function (value) {
-  earth.getObjectByName('surface').material.bumpScale = value;
-});
-guiSurface.add(surfaceControls, 'shininess', 0, 30).onChange(function (value) {
-  earth.getObjectByName('surface').material.shininess = value;
-});
+    guiFolders[folder] = gui.addFolder(folder);
 
-guiMarkers.add(markersControls, 'address');
-guiMarkers.addColor(markersControls, 'color');
-guiMarkers.add(markersControls, 'placeMarker');
+    // prep actions
 
-// guiAtmosphere.add(atmosphereControls, 'opacity', 0, 1).onChange(function (value) {
-guiAtmosphere.add({opacity: 0.8}, 'opacity', 0, 1).onChange(function (value) {
-  earth.getObjectByName('atmosphere').material.opacity = value;
-});
+    H.each(options, (option, value) => {
 
-guiAtmosphericGlow.add(atmosphericGlowControls, 'intensity', 0, 1).onChange(function (value) {
-  earth.getObjectByName('atmosphericGlow').material.uniforms['c'].value = value;
-});
-guiAtmosphericGlow.add(atmosphericGlowControls, 'fade', 0, 50).onChange(function (value) {
-  earth.getObjectByName('atmosphericGlow').material.uniforms['p'].value = value;
-});
-guiAtmosphericGlow.addColor(atmosphericGlowControls, 'color').onChange(function (value) {
-  earth.getObjectByName('atmosphericGlow').material.uniforms.glowColor.value.setHex(value);
+      if (value.val && value.choose) {
+
+        guiFolders[folder].add(defs, option, value.choose).onChange(function (value) {
+          console.log("change", folder, value);
+        });
+      
+      } else if (value.val) {
+
+        if (value.step) {
+          guiFolders[folder].add(defs, option, value.min, value.max).step(value.step).onChange(function (value) {
+            console.log("change", folder, option, value);
+          });
+
+        } else {
+          guiFolders[folder].add(defs, option, value.min, value.max).onChange(function (value) {
+            console.log("change", folder, option, value);
+          });
+
+        }
+
+      } else {
+
+        if (option === 'color') {
+          guiFolders[folder].addColor(defs, option, value).onChange(function (value) {
+            console.log("change", folder, option, value);
+          });
+
+        } else if (typeof value === 'function') {
+          guiFolders[folder].add(defs, option).onChange(function () {
+            console.log("change", folder, option, 'click');
+          });
+
+        } else {
+          guiFolders[folder].add(defs, option, value).onChange(function (value) {
+            console.log("change", folder, option, value);
+          });
+
+        }
+
+      }
+
+    });
+
+  }
+
 });
