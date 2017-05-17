@@ -7,9 +7,12 @@ const
 
 var CFG = {
 
+  Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
+
   earth: {
 
     radius: RADIUS,
+    radiusOverlay: RADIUS + 0.1,
 
     surface: {
 
@@ -40,6 +43,10 @@ var CFG = {
         alphaMap: 'images/earthcloudmaptrans.jpg'
       }
     },
+
+    seaice: {
+
+    }
 
   },
 
@@ -77,7 +84,7 @@ var CFG = {
   ],
 
   Lights: {
-    ambient:           new THREE.AmbientLight( 0xffffff, 0.9 ),
+    ambient:           new THREE.AmbientLight( 0xffffff, 0.4 ),
     spot:    {
       light:           new THREE.SpotLight(0xffffff, 0.5, 0, 0.6, 0.1),
       pos:             new THREE.Vector3(0, 2, 0)
@@ -100,30 +107,39 @@ var CFG = {
     0xffff00
   ),
 
+  preset: {
+
+  },
+
 
   'gui.dat' : {
     Loading: 0,
     Render: true,
     Camera: {
+      isFolder: true,
       reset: function () {console.log('click.reset')},
     },
     Ambient: {
+      isFolder: true,
       toggle: true,
       intensity: {val: 0.5, min: 0, max: 1},
       color: '#ffffff'
     },
     Directional: {
+      isFolder: true,
       toggle: true,
       intensity: {val: 0.5, min: 0, max: 1},
       color: '#ffffff'
     },
     Layers: {
+      isFolder: true,
       layer: {
         val: 'SNPP', 
         choose: ['SNPP', 'Topo'],
       }
     }, 
     DateTime : {
+      isFolder: true,
       choose: {val: 0.5, min: 0, max: 1},
     }
   }

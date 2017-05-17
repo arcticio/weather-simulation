@@ -48,6 +48,7 @@ var SCENE = (function () {
       document.body.appendChild(canvas);
       renderer.setPixelRatio( window.devicePixelRatio );
       renderer.setClearColor(0x4d4d4d, 1.0)
+      renderer.shadowMapEnabled = false;
 
       self.resize();
 
@@ -63,44 +64,34 @@ var SCENE = (function () {
       orbitControls.constraint.minDistance = RADIUS + 0.1;
       orbitControls.constraint.maxDistance = 8;
 
+      var mesh = self.createCube(
+        'globe', 
+        CFG.earth.radius, 
+        'images/snpp/globe.snpp.FACE.2048.jpg', 
+        'globe'
+      );
+      // scene.add( mesh );
 
-      var surface = new THREE.BoxGeometry(1, 1, 1, 32, 32, 32);
+      var mask = self.createCube(
+        'data', 
+        CFG.earth.radius, 
+        'images/mask/earth.FACE.2048.jpg', 
+        'data'
+      );
+      scene.add( mask );
 
-      for (idx in surface.vertices) {
-        vertex = surface.vertices[idx];
-        vertex.normalize().multiplyScalar(RADIUS);
-      }
+      var seaice = self.createCube(
+        'seaice', 
+        CFG.earth.radius + 0.001, 
+        'images/amsr2/polar.amsr2.FACE.1024.png', 
+        'polar'
+      );
+      scene.add( seaice );
 
-      surface.computeVertexNormals();
-      // surface.computeBoundingBox();
-      // surface.computeBoundingSphere();
-      // surface.computeFaceNormals();
-      // surface.computeFlatVertexNormals();
-      // surface.computeLineDistances();
-      // surface.computeMorphNormals();
-      // surface.computeFlatVertexNormals();
 
-      var cubemap = ['right', 'left', 'top', 'bottom', 'front', 'back'].map( face => {
-
-        // var filename = 'images/snpp/earth.right.snpp.2048.jpg';
-        // var filename = 'images/mask/earth.' + face + '.2048.jpg';
-        var surface = 'images/mask/earth.' + face + '.2048.jpg';
-        var bumpmap = 'images/topo/earth.' + face + '.topo.2048.jpg';
-
-        var surface = 'images/snpp/globe.snpp.' + face + '.2048.jpg';
-
-        return new THREE.MeshPhongMaterial( { 
-          map:      loader.load( surface ),
-          // bumpMap:  loader.load( bumpmap ),
-          // bumpScale: 0.08,
-          // shininess: 2,
-        });
-
-      });
-
-      var mesh = new THREE.Mesh( surface, new THREE.MeshFaceMaterial(cubemap) );
-      mesh.name = 'globe';
-      scene.add( mesh );
+      // var mesh = new THREE.Mesh( surface, new THREE.MeshFaceMaterial(cubemap) );
+      // mesh.name = 'globe';
+      // scene.add( mesh );
 
 
       // surface = CFG.earth.surface.mesh;
@@ -118,7 +109,7 @@ var SCENE = (function () {
 
       // Lights
       scene.add( CFG.Lights.ambient );
-      // scene.add( CFG.Lights.spot.light );
+      scene.add( CFG.Lights.spot.light );
       CFG.Lights.spot.light.position.copy( CFG.Lights.spot.pos ); // lon=90
 
       // Extras
@@ -138,6 +129,58 @@ var SCENE = (function () {
       scene.add( axes );
 
       scene.add(camera);
+
+    },
+    createCube: function (name, radius, template, type) {
+
+      var
+        idx, vertex, mesh, cubemap, texture, bumpmap, shininess, 
+        geometry = new THREE.BoxGeometry(1, 1, 1, 16, 16, 16),
+        bumpTemplate = 'images/topo/earth.FACE.topo.2048.jpg';
+
+      for (idx in geometry.vertices) {
+        vertex = geometry.vertices[idx];
+        vertex.normalize().multiplyScalar(radius);
+      }
+
+      geometry.computeVertexNormals();
+
+      cubemap = CFG.Faces.map( face => {
+
+        if (type === 'globe') {
+          texture = H.replace(template, 'FACE', face);
+
+        } else if (type === 'data') {
+          texture = H.replace(template, 'FACE', face);
+          bumpmap = H.replace(bumpTemplate, 'FACE', face);
+
+        } else if (type === 'polar') {
+          texture = (face === 'top' || face === 'bottom') ? 
+            H.replace(template, 'FACE', face) : 
+            'images/transparent.face.512.png';
+        }
+
+        // var surface = 'images/snpp/globe.snpp.' + face + '.2048.jpg';
+
+        return new THREE.MeshPhongMaterial( { 
+          map:         loader.load( texture ),
+          transparent: true, 
+          opacity:     1.0, 
+          side:        THREE.FrontSide,
+          wireframe:   false,
+          bumpMap:     bumpmap ? loader.load( bumpmap ) : undefined,
+          bumpScale:   0.04,
+          shininess:   2,
+
+          // lights:      false,
+        });
+
+      });
+
+      mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial(cubemap) );
+      mesh.name = name;
+      
+      return mesh;
 
     },
     addTrails: function (num) {
@@ -249,3 +292,57 @@ var SCENE = (function () {
   };
 
 }()).boot();
+
+
+
+/*
+
+surface.computeBoundingBox();
+surface.computeBoundingSphere();
+surface.computeFaceNormals();
+surface.computeFlatVertexNormals();
+surface.computeLineDistances();
+surface.computeMorphNormals();
+surface.computeFlatVertexNormals();
+
+var surface = new THREE.BoxGeometry(1, 1, 1, 16, 16, 16);
+
+for (idx in surface.vertices) {
+  vertex = surface.vertices[idx];
+  vertex.normalize().multiplyScalar(RADIUS);
+}
+
+surface.computeVertexNormals();
+
+var cubemap = ['right', 'left', 'top', 'bottom', 'front', 'back'].map( face => {
+
+  // var filename = 'images/snpp/earth.right.snpp.2048.jpg';
+  // var filename = 'images/mask/earth.' + face + '.2048.jpg';
+  var surface = 'images/mask/earth.' + face + '.2048.jpg';
+  var bumpmap = 'images/topo/earth.' + face + '.topo.2048.jpg';
+
+  var surface = 'images/snpp/globe.snpp.' + face + '.2048.jpg';
+
+  return new THREE.MeshPhongMaterial( { 
+    map:      loader.load( surface ),
+    // transparent:true, 
+    // opacity:0.2, 
+    side: THREE.FrontSide,
+    // wireframe: true,
+    // bumpMap:  loader.load( bumpmap ),
+    // bumpScale: 0.08,
+    // shininess: 2,
+  });
+
+});
+
+
+*/
+
+
+
+
+
+
+
+

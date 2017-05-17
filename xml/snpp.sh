@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gdalwarp -overwrite -wo SAMPLE_GRID=YES  -wo SOURCE_EXTRA=500 -ts 2048 2048:             \
+gdalwarp -overwrite -wo SAMPLE_GRID=YES  -wo SOURCE_EXTRA=500 -ts 2048 2048  \
     -t_srs "+proj=gnom  +lon_0=0  +lat_0=90  +datum=WGS84 +units=degrees"    \
     -te -6378137 -6378137 6378137 6378137                                    \
     GIBS_Globe_SNPP.xml  globe.snpp.top.2048.tif    

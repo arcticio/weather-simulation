@@ -9,15 +9,20 @@ H.each(CFG['gui.dat'], (folder, options) => {
   var defs = {};
 
   // root params
-  if (typeof options !== 'object') {
+  if (!options.isFolder) {
     defs[folder] = options;
     gui.add(defs, folder, options);
 
   } else {
 
+    delete options.isFolder;
+
     // prep folders
     H.each(options, (option, value) => {
-      defs[option] = value.val ? value.val : value;
+      if (option !== 'isFolder'){
+        defs[option] = value.val ? value.val : value;
+      }
+
     });
 
     guiFolders[folder] = gui.addFolder(folder);

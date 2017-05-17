@@ -1,0 +1,21 @@
+<GDAL_WMS>
+    <Service name="TMS">
+    <ServerUrl>https://gibs.earthdata.nasa.gov/wmts/epsg3413/best/AMSR2_Sea_Ice_Concentration_12km/default/2017-04-11/1km/${z}/${y}/${x}.png</ServerUrl>
+    </Service>
+    <DataWindow>
+        <UpperLeftX>-4194304</UpperLeftX>
+        <UpperLeftY>4194304</UpperLeftY>
+        <LowerRightX>4194304</LowerRightX>
+        <LowerRightY>-4194304</LowerRightY>
+        <TileLevel>4</TileLevel>
+        <TileCountX>2</TileCountX>
+        <TileCountY>2</TileCountY>
+        <YOrigin>top</YOrigin>
+    </DataWindow>
+    <Projection>EPSG:3413</Projection>
+    <BlockSizeX>512</BlockSizeX>
+    <BlockSizeY>512</BlockSizeY>
+    <BandsCount>4</BandsCount>
+    <ZeroBlockOnServerException>true</ZeroBlockOnServerException>
+    <ZeroBlockHttpCodes>204,404,400</ZeroBlockHttpCodes>
+</GDAL_WMS>
