@@ -11,7 +11,9 @@ H.each(CFG['gui.dat'], (folder, options) => {
   // root params
   if (!options.isFolder) {
     defs[folder] = options;
-    gui.add(defs, folder, options);
+    gui.add(defs, folder, options).onChange(function (value) {
+      SCENE.actions("change", folder, 'toggle', value);
+    });
 
   } else {
 
@@ -34,19 +36,19 @@ H.each(CFG['gui.dat'], (folder, options) => {
       if (value.val && value.choose) {
 
         guiFolders[folder].add(defs, option, value.choose).onChange(function (value) {
-          console.log("change", folder, value);
+          SCENE.actions("change", folder, option, value);
         });
       
       } else if (value.val) {
 
         if (value.step) {
           guiFolders[folder].add(defs, option, value.min, value.max).step(value.step).onChange(function (value) {
-            console.log("change", folder, option, value);
+            SCENE.actions("change", folder, option, value);
           });
 
         } else {
           guiFolders[folder].add(defs, option, value.min, value.max).onChange(function (value) {
-            console.log("change", folder, option, value);
+            SCENE.actions("change", folder, option, value);
           });
 
         }
@@ -55,17 +57,17 @@ H.each(CFG['gui.dat'], (folder, options) => {
 
         if (option === 'color') {
           guiFolders[folder].addColor(defs, option, value).onChange(function (value) {
-            console.log("change", folder, option, value);
+            SCENE.actions("change", folder, option, value);
           });
 
         } else if (typeof value === 'function') {
           guiFolders[folder].add(defs, option).onChange(function () {
-            console.log("change", folder, option, 'click');
+            SCENE.actions("change", folder, option, 'click');
           });
 
         } else {
           guiFolders[folder].add(defs, option, value).onChange(function (value) {
-            console.log("change", folder, option, value);
+            SCENE.actions("change", folder, option, value);
           });
 
         }

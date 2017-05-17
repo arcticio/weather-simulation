@@ -21,6 +21,11 @@ var SCENE = (function () {
     orbitControls = new THREE.OOrbitControls(camera, renderer.domElement),
     axes,
 
+    doRender      = true,
+
+    meshes        = {},
+    lights        = {},
+
     canvas,
 
     arrowHelper,
@@ -64,43 +69,30 @@ var SCENE = (function () {
       orbitControls.constraint.minDistance = RADIUS + 0.1;
       orbitControls.constraint.maxDistance = 8;
 
-      var mesh = self.createCube(
+      meshes.globe = self.createCube(
         'globe', 
         CFG.earth.radius, 
         'images/snpp/globe.snpp.FACE.2048.jpg', 
         'globe'
       );
-      // scene.add( mesh );
-
-      var mask = self.createCube(
+      scene.add( meshes.globe );
+      meshes.globe.visibility = false;
+      
+      meshes.data = self.createCube(
         'data', 
         CFG.earth.radius, 
         'images/mask/earth.FACE.2048.jpg', 
         'data'
       );
-      scene.add( mask );
+      scene.add( meshes.data );
 
-      var seaice = self.createCube(
+      meshes.seaice = self.createCube(
         'seaice', 
         CFG.earth.radius + 0.001, 
         'images/amsr2/polar.amsr2.FACE.1024.png', 
         'polar'
       );
-      scene.add( seaice );
-
-
-      // var mesh = new THREE.Mesh( surface, new THREE.MeshFaceMaterial(cubemap) );
-      // mesh.name = 'globe';
-      // scene.add( mesh );
-
-
-      // surface = CFG.earth.surface.mesh;
-      // surface.name = 'surface';
-      // self.texturize(surface, CFG.earth.surface.textures);
-
-      // overlay = CFG.earth.overlay.mesh;
-      // overlay.name = 'overlay';
-      // self.texturize(overlay, CFG.earth.overlay.textures);
+      scene.add( meshes.seaice );
 
       // // Galaxy
       // galaxy = CFG.Galaxy.mesh;
@@ -108,25 +100,30 @@ var SCENE = (function () {
       // self.texturize(galaxy, CFG.Galaxy.textures);
 
       // Lights
-      scene.add( CFG.Lights.ambient );
-      scene.add( CFG.Lights.spot.light );
-      CFG.Lights.spot.light.position.copy( CFG.Lights.spot.pos ); // lon=90
+      lights.ambient = CFG.Lights.ambient;
+      scene.add( lights.ambient );
+
+      lights.spot = CFG.Lights.spot.light;
+      lights.spot.position.copy( CFG.Lights.spot.pos ); 
+      scene.add( lights.spot );
+
+      // scene.add( CFG.Lights.spot.light );
 
       // Extras
       // self.addTrails();
 
       // Markers, depend on surface
-      // CFG.Markers.forEach(marker => TOOLS.placeMarker(surface, marker));
+      CFG.Markers.forEach(marker => TOOLS.placeMarker(meshes.globe, marker));
 
       // click pointer
-      arrowHelper = CFG.arrowHelper;
-      arrowHelper.name = 'arrowHelper';
-      scene.add( arrowHelper );
+      meshes.arrowHelper = CFG.arrowHelper;
+      meshes.arrowHelper.name = 'arrowHelper';
+      scene.add( meshes.arrowHelper );
 
       // axes
-      axes = CFG.axes,
-      axes.name = 'axes';
-      scene.add( axes );
+      meshes.axes = CFG.axes,
+      meshes.axes.name = 'axes';
+      scene.add( meshes.axes );
 
       scene.add(camera);
 
@@ -239,6 +236,42 @@ var SCENE = (function () {
       });
 
     },
+    actions: function (action, folder, option, value) {
+
+      // console.log("GUI.change", {action, folder, option, value});
+
+      var tmp, config = {
+        Render:  {
+          toggle:    (value) => doRender = value,
+        },
+        Ambient: {
+          toggle:    (value) => value ? scene.add(lights.ambient) : scene.remove(lights.ambient),
+          intensity: (value) => lights.ambient.intensity = value,
+          color:     (value) => lights.ambient.color = new THREE.Color( value ),
+        },
+        Spot: {
+          toggle:    (value) => value ? scene.add(lights.spot) : scene.remove(lights.spot),
+          intensity: (value) => lights.spot.intensity = value,
+          color:     (value) => lights.spot.color = new THREE.Color( value ),
+        },
+        Layers : {
+          'SNPP':    (value) => value ? scene.add(meshes.globe)  : scene.remove(meshes.globe),
+          'DATA':    (value) => value ? scene.add(meshes.data)   : scene.remove(meshes.data),
+          'SEAICE':  (value) => value ? scene.add(meshes.seaice) : scene.remove(meshes.seaice),
+        },
+        Camera: {
+          reset:     (value) => camera.position.copy(CFG.Cameras.perspective.pos),
+        },
+        DateTime: {
+          choose:    (value) => console.log('Date', value),
+        }
+      }
+
+      try {
+        config[folder][option](value);
+      } catch (e) {console.log("NOT DEFINED", folder, option, value, e)} 
+
+    },
     logInfo: function render () {
 
       console.log('renderer', JSON.stringify({
@@ -269,7 +302,7 @@ var SCENE = (function () {
           intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
 
           if (intersection) {
-            arrowHelper.setDirection( intersection.point.normalize() );
+            meshes.arrowHelper.setDirection( intersection.point.normalize() );
             // console.log('click', TOOLS.vector3ToLatLong(intersection.point, CFG.earth.radius));
           }
 
@@ -280,7 +313,7 @@ var SCENE = (function () {
         // trails.forEach(trail => trail.step());
 
         orbitControls.update();
-        renderer.render(scene, camera);
+        doRender && renderer.render(scene, camera);
 
       }
 

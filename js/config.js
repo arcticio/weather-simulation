@@ -127,17 +127,22 @@ var CFG = {
     },
     Directional: {
       isFolder: true,
+      toggle: false,
+      intensity: {val: 0.5, min: 0, max: 1},
+      color: '#ffffff'
+    },
+    Spot: {
+      isFolder: true,
       toggle: true,
       intensity: {val: 0.5, min: 0, max: 1},
       color: '#ffffff'
     },
     Layers: {
       isFolder: true,
-      layer: {
-        val: 'SNPP', 
-        choose: ['SNPP', 'Topo'],
-      }
-    }, 
+      'SNPP':   true,
+      'DATA':   true,
+      'SEAICE': true,
+    },
     DateTime : {
       isFolder: true,
       choose: {val: 0.5, min: 0, max: 1},
