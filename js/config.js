@@ -141,6 +141,7 @@ var CFG = {
       isFolder: true,
       'SNPP':   true,
       'DATA':   true,
+      'SST':    true,
       'SEAICE': true,
     },
     DateTime : {

@@ -84,6 +84,14 @@ var SCENE = (function () {
       );
       scene.add( meshes.data );
 
+      meshes.sst = self.createCube(
+        'sst', 
+        CFG.earth.radius + 0.0005, 
+        'images/sst/globe.sst.FACE.1024.png', 
+        'globe'
+      );
+      scene.add( meshes.sst );
+
       meshes.seaice = self.createCube(
         'seaice', 
         CFG.earth.radius + 0.001, 
@@ -255,6 +263,7 @@ var SCENE = (function () {
         Layers : {
           'SNPP':    (value) => value ? scene.add(meshes.globe)  : scene.remove(meshes.globe),
           'DATA':    (value) => value ? scene.add(meshes.data)   : scene.remove(meshes.data),
+          'SST':     (value) => value ? scene.add(meshes.sst)    : scene.remove(meshes.sst),
           'SEAICE':  (value) => value ? scene.add(meshes.seaice) : scene.remove(meshes.seaice),
         },
         Camera: {

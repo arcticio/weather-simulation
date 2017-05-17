@@ -4,9 +4,12 @@ appengine-generated/
 stuff/
 docs/
 
+xml/*.sh
+xml/*.zip
 xml/*.png
 xml/*.jpg
 xml/*.tiff
 xml/*.tif
+xml/*_tmp.xml
 
 images/sources
