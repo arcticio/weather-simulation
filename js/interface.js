@@ -38,7 +38,7 @@ var IFC = (function () {
 
       simulator = $('simulator');
 
-      console.log('simulator', simulator);
+      // console.log('simulator', simulator);
 
 
       window.addEventListener('resize', self.resize, false);

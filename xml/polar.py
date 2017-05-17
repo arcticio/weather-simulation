@@ -15,6 +15,7 @@ xmlFileTemplate = 'GIBS_Polar_AMSR2_%s_tmp.xml'
 
 # works
 # https://gibs.earthdata.nasa.gov/wmts/epsg3413/best/AMSR2_Sea_Ice_Concentration_12km/default/2017-05-13/1km/0/0/0.png
+# http://www.gdal.org/gdalwarp.html
 
 xmlTemplate = """<GDAL_WMS>
     <Service name="TMS">

@@ -55,10 +55,8 @@ var SCENE = (function () {
       renderer.setClearColor(0x4d4d4d, 1.0)
       renderer.shadowMapEnabled = false;
 
-      self.resize();
-
-
       camera.position.copy(CFG.Cameras.perspective.pos);
+      self.resize();
 
       orbitControls.enabled = true;
       orbitControls.enableDamping = true;
@@ -236,7 +234,7 @@ var SCENE = (function () {
       });
 
     },
-    actions: function (action, folder, option, value) {
+    actions: function (folder, option, value) {
 
       // console.log("GUI.change", {action, folder, option, value});
 
