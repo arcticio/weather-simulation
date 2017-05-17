@@ -10,6 +10,7 @@ xml/*.png
 xml/*.jpg
 xml/*.tiff
 xml/*.tif
-xml/*_tmp.xml
+xml/*tmp.xml
+xml/*aux.xml
 
 images/sources
