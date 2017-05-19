@@ -64,8 +64,8 @@ task = """
 for (face, lon, lat, extra) in tasks :
 
   cmd = task % (extra, size, size, lon, lat, xmlFile, face, size)
-  # cmds.append("echo %s" % face)
-  # cmds.append(cmd)
+  cmds.append("echo %s" % face)
+  cmds.append(cmd)
 
 
 for (face, lon, lat, extra) in tasks :

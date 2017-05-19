@@ -268,6 +268,8 @@
 			'uniform float lineWidth;',
 			'uniform vec3  color;',
 			'uniform float opacity;',
+			
+			// 'uniform float pointer;',
 
 			'varying vec2  vUV;',
 			'varying vec4  vColor;',
@@ -277,7 +279,7 @@
 
 			'    vec2 res = i.xy / i.w;',
 			'    res.x *= aspect;',
-			'	   vCounters = counters;',
+			// '	   vCounters = counters;',
 			'    return res;',
 
 			'}',
@@ -286,6 +288,7 @@
 
 			'    vUV = uv;',
 			'    vColor = vec4( color, opacity );',
+			'	   vCounters = counters;',
 
 			'    float aspect = resolution.x / resolution.y;',
 
@@ -338,6 +341,8 @@
 			'uniform float visibility;',
 			'uniform vec2  repeat;',
 
+			'uniform float pointer;',
+
 			'varying vec2  vUV;',
 			'varying vec4  vColor;',
 			'varying float vCounters;',
@@ -350,6 +355,9 @@
 
 			'    gl_FragColor    = c;',
 			'	   gl_FragColor.a *= step(vCounters, visibility);',
+
+			'    if (vCounters < pointer )        discard;',
+			'    if (vCounters > pointer + 0.005 ) discard;',
 
 			'}' 
 
@@ -374,6 +382,7 @@
 		this.visibility      = check( parameters.visibility,  1 );
 
 		this.head            = check( parameters.head,        0 );
+		this.pointer         = check( parameters.pointer,        0 );
 
 		var material = new THREE.RawShaderMaterial( {
 			uniforms:{
@@ -385,7 +394,9 @@
 				resolution: 	    { type: 'v2', value: this.resolution },
 				visibility: 	    { type: 'f',  value: this.visibility},
 				repeat: 			    { type: 'v2', value: this.repeat },
+
 				head:             { type: 'f',  value: this.head },
+				pointer:             { type: 'f',  value: this.pointer },
 			},
 			vertexShader:   vertexShaderSource.join( '\r\n' ),
 			fragmentShader: fragmentShaderSource.join( '\r\n' )
@@ -399,7 +410,9 @@
 		delete parameters.resolution;
 		delete parameters.visibility;
 		delete parameters.repeat;
+
 		delete parameters.head;
+		delete parameters.pointer;
 
 		material.type = 'MeshLineMaterial';
 

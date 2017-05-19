@@ -14,6 +14,14 @@ var CFG = {
     radius: RADIUS,
     radiusOverlay: RADIUS + 0.1,
 
+    pointer: new THREE.Mesh(
+      new THREE.SphereGeometry(RADIUS - 0.01, 64, 64),                  
+      new THREE.MeshBasicMaterial({
+        color:     0x660000,
+        wireframe: true,
+      })
+    ),
+
     surface: {
 
       mesh: new THREE.Mesh(
@@ -44,9 +52,6 @@ var CFG = {
       }
     },
 
-    seaice: {
-
-    }
 
   },
 
@@ -86,7 +91,7 @@ var CFG = {
   Lights: {
     ambient:           new THREE.AmbientLight( 0xffffff, 0.4 ),
     spot:    {
-      light:           new THREE.SpotLight(0xffffff, 0.5, 0, 0.6, 0.1),
+      light:           new THREE.SpotLight(0xffffff, 0.2, 0, 0.6, 0.1),
       pos:             new THREE.Vector3(0, 2, 0)
     } 
   },
@@ -117,7 +122,8 @@ var CFG = {
     Render: true,
     Camera: {
       isFolder: true,
-      reset: function () {console.log('click.reset')},
+      reset: () => {},
+      // reset: function () {console.log('click.reset')},
     },
     Ambient: {
       isFolder: true,
@@ -147,6 +153,16 @@ var CFG = {
     DateTime : {
       isFolder: true,
       choose: {val: 0.5, min: 0, max: 1},
+    },
+    Extras: {
+      isFolder: true,
+      Axes:     true,
+    },
+    Simulation: {
+      isFolder: true,
+      start:     () => {},
+      stop:      () => {},
+      pause:     () => {},
     }
   }
 

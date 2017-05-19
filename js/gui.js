@@ -12,7 +12,7 @@ H.each(CFG['gui.dat'], (folder, options) => {
   if (!options.isFolder) {
     defs[folder] = options;
     gui.add(defs, folder, options).onChange(function (value) {
-      SCENE.actions("change", folder, 'toggle', value);
+      SCENE.actions(folder, 'toggle', value);
     });
 
   } else {

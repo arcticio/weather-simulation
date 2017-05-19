@@ -537,7 +537,7 @@ var Simulator = (function () {
             return dataTimeRanges['gfs-simulation'][0];
 
         },
-        onload: function(canvas){
+        onload: function(callback){
 
             var range;
 
@@ -587,7 +587,10 @@ var Simulator = (function () {
 
             // little offset for the GUI
             setTimeout(function () {
-                self.loadRange(self.finishLoad);
+                self.loadRange(function (err, results) {
+                    self.finishLoad(err, results);
+                    callback();
+                });
             }, 200);
 
             // Sync, Pole chart data
@@ -694,7 +697,9 @@ var Simulator = (function () {
 
             hasData = true;
 
-            SIM.init(variables);
+            // SIM.init(variables);
+
+            // callback(variables);
 
             // if(Sections.isVisible("simulation")){
             //     setTimeout(self.animateStart, 500);

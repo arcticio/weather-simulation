@@ -77,6 +77,7 @@
   <script src="js/sim.marray.js"></script>
 
   <script src="js/interface.js"></script>
+  <script src="js/animator.js"></script>
 	<script src="js/scene.js"></script>
 	<script src="js/gui.js"></script>
 
@@ -92,15 +93,21 @@
 
       IFC.init();
       SCENE.init();
-
-      Simulator.onload();
+      ANI.init();
 
       IFC.activate(); 
       SCENE.activate();
+      ANI.activate();
 
-      SCENE.render();
+      Simulator.onload(function (data) {
 
-      setTimeout(SCENE.logInfo, 500);
+        SIM.init(data);
+        SIM.activate();
+        SCENE.render();
+
+        setTimeout(SCENE.logInfo, 500);
+
+      });
 
     }
 

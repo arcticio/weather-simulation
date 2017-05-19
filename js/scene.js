@@ -22,6 +22,7 @@ var SCENE = (function () {
     axes,
 
     doRender      = true,
+    doAnimate     = true,
 
     meshes        = {},
     lights        = {},
@@ -39,10 +40,18 @@ var SCENE = (function () {
 
   return {
     
+    scene,
+    loader,
+    camera,
     renderer,
 
     boot: function () {
       return self = this;
+    },
+    add: function (name, mesh) {
+      meshes[name] = mesh;
+      meshes[name].name = name;
+      scene.add(mesh);
     },
     init: function () {
 
@@ -53,7 +62,7 @@ var SCENE = (function () {
       document.body.appendChild(canvas);
       renderer.setPixelRatio( window.devicePixelRatio );
       renderer.setClearColor(0x4d4d4d, 1.0)
-      renderer.shadowMapEnabled = false;
+      renderer.shadowMap.enabled = false;
 
       camera.position.copy(CFG.Cameras.perspective.pos);
       self.resize();
@@ -67,14 +76,18 @@ var SCENE = (function () {
       orbitControls.constraint.minDistance = RADIUS + 0.1;
       orbitControls.constraint.maxDistance = 8;
 
-      meshes.globe = self.createCube(
-        'globe', 
-        CFG.earth.radius, 
-        'images/snpp/globe.snpp.FACE.2048.jpg', 
-        'globe'
-      );
-      scene.add( meshes.globe );
-      meshes.globe.visibility = false;
+      meshes.pointer = CFG.earth.pointer;
+      meshes.pointer.name = 'pointer';
+      scene.add(meshes.pointer);
+
+      // meshes.globe = self.createCube(
+      //   'globe', 
+      //   CFG.earth.radius, 
+      //   'images/snpp/globe.snpp.FACE.2048.jpg', 
+      //   'globe'
+      // );
+      // scene.add( meshes.globe );
+      // meshes.globe.visibility = false;
       
       meshes.data = self.createCube(
         'data', 
@@ -84,21 +97,21 @@ var SCENE = (function () {
       );
       scene.add( meshes.data );
 
-      meshes.sst = self.createCube(
-        'sst', 
-        CFG.earth.radius + 0.0005, 
-        'images/sst/globe.sst.FACE.1024.png', 
-        'globe'
-      );
-      scene.add( meshes.sst );
+      // meshes.sst = self.createCube(
+      //   'sst', 
+      //   CFG.earth.radius + 0.0005, 
+      //   'images/sst/globe.sst.FACE.1024.png', 
+      //   'globe'
+      // );
+      // scene.add( meshes.sst );
 
-      meshes.seaice = self.createCube(
-        'seaice', 
-        CFG.earth.radius + 0.001, 
-        'images/amsr2/polar.amsr2.FACE.1024.png', 
-        'polar'
-      );
-      scene.add( meshes.seaice );
+      // meshes.seaice = self.createCube(
+      //   'seaice', 
+      //   CFG.earth.radius + 0.001, 
+      //   'images/amsr2/polar.amsr2.FACE.1024.png', 
+      //   'polar'
+      // );
+      // scene.add( meshes.seaice );
 
       // // Galaxy
       // galaxy = CFG.Galaxy.mesh;
@@ -111,15 +124,10 @@ var SCENE = (function () {
 
       lights.spot = CFG.Lights.spot.light;
       lights.spot.position.copy( CFG.Lights.spot.pos ); 
-      scene.add( lights.spot );
-
-      // scene.add( CFG.Lights.spot.light );
-
-      // Extras
-      // self.addTrails();
+      // scene.add( lights.spot );
 
       // Markers, depend on surface
-      CFG.Markers.forEach(marker => TOOLS.placeMarker(meshes.globe, marker));
+      // CFG.Markers.forEach(marker => TOOLS.placeMarker(meshes.globe, marker));
 
       // click pointer
       meshes.arrowHelper = CFG.arrowHelper;
@@ -186,36 +194,13 @@ var SCENE = (function () {
       return mesh;
 
     },
-    addTrails: function (num) {
+    // addTrails: function (num) {
 
-      // first lat/lon [0/0] is last of trail
 
-      function genLons (lats, start) {
-        return lats.map( (lat, idx) => idx <= 90 | idx > 270 ? start : 180 + start );
-      }
+    //   sim.name = 'sim';
+    //   scene.add( sim );
 
-      var 
-        lats = Array.prototype.concat(
-          H.linspace(  0,  89, 90),
-          H.linspace( 90,   1, 90),
-          H.linspace(  0, -89, 90),
-          H.linspace(-90,  -1, 90)
-        ),
-        alphamap = loader.load('images/line.alpha.16.png');
-
-      sim = new THREE.Object3D();
-
-      H.linspace(0, 359, num).forEach(start => {
-
-        trails.push(new Trail(lats, genLons(lats, start), TRAIL_LEN, alphamap));
-
-      });
-
-      trails.forEach( trail => sim.add(trail.mesh));
-      sim.name = 'sim';
-      scene.add( sim );
-
-    },
+    // },
     activate: function () {
       window.addEventListener('resize', self.resize, false);
     },
@@ -246,7 +231,7 @@ var SCENE = (function () {
 
       // console.log("GUI.change", {action, folder, option, value});
 
-      var tmp, config = {
+      var config = {
         Render:  {
           toggle:    (value) => doRender = value,
         },
@@ -271,6 +256,14 @@ var SCENE = (function () {
         },
         DateTime: {
           choose:    (value) => console.log('Date', value),
+        },
+        Extras: {
+          Axes:      (value) => value ? scene.add(meshes.axes)   : scene.remove(meshes.axes),
+        },
+        Simulation: {
+          start:     (value) => SIM.start(),
+          stop:      (value) => SIM.stop(),
+          pause:     (value) => SIM.pause(),
         }
       }
 
@@ -284,9 +277,10 @@ var SCENE = (function () {
       console.log('renderer', JSON.stringify({
         trails:     TRAIL_NUM,
         length:     TRAIL_LEN,
+        children:   scene.children.length,
         geometries: renderer.info.memory.geometries,
-        textures:   renderer.info.memory.textures,
         calls:      renderer.info.render.calls,
+        textures:   renderer.info.memory.textures,
         faces:      renderer.info.render.faces,
         vertices:   renderer.info.render.vertices,
       }, null, 2));
@@ -300,28 +294,28 @@ var SCENE = (function () {
 
       stats.begin();
 
-      if (frame % 2) {
+      orbitControls.update();
+      doAnimate && ANI.animate(frame, NaN);
 
-        if ( IFC.mouse.down ) {
+      if ( IFC.mouse.down ) {
 
-          IFC.raycaster.setFromCamera( IFC.mouse, camera );
-          intersections = IFC.raycaster.intersectObjects( scene.children ).filter( its => its.object.name === 'globe');
-          intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
-
-          if (intersection) {
-            meshes.arrowHelper.setDirection( intersection.point.normalize() );
-            // console.log('click', TOOLS.vector3ToLatLong(intersection.point, CFG.earth.radius));
-          }
-
+        IFC.raycaster.setFromCamera( IFC.mouse, camera );
+        intersections = IFC.raycaster.intersectObjects( [meshes.pointer] );
+        if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
+          meshes.arrowHelper.setDirection( intersection.point.normalize() );
         }
 
+      }
+
         // trails.forEach(trail => trail.advance(idx));
+        trails.forEach(trail => trail.step());
 
-        // trails.forEach(trail => trail.step());
+      // (!(frame % 2)) && SIM.step(frame);
+      SIM.step(frame);
 
-        orbitControls.update();
-        doRender && renderer.render(scene, camera);
 
+      if (!(frame % 2)) {
+        doRender  && renderer.render(scene, camera);
       }
 
       stats.end();

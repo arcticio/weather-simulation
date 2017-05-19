@@ -4,6 +4,11 @@ appengine-generated/
 stuff/
 docs/
 
+data/*.nc
+data/*.dods
+data/*.hdf
+data/*.zip
+
 xml/*.sh
 xml/*.zip
 xml/*.png
