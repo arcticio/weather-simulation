@@ -361,8 +361,8 @@
 			'    gl_FragColor    = c;',
 			'	   gl_FragColor.a *= step(vCounters, visibility);',
 
-			'    if (vCounters < pointer )          discard;',
-			'    if (vCounters > pointer + length ) discard;',
+			'    if (vCounters > pointer )          discard;',
+			'    if (vCounters < pointer - length ) discard;',
 
 			'}' 
 

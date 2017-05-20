@@ -130,6 +130,59 @@ SIM.Model = (function () {
                 date.getUTCDate()
             ));
 
+        }, flatten : function (array, mutable) {
+
+            var result = [];
+            var nodes = (mutable && array) || array.slice();
+            var node;
+
+            if (!array.length) {
+                return result;
+            }
+
+            node = nodes.pop();
+            
+            do {
+                if (Array.isArray(node)) {
+                    nodes.push.apply(nodes, node);
+                } else {
+                    result.push(node);
+                }
+            } while (nodes.length && (node = nodes.pop()) !== undefined);
+
+            result.reverse(); // we reverse result to restore the original order, TRY: Float.Revese
+            return result;
+
+
+        }, parseMultiDods : function (dods) {
+
+            var t0 = Date.now(),
+
+                trenner = ', ',
+                snan  = "9.999E20",
+                lines = dods.split("\n").filter(function (l) {return l.trim().length; }),
+                info  = lines.slice(-6),
+
+                vari  = lines[0].split(trenner)[0],
+                shape = lines[0].match( /(\[\d+)/g ).join(' ').match(/(\d+)/g).map(Number),
+
+                tims  = info[1].split(trenner).map(self.toDate),
+                lats  = Float32Array.from(info[3].split(trenner).map(Number)),
+                lons  = Float32Array.from(info[5].split(trenner).map(Number)),
+
+                date  = self.stripHours(tims[0]),
+
+                data  = Float32Array.from(
+                    self.flatten(lines
+                        .slice(1, -6)
+                        .map(line => line.split(trenner).slice(1))
+                    ).map(num => num === snan ? NaN : parseFloat(num))
+                ),
+                spend = Date.now() - t0;
+
+            return {lats, lons, tims, shape, vari, date, data, spend};
+
+
         }, parseSingleDods : function (dods) {
 
             var token, numFloat, 

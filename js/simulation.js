@@ -45,6 +45,8 @@ var SIM = (function () {
         .map( n => 360 * n - 180)
       ;
 
+      // https://threejs.org/docs/#api/constants/Textures
+      var alphamap = SCENE.loader.load('images/line.alpha.64.png')
 
       function genLons (lats, start) {
         return lats.map( (lat, idx) => idx <= 90 | idx > 270 ? start : 180 + start );
@@ -71,7 +73,8 @@ var SIM = (function () {
         trails.push(new Trail(
           new Array(LENGTH).fill(lat),
           new Array(LENGTH).fill(lon),
-          LENGTH
+          LENGTH,
+          alphamap
         ));
 
       });

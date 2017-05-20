@@ -23,6 +23,7 @@ Plugin
 
 wget -O ugrd10.1.dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170519/gfs_0p50_00z.ascii?ugrd10m[0:0][0:1:360][0:1:719]"
 wget -O vgrd10.1.dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170519/gfs_0p50_00z.ascii?vgrd10m[0:0][0:1:360][0:1:719]"
+wget -O tmp2m.1.dods  "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170519/gfs_0p50_00z.ascii?tmp2m[0:0][0:1:360][0:1:719]"
 
 # wget -O vgrd10.2.dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170519/gfs_0p50_00z.ascii?vgrd10m[0:1][0:1:360][0:1:719]"
 

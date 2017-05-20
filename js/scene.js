@@ -12,9 +12,9 @@ var SCENE = (function () {
     frame         = 0,
     loader        = new THREE.TextureLoader(),
 
-    renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true }),
+    // renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true }),
     // renderer      = new THREE.WebGLRenderer({antialias: true}),
-    // renderer      = new THREE.WebGLRenderer(),
+    renderer      = new THREE.WebGLRenderer(),
 
     camera        = CFG.Cameras.perspective.cam,
     scene         = new THREE.Scene(),
