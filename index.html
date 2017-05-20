@@ -127,14 +127,14 @@
       RES.activate('.panel.info');
 
       RES.appendJob({
-        url: '/data/ugrd10.1.dods',
+        url: 'data/ugrd10.1.dods',
         onFinish: function (err, data) {
           var datagramm = SIM.Model.parseMultiDods(data);
           TIM.step('ugrd10', datagramm)
         }
       });      
       RES.appendJob({
-        url: '/data/vgrd10.1.dods',
+        url: 'data/vgrd10.1.dods',
         onFinish: function (err, data) {
           var datagramm = SIM.Model.parseMultiDods(data);
           TIM.step('vgrd10', datagramm)
