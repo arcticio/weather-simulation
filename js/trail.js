@@ -32,10 +32,14 @@ function Trail (lats, lons, length, alphamap) {
     resolution:      new THREE.Vector2( window.innerWidth, window.innerHeight ),
     side:            THREE.DoubleSide,
     transparent:     true, // needed for alphamap
-    head:            length -1,
-    pointer:         0.0,
     lights:          false,
+
+    head:            length -1,   // begin of line
+    pointer:         0.0,         // current head of trail 
+    length:          0.1,         // length of trail in %
+
     // wireframe:       true,
+
   });
 
   geometry.vertices = vertices.slice(0, length);

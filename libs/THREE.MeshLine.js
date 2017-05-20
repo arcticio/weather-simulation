@@ -31,12 +31,15 @@
 
 		if( g instanceof THREE.Geometry ) {
 			for( j = 0; j < g.vertices.length; j++ ) {
+
 				v = g.vertices[ j ];
-				c = j/g.vertices.length;
+				c = j / g.vertices.length;
+
 				this.positions.push( v.x, v.y, v.z );
 				this.positions.push( v.x, v.y, v.z );
 				this.counters.push(c);
 				this.counters.push(c);
+
 			}
 		}
 
@@ -60,9 +63,13 @@
 
 	MeshLine.prototype.compareV3 = function( a, b ) {
 
-		var aa = a * 6;
-		var ab = b * 6;
-		return ( this.positions[ aa ] === this.positions[ ab ] ) && ( this.positions[ aa + 1 ] === this.positions[ ab + 1 ] ) && ( this.positions[ aa + 2 ] === this.positions[ ab + 2 ] );
+		var aa = a * 6, ab = b * 6;
+
+		return (
+			( this.positions[ aa     ] === this.positions[ ab     ] ) && 
+			( this.positions[ aa + 1 ] === this.positions[ ab + 1 ] ) && 
+			( this.positions[ aa + 2 ] === this.positions[ ab + 2 ] )
+		);
 
 	}
 
@@ -269,8 +276,6 @@
 			'uniform vec3  color;',
 			'uniform float opacity;',
 			
-			// 'uniform float pointer;',
-
 			'varying vec2  vUV;',
 			'varying vec4  vColor;',
 			'varying float vCounters;',
@@ -279,7 +284,6 @@
 
 			'    vec2 res = i.xy / i.w;',
 			'    res.x *= aspect;',
-			// '	   vCounters = counters;',
 			'    return res;',
 
 			'}',
@@ -342,6 +346,7 @@
 			'uniform vec2  repeat;',
 
 			'uniform float pointer;',
+			'uniform float length;',
 
 			'varying vec2  vUV;',
 			'varying vec4  vColor;',
@@ -356,8 +361,8 @@
 			'    gl_FragColor    = c;',
 			'	   gl_FragColor.a *= step(vCounters, visibility);',
 
-			'    if (vCounters < pointer )        discard;',
-			'    if (vCounters > pointer + 0.005 ) discard;',
+			'    if (vCounters < pointer )          discard;',
+			'    if (vCounters > pointer + length ) discard;',
 
 			'}' 
 
@@ -396,7 +401,9 @@
 				repeat: 			    { type: 'v2', value: this.repeat },
 
 				head:             { type: 'f',  value: this.head },
-				pointer:             { type: 'f',  value: this.pointer },
+				pointer:          { type: 'f',  value: this.pointer },
+				length:           { type: 'f',  value: this.length },
+
 			},
 			vertexShader:   vertexShaderSource.join( '\r\n' ),
 			fragmentShader: fragmentShaderSource.join( '\r\n' )
@@ -413,6 +420,7 @@
 
 		delete parameters.head;
 		delete parameters.pointer;
+		delete parameters.length;
 
 		material.type = 'MeshLineMaterial';
 
@@ -430,17 +438,17 @@
 
 		THREE.Material.prototype.copy.call( this, source );
 
-		this.alphaMap    = source.alphaMap;
-		this.color.copy( source.color );
-		this.lineWidth   = source.lineWidth;
-		this.opacity     = source.opacity;
-		this.repeat.copy( source.repeat );
+		this.alphaMap       = source.alphaMap;
+		this.color.copy(      source.color );
+		this.lineWidth      = source.lineWidth;
+		this.opacity        = source.opacity;
+		this.repeat.copy(     source.repeat );
 		this.resolution.copy( source.resolution );
-		this.useAlphaMap = source.useAlphaMap;
-		this.visibility  = source.visibility;
+		this.useAlphaMap    = source.useAlphaMap;
+		this.visibility     = source.visibility;
 
 		return this;
-
+  
 	};
 
 	window.MeshLine = MeshLine;

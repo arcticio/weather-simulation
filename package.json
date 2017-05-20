@@ -1,0 +1,20 @@
+{
+  "name": "weather-simulation",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": "",
+  "scripts": {
+    "ls": "ls -la"
+  },
+  "pre-commit": [
+  ],
+  "private": true,
+  "engines": {
+    "node": ">= 6.9.2",
+    "npm": ">= 3.10.9"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}

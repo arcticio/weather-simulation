@@ -145,7 +145,7 @@ var SCENE = (function () {
     createCube: function (name, radius, template, type) {
 
       var
-        idx, vertex, mesh, cubemap, texture, bumpmap, shininess, 
+        idx, vertex, mesh, cubemap, texture, material, bumpmap, shininess, 
         geometry = new THREE.BoxGeometry(1, 1, 1, 16, 16, 16),
         bumpTemplate = 'images/topo/earth.FACE.topo.2048.jpg';
 
@@ -171,24 +171,29 @@ var SCENE = (function () {
             'images/transparent.face.512.png';
         }
 
-        // var surface = 'images/snpp/globe.snpp.' + face + '.2048.jpg';
-
-        return new THREE.MeshPhongMaterial( { 
+        material = { 
           map:         loader.load( texture ),
           transparent: true, 
           opacity:     1.0, 
           side:        THREE.FrontSide,
           wireframe:   false,
-          bumpMap:     bumpmap ? loader.load( bumpmap ) : undefined,
-          bumpScale:   0.04,
+          // bumpMap:     bumpmap ?  : undefined,
+          // bumpScale:   0.04,
           shininess:   2,
 
           // lights:      false,
-        });
+        };
+
+        if (bumpmap) {
+          material.bumpMap   = loader.load( bumpmap );
+          material.bumpScale = 0.04;
+        }
+
+        return new THREE.MeshPhongMaterial( material );
 
       });
 
-      mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial(cubemap) );
+      mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( cubemap ) );
       mesh.name = name;
       
       return mesh;

@@ -133,7 +133,6 @@ var CFG = {
   'gui.dat' : {
     Loading: 0,
     Render: true,
-    Reload: () => location.reload(),
     Camera: {
       isFolder: true,
       reset: () => {},

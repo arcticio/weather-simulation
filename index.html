@@ -64,14 +64,16 @@
 
 	<script src='libs/dat.gui.min.js'></script>
 
-  <script src="js/config.js"></script>
   <script src="js/helper.js"></script>
   <script src="js/tools.js"></script>
+
+  <script src="js/config.js"></script>
+  <script src="js/configurator.js"></script>
 
   <script src="js/trail.js"></script>
   <script src="js/simulation.js"></script>
   <script src="js/simulation.js"></script>
-  <script src="js/simulator.js"></script>
+  <!-- <script src="js/simulator.js"></script> -->
   <script src="js/sim.vars.js"></script>
   <script src="js/sim.model.js"></script>
   <script src="js/sim.marray.js"></script>
@@ -91,6 +93,8 @@
 
     window.onload = function () {
 
+      TIM.step('WIN.load.in');
+
       IFC.init();
       SCENE.init();
       ANI.init();
@@ -99,15 +103,13 @@
       SCENE.activate();
       ANI.activate();
 
-      Simulator.onload(function (data) {
+      SIM.init();
+      SIM.activate();
+      SCENE.render();
 
-        SIM.init(data);
-        SIM.activate();
-        SCENE.render();
+      TIM.step('WIN.load.out');
 
-        setTimeout(SCENE.logInfo, 500);
-
-      });
+      setTimeout(SCENE.logInfo, 1000);
 
     }
 

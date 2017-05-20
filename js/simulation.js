@@ -2,8 +2,8 @@
 
 var SIM = (function () {
 
-  const COUNT  = 1000;
-  const LENGTH = 361;
+  const COUNT  = 100;
+  const LENGTH = 60;
 
   var 
     self,
@@ -15,7 +15,7 @@ var SIM = (function () {
 
     index = 0,
     trails = [],
-    variables,
+    // variables,
 
     end;
 
@@ -24,13 +24,14 @@ var SIM = (function () {
     boot: function () {
       return self = this;
     },
-    init: function (data) {
+    init: function () {
 
-      variables = data;
+      TIM.step('SIM.init.in');
+
+      // variables = data;
       sim = new THREE.Object3D();
 
       // first lat/lon [0/0] is last of trail
-
 
       var lats = new Array(COUNT)
         .fill(0)
@@ -89,13 +90,7 @@ var SIM = (function () {
     },
     step: function (frame) {
 
-      // if (index < LENGTH){
-      //   trails.forEach( t => t.move());
-
-      // } else {
-        trails.forEach( t => t.step());
-
-      // }
+      trails.forEach( t => t.step());
 
       index += 1;
 

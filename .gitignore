@@ -3,6 +3,7 @@ appengine-generated/
 
 stuff/
 docs/
+node_modules/
 
 data/*.nc
 data/*.dods

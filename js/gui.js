@@ -10,10 +10,19 @@ H.each(CFG['gui.dat'], (folder, options) => {
 
   // root params
   if (!options.isFolder) {
+
     defs[folder] = options;
-    gui.add(defs, folder, options).onChange(function (value) {
-      SCENE.actions(folder, 'toggle', value);
-    });
+
+    if (typeof options === 'function'){
+      gui.add(defs, folder).onChange(options);
+
+    } else {
+      gui.add(defs, folder, options).onChange(function (value) {
+        SCENE.actions(folder, 'toggle', value);
+      });
+
+  }
+
 
   } else {
 
