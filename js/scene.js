@@ -80,14 +80,14 @@ var SCENE = (function () {
       meshes.pointer.name = 'pointer';
       scene.add(meshes.pointer);
 
-      // meshes.globe = self.createCube(
-      //   'globe', 
-      //   CFG.earth.radius, 
-      //   'images/snpp/globe.snpp.FACE.2048.jpg', 
-      //   'globe'
-      // );
-      // scene.add( meshes.globe );
-      // meshes.globe.visibility = false;
+      meshes.globe = self.createCube(
+        'globe', 
+        CFG.earth.radius, 
+        'images/snpp/globe.snpp.FACE.2048.jpg', 
+        'globe'
+      );
+      scene.add( meshes.globe );
+      meshes.globe.visibility = false;
       
       meshes.data = self.createCube(
         'data', 
