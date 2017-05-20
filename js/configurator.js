@@ -139,7 +139,7 @@ var _PRESET = _clone(_DEFAULTS, {
 
 });
 
-console.log('preset', JSON.stringify(_PRESET, null, 2));
+// console.log('preset', JSON.stringify(_PRESET, null, 2));
 
 
 // mostly meshes
