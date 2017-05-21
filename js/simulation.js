@@ -2,9 +2,6 @@
 
 var SIM = (function () {
 
-  const COUNT  = 100;
-  const LENGTH = 60;
-
   var 
     self,
     renderer,
@@ -15,7 +12,7 @@ var SIM = (function () {
 
     index = 0,
     trails = [],
-    // variables,
+    trailsWind = [],
 
     end;
 
@@ -24,25 +21,89 @@ var SIM = (function () {
     boot: function () {
       return self = this;
     },
+    createWind: function () {
+
+      var i, j, lat, lon, col,
+        amount = TRAIL_NUM,
+        length = TRAIL_LEN,
+        trailsCords  = new Array(amount).fill(0).map( () => []),
+        trailsColors = new Array(amount).fill(0).map( () => []),
+        latsStart = H.linspace(-80, 80, amount), 
+        lonsStart = H.linspace(  -45, 45, amount), 
+      end;
+
+      for (i=0; i<amount; i++) {
+
+        lat   = latsStart[i];
+        lon   = lonsStart[i];
+        col   = 0;
+
+        for (j=0; j<length; j++) {
+
+          trailsCords[i].push([lat, lon]);
+          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 50%, 80%)'));
+
+          lat += 0;
+          lon += 90/length;
+          col += 360/length;
+
+        }
+
+      }
+
+      trailsWind = new Trails('wind10m', trailsCords, trailsColors);
+      
+      SCENE.add('wind10m', trailsWind.container);
+      
+      // renderer {
+      //   "trails": 100,
+      //   "length": 60,
+      //   "children": 7,
+      //   "geometries": 105,
+      //   "calls": 110,
+      //   "textures": 7,
+      //   "faces": 14887,
+      //   "vertices": 93053
+      // }
+
+      // SCENE.add('wind10m', trailsWind.meshMerged);
+
+
+      // renderer {
+      //   "trails": 100,
+      //   "length": 60,
+      //   "children": 7,
+      //   "geometries": 5,
+      //   "calls": 10,
+      //   "textures": 6,
+      //   "faces": 3087,
+      //   "vertices": 57653
+      // }
+
+
+
+    },
     init: function () {
 
       TIM.step('SIM.init.in');
+
+      self.createWind();
 
       // variables = data;
       sim = new THREE.Object3D();
 
       // first lat/lon [0/0] is last of trail
 
-      var lats = new Array(COUNT)
+      var lats = new Array(TRAIL_NUM)
         .fill(0)
         .map(() => Math.random())
         .map( n => -80 + 160 * n)
       ;
 
-      var lons = new Array(COUNT)
-        .fill(0)
-        .map(() => Math.random())
-        .map( n => 360 * n - 180)
+      var lons = new Array(TRAIL_NUM)
+        .fill(-30)
+        // .map(() => Math.random())
+        // .map( n => 360 * n - 180)
       ;
 
       // https://threejs.org/docs/#api/constants/Textures
@@ -68,32 +129,34 @@ var SIM = (function () {
 
       // });
 
-      H.zip(lats, lons, (lat, lon) => {
+      // H.zip(lats, lons, (lat, lon) => {
 
-        trails.push(new Trail(
-          new Array(LENGTH).fill(lat),
-          new Array(LENGTH).fill(lon),
-          LENGTH,
-          alphamap
-        ));
+      //   trails.push(new Trail(
+      //     new Array(TRAIL_LEN).fill(lat),
+      //     new Array(TRAIL_LEN).fill(lon),
+      //     TRAIL_LEN,
+      //     alphamap
+      //   ));
 
-      });
+      // });
 
-      trails.forEach( trail => {
-        sim.add(trail.mesh);
-        for ( var i=0; i<LENGTH; i++){
-          trail.move();
-        }
-      });
+      // trails.forEach( trail => {
+      //   sim.add(trail.mesh);
+      //   for ( var i=0; i<TRAIL_LEN; i++){
+      //     trail.move();
+      //   }
+      // });
 
-      SCENE.add('sim', sim);
+      // SCENE.add('sim', sim);
 
       TIM.step('SIM.init.out');
       
     },
     step: function (frame) {
 
-      trails.forEach( t => t.step());
+      // trails.forEach( t => t.step());
+
+      trailsWind.step();
 
       index += 1;
 

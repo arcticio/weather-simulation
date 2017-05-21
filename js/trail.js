@@ -1,6 +1,101 @@
 
 // https://github.com/spite/THREE.MeshLine
 
+
+function Trails(name, trailsCoords, trailsColors) {
+
+  var 
+    index      = 0,
+    alphamap   = SCENE.loader.load('images/line.alpha.64.png'),
+    convert    = function (latlon) {
+      return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
+    },
+    nonIndexed,
+  end;
+  
+  this.frame      = 1;
+  this.geoMerged  = new THREE.BufferGeometry();
+  this.meshMerged,
+  this.geometries = [];
+  this.materials  = [];
+  this.trails     = [];
+  this.amount     = trailsCoords.length;
+  this.length     = trailsCoords[0].length;
+  this.container  = new THREE.Object3D();
+
+  H.zip(trailsCoords, trailsColors, (latlons, pointColors) => {
+
+    var line       = new MeshLine();
+    var geometry   = new THREE.Geometry();
+    var color      = new THREE.Color('hsl(200, 80%, 50%)');
+    var resolution = new THREE.Vector2( window.innerWidth, window.innerHeight );
+    var lineWidth  = CFG.earth.radius / 180;
+
+    var material   = new MeshLineMaterial( {
+
+      alphaMap:        alphamap,
+      color:           color,
+      lineWidth:       lineWidth,
+      opacity:         0.8,
+      resolution:      resolution,
+
+      depthTest:       true,        // false ignores planet
+      blending:        THREE.AdditiveBlending,
+      side:            THREE.DoubleSide,
+      transparent:     true,        // needed for alphamap
+      lights:          false,       // no deco effex
+
+      head:            this.length -1,   // begin of line
+      pointer:         0.0,         // current head of trail 
+      section:         8 / this.length,     // length of trail in %
+
+      // wireframe:       true,
+
+    });
+
+    geometry.vertices = latlons.map(convert);
+    line.setGeometry( geometry );
+    nonIndexed = line.geometry.toNonIndexed();
+
+    if (index === 0) {
+      this.geoMerged = nonIndexed.clone();      
+    } else {
+      this.geoMerged.merge(nonIndexed);
+    }
+
+
+    // var mesh = new THREE.Mesh( line.geometry, material );
+
+    var mesh = new THREE.Mesh( nonIndexed, material );
+    mesh.name = name + '.' + index;
+
+    this.geometries.push(geometry);
+    this.materials.push(material);
+    this.trails.push(mesh);
+
+    this.container.add(mesh);
+
+    index += 1;
+
+  });
+
+  this.meshMerged = new THREE.Mesh(this.geoMerged, new THREE.MultiMaterial(this.materials));
+
+}
+
+Trails.prototype = {
+  construcor: Trails,
+  step: function () {
+    var i, pointer, len = this.materials.length;
+    this.frame += 1;
+    for (i=0; i<len; i++){
+      pointer = this.materials[i].uniforms.pointer;
+      pointer.value = (this.frame % this.length) / this.length;
+      pointer.needsUpdate = true;
+    }
+  }
+}
+
 function Trail (lats, lons, length, alphamap) {
 
   var 
@@ -8,8 +103,23 @@ function Trail (lats, lons, length, alphamap) {
     cutoff  = 0.4,
     frame   = 0,
     pointer = 0,
+    length  = lats.length,
+    section = 1 / length,
 
     end;
+
+  function rndColor() {
+
+    function rand(min, max) {
+        return min + Math.random() * (max - min);
+    }
+
+    var h = rand(1, 360);
+    var s = 80; // rand(0, 100);
+    var l = 50; // rand(0, 100);
+    return 'hsl(' + h + ',' + s + '%,' + l + '%)';
+
+  }
 
   function calcWidth (cutoff) {
     return function (percent) {
@@ -18,17 +128,18 @@ function Trail (lats, lons, length, alphamap) {
     };
   }
 
-  var geometry   = new THREE.Geometry();
   var line       = new MeshLine();
+  var geometry   = new THREE.Geometry();
+  var color      = new THREE.Color(rndColor());
   var vertices   = H.zip(lats, lons, (lat, lon) => TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, CFG.earth.radius / 45));
   var material   = new MeshLineMaterial( {
+
     alphaMap:        alphamap,
-    useAlphaMap:     1,
     blending:        THREE.AdditiveBlending,
-    color:           new THREE.Color( 'rgb(250, 0, 0)' ),
+    color:           color,
     depthTest:       true,    // false ignores planet
     lineWidth:       width,
-    opacity:         1.0,
+    opacity:         0.1,
     resolution:      new THREE.Vector2( window.innerWidth, window.innerHeight ),
     side:            THREE.DoubleSide,
     transparent:     true, // needed for alphamap
@@ -36,7 +147,7 @@ function Trail (lats, lons, length, alphamap) {
 
     head:            length -1,   // begin of line
     pointer:         0.0,         // current head of trail 
-    length:          0.1,         // length of trail in %
+    section:         section,     // length of trail in %
 
     // wireframe:       true,
 
@@ -65,10 +176,11 @@ function Trail (lats, lons, length, alphamap) {
 
   this.move = () => {
 
-    var lat = H.clamp( (this.head[0] + ( [-1, +1][~~(Math.random() * 2)] * Math.random()) ), -89,   89 );
+    // var lat = H.clamp( (this.head[0] + ( [-1, +1][~~(Math.random() * 2)] * Math.random()) ), -89,   89 );
     // var lon = H.clamp( (this.head[1] + ( [-1, +1][~~(Math.random() * 2)] * Math.random()) ), -180, 180 );
-    var lat = this.head[0] + 1.0;
-    var lon = this.head[1] + 1.0;
+    
+    var lat = this.head[0] + 0.0;
+    var lon = this.head[1] + 3.0;
 
     line.advance(TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, CFG.earth.radius / 45));
     this.head = [lat, lon];

@@ -18,50 +18,43 @@
 var RES = (function () {
 
   var 
-    self,
+    self, i, j, div,
 
     $$ = document.querySelectorAll.bind(document),
-    div,
 
-    i, j, 
-
-    counter = 0,
-
-    isDev = true,
-
+    jobs       = [],
+    counter    = 0,
+    isDev      = true,
     concurrent = 2,
 
     stats   = {
-      queue:       0,
-      requests:    0, 
-      bytesLoaded: 0, 
-      bytesTotal:  0,
-      jobsTotal:   0,
-      percent:     0,
+      queue:       0,   // jobs in queue
+      requests:    0,   // active requests
+      bytesLoaded: 0,   // from jobs in queue
+      bytesTotal:  0,   // from jobs in queue
+      jobsTotal:   0,   // historical
+      percent:     0,   // done from jobs in queue
     },
     
-    jobs = [],
-    
-    end;
+  end;
 
-    function format() {
-      stats.percent = stats.requests ? (stats.bytesLoaded / stats.bytesTotal * 100).toFixed(1) : 'na';
-      // return `R: ${stats.requests} | P: ${stats.percent}`;
-      return JSON.stringify(stats) + '<br>';
+  function format() {
+    stats.percent = stats.requests ? (stats.bytesLoaded / stats.bytesTotal * 100).toFixed(1) : 'done';
+    // return `R: ${stats.requests} | P: ${stats.percent}`;
+    return JSON.stringify(stats) + '<br>';
+  }
+
+  function update (what, value)  {
+    if (what !== undefined && value !== undefined){
+      stats[what] += Number(value);
     }
-
-    function update (what, value)  {
-
-      if (what !== undefined && value !== undefined){
-        stats[what] += Number(value);
-      }
-      div.innerHTML += format();
-    }
+    div.innerHTML += format();
+  }
 
   return {
 
-    jobs,
-    stats,
+    // jobs,
+    // stats,
 
     boot: function () {
       return self = this;
@@ -72,7 +65,26 @@ var RES = (function () {
     activate: function (selector) {
       div = $$(selector)[0];
     },
-    appendJob: function (config) {
+    check: function () {
+
+      var candidate, candidates = [];
+
+      candidates = jobs.filter( j => j.failed || j.finished);
+      candidates.forEach( c => H.remove(jobs, c) );
+      // console.log("Removed:", candidates.length, candidates.map(c => c.id));
+
+      candidates = jobs.filter( j => !j.active && j.ready && !j.failed ).slice(0, concurrent);
+      candidates.forEach( c => c.execute());
+      // console.log("Executed:", candidates.length, candidates.map(c => c.id));
+
+      stats.queue = jobs.length;
+      update();
+
+    },
+
+    load: function (config) {
+
+      // make this multi job !!
 
       var job;
 
@@ -88,49 +100,22 @@ var RES = (function () {
 
     },
 
-    check: function () {
-
-      var ids, killed, candidate, candidates = [];
-
-      candidates = jobs.filter( j => j.failed || j.finished);
-      ids = candidates.map(c => c.id);
-      candidates.forEach( c => {
-        H.remove(jobs, c);
-      });
-      // console.log("Killed:", candidates.length, ids);
-
-      candidates = jobs.filter( j => !j.active && j.ready && !j.failed ).slice(0, concurrent);
-      ids = candidates.map(c => c.id);
-      candidates.forEach( c => self.execute(c));
-      // console.log("Executed:", candidates.length, ids);
-
-      stats.queue = jobs.length;
-      update();
-
-    },
-
-    execute: function (job) {
-
-      job.execute();
-      stats.requests += 1;
-
-    },
-
     Job: function (options) {
+
+      var 
+        mime, length, modified, 
+        url  = options.urls[0], 
+        type = options.type || 'text', 
+        bytesTotal  = 0, 
+        bytesLoaded = 0;
 
       this.options = options;
       this.id = options.id;
 
-      var url  = options.url;
-      var type = options.type || '';
-
-      var bytesTotal = 0;
-      var bytesLoaded = 0;
-
       this.finished = false;
-      this.failed  = false;
-      this.ready   = false;
-      this.active  = false;
+      this.failed   = false;
+      this.ready    = false;
+      this.active   = false;
 
       // head + get
       var onError = (err) => {
@@ -152,13 +137,13 @@ var RES = (function () {
         stats.requests -= 1;
         stats.bytesTotal -= bytesLoaded
         update('bytesLoaded', -bytesLoaded);
-        options.onFinish(null, data);
+        options.onFinish(null, [{data, mime, length}]);
         setTimeout(self.check, 20);
       }
 
       this.prepare = () => {
 
-        var mime, length, modified, req = new XMLHttpRequest();
+        var req = new XMLHttpRequest();
 
         req.open('HEAD', url, true);
         req.responseType = '';
@@ -202,6 +187,7 @@ var RES = (function () {
         var req = new XMLHttpRequest();
 
         this.active = true;
+        stats.requests += 1;
 
         req.open('GET', url, true);
         req.responseType = type;

@@ -133,11 +133,11 @@ var CFG = {
   'gui.dat' : {
     Loading: 0,
     Render: true,
+    Animate: true,
     Reload: () => location.reload(),
     Camera: {
       isFolder: true,
       reset: () => {},
-      // reset: function () {console.log('click.reset')},
     },
     Ambient: {
       isFolder: true,

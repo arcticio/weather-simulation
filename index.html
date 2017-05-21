@@ -41,23 +41,27 @@
     <style type="text/css">
       
     .panel.info {
-      bottom: 0px;
-      left: 0px;
-      width: 100%;
-      position: fixed;
-      color: #000;
       background-color: #ffff00;
-      vertical-align: middle;
-      padding-left: 4px;
-      padding-top: 4px;
+      bottom: 0px;
+      color: #000;
       font-family: sans-serif;
       font-size: 12px;
+      left: 0px;
+      max-height: 50%;
+      overflow-x: hidden;
       overflow-y: scroll;
-      max-height: 80%;
+      padding-left: 4px;
+      padding-top: 4px;
+      position: fixed;
+      vertical-align: middle;
+      width: 100%;
     }
 
 
     </style>
+
+    <script src='js/support.js'></script>
+
 
 </head>
 
@@ -126,20 +130,20 @@
       RES.init();
       RES.activate('.panel.info');
 
-      RES.appendJob({
-        url: 'data/ugrd10.1.dods',
-        onFinish: function (err, data) {
-          var datagramm = SIM.Model.parseMultiDods(data);
-          TIM.step('ugrd10', datagramm)
-        }
-      });      
-      RES.appendJob({
-        url: 'data/vgrd10.1.dods',
-        onFinish: function (err, data) {
-          var datagramm = SIM.Model.parseMultiDods(data);
-          TIM.step('vgrd10', datagramm)
-        }
-      });
+      // RES.load({
+      //   urls: ['data/ugrd10.1.dods'],
+      //   onFinish: function (err, responses) {
+      //     var datagramm = SIM.Model.parseMultiDods(responses[0].data);
+      //     TIM.step('ugrd10', datagramm)
+      //   }
+      // });      
+      // RES.load({
+      //   urls: ['data/vgrd10.1.dods'],
+      //   onFinish: function (err, responses) {
+      //     var datagramm = SIM.Model.parseMultiDods(responses[0].data);
+      //     TIM.step('vgrd10', datagramm)
+      //   }
+      // });
 
       // [100, 250, 500, 1000].forEach(num => {
       //   RES.appendJob({

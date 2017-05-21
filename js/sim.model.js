@@ -162,9 +162,10 @@ SIM.Model = (function () {
                 snan  = "9.999E20",
                 lines = dods.split("\n").filter(function (l) {return l.trim().length; }),
                 info  = lines.slice(-6),
+                head  = lines.slice(0),
 
-                vari  = lines[0].split(trenner)[0],
-                shape = lines[0].match( /(\[\d+)/g ).join(' ').match(/(\d+)/g).map(Number),
+                vari  = head.split(trenner)[0],
+                shape = head.match( /(\[\d+)/g ).join(' ').match(/(\d+)/g).map(Number),
 
                 tims  = info[1].split(trenner).map(self.toDate),
                 lats  = Float32Array.from(info[3].split(trenner).map(Number)),

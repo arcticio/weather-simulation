@@ -2,10 +2,10 @@
 
 // https://github.com/qkevinto/planetarium/blob/master/app/js/app.js
 
-var SCENE = (function () {
+const TRAIL_LEN = 60;
+const TRAIL_NUM = 100;
 
-  const TRAIL_LEN = 30;
-  const TRAIL_NUM = 720;
+var SCENE = (function () {
 
   var 
     self,
@@ -35,8 +35,8 @@ var SCENE = (function () {
     surface,
     overlay,
     sim,
-    trails        = []
-  ;
+
+  end;
 
   return {
     
@@ -64,7 +64,9 @@ var SCENE = (function () {
       renderer.setClearColor(0x4d4d4d, 1.0)
       renderer.shadowMap.enabled = false;
 
-      camera.position.copy(CFG.Cameras.perspective.pos);
+      // camera.position.copy(CFG.Cameras.perspective.pos);
+      camera.position.copy(new THREE.Vector3(4, 0, 0));
+
       self.resize();
 
       orbitControls.enabled = true;
@@ -80,14 +82,14 @@ var SCENE = (function () {
       meshes.pointer.name = 'pointer';
       scene.add(meshes.pointer);
 
-      meshes.globe = self.createCube(
-        'globe', 
-        CFG.earth.radius, 
-        'images/snpp/globe.snpp.FACE.2048.jpg', 
-        'globe'
-      );
-      scene.add( meshes.globe );
-      meshes.globe.visibility = false;
+      // meshes.globe = self.createCube(
+      //   'globe', 
+      //   CFG.earth.radius, 
+      //   'images/snpp/globe.snpp.FACE.2048.jpg', 
+      //   'globe'
+      // );
+      // scene.add( meshes.globe );
+      // meshes.globe.visibility = false;
       
       meshes.data = self.createCube(
         'data', 
@@ -240,6 +242,9 @@ var SCENE = (function () {
         Render:  {
           toggle:    (value) => doRender = value,
         },
+        Animate:  {
+          toggle:    (value) => doAnimate = value,
+        },
         Ambient: {
           toggle:    (value) => value ? scene.add(lights.ambient) : scene.remove(lights.ambient),
           intensity: (value) => lights.ambient.intensity = value,
@@ -312,12 +317,7 @@ var SCENE = (function () {
 
       }
 
-        // trails.forEach(trail => trail.advance(idx));
-        trails.forEach(trail => trail.step());
-
-      // (!(frame % 2)) && SIM.step(frame);
-      SIM.step(frame);
-
+      doAnimate && SIM.step(frame);
 
       if (!(frame % 2)) {
         doRender  && renderer.render(scene, camera);
