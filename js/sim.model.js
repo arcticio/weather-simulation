@@ -116,10 +116,11 @@ SIM.Model = (function () {
             var day = parseInt(datum, 10),
                 flt = parseFloat(datum),
                 scs = (flt - day) * (24 * 60 * 60),
-                utc  = new Date(Date.UTC(-1, 0, day, 0, 0, scs)),
+                utc  = new Date(Date.UTC(-1, 0, day -1, 0, 0, scs)),
                 year = utc.getUTCFullYear();
 
             utc.setUTCFullYear(year+2);
+
             return utc;
 
         }, stripHours : function (date) {
@@ -154,7 +155,7 @@ SIM.Model = (function () {
             return result;
 
 
-        }, parseMultiDods : function (dods) {
+        }, parseMultiDods : function (name, dods) {
 
             var t0 = Date.now(),
 
@@ -162,7 +163,7 @@ SIM.Model = (function () {
                 snan  = "9.999E20",
                 lines = dods.split("\n").filter(function (l) {return l.trim().length; }),
                 info  = lines.slice(-6),
-                head  = lines.slice(0),
+                head  = lines.slice(0, 1)[0],
 
                 vari  = head.split(trenner)[0],
                 shape = head.match( /(\[\d+)/g ).join(' ').match(/(\d+)/g).map(Number),
@@ -181,7 +182,7 @@ SIM.Model = (function () {
                 ),
                 spend = Date.now() - t0;
 
-            return {lats, lons, tims, shape, vari, date, data, spend};
+            return {name, lats, lons, tims, shape, vari, date, data, spend};
 
 
         }, parseSingleDods : function (dods) {
@@ -235,3 +236,116 @@ SIM.Model = (function () {
     };
 
 }()).boot();
+
+/*
+
+    {name, lats, lons, tims, shape, vari, date, data, spend};
+
+*/
+
+
+SIM.Datagram = function (datagramm, addCyclic) {
+
+    this.data = datagramm;
+
+    this.info = this.analyze();
+
+    addCyclic && this.addCyclic();
+
+    // console.log(this.info.name, JSON.stringify(this.info, null, 2));
+
+};
+
+SIM.Datagram.prototype = {
+
+    constructor: SIM.Datagram,
+
+    addCyclic: function () {
+        // for full globe
+    },
+    analyze: function () {
+
+        var d = this.data;
+
+        return {
+
+            name :      d.name,
+            vari :      d.vari,
+            shape :     d.shape,
+            plane :     d.lats.length * d.lons.length,
+
+            lats: {
+                len:    d.lats.length,
+                res:    d.lats[1] - d.lats[0],
+                min:    Math.min.apply(Math, d.lats),
+                max:    Math.max.apply(Math, d.lats),
+            },
+
+            lons: {
+                len:    d.lons.length,
+                res:    d.lons[1] - d.lons[0],
+                min:    Math.min.apply(Math, d.lons),
+                max:    Math.max.apply(Math, d.lons),
+            },
+
+            tims: {
+                len:    d.tims.length,
+                res:    d.tims[1] ? ((d.tims[1] - d.tims[0]) / (60 * 60 * 1000)) + 'h' : NaN,
+                min:    Math.min.apply(Math, d.tims),
+                max:    Math.max.apply(Math, d.tims),
+            },
+
+            data: {
+                len:    d.data.length,
+                min:    Math.min.apply(Math, d.data),
+                max:    Math.max.apply(Math, d.data),
+                avg   : d.data.reduce(function(a, b){ return a + b; }, 0) / d.data.length,
+            }
+
+        };
+
+    },
+
+    nearestXY: function (time, lat, lon) {
+
+    },
+
+    linearXY: function (time, lat, lon) {
+
+        /*
+            time  = 0, 1, ...
+        */
+
+        var 
+            plane = this.data.data.subarray(time * this.info.plane, (time + 1) * this.info.plane),
+            xlen  = this.data.shape[2],
+            ylen  = this.data.shape[1],
+            rlat  = this.info.lats.res,
+            rlon  = this.info.lons.res,
+
+            // array indices
+            xi0   = ( ~~(lon / rlon) - this.info.lons.min) / rlon,
+            yi0   = ( ~~(lat / rlat) - this.info.lats.min) / rlat,
+
+            xi1   = xi0 +1,
+            yi1   = yi0 +1,
+
+            // remainders
+            dx    = (lon - ~~lon) * rlon,                // remainders
+            dy    = (lat - ~~lat) * rlat,
+
+            val = (
+                plane[ xi0 + (yi0 * xlen) ] * (rlon - dx) * (rlat - dy) + 
+                plane[ xi1 + (yi0 * xlen) ] * (       dx) * (rlat - dy) + 
+                plane[ xi0 + (yi1 * xlen) ] * (rlon - dx) * (       dy) + 
+                plane[ xi1 + (yi1 * xlen) ] * (       dx) * (       dy)
+            );
+
+            return val
+
+        ;
+
+
+    }, 
+
+};

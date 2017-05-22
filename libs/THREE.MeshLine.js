@@ -261,13 +261,13 @@
 
       'precision highp float;',
 
-      'attribute vec3  position;',
-      'attribute vec3  previous;',
-      'attribute vec3  next;',
+      'attribute float counters;',
       'attribute float side;',
       'attribute float width;',
       'attribute vec2  uv;',
-      'attribute float counters;',
+      'attribute vec3  next;',
+      'attribute vec3  position;',
+      'attribute vec3  previous;',
 
       'uniform mat4  projectionMatrix;',
       'uniform mat4  modelViewMatrix;',

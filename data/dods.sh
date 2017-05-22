@@ -8,6 +8,47 @@ Plugin
 
   Nomads => Plugin
 
+### Testing 1° GFS
+
+Description:  GFS 1.0 deg starting from 00Z22may2017, downloaded May 22 04:57 UTC
+Documentation:  (none provided)    Longitude:  0.00000000000°E to 359.00000000000°E
+   (360 points, avg. res. 1.0°)    Latitude:   -90.00000000000°N to 90.00000000000°N
+   (181 points, avg. res. 1.0°)    Altitude:   1000.00000000000 to 1.00000000000
+   (31 points, avg. res. 33.3)     Time:   00Z22MAY2017 to 00Z07JUN2017
+   (33 points, avg. res. 0.5 days)
+
+
+###############
+
+  ugrd10m[0:0][0:19][0:9] => test1x20x10.dods
+
+
+  time, [1]
+  736472.0
+  lat, [20]
+  -90.0, -89.0, -88.0, -87.0, -86.0, -85.0, -84.0, -83.0, -82.0, -81.0, -80.0, -79.0, -78.0, -77.0, -76.0, -75.0, -74.0, -73.0, -72.0, -71.0
+  lon, [10]
+  0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0
+
+
+
+###############
+
+http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs20170522/gfs_1p00_00z.ascii?ugrd10m[0:0][0:0][0:0]
+
+ugrd10m, [1][1][1]
+[0][0], -2.2
+
+
+time, [1]
+736472.0
+lat, [1]
+-90.0
+lon, [1]
+0.0
+
+
+
 
 # OPeNDAP/DODS Data URL:  http://nomads.ncep.noaa.gov:80/dods/gfs_0p25/gfs20170519/gfs_0p25_00z
 
