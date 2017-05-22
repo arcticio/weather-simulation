@@ -15,9 +15,9 @@ DOCU: http://nomads.ncdc.noaa.gov/guide/?name=advanced
 
 */
 
-SIM.Model = (function () {
+"use strict";
 
-    "use strict";
+SIM.Model = (function () {
 
     var self,
 
@@ -349,3 +349,51 @@ SIM.Datagram.prototype = {
     }, 
 
 };
+
+
+/*
+
+RES.load({
+  urls: ['data/test.2x20x10.dods'],
+  onFinish: function (err, responses) {
+
+    var data = SIM.Model.parseMultiDods('test.2x10x20', responses[0].data);
+    var datagram = new SIM.Datagram(data);
+
+    // console.log("==> -90, 0", datagram.linearXY(0, -90, 0) );
+    // console.log("==> -90, 1", datagram.linearXY(0, -90, 1) );
+    // console.log("==> -90, 2", datagram.linearXY(0, -90, 2) );
+    // console.log("==> -90, 3", datagram.linearXY(0, -90, 3) );
+    // console.log("==> -90, 4", datagram.linearXY(0, -90, 4) );
+    // console.log("==> -90, 5", datagram.linearXY(0, -90, 5) );
+    // console.log("==> -90, 9", datagram.linearXY(0, -90, 9) );
+    
+    console.log("==>");
+
+    // console.log("==> -89, 0", datagram.linearXY(0, -89, 0) );
+    // console.log("==> -89, 1", datagram.linearXY(0, -89, 1) );
+    // console.log("==> -89, 2", datagram.linearXY(0, -89, 2) );
+    // console.log("==> -89, 3", datagram.linearXY(0, -89, 3) );
+    // console.log("==> -89, 4", datagram.linearXY(0, -89, 4) );
+    // console.log("==> -89, 5", datagram.linearXY(0, -89, 5) );
+
+    console.log("==> -72, 6", datagram.linearXY(0, -72, 6.0) );
+    console.log("==> -72, 6", datagram.linearXY(0, -72, 6.2) );
+    console.log("==> -72, 6", datagram.linearXY(0, -72, 6.4) );
+    console.log("==> -72, 6", datagram.linearXY(0, -72, 6.6) );
+    console.log("==> -72, 6", datagram.linearXY(0, -72, 6.8) );
+    console.log("==> -72, 7", datagram.linearXY(0, -72, 7.0) );
+
+  }
+
+});
+
+
+
+
+
+
+
+
+
+*/

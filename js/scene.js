@@ -107,13 +107,13 @@ var SCENE = (function () {
       // );
       // scene.add( meshes.sst );
 
-      // meshes.seaice = self.createCube(
-      //   'seaice', 
-      //   CFG.earth.radius + 0.001, 
-      //   'images/amsr2/polar.amsr2.FACE.1024.png', 
-      //   'polar'
-      // );
-      // scene.add( meshes.seaice );
+      meshes.seaice = self.createCube(
+        'seaice', 
+        CFG.earth.radius + 0.001, 
+        'images/amsr2/polar.amsr2.FACE.1024.png', 
+        'polar'
+      );
+      scene.add( meshes.seaice );
 
       // // Galaxy
       // galaxy = CFG.Galaxy.mesh;
@@ -126,7 +126,7 @@ var SCENE = (function () {
 
       lights.spot = CFG.Lights.spot.light;
       lights.spot.position.copy( CFG.Lights.spot.pos ); 
-      // scene.add( lights.spot );
+      scene.add( lights.spot );
 
       // Markers, depend on surface
       // CFG.Markers.forEach(marker => TOOLS.placeMarker(meshes.globe, marker));

@@ -187,6 +187,17 @@ var H = (function(){
     equal:      function (a,b){return JSON.stringify(a) === JSON.stringify(b);},
     mean:       function (a){return a.reduce(function(s,x){return (s+x);},0)/a.length;},
     median:     function (a){var al=a.length,m=~~(a.sort().length/2);return !al?null:al%2?a[m]:(a[m-1]+a[m])/2;},
+    repeat:     function (a, n) {
+      var out=[], i, j, len=a.length;
+      for (i=0; i<n; i++) {
+        for (j=0; j<len; j++) {
+          out.push(a[j])
+        }
+      }
+      return out;
+    },
+
+
     mode:       function (a){
       var i, n, cnt = {}, mode = [], max = 0;
       for (i in a) {

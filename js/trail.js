@@ -2,7 +2,7 @@
 // https://github.com/spite/THREE.MeshLine
 
 
-function Trails(name, trailsCoords, trailsColors) {
+function Trails(name, trailsVectors, trailsColors, color) {
 
   var 
     index      = 0,
@@ -19,15 +19,15 @@ function Trails(name, trailsCoords, trailsColors) {
   this.geometries = [];
   this.materials  = [];
   this.trails     = [];
-  this.amount     = trailsCoords.length;
-  this.length     = trailsCoords[0].length;
+  this.amount     = trailsVectors.length;
+  this.length     = trailsVectors[0].length;
   this.container  = new THREE.Object3D();
 
-  H.zip(trailsCoords, trailsColors, (latlons, pointColors) => {
+  H.zip(trailsVectors, trailsColors, (vectors, pointColors) => {
 
     var line       = new MeshLine();
     var geometry   = new THREE.Geometry();
-    var color      = new THREE.Color('hsl(200, 80%, 50%)');
+    // var color      = new THREE.Color('hsl(200, 80%, 50%)');
     var resolution = new THREE.Vector2( window.innerWidth, window.innerHeight );
     var lineWidth  = CFG.earth.radius / 180;
 
@@ -39,29 +39,29 @@ function Trails(name, trailsCoords, trailsColors) {
       opacity:         0.8,
       resolution:      resolution,
 
-      depthTest:       true,        // false ignores planet
+      depthTest:       true,                    // false ignores planet
       blending:        THREE.AdditiveBlending,
       side:            THREE.DoubleSide,
-      transparent:     true,        // needed for alphamap
-      lights:          false,       // no deco effex
+      transparent:     true,                    // needed for alphamap
+      lights:          false,                   // no deco effex
 
-      head:            this.length -1,   // begin of line
-      pointer:         0.0,         // current head of trail 
-      section:         8 / this.length,     // length of trail in %
+      head:            this.length -1,          // begin of line
+      pointer:         0.0,                     // current head of trail 
+      section:         80 / this.length,         // length of trail in %
 
       // wireframe:       true,
 
     });
 
-    geometry.vertices = latlons.map(convert);
+    geometry.vertices = vectors; //latlons.map(convert);
     line.setGeometry( geometry );
     nonIndexed = line.geometry.toNonIndexed();
 
-    if (index === 0) {
-      this.geoMerged = nonIndexed.clone();      
-    } else {
-      this.geoMerged.merge(nonIndexed);
-    }
+    // if (index === 0) {
+    //   this.geoMerged = nonIndexed.clone();      
+    // } else {
+    //   this.geoMerged.merge(nonIndexed);
+    // }
 
 
     // var mesh = new THREE.Mesh( line.geometry, material );
@@ -79,7 +79,7 @@ function Trails(name, trailsCoords, trailsColors) {
 
   });
 
-  this.meshMerged = new THREE.Mesh(this.geoMerged, new THREE.MultiMaterial(this.materials));
+  // this.meshMerged = new THREE.Mesh(this.geoMerged, new THREE.MultiMaterial(this.materials));
 
 }
 

@@ -28,7 +28,7 @@
 
 
     <link rel="stylesheet" href="css/style.css">
-	 
+   
     <title>Simulator</title>
     <meta name="description" content="Visualizes a set of cryosphereric parameters provide by NOAA's Global Forecasing System (GFS)" />
 
@@ -47,7 +47,7 @@
       font-family: sans-serif;
       font-size: 12px;
       left: 0px;
-      max-height: 50%;
+      max-height: 5%;
       overflow-x: hidden;
       overflow-y: scroll;
       padding-left: 4px;
@@ -89,12 +89,12 @@
   <script src='libs/proj4.js'></script>
   <script src='libs/jquery.js'></script>
   <script src='libs/Tween.js'></script>
-	<script src='libs/three.js'></script>
-	<script src='libs/OOrbitControls.js'></script>
+  <script src='libs/three.js'></script>
+  <script src='libs/OOrbitControls.js'></script>
   <script src="libs/THREE.MeshLine.js"></script>
   <script src="libs/stats.js"></script>
 
-	<script src='libs/dat.gui.min.js'></script>
+  <script src='libs/dat.gui.min.js'></script>
 
   <script src="js/helper.js"></script>
   <script src="js/tools.js"></script>
@@ -112,8 +112,8 @@
   <script src="js/resources.js"></script>
   <script src="js/interface.js"></script>
   <script src="js/animator.js"></script>
-	<script src="js/scene.js"></script>
-	<script src="js/gui.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/gui.js"></script>
 
   <script type="text/javascript">
     
@@ -127,67 +127,10 @@
 
       TIM.step('WIN.load.in');
 
+      // console.log(0, 0, TOOLS.vector3ToLatLong(TOOLS.latLongToVector3(-90, -10, 1, 0), 1));
+
       RES.init();
       RES.activate('.panel.info');
-
-      // RES.load({
-      //   urls: ['data/ugrd10.1.dods'],
-      //   onFinish: function (err, responses) {
-      //     var datagramm = SIM.Model.parseMultiDods(responses[0].data);
-      //     TIM.step('ugrd10', datagramm)
-      //   }
-      // });      
-      // RES.load({
-      //   urls: ['data/vgrd10.1.dods'],
-      //   onFinish: function (err, responses) {
-      //     var datagramm = SIM.Model.parseMultiDods(responses[0].data);
-      //     TIM.step('vgrd10', datagramm)
-      //   }
-      // });
-
-      RES.load({
-        urls: ['data/test.2x20x10.dods'],
-        onFinish: function (err, responses) {
-
-          var data = SIM.Model.parseMultiDods('test.2x10x20', responses[0].data);
-          var datagram = new SIM.Datagram(data);
-
-          // console.log("==> -90, 0", datagram.linearXY(0, -90, 0) );
-          // console.log("==> -90, 1", datagram.linearXY(0, -90, 1) );
-          // console.log("==> -90, 2", datagram.linearXY(0, -90, 2) );
-          // console.log("==> -90, 3", datagram.linearXY(0, -90, 3) );
-          // console.log("==> -90, 4", datagram.linearXY(0, -90, 4) );
-          // console.log("==> -90, 5", datagram.linearXY(0, -90, 5) );
-          // console.log("==> -90, 9", datagram.linearXY(0, -90, 9) );
-          
-          console.log("==>");
-
-          // console.log("==> -89, 0", datagram.linearXY(0, -89, 0) );
-          // console.log("==> -89, 1", datagram.linearXY(0, -89, 1) );
-          // console.log("==> -89, 2", datagram.linearXY(0, -89, 2) );
-          // console.log("==> -89, 3", datagram.linearXY(0, -89, 3) );
-          // console.log("==> -89, 4", datagram.linearXY(0, -89, 4) );
-          // console.log("==> -89, 5", datagram.linearXY(0, -89, 5) );
-
-          console.log("==> -72, 6", datagram.linearXY(0, -72, 6.0) );
-          console.log("==> -72, 6", datagram.linearXY(0, -72, 6.2) );
-          console.log("==> -72, 6", datagram.linearXY(0, -72, 6.4) );
-          console.log("==> -72, 6", datagram.linearXY(0, -72, 6.6) );
-          console.log("==> -72, 6", datagram.linearXY(0, -72, 6.8) );
-          console.log("==> -72, 7", datagram.linearXY(0, -72, 7.0) );
-
-        }
-      });
-
-      // [100, 250, 500, 1000].forEach(num => {
-      //   RES.appendJob({
-      //     url: '/stuff/' + (num * 1000) + '.dat', 
-      //     onFinish: function (err, data) {
-      //       console.log('RES.TEST', err, data.length)
-      //     }
-      //   });
-      // });
-
 
       IFC.init();
       SCENE.init();
@@ -203,7 +146,7 @@
 
       TIM.step('WIN.load.out');
 
-      // setTimeout(SCENE.logInfo, 1000);
+      setTimeout(SCENE.logInfo, 1000);
 
     }
 

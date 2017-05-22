@@ -4,6 +4,10 @@ var
   gui = new dat.GUI(),
   guiFolders = {};
 
+  gui.closed = true;
+
+// dat.GUI.toggleHide(); // total hide
+
 H.each(CFG['gui.dat'], (folder, options) => {
 
   var defs = {}, fn;
@@ -77,3 +81,5 @@ H.each(CFG['gui.dat'], (folder, options) => {
   }
 
 });
+
+

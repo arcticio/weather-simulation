@@ -28,8 +28,16 @@ var TOOLS = {
 
     return {
       lat: 90 - (Math.acos(v.y / radius))  * 180 / Math.PI,
-      lon: ((Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360
+      // lon: ((Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360
+      lon: ((270 + (Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360)
     };
+
+  },
+
+  vector3ToLatLongMem: function (v, radius, lat, lon) {
+
+    lat = 90 - (Math.acos(v.y / radius))  * 180 / Math.PI,
+    lon = ((Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360
 
   },
 
