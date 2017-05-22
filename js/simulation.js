@@ -69,16 +69,26 @@ var SIM = (function () {
     loadBetterWind: function () {
 
       // https://stackoverflow.com/questions/44098678/how-to-rotate-a-vector3-using-vector2
+
+      //  For winds, the u wind is parallel to the x axis. 
+      // A positive u wind is from the west. 
+      // A negative u wind is from the east. 
+      // The v wind runs parallel to the y axis. 
+      // A positive v wind is from the south, and a negative v wind is from the north.
       
       TIM.step('Model.loaded');
 
-      var i, j, lat, lon, col, vector3, vecWind, sphericalPosition,  latlon, 
-        amount = 20,
+      var t0 = Date.now(), i, j, lat, lon, col, vector3, vecWind, sphericalPosition,  latlon, 
+
+        // latlonsStart = TOOLS.createLatLonsRect( [0, 0], [87, 179], 4 ),
+        // amount = latlonsStart.length,
+
+        amount = 1000,
+        latlonsStart = TOOLS.createLatLonsRectRandom([0, 0], [87, 179], amount),
+
         length = 60,
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),
-        latsStart = H.linspace(10, 40, amount), 
-        lonsStart = H.linspace(10, 40, amount), 
         convertLL    = function (latlon) {
           return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
         },
@@ -93,8 +103,8 @@ var SIM = (function () {
       for (i=0; i<amount; i++) {
 
         col   = 0;
-        lat   = latsStart[i];
-        lon   = lonsStart[i];
+        lat   = latlonsStart[i][0];
+        lon   = latlonsStart[i][1];
 
         for (j=0; j<length; j++) {
 
@@ -103,7 +113,7 @@ var SIM = (function () {
 
           sphericalPosition = new THREE.Spherical().setFromVector3(vector3);
           sphericalPosition.theta += model.ugrd10.linearXY(0, lat, lon) * factor; // east-direction
-          sphericalPosition.phi   += model.vgrd10.linearXY(0, lat, lon) * factor; // north-direction
+          sphericalPosition.phi   -= model.vgrd10.linearXY(0, lat, lon) * factor; // north-direction
           vector3 = vector3.setFromSpherical(sphericalPosition).clone();
           
           latlon = convertV3(vector3);
@@ -120,6 +130,8 @@ var SIM = (function () {
       trailsBetterWind = new Trails('nicewind10m', trailsVectors, trailsColors, color);
       
       SCENE.add('nicewind10m', trailsBetterWind.container);
+
+      TIM.step('Wind.created');
 
     },
     init: function () {

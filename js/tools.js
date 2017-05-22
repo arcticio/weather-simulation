@@ -1,6 +1,80 @@
 
 var TOOLS = {
 
+  createLatLonsRectRandom: function (ul, lr, amount) {
+
+    var i, lat, lon, latlons = [];
+
+    for (i=0; i<amount; i++) {
+
+      lon = ul[1] + Math.random() * (lr[1] - ul[1]);
+      lat = ul[0] + Math.random() * (lr[0] - ul[0]);
+      lat = lat * Math.cos((lat + 90) * Math.PI/180) * -1.8;
+      lat = lat > 89.5 ? 89.5 : lat;
+
+      latlons.push([lat, lon]);
+
+    }
+
+    return latlons;
+
+  },
+  createLatLonsRect: function (ul, lr, res) {
+
+    /*
+        3 4, 3 5, 3 6, 3 7;
+        4 4, 4 5, 4 6, 4 7;
+        5 4, 5 5, 5 6, 5 7;
+    */
+
+
+    var 
+      i, j, res = res || 1, 
+      latlons = [],
+
+      rowLen = (lr[1] - ul[1] +1) / res,
+      colLen = (lr[0] - ul[0] +1) / res,
+      
+      rowLon = H.linspace(ul[1], lr[1], rowLen),
+      allLon = TOOLS.flatten(H.repeat(rowLon, colLen)),
+      
+      colLat = H.linspace(ul[0], lr[0], colLen),
+      allLat = TOOLS.flatten(TOOLS.transpose(H.repeat(colLat, rowLen)));
+      
+    
+    return H.zip(allLat, allLon, (lat, lon) => [lat, lon] );
+
+
+  }, transpose :  function (m) { 
+
+      return m[0].map((x,i) => m.map(x => x[i]));
+
+  
+  }, flatten : function (array, mutable) {
+
+      var result = [];
+      var nodes = (mutable && array) || array.slice();
+      var node;
+
+      if (!array.length) {
+          return result;
+      }
+
+      node = nodes.pop();
+      
+      do {
+          if (Array.isArray(node)) {
+              nodes.push.apply(nodes, node);
+          } else {
+              result.push(node);
+          }
+      } while (nodes.length && (node = nodes.pop()) !== undefined);
+
+      result.reverse(); // we reverse result to restore the original order, TRY: Float.Revese
+      return result;
+
+  },
+
   placeMarker: function (object, options) {
 
     var position = TOOLS.latLongToVector3(options.latitude, options.longitude, options.radius, options.height);

@@ -356,8 +356,8 @@
 
       '    color.a *= texture2D( alphaMap, vUV * repeat ).a;',
 
-      // '    if (counter > pointer ) color.a = 0.0;',
-      // '    if (counter < (pointer - section) ) color.a = 0.0;',
+      '    if (counter > pointer ) color.a = 0.0;',
+      '    if (counter < (pointer - section) ) color.a = 0.0;',
 
       // '    if (counter > pointer )             discard;',
       // '    if (counter < (pointer - section) ) discard;',

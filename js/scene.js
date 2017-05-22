@@ -98,6 +98,7 @@ var SCENE = (function () {
         'data'
       );
       scene.add( meshes.data );
+      meshes.data.rotation.y = Math.PI / 2;
 
       // meshes.sst = self.createCube(
       //   'sst', 
@@ -114,6 +115,7 @@ var SCENE = (function () {
         'polar'
       );
       scene.add( meshes.seaice );
+      meshes.seaice.rotation.y = Math.PI / 2;
 
       // // Galaxy
       // galaxy = CFG.Galaxy.mesh;

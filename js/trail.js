@@ -31,6 +31,8 @@ function Trails(name, trailsVectors, trailsColors, color) {
     var resolution = new THREE.Vector2( window.innerWidth, window.innerHeight );
     var lineWidth  = CFG.earth.radius / 180;
 
+    var start      = ~~(Math.random() * this.length);
+
     var material   = new MeshLineMaterial( {
 
       alphaMap:        alphamap,
@@ -45,9 +47,9 @@ function Trails(name, trailsVectors, trailsColors, color) {
       transparent:     true,                    // needed for alphamap
       lights:          false,                   // no deco effex
 
-      head:            this.length -1,          // begin of line
-      pointer:         0.0,                     // current head of trail 
-      section:         80 / this.length,         // length of trail in %
+      head:            start,          // begin of line
+      pointer:         start,                     // current head of trail 
+      section:         8 / this.length,         // length of trail in %
 
       // wireframe:       true,
 
@@ -86,11 +88,12 @@ function Trails(name, trailsVectors, trailsColors, color) {
 Trails.prototype = {
   construcor: Trails,
   step: function () {
-    var i, pointer, len = this.materials.length;
+    var i, pointer, head, len = this.materials.length;
     this.frame += 1;
     for (i=0; i<len; i++){
+      head = this.materials[i].uniforms.head.value,
       pointer = this.materials[i].uniforms.pointer;
-      pointer.value = (this.frame % this.length) / this.length;
+      pointer.value = ((head + this.frame) % this.length) / this.length;
       pointer.needsUpdate = true;
     }
   }
