@@ -7,15 +7,15 @@ function Trails(name, trailsVectors, trailsColors, color) {
   var 
     index      = 0,
     alphamap   = SCENE.loader.load('images/line.alpha.64.png'),
-    convert    = function (latlon) {
-      return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
-    },
+    // convert    = function (latlon) {
+    //   return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
+    // },
     nonIndexed,
   end;
   
-  this.frame      = 1;
-  this.geoMerged  = new THREE.BufferGeometry();
-  this.meshMerged,
+  this.frame      = 0;
+  // this.geoMerged  = new THREE.BufferGeometry();
+  // this.meshMerged,
   this.geometries = [];
   this.materials  = [];
   this.trails     = [];
@@ -27,13 +27,13 @@ function Trails(name, trailsVectors, trailsColors, color) {
 
     var line       = new MeshLine();
     var geometry   = new THREE.Geometry();
-    // var color      = new THREE.Color('hsl(200, 80%, 50%)');
     var resolution = new THREE.Vector2( window.innerWidth, window.innerHeight );
     var lineWidth  = CFG.earth.radius / 180;
-
     var start      = ~~(Math.random() * this.length);
 
     var material   = new MeshLineMaterial( {
+
+      // https://threejs.org/docs/index.html#api/constants/Materials
 
       alphaMap:        alphamap,
       color:           color,
@@ -42,14 +42,14 @@ function Trails(name, trailsVectors, trailsColors, color) {
       resolution:      resolution,
 
       depthTest:       true,                    // false ignores planet
-      blending:        THREE.AdditiveBlending,
-      side:            THREE.DoubleSide,
+      blending:        THREE.NormalBlending,    // NormalBlending, AdditiveBlending
+      side:            THREE.DoubleSide,        // FrontSide
       transparent:     true,                    // needed for alphamap
       lights:          false,                   // no deco effex
 
-      head:            start,          // begin of line
-      pointer:         start,                     // current head of trail 
-      section:         8 / this.length,         // length of trail in %
+      head:            start,                   // begin of line
+      pointer:         start,                   // current head of trail 
+      section:         32 / this.length,        // length of trail in %
 
       // wireframe:       true,
 

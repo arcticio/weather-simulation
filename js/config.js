@@ -30,8 +30,20 @@ var CFG = {
     pointer: new THREE.Mesh(
       new THREE.SphereGeometry(RADIUS - 0.01, 64, 64),                  
       new THREE.MeshBasicMaterial({
-        color:     0x660000,
+        color:     0x330000,
         wireframe: true,
+        transparent: true,
+        opacity: 0.1
+      })
+    ),
+
+    test: new THREE.Mesh(
+      new THREE.SphereGeometry(RADIUS + 0.01, 64, 64),                  
+      new THREE.MeshBasicMaterial({
+        color:     0x330000,
+        wireframe: false,
+        transparent: true,
+        opacity: 0.8
       })
     ),
 
@@ -112,7 +124,9 @@ var CFG = {
   Cameras: {
     perspective: {
       cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
-      pos:             new THREE.Vector3(0.5, 3.4, 0.5), // Greenland centered
+      
+      // pos:             new THREE.Vector3(0.5, 3.4, 0.5),       // Greenland centered
+      pos:             new THREE.Vector3(0.05, 2.3, -0.08),    // North Pole
     } 
   },
 

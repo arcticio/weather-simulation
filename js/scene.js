@@ -64,8 +64,8 @@ var SCENE = (function () {
       renderer.setClearColor(0x4d4d4d, 1.0)
       renderer.shadowMap.enabled = false;
 
-      // camera.position.copy(CFG.Cameras.perspective.pos);
-      camera.position.copy(new THREE.Vector3(4, 0, 0));
+      camera.position.copy(CFG.Cameras.perspective.pos);
+      // camera.position.copy(new THREE.Vector3(4, 0, 0));
 
       self.resize();
 
@@ -82,24 +82,29 @@ var SCENE = (function () {
       meshes.pointer.name = 'pointer';
       scene.add(meshes.pointer);
 
-      // meshes.globe = self.createCube(
-      //   'globe', 
-      //   CFG.earth.radius, 
-      //   'images/snpp/globe.snpp.FACE.2048.jpg', 
-      //   'globe'
-      // );
-      // scene.add( meshes.globe );
-      // meshes.globe.visibility = false;
-      
+      meshes.test = CFG.earth.test;
+      meshes.test.name = 'test';
+      scene.add(meshes.test);
+
       meshes.data = self.createCube(
         'data', 
-        CFG.earth.radius, 
+        CFG.earth.radius - 0.001, 
         'images/mask/earth.FACE.2048.jpg', 
         'data'
       );
       scene.add( meshes.data );
       meshes.data.rotation.y = Math.PI / 2;
 
+      meshes.globe = self.createCube(
+        'globe', 
+        CFG.earth.radius + 0.0005,
+        'images/snpp/globe.snpp.FACE.2048.jpg', 
+        'globe'
+      );
+      scene.add( meshes.globe );
+      meshes.globe.rotation.y = Math.PI / 2;
+      // meshes.globe.visibility = false;
+      
       // meshes.sst = self.createCube(
       //   'sst', 
       //   CFG.earth.radius + 0.0005, 
@@ -107,15 +112,16 @@ var SCENE = (function () {
       //   'globe'
       // );
       // scene.add( meshes.sst );
+      // meshes.sst.rotation.y = Math.PI / 2;
 
-      meshes.seaice = self.createCube(
-        'seaice', 
-        CFG.earth.radius + 0.001, 
-        'images/amsr2/polar.amsr2.FACE.1024.png', 
-        'polar'
-      );
-      scene.add( meshes.seaice );
-      meshes.seaice.rotation.y = Math.PI / 2;
+      // meshes.seaice = self.createCube(
+      //   'seaice', 
+      //   CFG.earth.radius + 0.001, 
+      //   'images/seaice/polar.amsr2.FACE.1024.png', 
+      //   'polar'
+      // );
+      // scene.add( meshes.seaice );
+      // meshes.seaice.rotation.y = Math.PI / 2;
 
       // // Galaxy
       // galaxy = CFG.Galaxy.mesh;
@@ -128,7 +134,7 @@ var SCENE = (function () {
 
       lights.spot = CFG.Lights.spot.light;
       lights.spot.position.copy( CFG.Lights.spot.pos ); 
-      scene.add( lights.spot );
+      // scene.add( lights.spot );
 
       // Markers, depend on surface
       // CFG.Markers.forEach(marker => TOOLS.placeMarker(meshes.globe, marker));
@@ -176,16 +182,16 @@ var SCENE = (function () {
         }
 
         material = { 
+
           map:         loader.load( texture ),
           transparent: true, 
           opacity:     1.0, 
           side:        THREE.FrontSide,
-          wireframe:   false,
-          // bumpMap:     bumpmap ?  : undefined,
-          // bumpScale:   0.04,
           shininess:   2,
 
+          // wireframe:   false,
           // lights:      false,
+
         };
 
         if (bumpmap) {
@@ -319,7 +325,9 @@ var SCENE = (function () {
 
       }
 
-      doAnimate && SIM.step(frame);
+      if (!(frame % 2)) {
+        doAnimate && SIM.step(frame);
+      }
 
       if (!(frame % 2)) {
         doRender  && renderer.render(scene, camera);

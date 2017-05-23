@@ -5,17 +5,20 @@ import os, sys
 
 args = sys.argv[1:]
 
-date    = "2017-05-13"
-size    = 2048
+date    = args[0] or "2017-04-11"
+size    = 1024
 quality = 90
 level   = 4
-sat     = 'VIIRS_SNPP_CorrectedReflectance_TrueColor'
-target  = '../images/snpp'
-xmlFile = 'GIBS_Globe_SNPP_tmp.xml'
+sat     = 'GHRSST_L4_MUR_Sea_Surface_Temperature'
+target  = '../images/sst'
+xmlFile = 'GIBS_Globe_SST_tmp.xml'
+
+# works
+# https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/GHRSST_L4_MUR_Sea_Surface_Temperature/default/2017-05-13/1km/0/0/0.png
 
 xml = """<GDAL_WMS>
     <Service name="TMS">
-    <ServerUrl>https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/%s/default/%s/250m/${z}/${y}/${x}.jpg</ServerUrl>
+    <ServerUrl>https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/%s/default/%s/1km/${z}/${y}/${x}.png</ServerUrl>
     </Service>
     <DataWindow>
         <UpperLeftX>-180.0</UpperLeftX>
@@ -30,7 +33,7 @@ xml = """<GDAL_WMS>
     <Projection>EPSG:4326</Projection>
     <BlockSizeX>512</BlockSizeX>
     <BlockSizeY>512</BlockSizeY>
-    <BandsCount>3</BandsCount>
+    <BandsCount>4</BandsCount>
     <ZeroBlockOnServerException>true</ZeroBlockOnServerException>
     <ZeroBlockHttpCodes>204,404,400</ZeroBlockHttpCodes>
 </GDAL_WMS>""" % (sat, date, level)
@@ -55,10 +58,8 @@ task = """
   gdalwarp -overwrite -wo SAMPLE_GRID=YES  -wo SOURCE_EXTRA=%d -ts %d %d  
     -t_srs "+proj=gnom  +lon_0=%d  +lat_0=%s  +datum=WGS84 +units=degrees"   
     -te -6378137 -6378137 6378137 6378137                                    
-    %s  globe.snpp.%s.%d.tif     
-""" 
-
-task = task.replace("\n", "")
+    %s  globe.sst.%s.%d.tif     
+""".replace("\n", "")
 
 for (face, lon, lat, extra) in tasks :
 
@@ -69,18 +70,31 @@ for (face, lon, lat, extra) in tasks :
 
 for (face, lon, lat, extra) in tasks :
 
-  cmd = "gdal_translate -of JPEG -co \"QUALITY=%d\" globe.snpp.%s.%d.tif globe.snpp.%s.%d.jpg" % (quality, face, size, face, size)
+  cmd = "gdal_translate -of PNG globe.sst.%s.%d.tif globe.sst.%s.%d.png" % (face, size, face, size)
   cmds.append(cmd)
 
 
 for (face, lon, lat, extra) in tasks :
 
-  cmd = "cp globe.snpp.%s.%d.jpg  %s/globe.snpp.%s.%d.jpg" % (face, size, target, face, size)
+  cmd = "mv globe.sst.%s.%d.png  %s/globe.sst.%s.%d.png" % (face, size, target, face, size)
   cmds.append(cmd)
 
 
+## Cleanup
+for (face, lon, lat, extra) in tasks :
+
+  cmd = "rm globe.sst.%s.%d.tif" % (face, size)
+  cmds.append(cmd)
+  cmd = "rm globe.sst.%s.%d.png.aux.xml" % (face, size)
+  cmds.append(cmd)
+
+cmds.append("rm %s" % xmlFile)
+
+
 for cmd in cmds :
-    print cmd
-    # os.system(cmd)
+    # print cmd
+    os.system(cmd)
+
+
 
 print "Done"

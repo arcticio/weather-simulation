@@ -290,8 +290,8 @@
 
       'void main() {',
 
-      '    vUV = uv;',
-      '    vColor = vec4( color, opacity );',
+      '    vUV       = uv;',
+      '    vColor    = vec4( color, opacity );',
       '    vCounters = counters;',
 
       '    float aspect = resolution.x / resolution.y;',
@@ -391,12 +391,13 @@
 
     var material = new THREE.RawShaderMaterial( {
       uniforms:{
-        lineWidth:        { type: 'f',  value: this.lineWidth },
+
         alphaMap:         { type: 't',  value: this.alphaMap },
         color:            { type: 'c',  value: this.color },
+        lineWidth:        { type: 'f',  value: this.lineWidth },
         opacity:          { type: 'f',  value: this.opacity },
-        resolution:       { type: 'v2', value: this.resolution },
         repeat:           { type: 'v2', value: this.repeat },
+        resolution:       { type: 'v2', value: this.resolution },
 
         head:             { type: 'f',  value: this.head },
         pointer:          { type: 'f',  value: this.pointer },

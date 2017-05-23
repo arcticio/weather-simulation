@@ -9,8 +9,8 @@ var TOOLS = {
 
       lon = ul[1] + Math.random() * (lr[1] - ul[1]);
       lat = ul[0] + Math.random() * (lr[0] - ul[0]);
-      lat = lat * Math.cos((lat + 90) * Math.PI/180) * -1.8;
-      lat = lat > 89.5 ? 89.5 : lat;
+      // lat = lat * Math.cos((lat + 90) * Math.PI/180) * -1.8;
+      // lat = lat > 89.5 ? 89.5 : lat;
 
       latlons.push([lat, lon]);
 

@@ -177,6 +177,7 @@ SIM.Model = (function () {
                 data  = Float32Array.from(
                     self.flatten(lines
                         .slice(1, -6)
+                        .reverse()
                         .map(line => line.split(trenner).slice(1))
                     ).map(num => num === snan ? NaN : parseFloat(num))
                 ),
@@ -347,6 +348,36 @@ SIM.Datagram.prototype = {
 
 
     }, 
+
+    toCanvas: function (fn) {
+
+        var i, imageData, data, grey,
+            cvs = document.createElement('CANVAS'),
+            ctx = cvs.getContext('2d'),
+            width  = this.info.shape[1],
+            height = this.info.shape[0],
+            min    = this.info.data.min,
+            max    = this.info.data.maxvar,
+            source = this.data;
+
+        cvs.width  = width;
+        cvs.height = height;
+
+        imageData = ctx.getImageData(0, 0, width, height);
+        data = imageData.data;
+
+        for (i = 0; i < data.length; i += 4) {
+          grey = H.scale(source[i], min, max, 0, 255);
+          data[i]     = grey;
+          data[i + 1] = grey;
+          data[i + 2] = grey;
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+
+        return cvs;
+
+    },
 
 };
 

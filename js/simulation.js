@@ -83,10 +83,10 @@ var SIM = (function () {
         // latlonsStart = TOOLS.createLatLonsRect( [0, 0], [87, 179], 4 ),
         // amount = latlonsStart.length,
 
-        amount = 1000,
-        latlonsStart = TOOLS.createLatLonsRectRandom([0, 0], [87, 179], amount),
-
         length = 60,
+        amount = 2000,
+        latlonsStart = TOOLS.createLatLonsRectRandom([60, 0], [-60, 359], amount),
+
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),
         convertLL    = function (latlon) {
@@ -95,8 +95,8 @@ var SIM = (function () {
         convertV3 = function (v3) {
           return TOOLS.vector3ToLatLong(v3, CFG.earth.radius + CFG.earth.radius / 45);
         },
-        factor = 0.0008,
-        color = new THREE.Color(0xff00ff);
+        factor = 0.0004, // TODO: proper Math
+        color = new THREE.Color(0xffff88);
 
       end;
 
@@ -157,7 +157,7 @@ var SIM = (function () {
         }, 100);
 
       RES.load({
-        urls: ['data/ugrd10.1x180x360.dods'],
+        urls: ['data/ugrd10m.1x180x360.dods'],
         onFinish: function (err, responses) {
           requests -= 1;
           var data = SIM.Model.parseMultiDods('ugrd10', responses[0].data);
@@ -166,7 +166,7 @@ var SIM = (function () {
       });      
 
       RES.load({
-        urls: ['data/vgrd10.1x180x360.dods'],
+        urls: ['data/vgrd10m.1x180x360.dods'],
         onFinish: function (err, responses) {
           requests -= 1;
           var data = SIM.Model.parseMultiDods('vgrd10', responses[0].data);

@@ -25,3 +25,7 @@ try {
 } catch (e) {console.error('APP NOT SUPPORTED', e)}
 
 // https://github.com/smali-kazmi/detect-mobile-browser
+
+
+// https://stackoverflow.com/questions/4998278/is-there-a-limit-of-vertices-in-webgl
+// GL_OES_element_index_uint max verices ?
