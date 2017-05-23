@@ -49,7 +49,7 @@ function Trails(name, trailsVectors, trailsColors, color) {
 
       head:            start,                   // begin of line
       pointer:         start,                   // current head of trail 
-      section:         32 / this.length,        // length of trail in %
+      section:         50 / this.length,        // length of trail in %
 
       // wireframe:       true,
 

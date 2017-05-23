@@ -58,6 +58,25 @@
       width: 100%;
     }
 
+    canvas.panel.test {
+      background-color: rgba(40, 0, 0, 0.2);
+      top: 0px;
+      left: 96px;
+      position: fixed;
+      width: 96px;
+      height: 48px;
+    }
+
+    canvas.panel.expi {
+      background-color: rgba(40, 0, 0, 0.2);
+      top: 0px;
+      left: 196px;
+      position: fixed;
+      width: 360px;
+      height: 181px;
+      display: none;
+    }
+
 
     </style>
 
@@ -77,8 +96,9 @@
 
   <div>
 
-    <div class="panel info" ondblclick="this.innerHTML = '' ">
-    </div>
+    <div    class="panel info" ondblclick="this.innerHTML = '' "></div>
+    <canvas class="panel test" height="48" width="96" ondblclick=""></div>
+    <canvas class="panel expi" height="181" width="360" ondblclick=""></div>
     
   </div>
 

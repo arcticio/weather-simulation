@@ -317,6 +317,8 @@ SIM.Datagram.prototype = {
             time  = 0, 1, ...
         */
 
+        // lon = (lon + 270) % 360;
+
         var 
             plane = this.data.data.subarray(time * this.info.plane, (time + 1) * this.info.plane),
             xlen  = this.data.shape[2],
@@ -349,33 +351,46 @@ SIM.Datagram.prototype = {
 
     }, 
 
-    toCanvas: function (fn) {
+    toCanvas: function () {
 
-        var i, imageData, data, grey,
-            cvs = document.createElement('CANVAS'),
-            ctx = cvs.getContext('2d'),
-            width  = this.info.shape[1],
-            height = this.info.shape[0],
+        var i, j, imageData, target, grey,
+
+            cvsImage = document.createElement('CANVAS'),
+            cvsScale = document.createElement('CANVAS'),
+            ctxImage = cvsImage.getContext('2d'),
+            ctxScale = cvsScale.getContext('2d'),
+
+            width  = this.info.shape[2],
+            height = this.info.shape[1],
             min    = this.info.data.min,
-            max    = this.info.data.maxvar,
-            source = this.data;
+            max    = this.info.data.max,
+            source = this.data.data;
 
-        cvs.width  = width;
-        cvs.height = height;
+        cvsScale.width  = 256;
+        cvsScale.height = 256;
 
-        imageData = ctx.getImageData(0, 0, width, height);
-        data = imageData.data;
+        cvsImage.width  = width;
+        cvsImage.height = height;
 
-        for (i = 0; i < data.length; i += 4) {
-          grey = H.scale(source[i], min, max, 0, 255);
-          data[i]     = grey;
-          data[i + 1] = grey;
-          data[i + 2] = grey;
+        imageData = ctxImage.getImageData(0, 0, width, height);
+        target = imageData.data;
+
+        for (i = 0, j=0; i < target.length; i += 4, j++) {
+          grey = ~~H.scale(source[j], min, max, 0, 255);
+          target[i    ] = grey;
+          target[i + 1] = grey;
+          target[i + 2] = grey;
+          target[i + 3] = 255;
         }
 
-        ctx.putImageData(imageData, 0, 0);
+        ctxImage.putImageData(imageData, 0, 0);
 
-        return cvs;
+        // blit to monitor and scaled
+
+        SCENE.monitor.drawImage(cvsImage, 0, 0, width, height, 0, 0, SCENE.monitor.canvas.width, SCENE.monitor.canvas.height);
+        ctxScale.drawImage(cvsImage, 0, 0, width, height, 0, 0, 256, 256);
+
+        return cvsScale;
 
     },
 

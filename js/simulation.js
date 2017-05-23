@@ -84,8 +84,8 @@ var SIM = (function () {
         // amount = latlonsStart.length,
 
         length = 60,
-        amount = 2000,
-        latlonsStart = TOOLS.createLatLonsRectRandom([60, 0], [-60, 359], amount),
+        amount = 3000,
+        latlonsStart = TOOLS.createLatLonsRectRandom([80, 0], [-80, 359], amount),
 
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),
@@ -113,7 +113,7 @@ var SIM = (function () {
 
           sphericalPosition = new THREE.Spherical().setFromVector3(vector3);
           sphericalPosition.theta += model.ugrd10.linearXY(0, lat, lon) * factor; // east-direction
-          sphericalPosition.phi   -= model.vgrd10.linearXY(0, lat, lon) * factor; // north-direction
+          sphericalPosition.phi   += model.vgrd10.linearXY(0, lat, lon) * factor; // north-direction
           vector3 = vector3.setFromSpherical(sphericalPosition).clone();
           
           latlon = convertV3(vector3);
@@ -152,6 +152,8 @@ var SIM = (function () {
         interval = setInterval(function () {
           if (requests === 0){
             clearInterval(interval);
+            SCENE.meshes.test.material.map = new THREE.CanvasTexture(model['tmp2m'].toCanvas());
+            SCENE.meshes.test.material.needsUpdate = true;
             callback();
           }
         }, 100);

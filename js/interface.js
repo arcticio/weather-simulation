@@ -63,6 +63,9 @@ var IFC = (function () {
 
         mouse.down = true;
 
+        // gui.closed = true;
+
+
       },
       mouseup:     function (event) { 
 

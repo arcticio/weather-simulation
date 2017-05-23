@@ -12,6 +12,9 @@ var SCENE = (function () {
     frame         = 0,
     loader        = new THREE.TextureLoader(),
 
+    $  = document.getElementById.bind(document),
+    $$ = document.querySelectorAll.bind(document),
+
     // renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true }),
     // renderer      = new THREE.WebGLRenderer({antialias: true}),
     renderer      = new THREE.WebGLRenderer(),
@@ -27,6 +30,9 @@ var SCENE = (function () {
     meshes        = {},
     lights        = {},
 
+    monitor      = $$('canvas.panel.test')[0].getContext('2d'),
+    expi         = $$('canvas.panel.expi')[0].getContext('2d'),
+
     canvas,
 
     arrowHelper,
@@ -40,9 +46,12 @@ var SCENE = (function () {
 
   return {
     
+    expi,
     scene,
     loader,
+    meshes,
     camera,
+    monitor,
     renderer,
 
     boot: function () {
@@ -84,7 +93,11 @@ var SCENE = (function () {
 
       meshes.test = CFG.earth.test;
       meshes.test.name = 'test';
+      meshes.test.material.map = loader.load('images/mask/globe.oceanmask.512.jpg');
+      meshes.test.material.needsUpdate = true;
       scene.add(meshes.test);
+      meshes.test.rotation.y = Math.PI;
+
 
       meshes.data = self.createCube(
         'data', 
@@ -268,6 +281,7 @@ var SCENE = (function () {
           'DATA':    (value) => value ? scene.add(meshes.data)   : scene.remove(meshes.data),
           'SST':     (value) => value ? scene.add(meshes.sst)    : scene.remove(meshes.sst),
           'SEAICE':  (value) => value ? scene.add(meshes.seaice) : scene.remove(meshes.seaice),
+          'TEST':    (value) => value ? scene.add(meshes.test)   : scene.remove(meshes.test),
         },
         Camera: {
           reset:     (value) => camera.position.copy(CFG.Cameras.perspective.pos),
@@ -306,7 +320,7 @@ var SCENE = (function () {
     },
     render: function render () {
 
-      var intersection, intersections, idx = (frame + TRAIL_LEN) % 360;
+      var v3, intersection, intersections, idx = (frame + TRAIL_LEN) % 360;
 
       requestAnimationFrame(render);
 
@@ -321,15 +335,16 @@ var SCENE = (function () {
         intersections = IFC.raycaster.intersectObjects( [meshes.pointer] );
         if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
           meshes.arrowHelper.setDirection( intersection.point.normalize() );
+          // console.log('click', TOOLS.vector3ToLatLong(intersection.point, 1));
         }
 
       }
 
-      if (!(frame % 2)) {
+      if (!(frame % 4)) {
         doAnimate && SIM.step(frame);
       }
 
-      if (!(frame % 2)) {
+      if (!(frame % 4)) {
         doRender  && renderer.render(scene, camera);
       }
 

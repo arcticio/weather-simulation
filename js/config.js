@@ -38,12 +38,12 @@ var CFG = {
     ),
 
     test: new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS + 0.01, 64, 64),                  
+      new THREE.SphereGeometry(RADIUS - 0.005, 64, 64),                  
       new THREE.MeshBasicMaterial({
-        color:     0x330000,
-        wireframe: false,
-        transparent: true,
-        opacity: 0.8
+        // color:     0xff0000,
+        // wireframe: true,
+        transparent: false,
+        // opacity: 0.8,
       })
     ),
 
@@ -114,7 +114,7 @@ var CFG = {
   ],
 
   Lights: {
-    ambient:           new THREE.AmbientLight( 0xffffff, 0.4 ),
+    ambient:           new THREE.AmbientLight( 0xffffff, 0.6 ),
     spot:    {
       light:           new THREE.SpotLight(0xffffff, 0.2, 0, 0.6, 0.1),
       pos:             new THREE.Vector3(0, 2, 0)
@@ -126,7 +126,8 @@ var CFG = {
       cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
       
       // pos:             new THREE.Vector3(0.5, 3.4, 0.5),       // Greenland centered
-      pos:             new THREE.Vector3(0.05, 2.3, -0.08),    // North Pole
+      // pos:             new THREE.Vector3(0.05, 2.3, -0.08),    // North Pole
+      pos:             new THREE.Vector3(0.5, -2.2, -3),          // Low near AA
     } 
   },
 
@@ -177,6 +178,7 @@ var CFG = {
       'DATA':   true,
       'SST':    true,
       'SEAICE': true,
+      'TEST':   true,
     },
     DateTime : {
       isFolder: true,
