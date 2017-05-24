@@ -4,7 +4,7 @@ var
   gui = new dat.GUI(),
   guiFolders = {};
 
-  gui.closed = true;
+  // gui.closed = true;
 
 // dat.GUI.toggleHide(); // total hide
 

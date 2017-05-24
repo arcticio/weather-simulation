@@ -23,12 +23,12 @@ function Trails(name, trailsVectors, trailsColors, color) {
   this.length     = trailsVectors[0].length;
   this.container  = new THREE.Object3D();
 
-  H.zip(trailsVectors, trailsColors, (vectors, pointColors) => {
+  H.zip(trailsVectors, trailsColors, (vectors, colors) => {
 
     var line       = new MeshLine();
     var geometry   = new THREE.Geometry();
     var resolution = new THREE.Vector2( window.innerWidth, window.innerHeight );
-    var lineWidth  = CFG.earth.radius / 180;
+    var lineWidth  = CFG.earth.radius / 45;
     var start      = ~~(Math.random() * this.length);
 
     var material   = new MeshLineMaterial( {
@@ -36,14 +36,14 @@ function Trails(name, trailsVectors, trailsColors, color) {
       // https://threejs.org/docs/index.html#api/constants/Materials
 
       alphaMap:        alphamap,
-      color:           color,
+      // color:           color,
       lineWidth:       lineWidth,
       opacity:         0.8,
       resolution:      resolution,
 
       depthTest:       true,                    // false ignores planet
       blending:        THREE.NormalBlending,    // NormalBlending, AdditiveBlending
-      side:            THREE.DoubleSide,        // FrontSide
+      side:            THREE.FrontSide,         // FrontSide, DoubleSide
       transparent:     true,                    // needed for alphamap
       lights:          false,                   // no deco effex
 
@@ -55,7 +55,9 @@ function Trails(name, trailsVectors, trailsColors, color) {
 
     });
 
-    geometry.vertices = vectors; //latlons.map(convert);
+    geometry.vertices = vectors;
+    geometry.colors   = colors;
+
     line.setGeometry( geometry );
     nonIndexed = line.geometry.toNonIndexed();
 

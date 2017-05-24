@@ -34,12 +34,14 @@ var SIM = (function () {
         length = TRAIL_LEN,
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),
-        latsStart = H.linspace(-80, 80, amount), 
-        lonsStart = H.linspace(  -45, 45, amount), 
+        latsStart = H.linspace(-40, 40, amount), 
+        lonsStart = H.linspace(  -10, -10, amount), 
         convert    = function (latlon) {
           return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
         },
-        color = new THREE.Color('hsl(200, 80%, 50%)')
+        color = new THREE.Color('hsl(200, 80%, 50%)'),
+        color = new THREE.Color('rgb(200, 0, 0)'),
+
       end;
 
       for (i=0; i<amount; i++) {
@@ -51,10 +53,10 @@ var SIM = (function () {
         for (j=0; j<length; j++) {
 
           trailsVectors[i].push(convert([lat, lon]));
-          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 50%, 80%)'));
+          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 80%, 50%)'));
 
           lat += 0;
-          lon += 90/length;
+          lon += 20/length;
           col += 360/length;
 
         }
@@ -138,8 +140,8 @@ var SIM = (function () {
 
       TIM.step('SIM.init.in');
 
-      self.loadModel(self.loadBetterWind);
-      // self.createWind();
+      // self.loadModel(self.loadBetterWind);
+      self.createWind();
 
       TIM.step('SIM.init.out');
       
@@ -188,9 +190,9 @@ var SIM = (function () {
     },
     step: function (frame) {
 
-      // trailsWind && trailsWind.step();
+      trailsWind && trailsWind.step();
 
-      trailsBetterWind && trailsBetterWind.step();
+      // trailsBetterWind && trailsBetterWind.step();
 
       index += 1;
 

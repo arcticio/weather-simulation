@@ -3,7 +3,7 @@
 // https://github.com/qkevinto/planetarium/blob/master/app/js/app.js
 
 const TRAIL_LEN = 60;
-const TRAIL_NUM = 100;
+const TRAIL_NUM = 40;
 
 var SCENE = (function () {
 
@@ -108,14 +108,14 @@ var SCENE = (function () {
       scene.add( meshes.data );
       meshes.data.rotation.y = Math.PI / 2;
 
-      meshes.globe = self.createCube(
-        'globe', 
-        CFG.earth.radius + 0.0005,
-        'images/snpp/globe.snpp.FACE.2048.jpg', 
-        'globe'
-      );
-      scene.add( meshes.globe );
-      meshes.globe.rotation.y = Math.PI / 2;
+      // meshes.globe = self.createCube(
+      //   'globe', 
+      //   CFG.earth.radius + 0.0005,
+      //   'images/snpp/globe.snpp.FACE.2048.jpg', 
+      //   'globe'
+      // );
+      // scene.add( meshes.globe );
+      // meshes.globe.rotation.y = Math.PI / 2;
       // meshes.globe.visibility = false;
       
       // meshes.sst = self.createCube(

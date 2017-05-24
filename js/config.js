@@ -127,7 +127,8 @@ var CFG = {
       
       // pos:             new THREE.Vector3(0.5, 3.4, 0.5),       // Greenland centered
       // pos:             new THREE.Vector3(0.05, 2.3, -0.08),    // North Pole
-      pos:             new THREE.Vector3(0.5, -2.2, -3),          // Low near AA
+      // pos:             new THREE.Vector3(0.5, -2.2, -3),          // Low near AA
+      pos:             new THREE.Vector3(3.7, 0, 0),                // 0,0
     } 
   },
 
