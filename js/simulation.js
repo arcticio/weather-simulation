@@ -30,8 +30,10 @@ var SIM = (function () {
     createWind: function () {
 
       var i, j, lat, lon, col,
+
         amount = TRAIL_NUM,
         length = TRAIL_LEN,
+        
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),
         latsStart = H.linspace(-40, 40, amount), 
@@ -39,8 +41,8 @@ var SIM = (function () {
         convert    = function (latlon) {
           return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
         },
-        color = new THREE.Color('hsl(200, 80%, 50%)'),
-        color = new THREE.Color('rgb(200, 0, 0)'),
+
+        color = new THREE.Color('rgb(255, 0, 0)'),
 
       end;
 

@@ -1,5 +1,7 @@
 ;(function() {
 
+// https://stackoverflow.com/questions/26973021/issue-using-attributes-object-in-rawshadermaterial
+
   "use strict";
 
   var THREE = this.THREE
@@ -49,20 +51,6 @@
       }
     }
 
-    // if( g instanceof THREE.BufferGeometry ) {
-    //   // read attribute positions ?
-    // }
-
-    // if( g instanceof Float32Array || g instanceof Array ) {
-    //   for( j = 0; j < g.length; j += 3 ) {
-    //     c = j/g.length;
-    //     this.positions.push( g[ j ], g[ j + 1 ], g[ j + 2 ] );
-    //     this.positions.push( g[ j ], g[ j + 1 ], g[ j + 2 ] );
-    //     this.counters.push(c);
-    //     this.counters.push(c);
-    //   }
-    // }
-
     this.process();
 
   }
@@ -97,8 +85,6 @@
     this.uvs      = [];
     this.width    = [];
 
-    // this.colors   = [];
-
     for( j = 0; j < l; j++ ) {
       this.side.push(  1 );
       this.side.push( -1 );
@@ -109,11 +95,6 @@
       this.width.push( w );
       this.width.push( w );
     }
-
-    // for( j = 0; j < l; j++ ) {
-    //   this.colors.push( w );
-    //   this.colors.push( w );
-    // }
 
     for( j = 0; j < l; j++ ) {
       this.uvs.push( j / ( l - 1 ), 0 );
@@ -364,6 +345,7 @@
 
       'uniform sampler2D alphaMap;',
       'uniform vec2  repeat;',
+      'uniform vec2  offset;',
 
       'uniform float pointer;',
       'uniform float section;',
@@ -371,19 +353,22 @@
       'varying vec2  vUV;',
       'varying vec4  vColor;',
       'varying float vCounters;',
+      
+      'float alpha;',
+      'float alphaTest = 0.5;',
 
       'void main() {',
 
       '    vec4  color   = vColor;',
       '    float counter = vCounters  ;',
 
-      '    color.a *= texture2D( alphaMap, vUV * repeat ).a;',
+      '    alpha = texture2D( alphaMap, vUV).a;',
 
-      '    if (counter > pointer ) color.a = 0.0;',
-      '    if (counter < (pointer - section) ) color.a = 0.0;',
+      '    if (counter > pointer ) alpha = 0.0;',
+      '    if (counter < (pointer - section) ) alpha = 0.0;',
 
-      // '    if (counter > pointer )             discard;',
-      // '    if (counter < (pointer - section) ) discard;',
+      '    if( alpha < alphaTest ) discard;',
+      '    color.a = alpha;',
 
       '    gl_FragColor    = color;',
 
@@ -405,7 +390,9 @@
     this.dashArray       = check( parameters.dashArray,   [] );
     this.lineWidth       = check( parameters.lineWidth,   1 );
     this.opacity         = check( parameters.opacity,     1 );
+
     this.repeat          = check( parameters.repeat,      new THREE.Vector2( 1, 1 ) );
+    this.offset          = check( parameters.offset,      new THREE.Vector2( 0, 0 ) );
     this.resolution      = check( parameters.resolution,  new THREE.Vector2( 1, 1 ) );
 
     this.head            = check( parameters.head,        0 );
@@ -416,10 +403,12 @@
       uniforms:{
 
         alphaMap:         { type: 't',  value: this.alphaMap },
+        repeat:           { type: 'v2', value: this.repeat },
+        offset:           { type: 'v2', value: this.offset },
+
         color:            { type: 'c',  value: this.color },
         lineWidth:        { type: 'f',  value: this.lineWidth },
         opacity:          { type: 'f',  value: this.opacity },
-        repeat:           { type: 'v2', value: this.repeat },
         resolution:       { type: 'v2', value: this.resolution },
 
         head:             { type: 'f',  value: this.head },
@@ -436,7 +425,9 @@
     delete parameters.color;
     delete parameters.opacity;
     delete parameters.resolution;
+
     delete parameters.repeat;
+    delete parameters.offset;
 
     delete parameters.head;
     delete parameters.pointer;
@@ -463,6 +454,7 @@
     this.lineWidth      = source.lineWidth;
     this.opacity        = source.opacity;
     this.repeat.copy(     source.repeat );
+    this.offset.copy(     source.offset );
     this.resolution.copy( source.resolution );
 
     return this;

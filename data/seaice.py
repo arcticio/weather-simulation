@@ -10,7 +10,7 @@ size    = 1024
 quality = 90
 level   = 4
 sat     = 'AMSR2_Sea_Ice_Concentration_12km'
-target  = '../images/seaice'
+target  = './seaice'
 xmlFileTemplate = 'GIBS_Polar_AMSR2_%s_tmp.xml'
 
 # works
@@ -90,7 +90,7 @@ for (face, lon, lat, extra, epsg) in tasks :
 
 for (face, lon, lat, extra, epsg) in tasks :
 
-  cmd = "cp polar.amsr2.%s.%d.png  %s/polar.amsr2.%s.%d.png" % (face, size, target, face, size)
+  cmd = "mv polar.amsr2.%s.%d.png  %s/%s.polar.amsr2.%s.%d.png" % (face, size, target, date, face, size)
   cmds.append(cmd)
 
 
@@ -102,7 +102,7 @@ for (face, lon, lat, extra, epsg) in tasks :
   cmd = "rm polar.amsr2.%s.%d.png.aux.xml" % (face, size)
   cmds.append(cmd)
 
-  cmds.append("rm %s" % (xmlFileTemplate % face)
+  cmds.append("rm %s" % (xmlFileTemplate % face))
 
 
 for cmd in cmds :

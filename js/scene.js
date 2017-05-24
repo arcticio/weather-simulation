@@ -92,11 +92,11 @@ var SCENE = (function () {
       scene.add(meshes.pointer);
 
       meshes.test = CFG.earth.test;
-      meshes.test.name = 'test';
       meshes.test.material.map = loader.load('images/mask/globe.oceanmask.512.jpg');
       meshes.test.material.needsUpdate = true;
-      scene.add(meshes.test);
+      meshes.test.name = 'test';
       meshes.test.rotation.y = Math.PI;
+      scene.add(meshes.test);
 
 
       meshes.data = self.createCube(
@@ -105,13 +105,13 @@ var SCENE = (function () {
         'images/mask/earth.FACE.2048.jpg', 
         'data'
       );
-      scene.add( meshes.data );
       meshes.data.rotation.y = Math.PI / 2;
+      scene.add( meshes.data );
 
       // meshes.globe = self.createCube(
       //   'globe', 
       //   CFG.earth.radius + 0.0005,
-      //   'images/snpp/globe.snpp.FACE.2048.jpg', 
+      //   'data/snpp/2017-05-23.globe.snpp.FACE.2048.jpg', 
       //   'globe'
       // );
       // scene.add( meshes.globe );
@@ -121,7 +121,7 @@ var SCENE = (function () {
       // meshes.sst = self.createCube(
       //   'sst', 
       //   CFG.earth.radius + 0.0005, 
-      //   'images/sst/globe.sst.FACE.1024.png', 
+      //   'data/sst/2017-05-22.globe.sst.FACE.1024.png', 
       //   'globe'
       // );
       // scene.add( meshes.sst );
@@ -130,7 +130,7 @@ var SCENE = (function () {
       // meshes.seaice = self.createCube(
       //   'seaice', 
       //   CFG.earth.radius + 0.001, 
-      //   'images/seaice/polar.amsr2.FACE.1024.png', 
+      //   'data/seaice/2017-05-23.polar.amsr2.FACE.1024.png', 
       //   'polar'
       // );
       // scene.add( meshes.seaice );

@@ -7,15 +7,16 @@ function Trails(name, trailsVectors, trailsColors, color) {
   var 
     index      = 0,
     alphamap   = SCENE.loader.load('images/line.alpha.64.png'),
+    // alphamap   = SCENE.loader.load('images/line.alpha.32.61.png'),
+    // alphamap   = SCENE.loader.load('images/line.alpha.64.64.png'),
     // convert    = function (latlon) {
     //   return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
     // },
     nonIndexed,
   end;
+
   
   this.frame      = 0;
-  // this.geoMerged  = new THREE.BufferGeometry();
-  // this.meshMerged,
   this.geometries = [];
   this.materials  = [];
   this.trails     = [];
@@ -36,7 +37,11 @@ function Trails(name, trailsVectors, trailsColors, color) {
       // https://threejs.org/docs/index.html#api/constants/Materials
 
       alphaMap:        alphamap,
-      // color:           color,
+      alphaTest:       0.5,
+      repeat:          new THREE.Vector2(2.0, 1.0),
+      offset:          new THREE.Vector2(0.0, 0.0),
+
+      color:           color,
       lineWidth:       lineWidth,
       opacity:         0.8,
       resolution:      resolution,
@@ -49,26 +54,18 @@ function Trails(name, trailsVectors, trailsColors, color) {
 
       head:            start,                   // begin of line
       pointer:         start,                   // current head of trail 
-      section:         50 / this.length,        // length of trail in %
+      section:         10 / this.length,        // length of trail in %
 
       // wireframe:       true,
 
     });
+
 
     geometry.vertices = vectors;
     geometry.colors   = colors;
 
     line.setGeometry( geometry );
     nonIndexed = line.geometry.toNonIndexed();
-
-    // if (index === 0) {
-    //   this.geoMerged = nonIndexed.clone();      
-    // } else {
-    //   this.geoMerged.merge(nonIndexed);
-    // }
-
-
-    // var mesh = new THREE.Mesh( line.geometry, material );
 
     var mesh = new THREE.Mesh( nonIndexed, material );
     mesh.name = name + '.' + index;
@@ -93,10 +90,17 @@ Trails.prototype = {
     var i, pointer, head, len = this.materials.length;
     this.frame += 1;
     for (i=0; i<len; i++){
+
       head = this.materials[i].uniforms.head.value,
       pointer = this.materials[i].uniforms.pointer;
       pointer.value = ((head + this.frame) % this.length) / this.length;
       pointer.needsUpdate = true;
+
+      // this.materials[i].uniforms.offset.value.y = (this.frame % TRAIL_LEN) / TRAIL_LEN;
+      // this.materials[i].uniforms.offset.value.x = (this.frame % TRAIL_LEN) / TRAIL_LEN * 0.5;
+      // this.materials[i].uniforms.offset.needsUpdate = true;
+
+
     }
   }
 }
