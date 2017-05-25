@@ -72,6 +72,8 @@ var SIM = (function () {
     },
     loadBetterWind: function () {
 
+      return;
+
       // https://stackoverflow.com/questions/44098678/how-to-rotate-a-vector3-using-vector2
 
       //  For winds, the u wind is parallel to the x axis. 
@@ -142,52 +144,40 @@ var SIM = (function () {
 
       TIM.step('SIM.init.in');
 
-      // self.loadModel(self.loadBetterWind);
+      self.loadModel(self.loadBetterWind);
       self.createWind();
 
       TIM.step('SIM.init.out');
       
     },
+    load: function (name, config, callback) {
+      console.log('SIM.load', name, config);
+      // callback();
+    },
     loadModel: function (callback) {
 
-      // quick async hack
-      var 
-        requests = 3,
-        interval = setInterval(function () {
-          if (requests === 0){
-            clearInterval(interval);
-            SCN.meshes.test.material.map = new THREE.CanvasTexture(model['tmp2m'].toCanvas());
-            SCN.meshes.test.material.needsUpdate = true;
-            callback();
-          }
-        }, 100);
+      return;
 
       RES.load({
-        urls: ['data/ugrd10m.1x180x360.dods'],
+        urls: [
+          'data/gfs/2017-05-23.tcdcclm.dods',
+          'data/gfs/2017-05-23.tmp2m.dods',
+          'data/gfs/2017-05-23.ugrd10m.dods',
+          'data/gfs/2017-05-23.vgrd10m.dods',
+        ],
         onFinish: function (err, responses) {
-          requests -= 1;
-          var data = SIM.Model.parseMultiDods('ugrd10', responses[0].data);
-          model['ugrd10'] = new SIM.Datagram(data);
+          responses.forEach(function (response) {
+            var vari, data;
+            if (response){
+              vari = response.url.split('.')[-2];
+              data = SIM.Model.parseMultiDods(vari, response.data);
+              model[vari] = new SIM.Datagram(data);
+            } else {
+              console.log('WTF');
+            }
+          });
         }
-      });      
-
-      RES.load({
-        urls: ['data/vgrd10m.1x180x360.dods'],
-        onFinish: function (err, responses) {
-          requests -= 1;
-          var data = SIM.Model.parseMultiDods('vgrd10', responses[0].data);
-          model['vgrd10'] = new SIM.Datagram(data);
-        }
-      });      
-
-      RES.load({
-        urls: ['data/tmp2m.1x180x360.dods'],
-        onFinish: function (err, responses) {
-          requests -= 1;
-          var data = SIM.Model.parseMultiDods('tmp2m', responses[0].data);
-          model['tmp2m'] = new SIM.Datagram(data);
-        }
-      }); 
+      });    
 
     },
     step: function (frame) {

@@ -1,7 +1,9 @@
 
 // dat.gui
 var 
-  gui = new dat.GUI(),
+  gui = new dat.GUI({
+    // parent: document.querySelectorAll('div.fullscreen')[0]
+  }),
   guiFolders = {};
 
   // gui.closed = true;

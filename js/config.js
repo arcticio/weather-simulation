@@ -23,127 +23,197 @@ var CFG = {
   Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
   earth: {
-
     radius: RADIUS,
     radiusOverlay: RADIUS + 0.1,
-
-    pointer: new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS - 0.01, 64, 64),                  
-      new THREE.MeshBasicMaterial({
-        color:     0x330000,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.1
-      })
-    ),
-
-    test: new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS - 0.005, 64, 64),                  
-      new THREE.MeshBasicMaterial({
-        // color:     0xff0000,
-        // wireframe: true,
-        transparent: false,
-        // opacity: 0.8,
-      })
-    ),
-
-    surface: {
-
-      mesh: new THREE.Mesh(
-        new THREE.SphereGeometry(RADIUS, 128, 128),                  
-        new THREE.MeshPhongMaterial({
-          bumpScale: 0.02,
-        })
-      ),
-      textures: {
-        map:           'images/earth.bathy.grey.jpg',
-        bumpMap:       'images/srtm_ramp2.world.4096x2048.jpg',
-        // specularMap:   'images/earthspec1k.jpg'
-      }
-    },
-
-    overlay:  {
-      mesh: new THREE.Mesh(
-        new THREE.SphereGeometry(RADIUS + DISTANCE_OVERLAY, 128, 128), 
-        new THREE.MeshPhongMaterial({
-          side:        THREE.FrontSide, //THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.8
-        })
-      ),
-      textures: {
-        map:      'images/earthcloudmap.jpg', 
-        alphaMap: 'images/earthcloudmaptrans.jpg'
-      }
-    },
-
-
   },
 
-  Galaxy: {
-    mesh: new THREE.Mesh(
-      new THREE.SphereGeometry(100, 32, 32),                  // SphereGeometry(radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength)
-      new THREE.MeshBasicMaterial({side: THREE.BackSide})
-    ),
-    textures: {
-      map: 'images/starfield.png'
-    },
-  },
+  objects: {
 
-  orbitControls: {
-    enableDamping:       true,
-    dampingFactor:       0.88,
-    constraint: {
-      smoothZoom:        true,
-      smoothZoomSpeed:   5.0,
-      zoomDampingFactor: 0.2,
-      minDistance:       1,
-      maxDistance:       8
-    }
-  },
-
-  Markers: [{
-      label:          'North Pole',
-      latitude:        90,
-      longitude:       0,
-      radius:          0.5,
-      height:          0,
-      size:            0.01,
-      color:           0xff0000
-    }
-  ],
-
-  Lights: {
-    ambient:           new THREE.AmbientLight( 0xffffff, 0.6 ),
-    spot:    {
-      light:           new THREE.SpotLight(0xffffff, 0.2, 0, 0.6, 0.1),
-      pos:             new THREE.Vector3(0, 2, 0)
-    } 
-  },
-
-  Cameras: {
     perspective: {
+      type: 'camera',
       cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
-      
       // pos:             new THREE.Vector3(0.5, 3.4, 0.5),       // Greenland centered
       // pos:             new THREE.Vector3(0.05, 2.3, -0.08),    // North Pole
       // pos:             new THREE.Vector3(0.5, -2.2, -3),          // Low near AA
-      pos:             new THREE.Vector3(3.7, 0, 0),                // 0,0
-    } 
+      pos:             new THREE.Vector3(4, 0, 0),                // 0,0
+    },
+
+    ambient: {
+      visible: true,
+      type: 'light',
+      color: 0xffffff,
+      intensity: 0.6,
+      light: (cfg) => new THREE.AmbientLight( cfg.color, cfg.intensity )
+    },
+
+    spot:    {
+      visible: true,
+      type: 'light',
+      color: 0xffffff, 
+      intensity: 0.2, 
+      distance: 0, 
+      angle: 0.6, 
+      penumbra: 0.1, 
+      decay: 0,
+      light: (cfg) => new THREE.SpotLight(cfg.color, cfg.intensity, cfg.distance, cfg.angle, cfg.penumbra),
+      pos:   new THREE.Vector3(0, 2, 0)
+    },
+
+    axes: {
+      visible: true,
+      type: 'mesh',
+      mesh: new THREE.AxisHelper( RADIUS * 4 ),
+    },
+
+    arrowHelper: {
+      visible: true,
+      type: 'mesh',
+      mesh: new THREE.ArrowHelper( 
+        new THREE.Vector3( 1, 1,  1), 
+        new THREE.Vector3( 0,  0,  0), 
+        RADIUS + 0.08, 
+        0xffff00
+      )
+    },
+
+    pointer: {
+      // raycaster
+      visible: true,
+      type: 'mesh',
+      mesh: new THREE.Mesh(
+        new THREE.SphereGeometry(RADIUS - 0.01, 64, 64),                  
+        new THREE.MeshBasicMaterial({
+          color:     0x330000,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.1
+        })
+      ),
+    },
+
+    test: {
+      visible: false,
+      type: 'mesh.textured',
+      texture: 'images/spheres/world.oceanmask.4096x2048.png',
+      mesh: new THREE.Mesh(
+        new THREE.SphereGeometry(RADIUS - 0.005, 64, 64),                  
+        // new THREE.MeshBasicMaterial({
+        new THREE.MeshLambertMaterial({
+          // color:     0xff0000,
+          // wireframe: true,
+          transparent: true,
+          opacity: 0.8,
+        })
+      ),
+    },
+
+    snpp: {
+      visible: true,
+      type: 'cube.textured',
+      cube: {
+        type: 'globe',
+        radius: RADIUS - 0.002,
+        texture: 'data/snpp/2017-05-23.globe.snpp.FACE.2048.jpg', 
+      }
+    },
+
+    data: {
+      visible: false,
+      type: 'cube.textured',
+      cube: {
+        type: 'globe',
+        radius: RADIUS, 
+        texture: 'images/mask/earth.FACE.2048.jpg', 
+        bump:    'images/topo/earth.FACE.topo.2048.jpg',
+      }
+    },
+
+    sst: {
+      visible: false,
+      type: 'cube.textured',
+      cube: {
+        type: 'globe',
+        radius: RADIUS + 0.001, 
+        texture: 'data/sst/2017-05-22.globe.sst.FACE.1024.png', 
+      }
+    },
+
+    seaice: {
+      visible: false,
+      type: 'cube.textured',
+      cube: {
+        type: 'polar',
+        radius: RADIUS + 0.002, 
+        texture: 'data/seaice/2017-05-22.polar.amsr2.FACE.1024.png', 
+      }
+    },
+
+    wind: {
+      visible: false,
+      type: 'simulation',
+      sim: {
+        data: [
+          'data/gfs/2017-05-23.tmp2m.dods',
+          'data/gfs/2017-05-23.ugrd10m.dods',
+          'data/gfs/2017-05-23.vgrd10m.dods',
+        ]
+      }
+    },
+
+    clouds: {
+      visible: false,
+      type: 'simulation',
+      sim: {
+        data: [
+          'data/gfs/2017-05-23.tcdcclm.dods',
+        ]
+      }
+    },
+
+
   },
 
-  axes: new THREE.AxisHelper( RADIUS * 4 ),
+  // Galaxy: {
+  //   mesh: new THREE.Mesh(
+  //     new THREE.SphereGeometry(100, 32, 32),                  // SphereGeometry(radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength)
+  //     new THREE.MeshBasicMaterial({side: THREE.BackSide})
+  //   ),
+  //   textures: {
+  //     map: 'images/starfield.png'
+  //   },
+  // },
 
-  arrowHelper: new THREE.ArrowHelper( 
-    new THREE.Vector3( 1, 1,  1), 
-    new THREE.Vector3( 0,  0,  0), 
-    RADIUS + 0.08, 
-    0xffff00
-  ),
+  // orbitControls: {
+  //   enableDamping:       true,
+  //   dampingFactor:       0.88,
+  //   constraint: {
+  //     smoothZoom:        true,
+  //     smoothZoomSpeed:   5.0,
+  //     zoomDampingFactor: 0.2,
+  //     minDistance:       1,
+  //     maxDistance:       8
+  //   }
+  // },
 
-  preset: {
+  // Markers: [{
+  //     label:          'North Pole',
+  //     latitude:        90,
+  //     longitude:       0,
+  //     radius:          0.5,
+  //     height:          0,
+  //     size:            0.01,
+  //     color:           0xff0000
+  //   }
+  // ],
 
-  },
+
+  // Cameras: {
+
+  // },
+
+  // preset: {
+
+  // },
 
 
   'gui.dat' : {
@@ -189,6 +259,7 @@ var CFG = {
     Extras: {
       isFolder: true,
       Axes:     true,
+      Rotate:   () => {},
     },
     Simulation: {
       isFolder: true,

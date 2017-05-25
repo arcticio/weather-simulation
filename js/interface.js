@@ -10,19 +10,21 @@ var IFC = (function () {
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
-    simulator, // 3D canvas
+    simulator,  // 3D canvas
+    fullscreen, // div full
 
     mouse = {x: NaN, y: NaN, down: false},
 
     raycaster = new THREE.Raycaster(),
 
-    stuff
+    stats,
 
-    ;
+    end;
 
 
   return {
     
+    stats,
     mouse,
     raycaster,
 
@@ -31,53 +33,78 @@ var IFC = (function () {
     },
     init: function () {
 
+      simulator  = $$('.simulator')[0];
+      fullscreen = $$('.fullscreen')[0];
+
+      var datgui = $$('div.dg.ac')[0];
+      // datgui.style.position = 'relative';
+      // datgui.style.top = '0px';
+
+      var stats = new Stats();
+      self.stats = stats;
+      stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+      fullscreen.appendChild( stats.dom );
+
       raycaster.params.Points.threshold = 0.001; // threshold;
 
     },
     activate: function () {
 
-      simulator = $('simulator');
-
-      // console.log('simulator', simulator);
-
 
       window.addEventListener('resize', self.resize, false);
 
-
       H.each([
-        'mousedown',
-        'mouseup',
-        'mousemove',
-        'mouseenter',
-        'mouseover',
-        'mouseleave',
-        'mouseout',
-        'contextmenu',
-      ], (_, event) => document.addEventListener(event, self.events[event], false));
+
+        [simulator, 'mousedown'],
+        [simulator, 'mouseup'],
+        [simulator, 'mousemove'],
+        [simulator, 'mouseenter'],
+        [simulator, 'mouseover'],
+        [simulator, 'mouseleave'],
+        [simulator, 'mouseout'],
+        [simulator, 'click'],
+        [simulator, 'dblclick'],
+        [document,  'contextmenu'],
+        [window,    'orientationchange'],
+        [window,    'deviceorientation'],
+        [window,    'devicemotion'],
+      
+      ], function (_, e) { 
+
+        e[0].addEventListener(e[1], self.events[e[1]], false) 
+
+      });
 
     },
     events: {
+      click:   function (event) { 
+
+        gui.closed = true;
+        // console.log('click')
+
+      },      
+      dblclick:   function (event) { 
+
+        if (screenfull.enabled) {
+          screenfull.toggle(fullscreen);
+        }        
+        console.log('dblclick');
+
+      },
       mousedown:   function (event) { 
 
-        /* console.log('mousedown') */ 
-
         mouse.down = true;
-
-        // gui.closed = true;
-
+        // console.log('mousedown', event.button, event);
 
       },
       mouseup:     function (event) { 
-
-        /* console.log('mouseup') */ 
 
         mouse.down = false;
 
       },
       mousemove:   function (event) { 
 
-        /* console.log('mousemove') */ 
-
+        // TODO: not window
         mouse.x =   ( event.clientX / window.innerWidth )  * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
@@ -87,6 +114,11 @@ var IFC = (function () {
       mouseleave:  function (event) { /* console.log('mouseleave') */ },
       mouseout:    function (event) { /* console.log('mouseout') */ },
       contextmenu: function (event) { /* console.log('contextmenu') */ },
+
+      devicemotion:      function (event) { /* console.log('devicemotion', event)      */ },
+      orientationchange: function (event) { console.log('orientationchange', event)       },
+      deviceorientation: function (event) { /* console.log('deviceorientation', event) */ },
+
     },
     resize: function () {
     },

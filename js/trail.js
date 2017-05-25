@@ -4,9 +4,10 @@
 
 function Trails(name, trailsVectors, trailsColors, color) {
 
+  var loader        = new THREE.TextureLoader();
   var 
     index      = 0,
-    alphamap   = SCN.loader.load('images/line.alpha.64.png'),
+    alphamap   = loader.load('images/line.alpha.64.png'),
     // alphamap   = SCN.loader.load('images/line.alpha.32.61.png'),
     // alphamap   = SCN.loader.load('images/line.alpha.64.64.png'),
     // convert    = function (latlon) {

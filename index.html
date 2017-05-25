@@ -40,20 +40,27 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
 
     <style type="text/css">
+
+    * {
+      padding: 0;
+      margin: 0;
+    }
       
     .panel.info {
       background-color: #ffff00;
+      background: url(images/black.32.png);
+      background-size: 10%; 
+      background-repeat: no-repeat;
       bottom: 0px;
-      color: #000;
+      color: #eee;
       font-family: sans-serif;
       font-size: 12px;
       left: 0px;
       max-height: 5%;
       overflow-x: hidden;
       overflow-y: scroll;
-      padding-left: 4px;
       padding-top: 4px;
-      position: fixed;
+      position: absolute;
       vertical-align: middle;
       width: 100%;
     }
@@ -62,7 +69,7 @@
       background-color: rgba(40, 0, 0, 0.2);
       top: 0px;
       left: 96px;
-      position: fixed;
+      position: absolute;
       width: 96px;
       height: 48px;
     }
@@ -71,7 +78,7 @@
       background-color: rgba(40, 0, 0, 0.2);
       top: 0px;
       left: 196px;
-      position: fixed;
+      position: absolute;
       width: 360px;
       height: 181px;
       display: none;
@@ -87,21 +94,26 @@
 
 <body>
 
-  <div style="display:none">
-    <img class="" src="images/line.alpha.64.png">
-    <img class="" src="images/line.alpha.32.png">
-    <img class="" src="images/line.alpha.16.png">
-    <img class="transparent-face-512" src="images/transparent.face.512.png">
-  </div>
+  <div class="fullscreen">
 
-  <div>
+    <div style="display:none">
+      <img class="" src="images/line.alpha.64.png">
+      <img class="" src="images/line.alpha.32.png">
+      <img class="" src="images/line.alpha.16.png">
+      <img class="transparent-face-512" src="images/transparent.face.512.png">
+    </div>
 
-    <div    class="panel info" ondblclick="this.innerHTML = '' "></div>
-    <canvas class="panel test" height="48" width="96" ondblclick=""></div>
-    <canvas class="panel expi" height="181" width="360" ondblclick=""></div>
-    
-  </div>
+    <div>
 
+      <div    class="panel info" ondblclick="this.innerHTML = '' "></div>
+      <canvas class="panel test" height="48" width="96" ondblclick=""></canvas>
+      <canvas class="panel expi" height="181" width="360" ondblclick=""></canvas>
+      
+    </div>
+
+    <canvas class="simulator"></canvas>
+
+  </div>  
 
   <script src='timeranges.js'></script>
 
@@ -114,8 +126,9 @@
   <script src='libs/OOrbitControls.js'></script>
   <script src="libs/THREE.MeshLine.js"></script>
   <script src="libs/stats.js"></script>
+  <script src="libs/screenfull.js"></script>
 
-  <script src='libs/dat.gui.min.js'></script>
+  <script src='libs/dat.gui.js'></script>
 
   <script src="js/helper.js"></script>
   <script src="js/tools.js"></script>
@@ -141,27 +154,22 @@
     
     // https://github.com/mrdoob/stats.js/
 
-    var stats = new Stats();
-    stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-    document.body.appendChild( stats.dom );
-
     window.onload = function () {
 
       TIM.step('WIN.load.in');
 
-      RES.init();
-      RES.activate('.panel.info');
-
+      RES.init('.panel.info');
       IFC.init();
       SCN.init();
       ANI.init();
+      SIM.init();
 
+      RES.activate();
       IFC.activate(); 
       SCN.activate();
       ANI.activate();
-
-      SIM.init();
       SIM.activate();
+
       SCN.render();
 
       TIM.step('WIN.load.out');

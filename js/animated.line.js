@@ -30,6 +30,8 @@
 
     this.widthCallback = callback;
 
+    this.length = g.vertices.length;
+
     this.positions = [];
     this.counters  = [];
     this.colors    = [];
@@ -188,68 +190,6 @@
     this.geometry.setIndex( this.attributes.index );
 
   }
-
-  function memcpy (src, srcOffset, dst, dstOffset, length) {
-
-    var i
-
-    src = src.subarray || src.slice ? src : src.buffer
-    dst = dst.subarray || dst.slice ? dst : dst.buffer
-
-    src = srcOffset ? src.subarray ?
-    src.subarray(srcOffset, length && srcOffset + length) :
-    src.slice(srcOffset, length && srcOffset + length) : src
-
-    if (dst.set) {
-      dst.set(src, dstOffset)
-    } else {
-      for (i=0; i<src.length; i++) {
-        dst[i + dstOffset] = src[i]
-      }
-    }
-
-    return dst
-  }
-
-  /**
-   * Fast method to advance the line by one position.  The oldest position is removed.
-   * @param position
-   */
-  MeshLine.prototype.advance = function(position) {
-
-    var positions = this.attributes.position.array;
-    var previous = this.attributes.previous.array;
-    var next = this.attributes.next.array;
-    var l = positions.length;
-
-    // PREVIOUS
-    memcpy( positions, 0, previous, 0, l );
-
-    // POSITIONS
-    memcpy( positions, 6, positions, 0, l - 6 );
-
-    positions[l - 6] = position.x;
-    positions[l - 5] = position.y;
-    positions[l - 4] = position.z;
-    positions[l - 3] = position.x;
-    positions[l - 2] = position.y;
-    positions[l - 1] = position.z;
-
-      // NEXT
-    memcpy( positions, 6, next, 0, l - 6 );
-
-    next[l - 6]  = position.x;
-    next[l - 5]  = position.y;
-    next[l - 4]  = position.z;
-    next[l - 3]  = position.x;
-    next[l - 2]  = position.y;
-    next[l - 1]  = position.z;
-
-    this.attributes.position.needsUpdate = true;
-    this.attributes.previous.needsUpdate = true;
-    this.attributes.next.needsUpdate     = true;
-
-  };
 
   function MeshLineMaterial( parameters ) {
 

@@ -7,7 +7,7 @@
   Purpose is to show user information about ongoing requests,
   with some interactivity (cancel)
 
-  How? https://www.html5rocks.com/en/tutorials/file/xhr2/
+  How? : https://www.html5rocks.com/en/tutorials/file/xhr2/
 
   got some extra activity via setTimeout.
 
@@ -49,21 +49,22 @@ var RES = (function () {
       stats[what] += Number(value);
     }
     div.innerHTML += format();
+
+    div.style.backgroundSize = ~~stats.percent + '%';
+
   }
 
   return {
 
-    // jobs,
-    // stats,
-
     boot: function () {
       return self = this;
     },
-    init: function (dev) {
-      isDev = dev === undefined ? true : dev;
+    init: function (selector) {
+      // isDev = dev === undefined ? true : dev;
+      div = $$(selector)[0];
     },
     activate: function (selector) {
-      div = $$(selector)[0];
+      div.innerHTML = 'R: 0, ETA: 0';
     },
     check: function () {
 
@@ -71,20 +72,21 @@ var RES = (function () {
 
       candidates = jobs.filter( j => j.failed || j.finished);
       candidates.forEach( c => H.remove(jobs, c) );
-      // console.log("Removed:", candidates.length, candidates.map(c => c.id));
 
       candidates = jobs.filter( j => !j.active && j.ready && !j.failed ).slice(0, concurrent);
-      candidates.forEach( c => c.execute());
-      // console.log("Executed:", candidates.length, candidates.map(c => c.id));
-
+      candidates.forEach( c => {
+        if (c.options.type === 'texture' ){
+          c.loadtexture()
+        } else {
+          c.execute()
+        }
+      });
       stats.queue = jobs.length;
       update();
 
     },
 
-    load: function (config) {
-
-      // make this multi job !!
+    add: function (config) {
 
       var job;
 
@@ -99,12 +101,27 @@ var RES = (function () {
       self.check();
 
     },
+    load: function (config) {
+
+      var tasks = config.urls.map( url => {
+
+        return function (callback) {
+          self.add({url: url, type: config.type || '', onFinish: function (err, data) {
+            err ? callback(err, null) : callback(null, data);
+          }});
+        };
+
+      });
+
+      async.parallel(tasks, config.onFinish);
+
+    },
 
     Job: function (options) {
 
       var 
         mime, length, modified, 
-        url  = options.urls[0], 
+        url  = options.url, 
         type = options.type || 'text', 
         bytesTotal  = 0, 
         bytesLoaded = 0;
@@ -137,7 +154,7 @@ var RES = (function () {
         stats.requests -= 1;
         stats.bytesTotal -= bytesLoaded
         update('bytesLoaded', -bytesLoaded);
-        options.onFinish(null, [{data, mime, length}]);
+        options.onFinish(null, {data, mime, length, url});
         setTimeout(self.check, 20);
       }
 
@@ -179,6 +196,28 @@ var RES = (function () {
         };
 
         req.send(null);
+
+      };
+
+      this.loadtexture = () => {
+
+        var loader = new THREE.TextureLoader();
+
+        this.active = true;
+        stats.requests += 1;
+
+        loader.load(
+          url,
+          function onlad ( texture ) {
+            onLoaded(texture);
+          },
+          function onprogress ( xhr ) {
+            onProgress(xhr.loaded - bytesLoaded);
+          },
+          function onerror ( xhr ) {
+            onError(xhr.status + ' ' + xhr.statusText);
+          }
+        );
 
       };
 

@@ -2,7 +2,7 @@
 appengine-generated/
 
 stuff/
-docs/
+doc/
 node_modules/
 
 data/*.nc

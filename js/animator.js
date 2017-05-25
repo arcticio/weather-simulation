@@ -26,7 +26,7 @@ var ANI = (function () {
     },
     activate: function () {
 
-      self.insert(400, self.library.example);
+      // self.insert(400, self.library.example);
 
     },
 
@@ -50,7 +50,15 @@ var ANI = (function () {
     insert: function (frame, action) {
 
       if (typeof frame === 'number') {
-        actions[frame] = action;
+
+        if (frame === 0){
+          action();
+
+        } else {
+          actions[frame] = action;
+
+        }
+
       }
 
 

@@ -11,16 +11,18 @@ var SCN = (function () {
     self,
     frame         = 0,
     time          = 0,
-    loader        = new THREE.TextureLoader(),
+    // loader        = new THREE.TextureLoader(),
 
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
-    // renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true }),
-    // renderer      = new THREE.WebGLRenderer({antialias: true}),
-    renderer      = new THREE.WebGLRenderer(),
+    renderer      = new THREE.WebGLRenderer({
+      canvas:    $$('.simulator')[0],
+      // antialias: true,
+      // alpha:     true 
+    }),
 
-    camera        = CFG.Cameras.perspective.cam,
+    camera        = CFG.objects.perspective.cam,
     scene         = new THREE.Scene(),
     orbitControls = new THREE.OOrbitControls(camera, renderer.domElement),
     axes,
@@ -29,8 +31,7 @@ var SCN = (function () {
     doAnimate     = true,
     doSimulate    = true,
 
-    meshes        = {},
-    lights        = {},
+    objects        = {},
 
     monitor      = $$('canvas.panel.test')[0].getContext('2d'),
     expi         = $$('canvas.panel.expi')[0].getContext('2d'),
@@ -50,189 +51,241 @@ var SCN = (function () {
     
     expi,
     scene,
-    loader,
-    meshes,
     camera,
     monitor,
+    objects,
     renderer,
 
     boot: function () {
       return self = this;
     },
-    add: function (name, mesh) {
-      meshes[name] = mesh;
-      meshes[name].name = name;
-      scene.add(mesh);
+    add: function (name, obj) {
+      objects[name] = obj;
+      objects[name].name = name;
+      scene.add(obj);
+    },
+    toggle: function (obj, force) {
+
+      if (scene.getObjectByName(obj.name) || force === false) {
+        scene.remove(obj);
+
+      } else {
+        if (obj instanceof THREE.Object3D){
+          scene.add(obj);
+
+        } else {
+          self.loader[obj.type](obj.name, obj);
+
+        }
+      }
+
+    },
+    activate: function () {
+      window.addEventListener('resize', self.resize, false);
+    },
+    loader: {
+
+      'mesh.textured': (name, cfg) => {
+        RES.load({type: 'texture', urls: [cfg.texture], onFinish: (err, responses) => {
+          cfg.mesh.material.map = responses[0].data;
+          self.add(name, cfg.mesh);
+        }});
+      },
+
+      'mesh': (name, cfg) => {
+        self.add(name, cfg.mesh);
+      },
+
+      'light': (name, cfg) => {
+        cfg.light = cfg.light(cfg);
+        cfg.pos && cfg.light.position.copy( cfg.pos ); 
+        self.add(name, cfg.light);
+      },
+
+      'simulation': (name, cfg) => {
+        SIM.load(name, cfg, self.add);
+      },
+      'cube.textured': (name, cfg) => {
+        self.loadCube(name, cfg, self.add);
+      },
+      'camera': (name, cfg) => {
+
+      },
     },
     init: function () {
 
-      var idx, vertex;
+      var idx, vertex, onload;
 
       canvas = renderer.domElement;
-      canvas.id = 'simulator';
-      document.body.appendChild(canvas);
       renderer.setPixelRatio( window.devicePixelRatio );
       renderer.setClearColor(0x4d4d4d, 1.0)
       renderer.shadowMap.enabled = false;
 
-      camera.position.copy(CFG.Cameras.perspective.pos);
-      // camera.position.copy(new THREE.Vector3(4, 0, 0));
+      camera.position.copy(CFG.objects.perspective.pos);
 
       self.resize();
 
       orbitControls.enabled = true;
-      orbitControls.enableDamping = true;
-      orbitControls.dampingFactor = 0.88;
-      orbitControls.constraint.smoothZoom = true;
-      orbitControls.constraint.zoomDampingFactor = 0.2;
-      orbitControls.constraint.smoothZoomSpeed = 2.0;
-      orbitControls.constraint.minDistance = RADIUS + 0.1;
-      orbitControls.constraint.maxDistance = 8;
-
-      meshes.pointer = CFG.earth.pointer;
-      meshes.pointer.name = 'pointer';
-      scene.add(meshes.pointer);
-
-      meshes.test = CFG.earth.test;
-      meshes.test.material.map = loader.load('images/mask/globe.oceanmask.512.jpg');
-      meshes.test.material.needsUpdate = true;
-      meshes.test.name = 'test';
-      meshes.test.rotation.y = Math.PI;
-      scene.add(meshes.test);
+        orbitControls.enableDamping = true;
+        orbitControls.dampingFactor = 0.88;
+        orbitControls.constraint.smoothZoom = true;
+        orbitControls.constraint.zoomDampingFactor = 0.2;
+        orbitControls.constraint.smoothZoomSpeed = 2.0;
+        orbitControls.constraint.minDistance = RADIUS + 0.1;
+        orbitControls.constraint.maxDistance = 8;
 
 
-      meshes.data = self.createCube(
-        'data', 
-        CFG.earth.radius - 0.001, 
-        'images/mask/earth.FACE.2048.jpg', 
-        'data'
-      );
-      meshes.data.rotation.y = Math.PI / 2;
-      scene.add( meshes.data );
+      H.each(CFG.objects, (name, config) => {
 
-      // meshes.globe = self.createCube(
-      //   'globe', 
-      //   CFG.earth.radius + 0.0005,
-      //   'data/snpp/2017-05-23.globe.snpp.FACE.2048.jpg', 
-      //   'globe'
-      // );
-      // scene.add( meshes.globe );
-      // meshes.globe.rotation.y = Math.PI / 2;
-      // meshes.globe.visibility = false;
-      
-      // meshes.sst = self.createCube(
-      //   'sst', 
-      //   CFG.earth.radius + 0.0005, 
-      //   'data/sst/2017-05-22.globe.sst.FACE.1024.png', 
-      //   'globe'
-      // );
-      // scene.add( meshes.sst );
-      // meshes.sst.rotation.y = Math.PI / 2;
+        config.name = name;
 
-      // meshes.seaice = self.createCube(
-      //   'seaice', 
-      //   CFG.earth.radius + 0.001, 
-      //   'data/seaice/2017-05-23.polar.amsr2.FACE.1024.png', 
-      //   'polar'
-      // );
-      // scene.add( meshes.seaice );
-      // meshes.seaice.rotation.y = Math.PI / 2;
-
-      // // Galaxy
-      // galaxy = CFG.Galaxy.mesh;
-      // galaxy.name = 'galaxy';
-      // self.texturize(galaxy, CFG.Galaxy.textures);
-
-      // Lights
-      lights.ambient = CFG.Lights.ambient;
-      scene.add( lights.ambient );
-
-      lights.spot = CFG.Lights.spot.light;
-      lights.spot.position.copy( CFG.Lights.spot.pos ); 
-      // scene.add( lights.spot );
-
-      // Markers, depend on surface
-      // CFG.Markers.forEach(marker => TOOLS.placeMarker(meshes.globe, marker));
-
-      // click pointer
-      meshes.arrowHelper = CFG.arrowHelper;
-      meshes.arrowHelper.name = 'arrowHelper';
-      scene.add( meshes.arrowHelper );
-
-      // axes
-      meshes.axes = CFG.axes,
-      meshes.axes.name = 'axes';
-      scene.add( meshes.axes );
-
-      scene.add(camera);
-
-    },
-    createCube: function (name, radius, template, type) {
-
-      var
-        idx, vertex, mesh, cubemap, texture, material, bumpmap, shininess, 
-        geometry = new THREE.BoxGeometry(1, 1, 1, 16, 16, 16),
-        bumpTemplate = 'images/topo/earth.FACE.topo.2048.jpg';
-
-      for (idx in geometry.vertices) {
-        vertex = geometry.vertices[idx];
-        vertex.normalize().multiplyScalar(radius);
-      }
-
-      geometry.computeVertexNormals();
-
-      cubemap = CFG.Faces.map( face => {
-
-        if (type === 'globe') {
-          texture = H.replace(template, 'FACE', face);
-
-        } else if (type === 'data') {
-          texture = H.replace(template, 'FACE', face);
-          bumpmap = H.replace(bumpTemplate, 'FACE', face);
-
-        } else if (type === 'polar') {
-          texture = (face === 'top' || face === 'bottom') ? 
-            H.replace(template, 'FACE', face) : 
-            'images/transparent.face.512.png';
+        if (config.visible){
+          self.loader[config.type](name, config);
+        } else {
+          objects[name] = config;
         }
 
-        material = { 
+        // switch (config.type){
 
-          map:         loader.load( texture ),
-          transparent: true, 
-          opacity:     1.0, 
-          side:        THREE.FrontSide,
-          shininess:   2,
+        //   case 'mesh.textured':
+        //     RES.load({type: 'texture', urls: [config.texture], onFinish: (err, responses) => {
+        //       config.mesh.material.map = responses[0].data;
+        //       self.add(name, config.mesh);
+        //       config.mesh.visible = config.visible;
+        //     }});
+        //   break;
 
-          // wireframe:   false,
-          // lights:      false,
+        //   case 'mesh':
+        //     self.add(name, config.mesh);
+        //     config.mesh.visible = config.visible;
+        //   break;
 
-        };
+        //   case 'light':
+        //     config.light = config.light(config);
+        //     config.pos && config.light.position.copy( config.pos ); 
+        //     config.light.visible = config.visible;
+        //     self.add(name, config.light);
+        //   break;
 
-        if (bumpmap) {
-          material.bumpMap   = loader.load( bumpmap );
-          material.bumpScale = 0.04;
-        }
+        //   case 'globe':
+        //     if (config.visible && config.cube){
+        //       // self.loadCube(name, config, self.add);
+        //     }
+        //   break;
 
-        return new THREE.MeshPhongMaterial( material );
+        //   case 'overlay':
+        //     if (config.visible && config.cube){
+        //       // self.loadCube(name, config, self.add);
+        //     }
+        //   break;
+
+        //   case 'simulation':
+        //     if (config.visible){
+        //       SIM.load(name, config, self.add);
+        //     }
+        //   break;
+
+        // }
+
 
       });
 
-      mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( cubemap ) );
-      mesh.name = name;
-      
-      return mesh;
 
     },
-    // addTrails: function (num) {
+    showGlobe: function (name, radius, template, type) {
+
+      if (objects[name]){
 
 
-    //   sim.name = 'sim';
-    //   scene.add( sim );
+      }
 
-    // },
-    activate: function () {
-      window.addEventListener('resize', self.resize, false);
+    },
+    loadCube: function (name, cfg, callback) {
+
+      var
+        idx, vertex,  materials, mesh,
+        geometry = new THREE.BoxGeometry(1, 1, 1, 16, 16, 16),
+        urls = CFG.Faces.map( face => {
+
+          if (cfg.cube.type === 'globe'){
+            return H.replace(cfg.cube.texture, 'FACE', face);
+
+          } else if (cfg.cube.type === 'polar') {
+             return (face === 'top' || face === 'bottom') ? 
+              H.replace(cfg.cube.texture, 'FACE', face) : 'images/transparent.face.512.png';
+          }
+
+        });
+
+      RES.load({urls, type: 'texture', onFinish: function (err, responses) {
+
+        for (idx in geometry.vertices) {
+          vertex = geometry.vertices[idx];
+          vertex.normalize().multiplyScalar(cfg.cube.radius);
+        }
+
+        geometry.computeVertexNormals();
+
+        materials = responses.map(response => {
+
+          return new THREE.MeshPhongMaterial({ 
+            map:         response.data,
+            transparent: true, 
+            opacity:     1.0, 
+            side:        THREE.FrontSide,
+            shininess:   2,
+          });
+
+        });
+
+        mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
+
+        callback(name, mesh);
+
+      }});
+
+      // cubemap = CFG.Faces.map( face => {
+
+      //   if (type === 'globe') {
+      //     texture = H.replace(template, 'FACE', face);
+
+      //   } else if (type === 'data') {
+      //     texture = H.replace(template, 'FACE', face);
+      //     bumpmap = H.replace(bumpTemplate, 'FACE', face);
+
+      //   } else if (type === 'polar') {
+      //     texture = (face === 'top' || face === 'bottom') ? 
+      //       H.replace(template, 'FACE', face) : 
+      //       'images/transparent.face.512.png';
+      //   }
+
+      //   material = { 
+
+      //     map:         loader.load( texture ),
+      //     transparent: true, 
+      //     opacity:     1.0, 
+      //     side:        THREE.FrontSide,
+      //     shininess:   2,
+
+      //     // wireframe:   false,
+      //     // lights:      false,
+
+      //   };
+
+      //   if (bumpmap) {
+      //     material.bumpMap   = loader.load( bumpmap );
+      //     material.bumpScale = 0.04;
+      //   }
+
+      //   return new THREE.MeshPhongMaterial( material );
+
+      // });
+
+      // mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( cubemap ) );
+      // mesh.name = name;
+      
+      // return mesh;
+
     },
     resize: function () {
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -244,19 +297,7 @@ var SCN = (function () {
       camera.updateProjectionMatrix();
       // console.log(window.innerWidth, window.innerHeight);
     },
-    texturize: function (mesh, textures) {
 
-      H.each(textures, function (property, uri) {
-
-        loader.load(uri, function (texture) {
-          mesh.material[property] = texture;
-          mesh.material.needsUpdate = true;
-          scene.add(mesh);
-        });
-
-      });
-
-    },
     actions: function (folder, option, value) {
 
       // console.log("GUI.change", {action, folder, option, value});
@@ -266,30 +307,31 @@ var SCN = (function () {
         Animate:  { toggle: (value) => doAnimate  = value },
         Simulate: { toggle: (value) => doSimulate = value },
         Ambient: {
-          toggle:    (value) => value ? scene.add(lights.ambient) : scene.remove(lights.ambient),
-          intensity: (value) => lights.ambient.intensity = value,
-          color:     (value) => lights.ambient.color = new THREE.Color( value ),
+          toggle:    (value) => self.toggle(objects.ambient, value),
+          intensity: (value) => objects.ambient.intensity = value,
+          color:     (value) => objects.ambient.color = new THREE.Color( value ),
         },
         Spot: {
-          toggle:    (value) => value ? scene.add(lights.spot) : scene.remove(lights.spot),
-          intensity: (value) => lights.spot.intensity = value,
-          color:     (value) => lights.spot.color = new THREE.Color( value ),
+          toggle:    (value) => self.toggle(objects.spot, value),
+          intensity: (value) => objects.spot.intensity = value,
+          color:     (value) => objects.spot.color = new THREE.Color( value ),
         },
         Layers : {
-          'SNPP':    (value) => value ? scene.add(meshes.globe)  : scene.remove(meshes.globe),
-          'DATA':    (value) => value ? scene.add(meshes.data)   : scene.remove(meshes.data),
-          'SST':     (value) => value ? scene.add(meshes.sst)    : scene.remove(meshes.sst),
-          'SEAICE':  (value) => value ? scene.add(meshes.seaice) : scene.remove(meshes.seaice),
-          'TEST':    (value) => value ? scene.add(meshes.test)   : scene.remove(meshes.test),
+          'SNPP':    (value) => self.toggle(objects.snpp, value),
+          'DATA':    (value) => self.toggle(objects.data, value),
+          'SST':     (value) => self.toggle(objects.sst, value),
+          'SEAICE':  (value) => self.toggle(objects.seaice, value),
+          'TEST':    (value) => self.toggle(objects.test, value),
         },
         Camera: {
-          reset:     (value) => camera.position.copy(CFG.Cameras.perspective.pos),
+          reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),
         },
         DateTime: {
           choose:    (value) => console.log('Date', value),
         },
         Extras: {
-          Axes:      (value) => value ? scene.add(meshes.axes)   : scene.remove(meshes.axes),
+          Axes:      (value) => self.toggle(objects.axes, value),
+          Rotate:    (value) => ANI.insert(0, ANI.library.example), 
         },
         Simulation: {
           start:     (value) => SIM.start(),
@@ -327,16 +369,16 @@ var SCN = (function () {
       requestAnimationFrame(render);
       if (!nTime){return;}
 
-      stats.begin();
+      IFC.stats.begin();
 
       orbitControls.update();
 
       if ( IFC.mouse.down ) {
 
         IFC.raycaster.setFromCamera( IFC.mouse, camera );
-        intersections = IFC.raycaster.intersectObjects( [meshes.pointer] );
+        intersections = IFC.raycaster.intersectObjects( [objects.pointer] );
         if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
-          meshes.arrowHelper.setDirection( intersection.point.normalize() );
+          objects.arrowHelper.setDirection( intersection.point.normalize() );
           // console.log('click', TOOLS.vector3ToLatLong(intersection.point, 1));
         }
 
@@ -344,14 +386,16 @@ var SCN = (function () {
 
       if (!(frame % 4)) {
         doSimulate && SIM.step(frame, dTime);
-        doAnimate  && ANI.step(frame, dTime);
       }
 
-      if (!(frame % 4)) {
+      // always check actions
+      doAnimate  && ANI.step(frame, dTime);
+
+      if (!(frame % 1)) {
         doRender  && renderer.render(scene, camera);
       }
 
-      stats.end();
+      IFC.stats.end();
 
       time = nTime;
       frame += 1;
