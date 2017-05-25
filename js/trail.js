@@ -6,9 +6,9 @@ function Trails(name, trailsVectors, trailsColors, color) {
 
   var 
     index      = 0,
-    alphamap   = SCENE.loader.load('images/line.alpha.64.png'),
-    // alphamap   = SCENE.loader.load('images/line.alpha.32.61.png'),
-    // alphamap   = SCENE.loader.load('images/line.alpha.64.64.png'),
+    alphamap   = SCN.loader.load('images/line.alpha.64.png'),
+    // alphamap   = SCN.loader.load('images/line.alpha.32.61.png'),
+    // alphamap   = SCN.loader.load('images/line.alpha.64.64.png'),
     // convert    = function (latlon) {
     //   return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
     // },

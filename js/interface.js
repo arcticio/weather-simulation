@@ -102,7 +102,7 @@ var IFC = (function () {
     getFrame :  function(mimetype){ 
 
       var 
-        ele    = SCENE.renderer.domElement,
+        ele    = SCN.renderer.domElement,
         width  = ele.width,
         height = ele.height;
 
@@ -110,7 +110,7 @@ var IFC = (function () {
         width, 
         height,
         url: ele.toDataURL(mimetype),
-        num: SCENE.frames, 
+        num: SCN.frames, 
       }; 
 
     },

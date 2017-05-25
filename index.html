@@ -153,20 +153,20 @@
       RES.activate('.panel.info');
 
       IFC.init();
-      SCENE.init();
+      SCN.init();
       ANI.init();
 
       IFC.activate(); 
-      SCENE.activate();
+      SCN.activate();
       ANI.activate();
 
       SIM.init();
       SIM.activate();
-      SCENE.render();
+      SCN.render();
 
       TIM.step('WIN.load.out');
 
-      setTimeout(SCENE.logInfo, 1000);
+      setTimeout(SCN.logInfo, 1000);
 
     }
 

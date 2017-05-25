@@ -22,7 +22,7 @@ H.each(CFG['gui.dat'], (folder, options) => {
 
     } else {
       gui.add(defs, folder, options).onChange(function (value) {
-        SCENE.actions(folder, 'toggle', value);
+        SCN.actions(folder, 'toggle', value);
       });
 
   }
@@ -46,7 +46,7 @@ H.each(CFG['gui.dat'], (folder, options) => {
 
     H.each(options, (option, value) => {
 
-      fn = SCENE.actions.bind(null, folder, option);
+      fn = SCN.actions.bind(null, folder, option);
 
       if (value.val && value.choose) {
         guiFolders[folder].add(defs, option, value.choose).onChange(fn);

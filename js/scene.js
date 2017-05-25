@@ -5,7 +5,7 @@
 const TRAIL_LEN = 60;
 const TRAIL_NUM = 40;
 
-var SCENE = (function () {
+var SCN = (function () {
 
   var 
     self,

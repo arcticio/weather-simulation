@@ -62,10 +62,10 @@ var ANI = (function () {
 
         // graphs => https://5013.es/toys/tween.audio/
 
-        if (SCENE.meshes.data){
+        if (SCN.meshes.data){
 
-          var current = {y: SCENE.meshes.data.rotation.y};
-          var target  = {y: SCENE.meshes.data.rotation.y + 2 * Math.PI};
+          var current = {y: SCN.meshes.data.rotation.y};
+          var target  = {y: SCN.meshes.data.rotation.y + 2 * Math.PI};
 
           var tween = new TWEEN
             .Tween(current)
@@ -77,7 +77,7 @@ var ANI = (function () {
               TIM.step('TWEEN.start', d)
             })
             .onUpdate(function(d){
-              SCENE.meshes.data.rotation.y = current.y;
+              SCN.meshes.data.rotation.y = current.y;
             })
             .onComplete(function(d){
               TIM.step('TWEEN.done', d)

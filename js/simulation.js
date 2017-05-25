@@ -67,7 +67,7 @@ var SIM = (function () {
 
       trailsWind = new Trails('wind10m', trailsVectors, trailsColors, color);
       
-      SCENE.add('wind10m', trailsWind.container);
+      SCN.add('wind10m', trailsWind.container);
       
     },
     loadBetterWind: function () {
@@ -133,7 +133,7 @@ var SIM = (function () {
 
       trailsBetterWind = new Trails('nicewind10m', trailsVectors, trailsColors, color);
       
-      SCENE.add('nicewind10m', trailsBetterWind.container);
+      SCN.add('nicewind10m', trailsBetterWind.container);
 
       TIM.step('Wind.created');
 
@@ -156,8 +156,8 @@ var SIM = (function () {
         interval = setInterval(function () {
           if (requests === 0){
             clearInterval(interval);
-            SCENE.meshes.test.material.map = new THREE.CanvasTexture(model['tmp2m'].toCanvas());
-            SCENE.meshes.test.material.needsUpdate = true;
+            SCN.meshes.test.material.map = new THREE.CanvasTexture(model['tmp2m'].toCanvas());
+            SCN.meshes.test.material.needsUpdate = true;
             callback();
           }
         }, 100);

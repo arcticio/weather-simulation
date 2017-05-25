@@ -387,7 +387,7 @@ SIM.Datagram.prototype = {
 
         // blit to monitor and scaled
 
-        SCENE.monitor.drawImage(cvsImage, 0, 0, width, height, 0, 0, SCENE.monitor.canvas.width, SCENE.monitor.canvas.height);
+        SCN.monitor.drawImage(cvsImage, 0, 0, width, height, 0, 0, SCN.monitor.canvas.width, SCN.monitor.canvas.height);
         ctxScale.drawImage(cvsImage, 0, 0, width, height, 0, 0, 256, 256);
 
         return cvsScale;
