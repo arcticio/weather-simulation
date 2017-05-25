@@ -10,6 +10,7 @@ var SCENE = (function () {
   var 
     self,
     frame         = 0,
+    time          = 0,
     loader        = new THREE.TextureLoader(),
 
     $  = document.getElementById.bind(document),
@@ -26,6 +27,7 @@ var SCENE = (function () {
 
     doRender      = true,
     doAnimate     = true,
+    doSimulate    = true,
 
     meshes        = {},
     lights        = {},
@@ -260,12 +262,9 @@ var SCENE = (function () {
       // console.log("GUI.change", {action, folder, option, value});
 
       var config = {
-        Render:  {
-          toggle:    (value) => doRender = value,
-        },
-        Animate:  {
-          toggle:    (value) => doAnimate = value,
-        },
+        Render:   { toggle: (value) => doRender   = value },
+        Animate:  { toggle: (value) => doAnimate  = value },
+        Simulate: { toggle: (value) => doSimulate = value },
         Ambient: {
           toggle:    (value) => value ? scene.add(lights.ambient) : scene.remove(lights.ambient),
           intensity: (value) => lights.ambient.intensity = value,
@@ -318,16 +317,19 @@ var SCENE = (function () {
       }, null, 2));
 
     },
-    render: function render () {
+    render: function render (nTime) {
 
-      var v3, intersection, intersections, idx = (frame + TRAIL_LEN) % 360;
+      var v3, 
+        intersection, intersections, 
+        idx = (frame + TRAIL_LEN) % 360,
+        dTime = nTime - time;
 
       requestAnimationFrame(render);
+      if (!nTime){return;}
 
       stats.begin();
 
       orbitControls.update();
-      doAnimate && ANI.animate(frame, NaN);
 
       if ( IFC.mouse.down ) {
 
@@ -341,7 +343,8 @@ var SCENE = (function () {
       }
 
       if (!(frame % 4)) {
-        doAnimate && SIM.step(frame);
+        doSimulate && SIM.step(frame, dTime);
+        doAnimate  && ANI.step(frame, dTime);
       }
 
       if (!(frame % 4)) {
@@ -350,6 +353,7 @@ var SCENE = (function () {
 
       stats.end();
 
+      time = nTime;
       frame += 1;
 
     }

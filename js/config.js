@@ -150,6 +150,7 @@ var CFG = {
     Loading: 0,
     Render: true,
     Animate: true,
+    Simulate: true,
     Reload: () => location.reload(),
     Camera: {
       isFolder: true,

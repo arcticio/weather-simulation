@@ -251,11 +251,6 @@
 
   };
 
-  // uniforms: a list of variables that are shared by both the vertex and the fragment shader.
-
-  // http://stackoverflow.com/questions/21532197/shift-texture-on-sphere-three-js
-
-
   function MeshLineMaterial( parameters ) {
 
     var vertexShaderSource = [
