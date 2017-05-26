@@ -40,6 +40,8 @@ var SCN = (function () {
 
     arrowHelper,
 
+    home = new THREE.Vector3(0, 0, 0),
+
     galaxy,
     surface,
     overlay,
@@ -50,6 +52,7 @@ var SCN = (function () {
   return {
     
     expi,
+    home,
     scene,
     camera,
     monitor,
@@ -244,6 +247,7 @@ var SCN = (function () {
         Extras: {
           Axes:      (value) => self.toggle(objects.axes, value),
           Rotate:    (value) => ANI.insert(0, ANI.library.example), 
+          // Rotate:    (value) => ANI.insert(0, ANI.library.cam2latlon(51, 7, 2)), 
         },
         Simulation: {
           start:     (value) => SIM.start(),
@@ -279,36 +283,28 @@ var SCN = (function () {
         dTime = nTime - time;
 
       requestAnimationFrame(render);
+
+      // drop first call, need dTime
       if (!nTime){return;}
 
       IFC.stats.begin();
 
-      orbitControls.update();
-      
-      if ( IFC.mouse.down ) {
+        TWEEN.update();
+        orbitControls.update();
 
-        IFC.raycaster.setFromCamera( IFC.mouse, camera );
-        intersections = IFC.raycaster.intersectObjects( [objects.pointer] );
-        if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
-          posArrow = intersection.point.normalize();
-          objects.arrowHelper.setDirection( posArrow );
+        // GUI info
+        posArrow && IFC.setLatLon(camera.position, posArrow);
+
+        if (!(frame % 4)) {
+          doSimulate && SIM.step(frame, dTime);
         }
 
-      }
+        // always check actions
+        doAnimate  && ANI.step(frame, dTime);
 
-      // GUI info
-      posArrow && IFC.setLatLon(camera.position, posArrow);
-
-      if (!(frame % 4)) {
-        doSimulate && SIM.step(frame, dTime);
-      }
-
-      // always check actions
-      doAnimate  && ANI.step(frame, dTime);
-
-      if (!(frame % 1)) {
-        doRender  && renderer.render(scene, camera);
-      }
+        if (!(frame % 1)) {
+          doRender  && renderer.render(scene, camera);
+        }
 
       IFC.stats.end();
 

@@ -14,7 +14,13 @@ var IFC = (function () {
     fullscreen, // div full
     latlon,     // info panel
 
-    mouse = {x: NaN, y: NaN, down: false},
+    mouse = {
+      x: NaN, 
+      y: NaN, 
+      down: false, 
+      button: NaN,
+      intersect: new THREE.Vector3(0, 0, 0),
+    },
 
     raycaster = new THREE.Raycaster(),
 
@@ -118,12 +124,23 @@ var IFC = (function () {
       mousedown:   function (event) { 
 
         mouse.down = true;
+        mouse.button = event.button;
         // console.log('mousedown', event.button, event);
+
+        if (mouse.button === 0) {
+          SCN.objects.arrowHelper.setDirection( mouse.intersect );
+        }
+
+        if (mouse.button === 2) {
+          ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2))
+        }
+
 
       },
       mouseup:     function (event) { 
 
         mouse.down = false;
+        mouse.button = NaN;
 
       },
       mousemove:   function (event) { 
@@ -131,6 +148,8 @@ var IFC = (function () {
         // TODO: not window
         mouse.x =   ( event.clientX / window.innerWidth )  * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+        self.updateMouse();
 
       },
       mouseenter:  function (event) { /* console.log('mouseenter') */ },
@@ -142,6 +161,18 @@ var IFC = (function () {
       devicemotion:      function (event) { /* console.log('devicemotion', event)      */ },
       orientationchange: function (event) { console.log('orientationchange', event)       },
       deviceorientation: function (event) { /* console.log('deviceorientation', event) */ },
+
+    },
+    updateMouse: function () {
+
+      var intersections, intersection;
+
+      raycaster.setFromCamera( mouse, SCN.camera );
+      intersections = raycaster.intersectObjects( [SCN.objects.pointer] );
+
+      if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
+        mouse.intersect.copy(intersection.point.normalize());
+      }
 
     },
     resize: function () {

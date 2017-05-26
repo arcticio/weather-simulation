@@ -68,7 +68,7 @@ tasks = [
 ]
 
 task = """
-  gdalwarp -overwrite -wo SAMPLE_GRID=YES  -wo SOURCE_EXTRA=%d -ts %d %d  
+  gdalwarp -q -overwrite -et 0.8 -wo SAMPLE_GRID=YES  -wo SOURCE_EXTRA=%d -ts %d %d  
     -t_srs "+proj=gnom  +lon_0=%d  +lat_0=%s  +datum=WGS84 +units=degrees"   
     -te -6378137 -6378137 6378137 6378137                                    
     %s  polar.amsr2.%s.%d.tif     
@@ -78,7 +78,7 @@ for (face, lon, lat, extra, epsg) in tasks :
 
   xmlFile = writeXML (face, lon, lat, extra, epsg)
   cmd = task % (extra, size, size, lon, lat, xmlFile, face, size)
-  cmds.append("echo %s" % face)
+  cmds.append("echo -n %s" % face)
   cmds.append(cmd)
 
 

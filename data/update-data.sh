@@ -1,26 +1,45 @@
 #!/bin/bash
 
 #### https://linux.die.net/man/1/date
+#### https://unix.stackexchange.com/questions/49053/linux-add-x-days-to-date-and-get-new-virtual-date
+#### https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
+#### http://www.fmwconcepts.com/imagemagick/index.php
 
-DATE=`date -u +%Y-%m-%d`
-DOE=`date -u +%Y-%j`
+### convert 2017-05-23.polar.amsr2.top.1024.png -grayscale rec601luma top.grey.png
 
-BEFORE=`date -d "yesterday 12:00" '+%Y-%m-%d'`
-BEFOREDOE=`date -d "yesterday 12:00" '+%Y-%j'`
+DATEPAR="$@"
+DATENOW=`date -u +%Y-%m-%d`
+DOENOW=` date -u +%Y-%j`
 
+## Keep this
+YESTER=`date "+%y-%m-%d" -d "$DATE-1days"`
+
+if [[ -z "${DATEPAR// }" ]]; then
+  DATE=`date -d "yesterday 12:00" '+%Y-%m-%d'`
+  DATESST=`date "+%y-%m-%d" -d "$DATE-1days"`
+
+else 
+  DATE=$DATEPAR
+  DATESST=$DATE
+
+fi
+q
 TASKS="dods seaice sst snpp"
-TASKS="snpp"
+# TASKS="dods seaice snpp"
+# TASKS="sst"
 
-echo Dates: "${DATE} - ${BEFORE}"
-echo Does: " ${DOE}   - ${BEFOREDOE}"
+echo
+echo "Now: ${DATENOW} Param: ${DATEPAR} Using: ${DATE} SST: ${DATESST} Tasks: ${TASKS}"
+echo
+gdalwarp --version
 
+## nice options --debug 
 
+# exit
 
 ####### GLOBE, SNPP
 
 if [[ "$TASKS" =~ "snpp" ]]; then
-
-  DATE=`date -d "yesterday 12:00" '+%Y-%m-%d'`
   echo 
   echo "snpp cube for ${DATE}"  
   python snpp.py $DATE
@@ -32,8 +51,6 @@ fi
 ####### SEAICE, AMSR2
 
 if [[ "$TASKS" =~ "seaice" ]]; then
-
-  DATE=`date -d "yesterday 12:00" '+%Y-%m-%d'`
   echo 
   echo "amsr2 cube for ${DATE}"
   python seaice.py $DATE
@@ -44,13 +61,10 @@ fi
 ####### GLOBE SST
 
 if [[ "$TASKS" =~ "sst" ]]; then
-
-  # DATE=`date -d "yesterday 12:00" '+%Y-%m-%d'`
-  DATE=`date -d "2 days ago" '+%Y-%m-%d'`
   echo 
-  echo "sst cube for ${DATE}"
-  python sst.py $DATE
-  touch "sst/$DATE.txt"
+  echo "sst cube for ${DATESST}"
+  python sst.py $DATESST
+  touch "sst/$DATESST.txt"
 
 fi
 
