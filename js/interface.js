@@ -12,6 +12,7 @@ var IFC = (function () {
 
     simulator,  // 3D canvas
     fullscreen, // div full
+    latlon,     // info panel
 
     mouse = {x: NaN, y: NaN, down: false},
 
@@ -20,6 +21,28 @@ var IFC = (function () {
     stats,
 
     end;
+
+  function vector3ToLatLong (v3) {
+
+    var v = v3.clone().normalize();
+    var lon = ((270 + (Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360);
+
+    lon = lon > 180 ? -(360 - lon) : lon;
+
+    return {
+      lat: 90 - (Math.acos(v.y))  * 180 / Math.PI,
+      lon: lon,
+    };
+
+  }
+
+  function formatLatLon (prefix, ll) {
+    
+    ll.lat = ll.lat < 0 ? 'S ' + Math.abs(ll.lat).toFixed(0) : 'N ' + Math.abs(ll.lat).toFixed(0);
+    ll.lon = ll.lon < 0 ? 'E ' + Math.abs(ll.lon).toFixed(0) : 'W ' + Math.abs(ll.lon).toFixed(0);
+
+    return `<strong>${prefix}</strong> ${ ll.lat }, ${ ll.lon }`;
+  }
 
 
   return {
@@ -35,6 +58,7 @@ var IFC = (function () {
 
       simulator  = $$('.simulator')[0];
       fullscreen = $$('.fullscreen')[0];
+      latlon     = $$('.panel.latlon')[0];
 
       var datgui = $$('div.dg.ac')[0];
       // datgui.style.position = 'relative';
@@ -121,6 +145,12 @@ var IFC = (function () {
 
     },
     resize: function () {
+    },
+    setLatLon: function (posCam, posArrow) {
+      latlon.innerHTML = (
+        formatLatLon('C', vector3ToLatLong(posCam)) + '<br>' + 
+        formatLatLon('P', vector3ToLatLong(posArrow))
+      );
     },
 
     takeScreenShot: function(){

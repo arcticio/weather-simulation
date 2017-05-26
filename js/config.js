@@ -66,6 +66,7 @@ var CFG = {
     },
 
     arrowHelper: {
+      // latlon-pointer
       visible: true,
       type: 'mesh',
       mesh: new THREE.ArrowHelper( 
@@ -107,19 +108,10 @@ var CFG = {
       ),
     },
 
-    snpp: {
+    data: {
       visible: true,
       type: 'cube.textured',
-      cube: {
-        type: 'globe',
-        radius: RADIUS - 0.002,
-        texture: 'data/snpp/2017-05-23.globe.snpp.FACE.2048.jpg', 
-      }
-    },
-
-    data: {
-      visible: false,
-      type: 'cube.textured',
+      rotation: [0, Math.PI / 2, 0],
       cube: {
         type: 'globe',
         radius: RADIUS, 
@@ -128,9 +120,21 @@ var CFG = {
       }
     },
 
+    snpp: {
+      visible: false,
+      type: 'cube.textured',
+      rotation: [0, Math.PI / 2, 0],
+      cube: {
+        type: 'globe',
+        radius: RADIUS - 0.002,
+        texture: 'data/snpp/2017-05-23.globe.snpp.FACE.2048.jpg', 
+      }
+    },
+
     sst: {
       visible: false,
       type: 'cube.textured',
+      rotation: [0, Math.PI / 2, 0],
       cube: {
         type: 'globe',
         radius: RADIUS + 0.001, 
@@ -141,6 +145,7 @@ var CFG = {
     seaice: {
       visible: false,
       type: 'cube.textured',
+      rotation: [0, Math.PI / 2, 0],
       cube: {
         type: 'polar',
         radius: RADIUS + 0.002, 
@@ -149,7 +154,7 @@ var CFG = {
     },
 
     wind: {
-      visible: false,
+      visible: true,
       type: 'simulation',
       sim: {
         data: [
@@ -250,6 +255,7 @@ var CFG = {
       'DATA':   true,
       'SST':    true,
       'SEAICE': true,
+      'WIND':   true,
       'TEST':   true,
     },
     DateTime : {
@@ -271,24 +277,3 @@ var CFG = {
 
 };
 
-/*
-
-SpotLight( color, intensity, distance, angle, penumbra, decay )
-
-  color - (optional) hexadecimal color of the light. Default is 0xffffff (white).
-  intensity - (optional) numeric value of the light's strength/intensity. Default is 1.
-
-  distance - Maximum distance from origin where light will shine whose intensity is attenuated linearly based on distance from origin.
-  angle - Maximum angle of light dispersion from its direction whose upper bound is Math.PI/2.
-  penumbra - Percent of the spotlight cone that is attenuated due to penumbra. Takes values between zero and 1. Default is zero.
-  decay - The amount the light dims along the distance of the light.
-
-
-AmbientLight( color, intensity )
-
-  color — Numeric value of the RGB component of the color.
-  intensity -- Numeric value of the light's strength/intensity.
-
-
-
-*/

@@ -27,6 +27,22 @@ var SIM = (function () {
     boot: function () {
       return self = this;
     },
+    init: function () {
+
+      // self.loadModel(self.loadBetterWind);
+
+      
+    },
+    load: function (name, config, callback) {
+
+      TIM.step('SIM.load.in');
+
+      var mesh = self.createWind();
+      callback(name, mesh);
+
+      TIM.step('SIM.load.out');
+
+    },
     createWind: function () {
 
       var i, j, lat, lon, col,
@@ -67,7 +83,7 @@ var SIM = (function () {
 
       trailsWind = new Trails('wind10m', trailsVectors, trailsColors, color);
       
-      SCN.add('wind10m', trailsWind.container);
+      return trailsWind.container;
       
     },
     loadBetterWind: function () {
@@ -139,20 +155,6 @@ var SIM = (function () {
 
       TIM.step('Wind.created');
 
-    },
-    init: function () {
-
-      TIM.step('SIM.init.in');
-
-      self.loadModel(self.loadBetterWind);
-      self.createWind();
-
-      TIM.step('SIM.init.out');
-      
-    },
-    load: function (name, config, callback) {
-      console.log('SIM.load', name, config);
-      // callback();
     },
     loadModel: function (callback) {
 

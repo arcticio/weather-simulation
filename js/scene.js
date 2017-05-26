@@ -1,7 +1,5 @@
 'use strict';
 
-// https://github.com/qkevinto/planetarium/blob/master/app/js/app.js
-
 const TRAIL_LEN = 60;
 const TRAIL_NUM = 40;
 
@@ -30,6 +28,8 @@ var SCN = (function () {
     doRender      = true,
     doAnimate     = true,
     doSimulate    = true,
+
+    posArrow,
 
     objects        = {},
 
@@ -111,6 +111,7 @@ var SCN = (function () {
       'camera': (name, cfg) => {
 
       },
+
     },
     init: function () {
 
@@ -145,59 +146,7 @@ var SCN = (function () {
           objects[name] = config;
         }
 
-        // switch (config.type){
-
-        //   case 'mesh.textured':
-        //     RES.load({type: 'texture', urls: [config.texture], onFinish: (err, responses) => {
-        //       config.mesh.material.map = responses[0].data;
-        //       self.add(name, config.mesh);
-        //       config.mesh.visible = config.visible;
-        //     }});
-        //   break;
-
-        //   case 'mesh':
-        //     self.add(name, config.mesh);
-        //     config.mesh.visible = config.visible;
-        //   break;
-
-        //   case 'light':
-        //     config.light = config.light(config);
-        //     config.pos && config.light.position.copy( config.pos ); 
-        //     config.light.visible = config.visible;
-        //     self.add(name, config.light);
-        //   break;
-
-        //   case 'globe':
-        //     if (config.visible && config.cube){
-        //       // self.loadCube(name, config, self.add);
-        //     }
-        //   break;
-
-        //   case 'overlay':
-        //     if (config.visible && config.cube){
-        //       // self.loadCube(name, config, self.add);
-        //     }
-        //   break;
-
-        //   case 'simulation':
-        //     if (config.visible){
-        //       SIM.load(name, config, self.add);
-        //     }
-        //   break;
-
-        // }
-
-
       });
-
-
-    },
-    showGlobe: function (name, radius, template, type) {
-
-      if (objects[name]){
-
-
-      }
 
     },
     loadCube: function (name, cfg, callback) {
@@ -217,14 +166,16 @@ var SCN = (function () {
 
         });
 
+      // H.each(geometry.vertices, (_, vertex) => vertex.normalize().multiplyScalar(cfg.cube.radius));
+
+      for (idx in geometry.vertices) {
+        vertex = geometry.vertices[idx];
+        vertex.normalize().multiplyScalar(cfg.cube.radius);
+      }
+
+      geometry.computeVertexNormals();
+
       RES.load({urls, type: 'texture', onFinish: function (err, responses) {
-
-        for (idx in geometry.vertices) {
-          vertex = geometry.vertices[idx];
-          vertex.normalize().multiplyScalar(cfg.cube.radius);
-        }
-
-        geometry.computeVertexNormals();
 
         materials = responses.map(response => {
 
@@ -240,51 +191,11 @@ var SCN = (function () {
 
         mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
 
+        cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
+
         callback(name, mesh);
 
       }});
-
-      // cubemap = CFG.Faces.map( face => {
-
-      //   if (type === 'globe') {
-      //     texture = H.replace(template, 'FACE', face);
-
-      //   } else if (type === 'data') {
-      //     texture = H.replace(template, 'FACE', face);
-      //     bumpmap = H.replace(bumpTemplate, 'FACE', face);
-
-      //   } else if (type === 'polar') {
-      //     texture = (face === 'top' || face === 'bottom') ? 
-      //       H.replace(template, 'FACE', face) : 
-      //       'images/transparent.face.512.png';
-      //   }
-
-      //   material = { 
-
-      //     map:         loader.load( texture ),
-      //     transparent: true, 
-      //     opacity:     1.0, 
-      //     side:        THREE.FrontSide,
-      //     shininess:   2,
-
-      //     // wireframe:   false,
-      //     // lights:      false,
-
-      //   };
-
-      //   if (bumpmap) {
-      //     material.bumpMap   = loader.load( bumpmap );
-      //     material.bumpScale = 0.04;
-      //   }
-
-      //   return new THREE.MeshPhongMaterial( material );
-
-      // });
-
-      // mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( cubemap ) );
-      // mesh.name = name;
-      
-      // return mesh;
 
     },
     resize: function () {
@@ -322,6 +233,7 @@ var SCN = (function () {
           'SST':     (value) => self.toggle(objects.sst, value),
           'SEAICE':  (value) => self.toggle(objects.seaice, value),
           'TEST':    (value) => self.toggle(objects.test, value),
+          'WIND':    (value) => self.toggle(objects.wind, value),
         },
         Camera: {
           reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),
@@ -372,17 +284,20 @@ var SCN = (function () {
       IFC.stats.begin();
 
       orbitControls.update();
-
+      
       if ( IFC.mouse.down ) {
 
         IFC.raycaster.setFromCamera( IFC.mouse, camera );
         intersections = IFC.raycaster.intersectObjects( [objects.pointer] );
         if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
-          objects.arrowHelper.setDirection( intersection.point.normalize() );
-          // console.log('click', TOOLS.vector3ToLatLong(intersection.point, 1));
+          posArrow = intersection.point.normalize();
+          objects.arrowHelper.setDirection( posArrow );
         }
 
       }
+
+      // GUI info
+      posArrow && IFC.setLatLon(camera.position, posArrow);
 
       if (!(frame % 4)) {
         doSimulate && SIM.step(frame, dTime);
@@ -417,36 +332,6 @@ surface.computeLineDistances();
 surface.computeMorphNormals();
 surface.computeFlatVertexNormals();
 
-var surface = new THREE.BoxGeometry(1, 1, 1, 16, 16, 16);
-
-for (idx in surface.vertices) {
-  vertex = surface.vertices[idx];
-  vertex.normalize().multiplyScalar(RADIUS);
-}
-
-surface.computeVertexNormals();
-
-var cubemap = ['right', 'left', 'top', 'bottom', 'front', 'back'].map( face => {
-
-  // var filename = 'images/snpp/earth.right.snpp.2048.jpg';
-  // var filename = 'images/mask/earth.' + face + '.2048.jpg';
-  var surface = 'images/mask/earth.' + face + '.2048.jpg';
-  var bumpmap = 'images/topo/earth.' + face + '.topo.2048.jpg';
-
-  var surface = 'images/snpp/globe.snpp.' + face + '.2048.jpg';
-
-  return new THREE.MeshPhongMaterial( { 
-    map:      loader.load( surface ),
-    // transparent:true, 
-    // opacity:0.2, 
-    side: THREE.FrontSide,
-    // wireframe: true,
-    // bumpMap:  loader.load( bumpmap ),
-    // bumpScale: 0.08,
-    // shininess: 2,
-  });
-
-});
 
 
 */

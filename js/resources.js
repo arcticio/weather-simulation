@@ -48,7 +48,8 @@ var RES = (function () {
     if (what !== undefined && value !== undefined){
       stats[what] += Number(value);
     }
-    div.innerHTML += format();
+    // div.innerHTML += format();
+    div.innerHTML = `Req: ${stats.requests} Per: ${stats.percent}`;
 
     div.style.backgroundSize = ~~stats.percent + '%';
 
