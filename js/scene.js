@@ -214,55 +214,64 @@ var SCN = (function () {
 
       // console.log("GUI.change", {action, folder, option, value});
 
-      var config = {
-        Render:   { toggle: (value) => doRender   = value },
-        Animate:  { toggle: (value) => doAnimate  = value },
-        Simulate: { toggle: (value) => doSimulate = value },
-        Ambient: {
-          toggle:    (value) => self.toggle(objects.ambient, value),
-          intensity: (value) => objects.ambient.intensity = value,
-          color:     (value) => objects.ambient.color = new THREE.Color( value ),
+      var
+        ignore = () => {},
+        config = {
+          Loading:  { update: ignore},
+          Render:   { toggle: (value) => doRender   = value },
+          Animate:  { toggle: (value) => doAnimate  = value },
+          Simulate: { toggle: (value) => doSimulate = value },
+          Ambient: {
+            toggle:    (value) => self.toggle(objects.ambient, value),
+            intensity: (value) => objects.ambient.intensity = value,
+            color:     (value) => objects.ambient.color = new THREE.Color( value ),
+          },
+          Spot: {
+            toggle:    (value) => self.toggle(objects.spot, value),
+            intensity: (value) => objects.spot.intensity = value,
+            color:     (value) => objects.spot.color = new THREE.Color( value ),
+          },
+          Sun: {
+            toggle:    (value) => self.toggle(objects.sun, value),
+            intensity: (value) => objects.sun.intensity = value,
+            skycolor:  (value) => {objects.sun.color = new THREE.Color( value ); console.log(value)},
+            grdcolor:  (value) => objects.sun.groundColor = new THREE.Color( value ),
+          },
+          Layers : {
+            'SNPP':    (value) => self.toggle(objects.snpp, value),
+            'DATA':    (value) => self.toggle(objects.data, value),
+            'SST':     (value) => self.toggle(objects.sst, value),
+            'SEAICE':  (value) => self.toggle(objects.seaice, value),
+            'TEST':    (value) => self.toggle(objects.test, value),
+            'WIND':    (value) => self.toggle(objects.wind, value),
+          },
+          Camera: {
+            reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),
+          },
+          DateTime: {
+            display:   ignore,
+            choose:    (value) => console.log('Date', value),
+          },
+          Extras: {
+            Axes:      (value) => self.toggle(objects.axes, value),
+            Rotate:    (value) => ANI.insert(0, ANI.library.example), 
+            // Rotate:    (value) => ANI.insert(0, ANI.library.cam2latlon(51, 7, 2)), 
+          },
+          Simulation: {
+            start:     (value) => SIM.start(),
+            stop:      (value) => SIM.stop(),
+            pause:     (value) => SIM.pause(),
+          }
         },
-        Spot: {
-          toggle:    (value) => self.toggle(objects.spot, value),
-          intensity: (value) => objects.spot.intensity = value,
-          color:     (value) => objects.spot.color = new THREE.Color( value ),
-        },
-        Sun: {
-          toggle:    (value) => self.toggle(objects.sun, value),
-          intensity: (value) => objects.sun.intensity = value,
-          skycolor:  (value) => {objects.sun.color = new THREE.Color( value ); console.log(value)},
-          grdcolor:  (value) => objects.sun.groundColor = new THREE.Color( value ),
-        },
-        Layers : {
-          'SNPP':    (value) => self.toggle(objects.snpp, value),
-          'DATA':    (value) => self.toggle(objects.data, value),
-          'SST':     (value) => self.toggle(objects.sst, value),
-          'SEAICE':  (value) => self.toggle(objects.seaice, value),
-          'TEST':    (value) => self.toggle(objects.test, value),
-          'WIND':    (value) => self.toggle(objects.wind, value),
-        },
-        Camera: {
-          reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),
-        },
-        DateTime: {
-          choose:    (value) => console.log('Date', value),
-        },
-        Extras: {
-          Axes:      (value) => self.toggle(objects.axes, value),
-          Rotate:    (value) => ANI.insert(0, ANI.library.example), 
-          // Rotate:    (value) => ANI.insert(0, ANI.library.cam2latlon(51, 7, 2)), 
-        },
-        Simulation: {
-          start:     (value) => SIM.start(),
-          stop:      (value) => SIM.stop(),
-          pause:     (value) => SIM.pause(),
-        }
-      }
+      end;
 
       try {
-        config[folder][option](value);
-      } catch (e) {console.log("NOT DEFINED", folder, option, value, e)} 
+        if ( config[folder] && config[folder][option] ) {
+          config[folder][option](value);
+        } else {
+          console.log('SCN.actions.ignored', folder, option, value);
+        }
+      } catch (e) {console.log("SCN.actions.error", folder, option, value, e)} 
 
     },
     logInfo: function render () {

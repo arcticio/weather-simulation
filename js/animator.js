@@ -153,7 +153,8 @@ var ANI = (function () {
         // distance = Math.abs( width / Math.sin( fov / 2 ) ) - RADIUS;      // 50 % height
         // distance = Math.abs( width / Math.sin( fov / 2 ) ) ;              // ~~ 30% height
         // distance = Math.abs( width / 2 / Math.sin( fov / 2 ) ) ;          // 100% height
-        distance = Math.abs( width / 2 / Math.sin( fov / 2 ) ) - RADIUS;  // 45% height
+        // distance = Math.abs( width / 2 / Math.sin( fov / 2 ) ) - RADIUS;  // 45% height
+        distance = Math.abs( width / 2 / Math.sin( fov / 2 ) );  // 45% height
 
         var 
           spherical,

@@ -12,6 +12,7 @@ var IFC = (function () {
 
     orbitControls, 
 
+    controllers = GUIcontrollers,
 
     simulator,  // 3D canvas
     fullscreen, // div full
@@ -60,6 +61,7 @@ var IFC = (function () {
     stats,
     mouse,
     raycaster,
+    controllers,
     orbitControls,
 
     boot: function () {
@@ -72,8 +74,6 @@ var IFC = (function () {
       latlon     = $$('.panel.latlon')[0];
 
       var datgui = $$('div.dg.ac')[0];
-      // datgui.style.position = 'relative';
-      // datgui.style.top = '0px';
 
       var stats = new Stats();
       self.stats = stats;
@@ -93,6 +93,12 @@ var IFC = (function () {
         orbitControls.constraint.smoothZoomSpeed = 2.0;
         orbitControls.constraint.minDistance = RADIUS + 0.1;
         orbitControls.constraint.maxDistance = 8;
+
+      // move gui.dat to fullscreen container
+      fullscreen.appendChild(datgui);
+
+      // poc
+      // controllers['Ambient']['intensity'].setValue(1.0);
 
     },
     activate: function () {
@@ -136,7 +142,7 @@ var IFC = (function () {
     events: {
       click:   function (event) { 
 
-        gui.closed = true;
+        GUI.closed = true;
         // console.log('click')
 
       },      

@@ -1,87 +1,107 @@
 
-// dat.gui
-var 
-  gui = new dat.GUI({
-    // parent: document.querySelectorAll('div.fullscreen')[0]
-  }),
-  guiFolders = {};
+(function () {
 
-  // gui.closed = true;
+  // dat.gui
+  var 
+    gui = new dat.GUI({
+      // parent: document.querySelectorAll('div.fullscreen')[0]
+    }),
 
-// dat.GUI.toggleHide(); // total hide
+    guiFolders = {},
 
-H.each(CFG['gui.dat'], (folder, options) => {
+    controllers = {
 
-  var defs = {}, fn;
+    };
 
-  // root params
-  if (!options.isFolder) {
+    // gui.closed = true;
 
-    defs[folder] = options;
+  // dat.GUI.toggleHide(); // total hide
 
-    if (typeof options === 'function'){
-      gui.add(defs, folder).onChange(options);
+  H.each(CFG['gui.dat'], (folder, options) => {
 
-    } else {
-      gui.add(defs, folder, options).onChange(function (value) {
-        SCN.actions(folder, 'toggle', value);
-      });
+    var defs = {}, fn;
 
-  }
+    // root params
+    if (!options.isFolder) {
 
+      defs[folder] = options;
 
-  } else {
+      if (typeof options === 'function'){
+        controllers[folder] = gui.add(defs, folder).onChange(options);
 
-    delete options.isFolder;
-
-    // prep folders
-    H.each(options, (option, value) => {
-      if (option !== 'isFolder'){
-        defs[option] = value.val ? value.val : value;
-      }
-
-    });
-
-    guiFolders[folder] = gui.addFolder(folder);
-
-    // prep actions
-
-    H.each(options, (option, value) => {
-
-      fn = SCN.actions.bind(null, folder, option);
-
-      if (value.val && value.choose) {
-        guiFolders[folder].add(defs, option, value.choose).onChange(fn);
-      
-      } else if (value.val) {
-
-        if (value.step) {
-          guiFolders[folder].add(defs, option, value.min, value.max).step(value.step).onChange(fn);
-
-        } else {
-          guiFolders[folder].add(defs, option, value.min, value.max).onChange(fn);
-
-        }
+      } else if (typeof options === 'string') {
+        controllers[folder] = gui.add(defs, folder, options).onChange(function (value) {
+          SCN.actions(folder, 'update', value);
+        });
 
       } else {
-
-        if (H.endsWith(option, 'color')) {
-          guiFolders[folder].addColor(defs, option, value).onChange(fn);
-
-        } else if (typeof value === 'function') {
-          guiFolders[folder].add(defs, option).onChange(fn);
-
-        } else {
-          guiFolders[folder].add(defs, option, value).onChange(fn);
-
-        }
+        controllers[folder] = gui.add(defs, folder, options).onChange(function (value) {
+          SCN.actions(folder, 'toggle', value);
+        });
 
       }
 
-    });
 
-  }
+    } else {
 
-});
+      delete options.isFolder;
 
+      // prep folders
+      H.each(options, (option, value) => {
+        if (option !== 'isFolder'){
+          defs[option] = value.val ? value.val : value;
+        }
 
+      });
+
+      guiFolders[folder] = gui.addFolder(folder);
+      controllers[folder] = {};
+
+      // prep actions
+
+      H.each(options, (option, value) => {
+
+        fn = SCN.actions.bind(null, folder, option);
+
+        if (value.val && value.choose) {
+          controllers[folder][option] = guiFolders[folder].add(defs, option, value.choose).onChange(fn);
+        
+        } else if (value.val) {
+
+          if (value.step) {
+            controllers[folder][option] = guiFolders[folder].add(defs, option, value.min, value.max).step(value.step).onChange(fn);
+
+          } else {
+            controllers[folder][option] = guiFolders[folder].add(defs, option, value.min, value.max).onChange(fn);
+
+          }
+
+        } else {
+
+          if (H.endsWith(option, 'color')) {
+            controllers[folder][option] = guiFolders[folder].addColor(defs, option, value).onChange(fn);
+
+          } else if (typeof value === 'function') {
+            controllers[folder][option] = guiFolders[folder].add(defs, option).onChange(fn);
+
+          } else {
+            controllers[folder][option] = guiFolders[folder].add(defs, option, value).onChange(fn);
+
+          }
+
+        }
+
+      });
+
+    }
+
+  });
+
+  // this is rubbish
+  window.GUIcontrollers = controllers;
+  window.GUI = gui;
+
+  // CFG['gui.dat'].Loading = 'please wait a second...';
+  controllers['Loading'].setValue('please wait a second or two...');
+
+} ())

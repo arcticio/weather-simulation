@@ -140,9 +140,10 @@
   <script src="libs/THREE.MeshLine.js"></script>
   <script src="libs/stats.js"></script>
   <script src="libs/screenfull.js"></script>
-
   <script src='libs/dat.gui.js'></script>
 
+<!--   <script src='libs/dat.gui.js'></script>
+ -->
   <script src="js/helper.js"></script>
   <script src="js/tools.js"></script>
   <script src="js/aio-time.js"></script>
@@ -158,11 +159,12 @@
   <script src="js/sim.model.js"></script>
   <script src="js/sim.marray.js"></script>
 
+  <script src="js/scene.js"></script>
+  <script src="js/gui.js"></script>
+
   <script src="js/resources.js"></script>
   <script src="js/interface.js"></script>
   <script src="js/animator.js"></script>
-  <script src="js/scene.js"></script>
-  <script src="js/gui.js"></script>
 
   <script type="text/javascript">
     
@@ -174,7 +176,7 @@
 
       TIM.step('WIN.load.in');
 
-      RES.init('.panel.info');
+      RES.init();
       SCN.init();
       IFC.init();
       ANI.init();

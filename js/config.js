@@ -50,7 +50,7 @@ var CFG = {
       visible: true,
       type: 'light',
       color: 0xffffff,
-      intensity: 0.3,
+      intensity: 0.2,
       light: (cfg) => new THREE.AmbientLight( cfg.color, cfg.intensity )
     },
 
@@ -70,9 +70,9 @@ var CFG = {
     sun: {
       visible:      true,
       type:         'light',
-      skycolor:     0xffd5a6,
-      grdcolor:     0x161661,
-      intensity:    0.2, 
+      skycolor:     0xffddaa,
+      grdcolor:     0x000022,
+      intensity:    0.7, 
       light:        (cfg) => new THREE.HemisphereLight( cfg.skycolor, cfg.grdcolor, cfg.intensity ),
       pos:          new THREE.Vector3(2, 2, 2)
     },
@@ -240,7 +240,7 @@ var CFG = {
 
 
   'gui.dat' : {
-    Loading: 0,
+    Loading: '',
     Render: true,
     Animate: true,
     Simulate: true,
@@ -279,7 +279,8 @@ var CFG = {
     },
     DateTime : {
       isFolder: true,
-      choose: {val: 3, min: 0, max: timerange.length -1},
+      display: '',
+      choose: {val: 3, min: 0, max: timerange.length * 24},
     },
     Extras: {
       isFolder: true,

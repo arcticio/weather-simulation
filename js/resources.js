@@ -27,6 +27,8 @@ var RES = (function () {
     isDev      = true,
     concurrent = 2,
 
+    div = $$('.panel.info')[0],
+
     stats   = {
       queue:       0,   // jobs in queue
       requests:    0,   // active requests
@@ -60,9 +62,7 @@ var RES = (function () {
     boot: function () {
       return self = this;
     },
-    init: function (selector) {
-      // isDev = dev === undefined ? true : dev;
-      div = $$(selector)[0];
+    init: function () {
     },
     activate: function (selector) {
       div.innerHTML = 'R: 0, ETA: 0';
@@ -107,9 +107,13 @@ var RES = (function () {
       var tasks = config.urls.map( url => {
 
         return function (callback) {
-          self.add({url: url, type: config.type || '', onFinish: function (err, data) {
-            err ? callback(err, null) : callback(null, data);
-          }});
+          self.add({
+            url:      url, 
+            type:     config.type || '', 
+            onFinish: function (err, data) {
+              err ? callback(err, null) : callback(null, data);
+            }
+          });
         };
 
       });
