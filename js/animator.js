@@ -145,6 +145,16 @@ var ANI = (function () {
 
       cam2vector: function (vector, distance){
 
+        // https://stackoverflow.com/questions/14614252/how-to-fit-camera-to-object
+        var aspect = window.innnerWidth / window.innerHeight;
+        var width = RADIUS + RADIUS;
+        var fov = SCN.camera.fov * ( Math.PI / 180 ); 
+
+        // distance = Math.abs( width / Math.sin( fov / 2 ) ) - RADIUS;      // 50 % height
+        // distance = Math.abs( width / Math.sin( fov / 2 ) ) ;              // ~~ 30% height
+        // distance = Math.abs( width / 2 / Math.sin( fov / 2 ) ) ;          // 100% height
+        distance = Math.abs( width / 2 / Math.sin( fov / 2 ) ) - RADIUS;  // 45% height
+
         var 
           spherical,
           curShere = new THREE.Spherical().setFromVector3(SCN.camera.position),
@@ -159,7 +169,9 @@ var ANI = (function () {
             phi:    futShere.phi,
             theta:  futShere.theta,  // east-direction
             radius: distance,
-          };
+          },
+
+        end;
 
         // handle moving over NUll Meridian
         if (target.theta - current.theta > Math.PI) {

@@ -22,7 +22,6 @@ var SCN = (function () {
 
     camera        = CFG.objects.perspective.cam,
     scene         = new THREE.Scene(),
-    orbitControls = new THREE.OOrbitControls(camera, renderer.domElement),
     axes,
 
     doRender      = true,
@@ -47,6 +46,8 @@ var SCN = (function () {
     overlay,
     sim,
 
+    timerange = new TimeRange(),
+
   end;
 
   return {
@@ -58,6 +59,7 @@ var SCN = (function () {
     monitor,
     objects,
     renderer,
+    timerange,
 
     boot: function () {
       return self = this;
@@ -122,6 +124,8 @@ var SCN = (function () {
 
       canvas = renderer.domElement;
       renderer.setPixelRatio( window.devicePixelRatio );
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      // webgl.min_capability_mode
       renderer.setClearColor(0x4d4d4d, 1.0)
       renderer.shadowMap.enabled = false;
 
@@ -129,14 +133,8 @@ var SCN = (function () {
 
       self.resize();
 
-      orbitControls.enabled = true;
-        orbitControls.enableDamping = true;
-        orbitControls.dampingFactor = 0.88;
-        orbitControls.constraint.smoothZoom = true;
-        orbitControls.constraint.zoomDampingFactor = 0.2;
-        orbitControls.constraint.smoothZoomSpeed = 2.0;
-        orbitControls.constraint.minDistance = RADIUS + 0.1;
-        orbitControls.constraint.maxDistance = 8;
+      timerange.push(dataTimeRanges["3d-simulation"][0]);
+      console.log(timerange.latest());
 
 
       H.each(CFG.objects, (name, config) => {
@@ -230,6 +228,12 @@ var SCN = (function () {
           intensity: (value) => objects.spot.intensity = value,
           color:     (value) => objects.spot.color = new THREE.Color( value ),
         },
+        Sun: {
+          toggle:    (value) => self.toggle(objects.sun, value),
+          intensity: (value) => objects.sun.intensity = value,
+          skycolor:  (value) => {objects.sun.color = new THREE.Color( value ); console.log(value)},
+          grdcolor:  (value) => objects.sun.groundColor = new THREE.Color( value ),
+        },
         Layers : {
           'SNPP':    (value) => self.toggle(objects.snpp, value),
           'DATA':    (value) => self.toggle(objects.data, value),
@@ -289,11 +293,7 @@ var SCN = (function () {
 
       IFC.stats.begin();
 
-        TWEEN.update();
-        orbitControls.update();
-
-        // GUI info
-        posArrow && IFC.setLatLon(camera.position, posArrow);
+        IFC.step();
 
         if (!(frame % 4)) {
           doSimulate && SIM.step(frame, dTime);
@@ -308,7 +308,7 @@ var SCN = (function () {
 
       IFC.stats.end();
 
-      time = nTime;
+      time   = nTime;
       frame += 1;
 
     }

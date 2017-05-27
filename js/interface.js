@@ -10,6 +10,9 @@ var IFC = (function () {
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
+    orbitControls, 
+
+
     simulator,  // 3D canvas
     fullscreen, // div full
     latlon,     // info panel
@@ -23,6 +26,7 @@ var IFC = (function () {
     },
 
     raycaster = new THREE.Raycaster(),
+    marker    = new THREE.Vector3(),
 
     stats,
 
@@ -56,6 +60,7 @@ var IFC = (function () {
     stats,
     mouse,
     raycaster,
+    orbitControls,
 
     boot: function () {
       return self = this;
@@ -76,6 +81,18 @@ var IFC = (function () {
       fullscreen.appendChild( stats.dom );
 
       raycaster.params.Points.threshold = 0.001; // threshold;
+
+      orbitControls = self.orbitControls = new THREE.OOrbitControls(SCN.camera, SCN.renderer.domElement),
+
+      orbitControls.enabled = true;
+        orbitControls.enablePan = false;
+        orbitControls.enableDamping = true;
+        orbitControls.dampingFactor = 0.88;
+        orbitControls.constraint.smoothZoom = true;
+        orbitControls.constraint.zoomDampingFactor = 0.2;
+        orbitControls.constraint.smoothZoomSpeed = 2.0;
+        orbitControls.constraint.minDistance = RADIUS + 0.1;
+        orbitControls.constraint.maxDistance = 8;
 
     },
     activate: function () {
@@ -106,6 +123,16 @@ var IFC = (function () {
       });
 
     },
+    step: function step () {
+
+      TWEEN.update();
+
+      orbitControls.update();
+
+      // GUI info
+      self.setLatLon(SCN.camera.position, SCN.objects.arrowHelper.cone.position);
+
+    },
     events: {
       click:   function (event) { 
 
@@ -118,7 +145,7 @@ var IFC = (function () {
         if (screenfull.enabled) {
           screenfull.toggle(fullscreen);
         }        
-        console.log('dblclick');
+        // console.log('dblclick');
 
       },
       mousedown:   function (event) { 
@@ -129,6 +156,7 @@ var IFC = (function () {
 
         if (mouse.button === 0) {
           SCN.objects.arrowHelper.setDirection( mouse.intersect );
+          marker.copy(mouse.intersect);
         }
 
         if (mouse.button === 2) {
@@ -171,7 +199,7 @@ var IFC = (function () {
       intersections = raycaster.intersectObjects( [SCN.objects.pointer] );
 
       if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
-        mouse.intersect.copy(intersection.point.normalize());
+        mouse.intersect.copy(intersection.point).normalize();
       }
 
     },
@@ -180,7 +208,7 @@ var IFC = (function () {
     setLatLon: function (posCam, posArrow) {
       latlon.innerHTML = (
         formatLatLon('C', vector3ToLatLong(posCam)) + '<br>' + 
-        formatLatLon('P', vector3ToLatLong(posArrow))
+        formatLatLon('M', vector3ToLatLong(marker))
       );
     },
 
@@ -195,14 +223,14 @@ var IFC = (function () {
     getFrame :  function(mimetype){ 
 
       var 
-        ele    = SCN.renderer.domElement,
-        width  = ele.width,
-        height = ele.height;
+        cvs    = SCN.renderer.domElement,
+        width  = cvs.width,
+        height = cvs.height;
 
       return {
         width, 
         height,
-        url: ele.toDataURL(mimetype),
+        url: cvs.toDataURL(mimetype),
         num: SCN.frames, 
       }; 
 

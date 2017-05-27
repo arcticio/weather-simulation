@@ -145,6 +145,7 @@
 
   <script src="js/helper.js"></script>
   <script src="js/tools.js"></script>
+  <script src="js/aio-time.js"></script>
 
   <script src="js/config.js"></script>
   <script src="js/configurator.js"></script>
@@ -167,19 +168,21 @@
     
     // https://github.com/mrdoob/stats.js/
 
+    console.log( 'devicePixelRatio', devicePixelRatio);
+
     window.onload = function () {
 
       TIM.step('WIN.load.in');
 
       RES.init('.panel.info');
-      IFC.init();
       SCN.init();
+      IFC.init();
       ANI.init();
       SIM.init();
 
       RES.activate();
-      IFC.activate(); 
       SCN.activate();
+      IFC.activate(); 
       ANI.activate();
       SIM.activate();
 

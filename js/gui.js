@@ -65,7 +65,7 @@ H.each(CFG['gui.dat'], (folder, options) => {
 
       } else {
 
-        if (option === 'color') {
+        if (H.endsWith(option, 'color')) {
           guiFolders[folder].addColor(defs, option, value).onChange(fn);
 
         } else if (typeof value === 'function') {

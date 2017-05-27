@@ -17,6 +17,14 @@ const FIX = {
 
 } 
 
+const timerange = [
+  '2017-05-21',
+  '2017-05-22',
+  '2017-05-23',
+  '2017-05-24',
+  '2017-05-25',
+];
+
 
 var CFG = {
 
@@ -42,7 +50,7 @@ var CFG = {
       visible: true,
       type: 'light',
       color: 0xffffff,
-      intensity: 0.6,
+      intensity: 0.3,
       light: (cfg) => new THREE.AmbientLight( cfg.color, cfg.intensity )
     },
 
@@ -57,6 +65,16 @@ var CFG = {
       decay: 0,
       light: (cfg) => new THREE.SpotLight(cfg.color, cfg.intensity, cfg.distance, cfg.angle, cfg.penumbra),
       pos:   new THREE.Vector3(0, 2, 0)
+    },
+
+    sun: {
+      visible:      true,
+      type:         'light',
+      skycolor:     0xffd5a6,
+      grdcolor:     0x161661,
+      intensity:    0.2, 
+      light:        (cfg) => new THREE.HemisphereLight( cfg.skycolor, cfg.grdcolor, cfg.intensity ),
+      pos:          new THREE.Vector3(2, 2, 2)
     },
 
     axes: {
@@ -237,17 +255,18 @@ var CFG = {
       intensity: {val: 0.5, min: 0, max: 1},
       color: '#ffffff'
     },
-    Directional: {
-      isFolder: true,
-      toggle: false,
-      intensity: {val: 0.5, min: 0, max: 1},
-      color: '#ffffff'
-    },
     Spot: {
       isFolder: true,
       toggle: true,
       intensity: {val: 0.5, min: 0, max: 1},
       color: '#ffffff'
+    },
+    Sun: {
+      isFolder:  true,
+      toggle:    true,
+      intensity: {val: 0.5, min: 0, max: 1},
+      skycolor: '#ffd5a6',
+      grdcolor: '#161661',
     },
     Layers: {
       isFolder: true,
@@ -260,7 +279,7 @@ var CFG = {
     },
     DateTime : {
       isFolder: true,
-      choose: {val: 0.5, min: 0, max: 1},
+      choose: {val: 3, min: 0, max: timerange.length -1},
     },
     Extras: {
       isFolder: true,
