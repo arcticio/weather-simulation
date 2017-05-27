@@ -108,7 +108,7 @@ var SCN = (function () {
       },
 
       'simulation': (name, cfg) => {
-        SIM.load(name, cfg, self.add);
+        // SIM.load(name, cfg, self.add);
       },
       'cube.textured': (name, cfg) => {
         self.loadCube(name, cfg, self.add);
@@ -218,6 +218,7 @@ var SCN = (function () {
         ignore = () => {},
         config = {
           Loading:  { update: ignore},
+          SimTime:  { update: ignore},
           Render:   { toggle: (value) => doRender   = value },
           Animate:  { toggle: (value) => doAnimate  = value },
           Simulate: { toggle: (value) => doSimulate = value },
@@ -228,6 +229,7 @@ var SCN = (function () {
           },
           Spot: {
             toggle:    (value) => self.toggle(objects.spot, value),
+            angle:     (value) => objects.spot.angle = value,
             intensity: (value) => objects.spot.intensity = value,
             color:     (value) => objects.spot.color = new THREE.Color( value ),
           },
@@ -249,8 +251,13 @@ var SCN = (function () {
             reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),
           },
           DateTime: {
-            display:   ignore,
-            choose:    (value) => console.log('Date', value),
+            choose:    (value) => SIM.updateDatetime(value),
+            hourn1:     (value) => SIM.updateDatetime('-1'),
+            hour1:     (value) => SIM.updateDatetime('+1'),
+            hour24:    (value) => SIM.updateDatetime('+24'),
+            hourn24:    (value) => SIM.updateDatetime('-24'),
+            day30:     (value) => SIM.updateDatetime('+' + 24*30),
+            dayn30:    (value) => SIM.updateDatetime('-' + 24*30),
           },
           Extras: {
             Axes:      (value) => self.toggle(objects.axes, value),

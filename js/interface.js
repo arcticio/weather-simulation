@@ -142,7 +142,7 @@ var IFC = (function () {
     events: {
       click:   function (event) { 
 
-        GUI.closed = true;
+        // GUI.closed = true;
         // console.log('click')
 
       },      

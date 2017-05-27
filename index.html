@@ -58,6 +58,17 @@
       white-space: nowrap;
     }
 
+    .panel.image {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 360px;
+      height: 180px;
+      background-color: rgba(200, 200, 200, 0.2);
+      border: 0;
+      z-index: 1;
+    }
+
     .panel.info {
       background-color: #ffff00;
       background: url(images/black.32.png);
@@ -121,6 +132,7 @@
       <div    class="panel info" ondblclick="this.innerHTML = '' "></div>
       <canvas class="panel test" height="48" width="96" ondblclick=""></canvas>
       <canvas class="panel expi" height="181" width="360" ondblclick=""></canvas>
+      <img    src="" class="panel image" height="180" width="360"></img>
       
     </div>
 
@@ -130,7 +142,14 @@
 
   <script src='timeranges.js'></script>
 
+  <script src="libs/orb2/orb2.js"></script>
+  <script src="libs/orb2/core_v2r1.js"></script>
+  <script src="libs/orb2/solarsystem_v2r1.js"></script>
+  <script src="libs/orb2/vsop87a_ear.json"></script>
+
   <script src='libs/polyfills.js'></script>
+  <script src='libs/suncalc.js'></script>
+  <script src='libs/moment.js'></script>
   <script src='libs/async.min.js'></script>
   <script src='libs/proj4.js'></script>
   <script src='libs/jquery.js'></script>
@@ -142,8 +161,6 @@
   <script src="libs/screenfull.js"></script>
   <script src='libs/dat.gui.js'></script>
 
-<!--   <script src='libs/dat.gui.js'></script>
- -->
   <script src="js/helper.js"></script>
   <script src="js/tools.js"></script>
   <script src="js/aio-time.js"></script>
@@ -165,12 +182,14 @@
   <script src="js/resources.js"></script>
   <script src="js/interface.js"></script>
   <script src="js/animator.js"></script>
+  
 
   <script type="text/javascript">
     
-    // https://github.com/mrdoob/stats.js/
-
     console.log( 'devicePixelRatio', devicePixelRatio);
+
+    Orb.Time = Orb.Core.Time;
+    Orb.Tool = Orb.Core.Tool;
 
     window.onload = function () {
 

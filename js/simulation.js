@@ -2,6 +2,7 @@
 
 var SIM = (function () {
 
+
   var 
     self,
     renderer,
@@ -10,14 +11,43 @@ var SIM = (function () {
     frame,
     sim,
 
+    $$ = document.querySelectorAll.bind(document),
+
+    image  = $$('.panel.image')[0],
+
+
     index = 0,
     trails = [],
     
     trailsWind,
     trailsBetterWind,
 
+    image,
+
     model = {
 
+    },
+
+    sun   = Orb.SolarSystem().Sun(),
+    // sun2  = Orb.SolarSystem().Sun2(),
+    // earth = Orb.SolarSystem().Earth(),
+
+    time = {
+      // start: moment.utc(timerange[0], "YYYY-MM-DD"),
+      start: moment.utc('2017-01-01-00', "YYYY-MM-DD-HH"),
+
+      now: moment.utc('2017-03-20-12', "YYYY-MM-DD-HH"),
+
+      show: moment.utc('2017-03-20-12', "YYYY-MM-DD-HH"),
+      show: moment.utc('2017-09-23-12', "YYYY-MM-DD-HH"),
+
+      // now:   moment.utc(),
+      // show:  moment.utc(),
+
+      // end:   moment.utc(timerange.slice(-1)[0], "YYYY-MM-DD"),
+      end:   moment.utc('2017-12-31-00', "YYYY-MM-DD-HH"),
+      // interval: timerange.length * 24 -1, 
+      interval: 365 * 24, 
     },
 
     end;
@@ -29,9 +59,11 @@ var SIM = (function () {
     },
     init: function () {
 
-      // self.loadModel(self.loadBetterWind);
+      var diff = time.now.diff(time.start, 'hours');
 
-      
+      IFC.controllers['DateTime']['choose'].setValue(diff);
+      // IFC.controllers['DateTime']['display'].setValue(time.show.format('YYYY-MM-DD HH:MM'));
+
     },
     load: function (name, config, callback) {
 
@@ -41,6 +73,38 @@ var SIM = (function () {
       callback(name, mesh);
 
       TIM.step('SIM.load.out');
+
+    },
+    updateDatetime: function (val) {
+
+      // TODO: adjust for ra
+      // https://www.timeanddate.com/scripts/sunmap.php?iso=20170527T1200
+
+      var iso, orbTime, posSun, sphererical;
+
+      time.show = (typeof val === 'string') ? 
+        time.show.clone().add(~~val, 'hours') : 
+        time.start.clone().add(val, 'hours') ;
+
+      iso = time.show.format('YYYY-MM-DD HH');
+      // image && (image.src = '//www.timeanddate.com/scripts/sunmap.php?iso=' + time.show.format('YYYYMMDD[T]HHmm'));
+
+      // query sun by time
+      orbTime = new Orb.Time(time.show.toDate());
+      posSun  = sun.position.equatorial(orbTime);
+
+      //  Spherical(                      radius, phi, theta )
+      sphererical = new THREE.Spherical(4, 0, -Math.PI / 2);
+      sphererical.phi    -= posSun.dec * Math.PI / 180;             // raise sun
+      sphererical.phi    += Math.PI / 2;                            // change coord system
+      sphererical.theta  -= ( time.show.hour() * (Math.PI / 12) ) ; // rot by planet
+
+      SCN.objects.spot.position.setFromSpherical(sphererical).normalize().multiplyScalar(4);
+      SCN.objects.sunPointer.setDirection(SCN.objects.spot.position.clone().normalize());
+
+      IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
+
+      // console.log(iso, 'dec', posSun.dec, 'ra', posSun.ra);
 
     },
     createWind: function () {

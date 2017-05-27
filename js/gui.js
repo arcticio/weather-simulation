@@ -101,7 +101,6 @@
   window.GUIcontrollers = controllers;
   window.GUI = gui;
 
-  // CFG['gui.dat'].Loading = 'please wait a second...';
-  controllers['Loading'].setValue('please wait a second or two...');
+  controllers['Loading'].setValue('please wait a second...');
 
 } ())

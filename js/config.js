@@ -23,6 +23,11 @@ const timerange = [
   '2017-05-23',
   '2017-05-24',
   '2017-05-25',
+  '2017-05-26',
+  '2017-05-27',
+  '2017-05-28',
+  '2017-05-29',
+  '2017-05-30',
 ];
 
 
@@ -43,7 +48,8 @@ var CFG = {
       // pos:             new THREE.Vector3(0.5, 3.4, 0.5),       // Greenland centered
       // pos:             new THREE.Vector3(0.05, 2.3, -0.08),    // North Pole
       // pos:             new THREE.Vector3(0.5, -2.2, -3),          // Low near AA
-      pos:             new THREE.Vector3(4, 0, 0),                // 0,0
+      // pos:             new THREE.Vector3(0.8, 3.9, 0.0),                // 0,0
+      pos:             new THREE.Vector3(4, 0, 0),                // Äq
     },
 
     ambient: {
@@ -55,16 +61,16 @@ var CFG = {
     },
 
     spot:    {
-      visible: true,
-      type: 'light',
-      color: 0xffffff, 
-      intensity: 0.2, 
-      distance: 0, 
-      angle: 0.6, 
-      penumbra: 0.1, 
-      decay: 0,
+      visible:   true,
+      type:      'light',
+      color:     0xffffff, 
+      intensity: 0.6, 
+      distance:  0.0, 
+      angle:     0.3, 
+      penumbra:  0.1, 
+      decay:     0.0,
       light: (cfg) => new THREE.SpotLight(cfg.color, cfg.intensity, cfg.distance, cfg.angle, cfg.penumbra),
-      pos:   new THREE.Vector3(0, 2, 0)
+      pos:   new THREE.Vector3(0, 4, 0)
     },
 
     sun: {
@@ -72,7 +78,7 @@ var CFG = {
       type:         'light',
       skycolor:     0xffddaa,
       grdcolor:     0x000022,
-      intensity:    0.7, 
+      intensity:    0.2, 
       light:        (cfg) => new THREE.HemisphereLight( cfg.skycolor, cfg.grdcolor, cfg.intensity ),
       pos:          new THREE.Vector3(2, 2, 2)
     },
@@ -92,6 +98,18 @@ var CFG = {
         new THREE.Vector3( 0,  0,  0), 
         RADIUS + 0.08, 
         0xffff00
+      )
+    },
+
+    sunPointer: {
+      // latlon-pointer
+      visible: true,
+      type: 'mesh',
+      mesh: new THREE.ArrowHelper( 
+        new THREE.Vector3( 1, 1,  1), 
+        new THREE.Vector3( 0,  0,  0), 
+        RADIUS + 0.2, 
+        0xff0000
       )
     },
 
@@ -241,6 +259,7 @@ var CFG = {
 
   'gui.dat' : {
     Loading: '',
+    SimTime: '',
     Render: true,
     Animate: true,
     Simulate: true,
@@ -258,6 +277,7 @@ var CFG = {
     Spot: {
       isFolder: true,
       toggle: true,
+      angle:     {val: 0.5, min: 0, max: Math.PI},
       intensity: {val: 0.5, min: 0, max: 1},
       color: '#ffffff'
     },
@@ -279,8 +299,14 @@ var CFG = {
     },
     DateTime : {
       isFolder: true,
-      display: '',
-      choose: {val: 3, min: 0, max: timerange.length * 24},
+      // choose: {val: 3, min: 0, max: timerange.length * 24, step: 1},
+      choose: {val: 3, min: 0, max: 365 * 24, step: 1},
+      hour1:    () => {},
+      hourn1:    () => {},
+      hour24:   () => {},
+      hourn24:   () => {},
+      day30:    () => {},
+      dayn30:   () => {},
     },
     Extras: {
       isFolder: true,
