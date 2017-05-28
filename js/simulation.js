@@ -22,6 +22,8 @@ var SIM = (function () {
     trailsWind,
     trailsBetterWind,
 
+    vectorSun = new THREE.Vector3(),
+
     image,
 
     model = {
@@ -29,8 +31,6 @@ var SIM = (function () {
     },
 
     sun   = Orb.SolarSystem().Sun(),
-    // sun2  = Orb.SolarSystem().Sun2(),
-    // earth = Orb.SolarSystem().Earth(),
 
     time = {
       // start: moment.utc(timerange[0], "YYYY-MM-DD"),
@@ -54,6 +54,9 @@ var SIM = (function () {
 
 
   return {
+
+    vectorSun,
+
     boot: function () {
       return self = this;
     },
@@ -80,7 +83,7 @@ var SIM = (function () {
       // TODO: adjust for ra
       // https://www.timeanddate.com/scripts/sunmap.php?iso=20170527T1200
 
-      var iso, orbTime, posSun, sphererical;
+      var iso, orbTime, orbSun, sphererical;
 
       time.show = (typeof val === 'string') ? 
         time.show.clone().add(~~val, 'hours') : 
@@ -91,16 +94,18 @@ var SIM = (function () {
 
       // query sun by time
       orbTime = new Orb.Time(time.show.toDate());
-      posSun  = sun.position.equatorial(orbTime);
+      orbSun  = sun.position.equatorial(orbTime);
 
       //  Spherical(                      radius, phi, theta )
       sphererical = new THREE.Spherical(4, 0, -Math.PI / 2);
-      sphererical.phi    -= posSun.dec * Math.PI / 180;             // raise sun
+      sphererical.phi    -= orbSun.dec * Math.PI / 180;             // raise sun
       sphererical.phi    += Math.PI / 2;                            // change coord system
       sphererical.theta  -= ( time.show.hour() * (Math.PI / 12) ) ; // rot by planet
 
-      SCN.objects.spot.position.setFromSpherical(sphererical).normalize().multiplyScalar(4);
-      SCN.objects.sunPointer.setDirection(SCN.objects.spot.position.clone().normalize());
+      // updates
+      vectorSun.setFromSpherical(sphererical).normalize();
+      SCN.objects.spot.position.copy(vectorSun).multiplyScalar(4);
+      SCN.objects.sunPointer.setDirection(vectorSun);
 
       IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
 

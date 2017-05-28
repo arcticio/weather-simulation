@@ -42,38 +42,55 @@
     <style type="text/css">
 
     * {
-      padding: 0;
       margin: 0;
+      padding: 0;
+    }
+
+    .interface, .panels, .labels, .preload {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .label.sun {
+      background-color: rgba(20, 20, 20, 0.2);
+      color: white;
+      font-family: monospace;
+      font-size:  10px;
+      overflow-x: hidden;
+      position: absolute;
+      white-space: nowrap;
     }
       
     .panel.latlon {
-      position: absolute;
+      background-color: rgba(200, 200, 200, 0.2);
       color: white;
-      top: 48px;
-      width: 80px;
-      overflow-x: hidden;
       font-family: monospace;
       font-size:  10px;
-      background-color: rgba(200, 200, 200, 0.2);
+      overflow-x: hidden;
+      position: absolute;
+      top: 48px;
       white-space: nowrap;
+      width: 80px;
     }
 
     .panel.image {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      width: 360px;
-      height: 180px;
       background-color: rgba(200, 200, 200, 0.2);
       border: 0;
+      bottom: 20px;
+      display: none;
+      height: 180px;
+      left: 20px;
+      position: absolute;
+      width: 360px;
       z-index: 1;
     }
 
     .panel.info {
       background-color: #ffff00;
-      background: url(images/black.32.png);
-      background-size: 10%; 
       background-repeat: no-repeat;
+      background-size: 10%; 
+      background: url(images/black.32.png);
       bottom: 0px;
       color: #eee;
       font-family: sans-serif;
@@ -90,21 +107,21 @@
 
     canvas.panel.test {
       background-color: rgba(40, 0, 0, 0.2);
-      top: 0px;
+      height: 48px;
       left: 96px;
       position: absolute;
+      top: 0px;
       width: 96px;
-      height: 48px;
     }
 
     canvas.panel.expi {
       background-color: rgba(40, 0, 0, 0.2);
-      top: 0px;
+      display: none;
+      height: 181px;
       left: 196px;
       position: absolute;
+      top: 0px;
       width: 360px;
-      height: 181px;
-      display: none;
     }
 
 
@@ -119,14 +136,14 @@
 
   <div class="fullscreen">
 
-    <div style="display:none">
+    <div class="preload" style="display:none">
       <img class="" src="images/line.alpha.64.png">
       <img class="" src="images/line.alpha.32.png">
       <img class="" src="images/line.alpha.16.png">
       <img class="transparent-face-512" src="images/transparent.face.512.png">
     </div>
 
-    <div>
+    <div class="interface">
 
       <dir    class="panel latlon"></dir>
       <div    class="panel info" ondblclick="this.innerHTML = '' "></div>
@@ -134,6 +151,11 @@
       <canvas class="panel expi" height="181" width="360" ondblclick=""></canvas>
       <img    src="" class="panel image" height="180" width="360"></img>
       
+
+      <div class="labels">
+        <div class="label sun">SUN</div>
+      </div>
+
     </div>
 
     <canvas class="simulator"></canvas>

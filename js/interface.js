@@ -11,19 +11,28 @@ var IFC = (function () {
     $$ = document.querySelectorAll.bind(document),
 
     orbitControls, 
+    width, height,
 
     controllers = GUIcontrollers,
 
     simulator,  // 3D canvas
     fullscreen, // div full
-    latlon,     // info panel
 
     mouse = {
-      x: NaN, 
-      y: NaN, 
-      down: false, 
+      x:      NaN, 
+      y:      NaN, 
+      down:   false, 
       button: NaN,
       intersect: new THREE.Vector3(0, 0, 0),
+    },
+
+    labels = {
+      sun:       $$('.label.sun')[0],
+    },
+
+    panels = {
+      latlon:    $$('.panel.latlon')[0],
+
     },
 
     raycaster = new THREE.Raycaster(),
@@ -71,12 +80,11 @@ var IFC = (function () {
 
       simulator  = $$('.simulator')[0];
       fullscreen = $$('.fullscreen')[0];
-      latlon     = $$('.panel.latlon')[0];
 
-      var datgui = $$('div.dg.ac')[0];
+      width  = simulator.width;
+      height = simulator.height;
 
-      var stats = new Stats();
-      self.stats = stats;
+      self.stats = stats = new Stats();
       stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
       fullscreen.appendChild( stats.dom );
 
@@ -95,16 +103,10 @@ var IFC = (function () {
         orbitControls.constraint.maxDistance = 8;
 
       // move gui.dat to fullscreen container
-      fullscreen.appendChild(datgui);
-
-      // poc
-      // controllers['Ambient']['intensity'].setValue(1.0);
+      fullscreen.appendChild($$('div.dg.ac')[0]);
 
     },
     activate: function () {
-
-
-      window.addEventListener('resize', self.resize, false);
 
       H.each([
 
@@ -121,6 +123,7 @@ var IFC = (function () {
         [window,    'orientationchange'],
         [window,    'deviceorientation'],
         [window,    'devicemotion'],
+        [window,    'resize'],
       
       ], function (_, e) { 
 
@@ -135,14 +138,15 @@ var IFC = (function () {
 
       orbitControls.update();
 
-      // GUI info
-      self.setLatLon(SCN.camera.position, SCN.objects.arrowHelper.cone.position);
+      // GUI infos
+      self.updatePanels();
+      self.updateLabels();
 
     },
     events: {
       click:   function (event) { 
 
-        // GUI.closed = true;
+        GUI.closed = true;
         // console.log('click')
 
       },      
@@ -195,8 +199,16 @@ var IFC = (function () {
       devicemotion:      function (event) { /* console.log('devicemotion', event)      */ },
       orientationchange: function (event) { console.log('orientationchange', event)       },
       deviceorientation: function (event) { /* console.log('deviceorientation', event) */ },
+      resize: function () {
+
+        width  = SCN.renderer.domElement.width;
+        height = SCN.renderer.domElement.height;
+
+      },
 
     },
+
+
     updateMouse: function () {
 
       var intersections, intersection;
@@ -209,14 +221,47 @@ var IFC = (function () {
       }
 
     },
-    resize: function () {
+    updateLabels: function () {
+
+      var 
+        cam = SCN.camera,
+        convert = TOOLS.vector3toScreenXY,
+        camDistance = cam.position.distanceTo(SCN.home),
+        sunDistance = cam.position.distanceTo(SIM.vectorSun);
+
+      if (camDistance < sunDistance) {
+        SIM.vectorSun && self.updateLabel(labels.sun, {x: -1000, y: -1000});
+
+      } else {
+        SIM.vectorSun && self.updateLabel(labels.sun, convert(SIM.vectorSun, width, height));
+
+      }
+
     },
-    setLatLon: function (posCam, posArrow) {
-      latlon.innerHTML = (
-        formatLatLon('C', vector3ToLatLong(posCam)) + '<br>' + 
+    updateLabel: function (el, pos) {
+
+      el.style.left = pos.x + 'px';
+      el.style.top  = pos.y + 'px';
+
+    },
+    updatePanels: function () {
+
+      var 
+        cam    = SCN.camera.position,
+        marker = SCN.objects.arrowHelper.cone.position,
+
+      end;
+
+      panels.latlon.innerHTML = (
+        formatLatLon('C', vector3ToLatLong(cam)) + '<br>' + 
         formatLatLon('M', vector3ToLatLong(marker))
       );
+
+
     },
+
+
+
 
     takeScreenShot: function(){
       // https://developer.mozilla.org/en/DOM/window.open

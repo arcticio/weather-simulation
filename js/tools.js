@@ -95,7 +95,16 @@ var TOOLS = {
     return markerMesh;
 
   },
+  vector3toScreenXY: function (pos, width, height) {
 
+    var p = new THREE.Vector3(pos.x, pos.y, pos.z);
+    var vector = p.project(SCN.camera);
+
+    vector.x = (vector.x + 1) / 2 * width;
+    vector.y = -(vector.y - 1) / 2 * height;
+
+    return vector;
+  },
   vector3ToLatLong: function (v, radius) {
 
     // var lon = ((270 + (Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360) - 180;
