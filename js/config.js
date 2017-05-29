@@ -59,7 +59,7 @@ var CFG = {
       visible:    true,
       type:       'light',
       color:      0xffffff,
-      intensity:  0.2,
+      intensity:  0.01,
       light: (cfg) => new THREE.AmbientLight( cfg.color, cfg.intensity )
     },
 
@@ -80,8 +80,8 @@ var CFG = {
       visible:      true,
       type:         'light',
       skycolor:     0xffddaa,
-      grdcolor:     0x000022,
-      intensity:    0.2, 
+      grdcolor:     0x090950,
+      intensity:    0.4, 
       light:        (cfg) => new THREE.HemisphereLight( cfg.skycolor, cfg.grdcolor, cfg.intensity ),
       pos:          new THREE.Vector3(2, 2, 2)
     },
@@ -129,6 +129,24 @@ var CFG = {
           opacity: 0.1
         })
       ),
+    },
+
+    land: {
+      visible: false,
+      radius: RADIUS + 0.0008,
+      type: 'geo.json',
+      rotation: [0, Math.PI / 2, 0],
+      json: 'data/json/countries_states.geojson',
+      color: new THREE.Color('#888888'),
+    },
+
+    rivers: {
+      visible: false,
+      radius: RADIUS + 0.01,
+      type: 'geo.json',
+      rotation: [0, Math.PI / 2, 0],
+      json: 'data/json/rivers.geojson',
+      color: new THREE.Color('#888888'),
     },
 
     test: {
@@ -260,69 +278,73 @@ var CFG = {
   // },
 
 
-  'gui.dat' : {
-    Loading: '',
-    SimTime: '',
-    Render: true,
-    Animate: true,
-    Simulate: true,
-    Reload: () => location.reload(),
-    Camera: {
-      isFolder: true,
-      reset: () => {},
-    },
-    Ambient: {
-      isFolder: true,
-      toggle: true,
-      intensity: {val: 0.5, min: 0, max: 1},
-      color: '#ffffff'
-    },
-    Spot: {
-      isFolder: true,
-      toggle: true,
-      angle:     {val: 0.5, min: 0, max: Math.PI},
-      intensity: {val: 0.5, min: 0, max: 1},
-      color: '#ffffff'
-    },
-    Sun: {
-      isFolder:  true,
-      toggle:    true,
-      intensity: {val: 0.5, min: 0, max: 1},
-      skycolor: '#ffd5a6',
-      grdcolor: '#161661',
-    },
-    Layers: {
-      isFolder: true,
-      'SNPP':   true,
-      'DATA':   true,
-      'SST':    true,
-      'SEAICE': true,
-      'WIND':   true,
-      'TEST':   true,
-    },
-    DateTime : {
-      isFolder: true,
-      // choose: {val: 3, min: 0, max: timerange.length * 24, step: 1},
-      choose: {val: 3, min: 0, max: 365 * 24, step: 1},
-      hour1:    () => {},
-      hourn1:    () => {},
-      hour24:   () => {},
-      hourn24:   () => {},
-      day30:    () => {},
-      dayn30:   () => {},
-    },
-    Extras: {
-      isFolder: true,
-      Axes:     true,
-      Rotate:   () => {},
-    },
-    Simulation: {
-      isFolder: true,
-      start:     () => {},
-      stop:      () => {},
-      pause:     () => {},
-    }
-  }
 
+
+};
+
+const PRESET = {
+  Loading: '',
+  SimTime: '',
+  Render: true,
+  Animate: true,
+  Simulate: true,
+  Reload: () => location.reload(),
+  Camera: {
+    isFolder: true,
+    reset: () => {},
+  },
+  Ambient: {
+    isFolder: true,
+    toggle: true,
+    intensity: {val: CFG.objects.ambient.intensity, min: 0, max: 1},
+    color: '#ffffff'
+  },
+  Spot: {
+    isFolder: true,
+    toggle: true,
+    angle:     {val: 0.5, min: 0, max: Math.PI},
+    intensity: {val: CFG.objects.spot.intensity, min: 0, max: 1},
+    color: '#ffffff'
+  },
+  Sun: {
+    isFolder:  true,
+    toggle:    true,
+    intensity: {val: CFG.objects.sun.intensity, min: 0, max: 1},
+    skycolor:  CFG.objects.sun.skycolor,
+    grdcolor:  CFG.objects.sun.grdcolor,
+  },
+  Layers: {
+    isFolder: true,
+    'SNPP':     CFG.objects.snpp.visible,
+    'DATA':     CFG.objects.data.visible,
+    'SST':      CFG.objects.sst.visible,
+    'SEAICE':   CFG.objects.seaice.visible,
+    'WIND':     CFG.objects.wind.visible,
+    'TEST':     CFG.objects.test.visible,
+    'LAND':     CFG.objects.land.visible,
+    'RIVERS':   CFG.objects.rivers.visible,
+  },
+  DateTime : {
+    isFolder: true,
+    // choose: {val: 3, min: 0, max: timerange.length * 24, step: 1},
+    choose: {val: 3, min: 0, max: 365 * 24, step: 1},
+    hour1:    () => {},
+    hourn1:    () => {},
+    hour24:   () => {},
+    hourn24:   () => {},
+    day30:    () => {},
+    dayn30:   () => {},
+  },
+  Extras: {
+    isFolder: true,
+    Axes:     CFG.objects.axes.visible,
+    Rotate:   () => {},
+  },
+  Simulation: {
+    isFolder: true,
+    start:     () => {},
+    stop:      () => {},
+    pause:     () => {},
+  }
 };
 

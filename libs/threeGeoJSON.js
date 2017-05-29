@@ -222,7 +222,8 @@ function drawThreeGeo(json, radius, shape, materalOptions, container) {
         var line_geom = new THREE.Geometry();
         createVertexForEachPoint(line_geom, x_values, y_values, z_values);
 
-        var line_material = new THREE.LineBasicMaterial(options);
+        // var line_material = new THREE.LineBasicMaterial(options);
+        var line_material = new THREE.MeshLambertMaterial(options);
         var line = new THREE.Line(line_geom, line_material);
         container.add(line);
 

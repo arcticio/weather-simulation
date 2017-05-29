@@ -140,6 +140,26 @@ var SCN = (function () {
         self.add(name, cfg.mesh);
       },
 
+      'geo.json': (name, cfg) => {
+
+        RES.load({type: 'text', urls: [cfg.json], onFinish: (err, responses) => {
+
+          var obj = new THREE.Object3D();
+          var json = JSON.parse(responses[0].data);
+
+          drawThreeGeo(json, cfg.radius, 'sphere', {
+            color: cfg.color, 
+            lights: true, // grrrr
+          }, obj); 
+
+          cfg.rotation && obj.rotation.fromArray(cfg.rotation);
+
+          self.add(name, obj);
+
+        }});
+
+      },
+
       'light': (name, cfg) => {
         cfg.light = cfg.light(cfg);
         cfg.pos && cfg.light.position.copy( cfg.pos ); 
@@ -239,6 +259,8 @@ var SCN = (function () {
             'SEAICE':  (value) => self.toggle(objects.seaice, value),
             'TEST':    (value) => self.toggle(objects.test, value),
             'WIND':    (value) => self.toggle(objects.wind, value),
+            'LAND':    (value) => self.toggle(objects.land, value),
+            'RIVERS':  (value) => self.toggle(objects.rivers, value),
           },
           Camera: {
             reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),

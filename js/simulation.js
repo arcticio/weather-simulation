@@ -34,7 +34,7 @@ var SIM = (function () {
       // start: moment.utc(timerange[0], 'YYYY-MM-DD'),
       start: moment.utc('2017-01-01-00', 'YYYY-MM-DD-HH'),
 
-      now: moment.utc('2017-03-20-12', 'YYYY-MM-DD-HH'),
+      now: moment.utc('2017-05-30-12', 'YYYY-MM-DD-HH'),
 
       // show: moment.utc('2017-03-20-12', 'YYYY-MM-DD-HH'),
       show: moment.utc('2017-09-23-12', 'YYYY-MM-DD-HH'),
@@ -105,7 +105,8 @@ var SIM = (function () {
 
       // updates
       vectorSun.setFromSpherical(sphererical).normalize();
-      SCN.objects.spot.visible && SCN.objects.spot.position.copy(vectorSun).multiplyScalar(4);
+      SCN.objects.spot.visible       && SCN.objects.spot.position.copy(vectorSun).multiplyScalar(6);
+      SCN.objects.sun.visible        && SCN.objects.sun.position.copy(vectorSun).multiplyScalar(6);
       SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(vectorSun);
 
       IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
@@ -126,7 +127,7 @@ var SIM = (function () {
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),
         convert       = function (latlon) {
-          return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
+          return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, 0.01);
         },
 
       end;
@@ -140,7 +141,7 @@ var SIM = (function () {
         for (j=0; j<length; j++) {
 
           trailsVectors[i].push(convert([lat, lon]));
-          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 80%, 50%)'));
+          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 50%, 50%)'));
 
           lat += 0.1;
           lon += 60/length;

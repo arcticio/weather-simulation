@@ -17,7 +17,7 @@
 
   // dat.GUI.toggleHide(); // total hide
 
-  H.each(CFG['gui.dat'], (folder, options) => {
+  H.each(PRESET, (folder, options) => {
 
     var defs = {}, fn;
 
