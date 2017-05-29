@@ -146,7 +146,7 @@ Multiline.prototype = {
       alphaTest  = 0.5,
       color      = new THREE.Color('#ff0000'),
 
-      lineWidth  = CFG.earth.radius / 45,
+      lineWidth  = (CFG.earth.radius * Math.PI) / this.amount * 0.5,
       resolution = new THREE.Vector2( window.innerWidth, window.innerHeight ),
 
       heads      = new Array(this.amount).fill(0).map( n => Math.random() * this.lineLength ),
@@ -156,7 +156,7 @@ Multiline.prototype = {
       material   = new THREE.RawShaderMaterial( {
       uniforms: {
 
-        alphaMap:         { type: 't',  value: alphaMap },
+        // alphaMap:         { type: 't',  value: alphaMap },
         alphaTest:        { type: 'f',  value: alphaTest },
         color:            { type: 'c',  value: color },
         opacity:          { type: 'f',  value: opacity },
@@ -173,13 +173,20 @@ Multiline.prototype = {
       fragmentShader: this.shaderFragment(),
     });
 
+      // material.uniforms.alphaMap.repeat = new THREE.Vector2(64, 1);
+      // https://threejs.org/docs/index.html#api/materials/ShaderMaterial
+
     Object.assign(material, {
 
       depthTest:       true,                    // false ignores planet
       blending:        THREE.NormalBlending,    // NormalBlending, AdditiveBlending
-      side:            THREE.FrontSide,         // FrontSide, DoubleSide
+      side:            THREE.DoubleSide,        // FrontSide (start=skewed), DoubleSide (start=vertical)
       transparent:     true,                    // needed for alphamap
-      lights:          false,                   // no deco effex
+      lights:          false,                   // no deco effex, true tries to add scene.lights
+
+      shading:         THREE.SmoothShading,     // *THREE.SmoothShading or THREE.FlatShading
+      vertexColors:    THREE.NoColors,          // *THREE.NoColors, THREE.FaceColors and THREE.VertexColors.
+
 
       wireframe:       false,
 

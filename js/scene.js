@@ -1,7 +1,7 @@
 'use strict';
 
 const TRAIL_LEN = 60;
-const TRAIL_NUM = 40;
+const TRAIL_NUM = 1200;
 
 var SCN = (function () {
 
@@ -16,7 +16,7 @@ var SCN = (function () {
 
     renderer      = new THREE.WebGLRenderer({
       canvas:    $$('.simulator')[0],
-      // antialias: true,
+      antialias: true,
       // alpha:     true 
     }),
 
@@ -309,7 +309,7 @@ var SCN = (function () {
 
         IFC.step();
 
-        if (!(frame % 4)) {
+        if (!(frame % 1)) {
           doSimulate && SIM.step(frame, dTime);
         }
 

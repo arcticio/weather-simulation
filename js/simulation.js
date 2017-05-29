@@ -7,15 +7,13 @@ var SIM = (function () {
     renderer,
     camera,
 
-    frame,
+    frame = 0,
     sim,
 
     $$ = document.querySelectorAll.bind(document),
 
     image  = $$('.panel.image')[0],
 
-
-    index = 0,
     trails = [],
     
     trailsWind,
@@ -72,10 +70,10 @@ var SIM = (function () {
       TIM.step('SIM.load.in');
 
       var containerWind = self.createWind();
-      callback(name, containerWind);
+      // callback(name, containerWind);
 
       multiline = new Multiline(containerWind.children, TRAIL_LEN);
-      multiline.mesh.rotation.y += Math.PI / 4;
+      // multiline.mesh.rotation.y += Math.PI / 4;
       callback('meshlines', multiline.mesh);
 
       TIM.step('SIM.load.out');
@@ -123,8 +121,8 @@ var SIM = (function () {
         length = TRAIL_LEN,
         
         color         = new THREE.Color('rgb(255, 0, 0)'),
-        latsStart     = H.linspace( -40,  40, amount), 
-        lonsStart     = H.linspace( -10, -10, amount), 
+        latsStart     = H.linspace( -80,  80, amount), 
+        lonsStart     = H.linspace( -60,  60, amount), 
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),
         convert       = function (latlon) {
@@ -144,8 +142,8 @@ var SIM = (function () {
           trailsVectors[i].push(convert([lat, lon]));
           trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 80%, 50%)'));
 
-          lat += 0;
-          lon += 20/length;
+          lat += 0.1;
+          lon += 60/length;
           col += 360/length;
 
         }
@@ -253,14 +251,14 @@ var SIM = (function () {
       });    
 
     },
-    step: function (frame) {
+    step: function () {
 
       // trailsWind && trailsWind.step();
       multiline && multiline.step();
 
       // trailsBetterWind && trailsBetterWind.step();
 
-      index += 1;
+      frame += 1;
 
     },
     start: function () {},

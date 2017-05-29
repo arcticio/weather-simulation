@@ -139,7 +139,7 @@ var IFC = (function () {
       orbitControls.update();
 
       // GUI infos
-      self.updatePanels();
+      // self.updatePanels();
       // self.updateLabels();
 
     },

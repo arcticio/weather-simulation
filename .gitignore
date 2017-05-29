@@ -1,6 +1,9 @@
 # Google App Engine generated folder
 appengine-generated/
 
+stuff.txt
+http-8765.sh
+
 stuff/
 doc/
 node_modules/
@@ -9,17 +12,6 @@ data/*.nc
 data/*.hdf
 data/*.zip
 
-xml/*.sh
-xml/*.zip
-xml/*.png
-xml/*.jpg
-xml/*.tiff
-xml/*.tif
-xml/*tmp.xml
-xml/*aux.xml
-
 images/sources
 
-stuff.txt
-http-8765.sh
 
