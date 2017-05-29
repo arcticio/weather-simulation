@@ -13,7 +13,7 @@
 
     };
 
-    // gui.closed = true;
+    gui.closed = true;
 
   // dat.GUI.toggleHide(); // total hide
 

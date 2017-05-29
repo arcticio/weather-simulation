@@ -53,11 +53,15 @@
     }
 
     .label.sun {
-      background-color: rgba(20, 20, 20, 0.2);
-      color: white;
+      background-color: rgba(200, 200, 200, 0.8);
+      border-radius: 3px;
+      border: 2px solid rgba(200,200,200, 0.8);
+      color: #333;
       font-family: monospace;
-      font-size:  10px;
+      font-size: 10px;
+      font-weight: 800;
       overflow-x: hidden;
+      padding: 2px 2px 1px 4px;
       position: absolute;
       white-space: nowrap;
     }
@@ -153,7 +157,7 @@
       
 
       <div class="labels">
-        <div class="label sun">SUN</div>
+        <div class="label sun">Sun</div>
       </div>
 
     </div>
@@ -178,7 +182,6 @@
   <script src='libs/Tween.js'></script>
   <script src='libs/three.js'></script>
   <script src='libs/OOrbitControls.js'></script>
-  <script src="libs/THREE.MeshLine.js"></script>
   <script src="libs/stats.js"></script>
   <script src="libs/screenfull.js"></script>
   <script src='libs/dat.gui.js'></script>
@@ -191,6 +194,7 @@
   <script src="js/configurator.js"></script>
 
   <script src="js/animated.line.js"></script>
+  <script src="js/multi.line.js"></script>
   <script src="js/trail.js"></script>
 
   <script src="js/simulation.js"></script>

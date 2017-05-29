@@ -140,7 +140,7 @@ var IFC = (function () {
 
       // GUI infos
       self.updatePanels();
-      self.updateLabels();
+      // self.updateLabels();
 
     },
     events: {

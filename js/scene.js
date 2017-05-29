@@ -108,7 +108,7 @@ var SCN = (function () {
       },
 
       'simulation': (name, cfg) => {
-        // SIM.load(name, cfg, self.add);
+        SIM.load(name, cfg, self.add);
       },
       'cube.textured': (name, cfg) => {
         self.loadCube(name, cfg, self.add);
@@ -166,8 +166,6 @@ var SCN = (function () {
           }
 
         });
-
-      // H.each(geometry.vertices, (_, vertex) => vertex.normalize().multiplyScalar(cfg.cube.radius));
 
       for (idx in geometry.vertices) {
         vertex = geometry.vertices[idx];

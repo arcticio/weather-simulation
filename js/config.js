@@ -8,9 +8,12 @@
 */
 
 const 
+  PI = Math.PI,
+  TAU = 2 * PI,
+  PI2 = PI / 2,
   RADIUS = 1.0,
-  DISTANCE_OVERLAY  = 0.01,
-  DISTANCE_TRAILS = 0.03
+  DISTANCE_OVERLAY = 0.01,
+  DISTANCE_TRAILS  = 0.03
 ;
 
 const FIX = {
@@ -36,7 +39,7 @@ var CFG = {
   Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
   earth: {
-    radius: RADIUS,
+    radius:        RADIUS,
     radiusOverlay: RADIUS + 0.1,
   },
 
@@ -53,10 +56,10 @@ var CFG = {
     },
 
     ambient: {
-      visible: true,
-      type: 'light',
-      color: 0xffffff,
-      intensity: 0.2,
+      visible:    true,
+      type:       'light',
+      color:      0xffffff,
+      intensity:  0.2,
       light: (cfg) => new THREE.AmbientLight( cfg.color, cfg.intensity )
     },
 
@@ -90,7 +93,7 @@ var CFG = {
     },
 
     arrowHelper: {
-      // latlon-pointer
+      // latlon pointer of click marker
       visible: true,
       type: 'mesh',
       mesh: new THREE.ArrowHelper( 
@@ -102,8 +105,8 @@ var CFG = {
     },
 
     sunPointer: {
-      // latlon-pointer
-      visible: true,
+      // sun dir pointer
+      visible: false,
       type: 'mesh',
       mesh: new THREE.ArrowHelper( 
         new THREE.Vector3( 1, 1,  1), 

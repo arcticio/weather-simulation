@@ -6,15 +6,15 @@
   "scripts": {
     "ls": "ls -la"
   },
-  "pre-commit": [
-  ],
+  "pre-commit": [],
   "private": true,
   "engines": {
     "node": ">= 6.9.2",
     "npm": ">= 3.10.9"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "eslint": "^3.19.0"
   }
 }

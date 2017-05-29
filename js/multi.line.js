@@ -1,85 +1,116 @@
 
 
-function Multiline (meshlines, material) {
+function Multiline (meshlines) {
+
+  // meshlines = nonindexed
+
+  const vertCount = 3; // duplicate fist/last vertices + data
+
+  this.frame  = 0;
 
   this.amount = meshlines.length;
-  this.length = meshlines[0].positions.length / 2;
-  this.extras = (this.length -1) * 2;
-  this.totals = this.amount * this.length + this.extras;
+  this.extras = (this.amount -1) * 2 * vertCount;
+
+  this.geometry  = new THREE.BufferGeometry();
+  this.material  = meshlines[0].material;
+  // this.material  = meshlines[0].material.clone();
 
   this.attributes = {
 
-    colors:   new THREE.BufferAttribute( new Float32Array( this.total ), 3 ),
-    counters: new THREE.BufferAttribute( new Float32Array( this.total ), 1 ),
-    index:    new THREE.BufferAttribute( new Uint16Array(  this.total ), 1 ),
-    next:     new THREE.BufferAttribute( new Float32Array( this.total ), 3 ),
-    position: new THREE.BufferAttribute( new Float32Array( this.total ), 3 ),
-    previous: new THREE.BufferAttribute( new Float32Array( this.total ), 3 ),
-    side:     new THREE.BufferAttribute( new Float32Array( this.total ), 1 ),
-    uv:       new THREE.BufferAttribute( new Float32Array( this.total ), 2 ),
-    width:    new THREE.BufferAttribute( new Float32Array( this.total ), 1 ),
+    colors:    Float32Array,
+    counters:  Float32Array,
+    next:      Float32Array,
+    position:  Float32Array,
+    previous:  Float32Array,
+    side:      Float32Array,
+    uv:        Float32Array,
+    width:     Float32Array,
 
   };
 
-  H.each(this.attributes, (name, buffer) => {
+  var first = meshlines[0].geometry.attributes.counters.array;
+  var last  = meshlines[this.amount-1].geometry.attributes.counters.array;
+
+  // console.log('trails', TRAIL_NUM, 'length', TRAIL_LEN, last.length);
+  // console.log('first', first.slice(0, 12));
+  // console.log('last',  last.slice(-12));
+
+  H.each(this.attributes, (name, bufferType) => {
+
+    var
+      target, pointer = 0,
+      bufferLength   = meshlines[0].geometry.attributes[name].count,
+      bufferItemSize = meshlines[0].geometry.attributes[name].itemSize,
+      copyCount      = bufferItemSize * vertCount,
+      totalLength    = this.amount * (bufferLength * bufferItemSize) + this.extras;
+
+    this.attributes[name] = new THREE.BufferAttribute( new bufferType( totalLength ), bufferItemSize );
+    target = this.attributes[name].array;
 
     H.each(meshlines, (idx, mesh) => {
 
       var 
         i, j,
-        pointer = 0,
-        source  = mesh.attributes[name].array,
-        target  = buffer.array,
-        length  = source.length,
-        size    = mesh.attributes[name].itemSize
+        source  = mesh.geometry.attributes[name].array,
+        length  = source.length;
 
 
+      // double first vertice data, but not from first line 
       if (idx !== '0'){
-        
-        // double first
-        for (j=0, j<size; j++) {
+         
+        for (j=0; j<copyCount; j++) {
           target[pointer + j] = source[j];
         }
-        pointer += itemsize;
+        pointer += copyCount;
 
       }
 
-
-      // all data
+      // copy vertice data, from all lines
       for (i=0; i<length; i++) {
-        target[i] = source[i];
+        target[pointer + i] = source[i];
       }
       pointer += length;
 
 
-      if (idx !== String(this.amount)) {
+      // double last vertice data, but not from last line
+      if (idx !== String(this.amount -1)) {
 
-        // double last
-        for (j=0, j<size; j++) {
-          target[pointer + j] = source[length - itemsize + j];
+        for (j=0; j<copyCount; j++) {
+          target[pointer + j] = source[length - copyCount + j];
         }
-        pointer += itemsize;
+        pointer += copyCount;
 
       }
 
 
     });
 
+    this.geometry.addAttribute( name, this.attributes[name] );
+
   });
+
+  // console.log(this.attributes.counters.array.slice(0, 12));
+  // console.log(this.attributes.counters.array.slice(-12));
+
+  // debugger;
+
+  this.mesh = new THREE.Mesh( this.geometry, this.material );
 
 }
 
 Multiline.prototype = {
   constructor: Multiline,
-  
-  concat: function () {
 
-    H.each(meshlines,  line => {
+  step: function () {
 
+    var i, pointer, head;
 
-    });
+    this.frame += 1;
 
-
+    head = this.material.uniforms.head.value,
+    pointer = this.material.uniforms.pointer;
+    pointer.value = ((head + this.frame) % this.length) / this.length;
+    pointer.needsUpdate = true;
 
   },
 
@@ -105,7 +136,7 @@ Multiline.prototype = {
       pointer:          { type: 'f',  value: this.pointer },
       section:          { type: 'f',  value: this.section },
 
-    },
+    };
 
 
   },
@@ -194,7 +225,7 @@ Multiline.prototype = {
     ].join( '\r\n' );
 
 
-  }
+  },
 
   shaderFragment: function () {
 

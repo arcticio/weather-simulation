@@ -2,7 +2,6 @@
 
 var SIM = (function () {
 
-
   var 
     self,
     renderer,
@@ -21,6 +20,7 @@ var SIM = (function () {
     
     trailsWind,
     trailsBetterWind,
+    multiline,
 
     vectorSun = new THREE.Vector3(),
 
@@ -33,19 +33,19 @@ var SIM = (function () {
     sun   = Orb.SolarSystem().Sun(),
 
     time = {
-      // start: moment.utc(timerange[0], "YYYY-MM-DD"),
-      start: moment.utc('2017-01-01-00', "YYYY-MM-DD-HH"),
+      // start: moment.utc(timerange[0], 'YYYY-MM-DD'),
+      start: moment.utc('2017-01-01-00', 'YYYY-MM-DD-HH'),
 
-      now: moment.utc('2017-03-20-12', "YYYY-MM-DD-HH"),
+      now: moment.utc('2017-03-20-12', 'YYYY-MM-DD-HH'),
 
-      show: moment.utc('2017-03-20-12', "YYYY-MM-DD-HH"),
-      show: moment.utc('2017-09-23-12', "YYYY-MM-DD-HH"),
+      // show: moment.utc('2017-03-20-12', 'YYYY-MM-DD-HH'),
+      show: moment.utc('2017-09-23-12', 'YYYY-MM-DD-HH'),
 
       // now:   moment.utc(),
       // show:  moment.utc(),
 
-      // end:   moment.utc(timerange.slice(-1)[0], "YYYY-MM-DD"),
-      end:   moment.utc('2017-12-31-00', "YYYY-MM-DD-HH"),
+      // end:   moment.utc(timerange.slice(-1)[0], 'YYYY-MM-DD'),
+      end:   moment.utc('2017-12-31-00', 'YYYY-MM-DD-HH'),
       // interval: timerange.length * 24 -1, 
       interval: 365 * 24, 
     },
@@ -65,15 +65,18 @@ var SIM = (function () {
       var diff = time.now.diff(time.start, 'hours');
 
       IFC.controllers['DateTime']['choose'].setValue(diff);
-      // IFC.controllers['DateTime']['display'].setValue(time.show.format('YYYY-MM-DD HH:MM'));
 
     },
     load: function (name, config, callback) {
 
       TIM.step('SIM.load.in');
 
-      var mesh = self.createWind();
-      callback(name, mesh);
+      var containerWind = self.createWind();
+      callback(name, containerWind);
+
+      multiline = new Multiline(containerWind.children);
+      multiline.mesh.rotation.y += Math.PI / 4;
+      callback('meshlines', multiline.mesh);
 
       TIM.step('SIM.load.out');
 
@@ -104,8 +107,8 @@ var SIM = (function () {
 
       // updates
       vectorSun.setFromSpherical(sphererical).normalize();
-      SCN.objects.spot.position.copy(vectorSun).multiplyScalar(4);
-      SCN.objects.sunPointer.setDirection(vectorSun);
+      SCN.objects.spot.visible && SCN.objects.spot.position.copy(vectorSun).multiplyScalar(4);
+      SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(vectorSun);
 
       IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
 
@@ -119,23 +122,22 @@ var SIM = (function () {
         amount = TRAIL_NUM,
         length = TRAIL_LEN,
         
+        color         = new THREE.Color('rgb(255, 0, 0)'),
+        latsStart     = H.linspace( -40,  40, amount), 
+        lonsStart     = H.linspace( -10, -10, amount), 
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),
-        latsStart = H.linspace(-40, 40, amount), 
-        lonsStart = H.linspace(  -10, -10, amount), 
-        convert    = function (latlon) {
+        convert       = function (latlon) {
           return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
         },
-
-        color = new THREE.Color('rgb(255, 0, 0)'),
 
       end;
 
       for (i=0; i<amount; i++) {
 
+        col   = 0;
         lat   = latsStart[i];
         lon   = lonsStart[i];
-        col   = 0;
 
         for (j=0; j<length; j++) {
 
@@ -253,7 +255,8 @@ var SIM = (function () {
     },
     step: function (frame) {
 
-      trailsWind && trailsWind.step();
+      // trailsWind && trailsWind.step();
+      multiline && multiline.step();
 
       // trailsBetterWind && trailsBetterWind.step();
 

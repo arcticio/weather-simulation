@@ -100,7 +100,7 @@ var TOOLS = {
     var p = new THREE.Vector3(pos.x, pos.y, pos.z);
     var vector = p.project(SCN.camera);
 
-    vector.x = (vector.x + 1) / 2 * width;
+    vector.x =  (vector.x + 1) / 2 * width;
     vector.y = -(vector.y - 1) / 2 * height;
 
     return vector;

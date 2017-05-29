@@ -23,10 +23,10 @@ else
   DATESST=$DATE
 
 fi
-q
+
 TASKS="dods seaice sst snpp"
 # TASKS="dods seaice snpp"
-# TASKS="sst"
+TASKS="seaice snpp"
 
 echo
 echo "Now: ${DATENOW} Param: ${DATEPAR} Using: ${DATE} SST: ${DATESST} Tasks: ${TASKS}"
@@ -73,14 +73,14 @@ fi
 
 if [[ "$TASKS" =~ "dods" ]]; then
 
-  DATE1=`date -d "yesterday 12:00" '+%Y%m%d'`
-  DATE=`date -d "yesterday 12:00" '+%Y-%m-%d'`
+  DATEGFS="${DATE//-}" 
+
   echo 
-  echo "ugrd10m, vgrd10m, tmp2m, tcdcclm for ${DATE}"
-  wget -O "gfs/${DATE}.ugrd10m.dods" "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATE1}/gfs_1p00_00z.ascii?ugrd10m[0:0][0:180][0:359]"
-  wget -O "gfs/${DATE}.vgrd10m.dods" "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATE1}/gfs_1p00_00z.ascii?vgrd10m[0:0][0:180][0:359]"
-  wget -O "gfs/${DATE}.tmp2m.dods"   "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATE1}/gfs_1p00_00z.ascii?tmp2m[0:0][0:180][0:359]"
-  wget -O "gfs/${DATE}.tcdcclm.dods" "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATE1}/gfs_1p00_00z.ascii?tcdcclm[0:0][0:180][0:359]"
+  echo "ugrd10m, vgrd10m, tmp2m, tcdcclm for ${DATEGFS}"
+  wget -O "gfs/${DATE}.ugrd10m.dods" "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATEGFS}/gfs_1p00_00z.ascii?ugrd10m[0:0][0:180][0:359]"
+  wget -O "gfs/${DATE}.vgrd10m.dods" "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATEGFS}/gfs_1p00_00z.ascii?vgrd10m[0:0][0:180][0:359]"
+  wget -O "gfs/${DATE}.tmp2m.dods"   "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATEGFS}/gfs_1p00_00z.ascii?tmp2m[0:0][0:180][0:359]"
+  wget -O "gfs/${DATE}.tcdcclm.dods" "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATEGFS}/gfs_1p00_00z.ascii?tcdcclm[0:0][0:180][0:359]"
 
 fi
 
