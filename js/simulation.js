@@ -74,7 +74,7 @@ var SIM = (function () {
       var containerWind = self.createWind();
       callback(name, containerWind);
 
-      multiline = new Multiline(containerWind.children);
+      multiline = new Multiline(containerWind.children, TRAIL_LEN);
       multiline.mesh.rotation.y += Math.PI / 4;
       callback('meshlines', multiline.mesh);
 

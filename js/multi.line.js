@@ -1,19 +1,19 @@
 
 
-function Multiline (meshlines) {
+function Multiline (meshlines, lineLength) {
 
   // meshlines = nonindexed
 
   const vertCount = 3; // duplicate fist/last vertices + data
 
-  this.frame  = 0;
-
-  this.amount = meshlines.length;
-  this.extras = (this.amount -1) * 2 * vertCount;
-
-  this.geometry  = new THREE.BufferGeometry();
-  this.material  = meshlines[0].material;
-  // this.material  = meshlines[0].material.clone();
+  this.loader     = new THREE.TextureLoader();
+  this.bytes      = NaN;
+  this.frame      = 0;
+  this.lineLength = lineLength;
+  this.amount     = meshlines.length;
+  this.extras     = (this.amount -1) * 2 * vertCount;
+  this.geometry   = new THREE.BufferGeometry();
+  this.material   = this.createMaterial();
 
   this.attributes = {
 
@@ -28,9 +28,13 @@ function Multiline (meshlines) {
 
   };
 
-  var first = meshlines[0].geometry.attributes.counters.array;
-  var last  = meshlines[this.amount-1].geometry.attributes.counters.array;
+  var itemLength   = meshlines[0].geometry.attributes['colors'].count;
+  var lineIndexLength = this.amount * (itemLength) + this.extras;
+  this.lineIndex =  new THREE.BufferAttribute( new Float32Array( lineIndexLength ), 1 );
+  this.geometry.addAttribute( 'lineIndex', this.lineIndex );
 
+  // var first = meshlines[0].geometry.attributes.counters.array;
+  // var last  = meshlines[this.amount-1].geometry.attributes.counters.array;
   // console.log('trails', TRAIL_NUM, 'length', TRAIL_LEN, last.length);
   // console.log('first', first.slice(0, 12));
   // console.log('last',  last.slice(-12));
@@ -38,28 +42,29 @@ function Multiline (meshlines) {
   H.each(this.attributes, (name, bufferType) => {
 
     var
-      target, pointer = 0,
-      bufferLength   = meshlines[0].geometry.attributes[name].count,
-      bufferItemSize = meshlines[0].geometry.attributes[name].itemSize,
-      copyCount      = bufferItemSize * vertCount,
-      totalLength    = this.amount * (bufferLength * bufferItemSize) + this.extras;
+      target,
+      pointer     = 0,
+      itemSize    = meshlines[0].geometry.attributes[name].itemSize,
+      copyCount   = itemSize * vertCount,
+      totalLength = this.amount * (itemLength * itemSize) + this.extras,
+      lineIndexes = this.geometry.attributes['lineIndex'].array;
 
-    this.attributes[name] = new THREE.BufferAttribute( new bufferType( totalLength ), bufferItemSize );
+    this.attributes[name] = new THREE.BufferAttribute( new bufferType( totalLength ), itemSize );
     target = this.attributes[name].array;
 
     H.each(meshlines, (idx, mesh) => {
 
       var 
-        i, j,
+        i,
         source  = mesh.geometry.attributes[name].array,
         length  = source.length;
-
 
       // double first vertice data, but not from first line 
       if (idx !== '0'){
          
-        for (j=0; j<copyCount; j++) {
-          target[pointer + j] = source[j];
+        for (i=0; i<copyCount; i++) {
+          target[pointer + i]      = source[i];
+          lineIndexes[pointer + i] = idx;
         }
         pointer += copyCount;
 
@@ -67,7 +72,8 @@ function Multiline (meshlines) {
 
       // copy vertice data, from all lines
       for (i=0; i<length; i++) {
-        target[pointer + i] = source[i];
+        target[pointer + i]      = source[i];
+        lineIndexes[pointer + i] = idx;
       }
       pointer += length;
 
@@ -75,13 +81,14 @@ function Multiline (meshlines) {
       // double last vertice data, but not from last line
       if (idx !== String(this.amount -1)) {
 
-        for (j=0; j<copyCount; j++) {
-          target[pointer + j] = source[length - copyCount + j];
+        for (i=0; i<copyCount; i++) {
+          target[pointer + i]      = source[length - copyCount + i];
+          lineIndexes[pointer + i] = idx;
+
         }
         pointer += copyCount;
 
       }
-
 
     });
 
@@ -96,6 +103,14 @@ function Multiline (meshlines) {
 
   this.mesh = new THREE.Mesh( this.geometry, this.material );
 
+  this.bytes = Object
+    .keys(this.attributes)
+    .map(attr => this.attributes[attr].array.length)
+    .reduce(function(a, b){ return a + b; }, 0) * 4
+  ;
+
+  console.log('Multiline.length', this.bytes, 'bytes');
+
 }
 
 Multiline.prototype = {
@@ -103,51 +118,82 @@ Multiline.prototype = {
 
   step: function () {
 
+    // TODO: calc offset upfront
+
     var i, pointer, head;
 
     this.frame += 1;
 
-    head = this.material.uniforms.head.value,
-    pointer = this.material.uniforms.pointer;
-    pointer.value = ((head + this.frame) % this.length) / this.length;
-    pointer.needsUpdate = true;
+    for (i=0; i<this.amount; i++) {
+
+      head        = this.material.uniforms.heads.value[i],
+      pointers    = this.material.uniforms.pointers.value;
+      pointers[i] = ((head + this.frame) % this.lineLength) / this.lineLength;
+
+      this.material.uniforms.pointers.needsUpdate = true;
+
+    }
 
   },
 
-  material: function () {
+  createMaterial: function () {
 
-    this.prototype = Object.create( THREE.Material.prototype );
-    this.prototype.constructor = Multiline.material;
+    var     
+      alphaMap   = this.loader.load('images/line.alpha.64.png'),
+      opacity    = 0.8,
+      alphaTest  = 0.5,
+      color      = new THREE.Color('#ff0000'),
 
-    THREE.Material.call( this );
+      lineWidth  = CFG.earth.radius / 45,
+      resolution = new THREE.Vector2( window.innerWidth, window.innerHeight ),
 
-    var uniforms = {
+      heads      = new Array(this.amount).fill(0).map( n => Math.random() * this.lineLength ),
+      pointers   = heads.map( n => n),
+      section    = 10 / this.lineLength,    // length of trail in %
 
-      alphaMap:         { type: 't',  value: this.alphaMap },
-      repeat:           { type: 'v2', value: this.repeat },
-      offset:           { type: 'v2', value: this.offset },
+      material   = new THREE.RawShaderMaterial( {
+      uniforms: {
 
-      color:            { type: 'c',  value: this.color },
-      lineWidth:        { type: 'f',  value: this.lineWidth },
-      opacity:          { type: 'f',  value: this.opacity },
-      resolution:       { type: 'v2', value: this.resolution },
+        alphaMap:         { type: 't',  value: alphaMap },
+        alphaTest:        { type: 'f',  value: alphaTest },
+        color:            { type: 'c',  value: color },
+        opacity:          { type: 'f',  value: opacity },
 
-      head:             { type: 'f',  value: this.head },
-      pointer:          { type: 'f',  value: this.pointer },
-      section:          { type: 'f',  value: this.section },
+        lineWidth:        { type: 'f',  value: lineWidth },
+        resolution:       { type: 'v2', value: resolution },
 
-    };
+        heads:            { type: '1fv', value: heads },
+        pointers:         { type: '1fv', value: pointers },
+        section:          { type: 'f',   value: section },
+
+      },
+      vertexShader:   this.shaderVertex(),
+      fragmentShader: this.shaderFragment(),
+    });
+
+    Object.assign(material, {
+
+      depthTest:       true,                    // false ignores planet
+      blending:        THREE.NormalBlending,    // NormalBlending, AdditiveBlending
+      side:            THREE.FrontSide,         // FrontSide, DoubleSide
+      transparent:     true,                    // needed for alphamap
+      lights:          false,                   // no deco effex
+
+      wireframe:       false,
+
+    });
+
+    return material;
 
 
   },
 
-  shaderVertex: function () {
+  shaderVertex: function (lineLength) {
     
     return [
 
       'precision highp float;',
 
-      'attribute float counters;',
       'attribute float side;',
       'attribute float width;',
       'attribute vec2  uv;',
@@ -156,16 +202,24 @@ Multiline.prototype = {
       'attribute vec3  previous;',
 
       'attribute vec3  colors;',
+      'attribute float lineIndex;',
+      'attribute float counters;',
 
       'uniform mat4  projectionMatrix;',
       'uniform mat4  modelViewMatrix;',
       'uniform vec2  resolution;',
       'uniform float lineWidth;',
+
       'uniform vec3  color;',
       'uniform float opacity;',
+
+      'uniform float heads[    ' + this.amount + ' ];',  // start for each line
+      'uniform float pointers[ ' + this.amount + ' ];',  // start for each line
       
       'varying vec2  vUV;',
       'varying vec4  vColor;',
+
+      'varying float vPointer;',
       'varying float vCounters;',
 
       'vec2 fix( vec4 i, float aspect ) {',
@@ -179,6 +233,9 @@ Multiline.prototype = {
       'void main() {',
 
       '    vUV       = uv;',
+
+      '    vPointer    = pointers[int(lineIndex)];',
+
       // '    vColor    = vec4( (color + colors) * 0.5, opacity );',
       '    vColor    = vec4( colors, opacity );',
       '    vCounters = counters;',
@@ -234,15 +291,13 @@ Multiline.prototype = {
       'precision mediump float;',
 
       'uniform sampler2D alphaMap;',
-      'uniform vec2  repeat;',
-      'uniform vec2  offset;',
-
-      'uniform float pointer;',
-      'uniform float section;',
 
       'varying vec2  vUV;',
       'varying vec4  vColor;',
       'varying float vCounters;',
+
+      'varying float vPointer;',
+      'uniform float section;',
       
       'float alpha;',
       'float alphaTest = 0.5;',
@@ -254,21 +309,18 @@ Multiline.prototype = {
 
       '    alpha = texture2D( alphaMap, vUV).a;',
 
-      '    if (counter > pointer ) alpha = 0.0;',
-      '    if (counter < (pointer - section) ) alpha = 0.0;',
+      '    if (counter > vPointer ) alpha = 0.0;',
+      '    if (counter < (vPointer - section) ) alpha = 0.0;',
 
       '    if( alpha < alphaTest ) discard;',
       '    color.a = alpha;',
 
       '    gl_FragColor    = color;',
 
-
       '}' 
 
     ].join( '\r\n' );
 
-
   }
-
 
 }
