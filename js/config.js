@@ -87,13 +87,13 @@ var CFG = {
     },
 
     axes: {
-      visible: true,
+      visible: false,
       type: 'mesh',
       mesh: new THREE.AxisHelper( RADIUS * 4 ),
     },
 
+    // lat lon pointer of click marker
     arrowHelper: {
-      // latlon pointer of click marker
       visible: true,
       type: 'mesh',
       mesh: new THREE.ArrowHelper( 
@@ -173,7 +173,11 @@ var CFG = {
         type: 'globe',
         radius: RADIUS, 
         texture: 'images/mask/earth.FACE.2048.jpg', 
-        bump:    'images/topo/earth.FACE.topo.2048.jpg',
+        material: {
+          transparent: true, 
+          opacity:     0.99,              // removes crazy seaice effeckt
+          side:        THREE.DoubleSide,
+        }
       }
     },
 
@@ -185,6 +189,11 @@ var CFG = {
         type: 'globe',
         radius: RADIUS - 0.002,
         texture: 'data/snpp/2017-05-23.globe.snpp.FACE.2048.jpg', 
+        material: {
+          transparent: true, 
+          opacity:     0.99,              // removes crazy seaice effeckt
+          side:        THREE.DoubleSide,
+        }
       }
     },
 
@@ -196,6 +205,11 @@ var CFG = {
         type: 'globe',
         radius: RADIUS + 0.001, 
         texture: 'data/sst/2017-05-22.globe.sst.FACE.1024.png', 
+        material: {
+          transparent: true, 
+          opacity:     0.99,              // removes crazy seaice effeckt
+          side:        THREE.SingleSide,
+        }
       }
     },
 
@@ -207,6 +221,11 @@ var CFG = {
         type: 'polar',
         radius: RADIUS + 0.002, 
         texture: 'data/seaice/2017-05-22.polar.amsr2.FACE.1024.png', 
+        material: {
+          transparent: true, 
+          opacity:     0.99,              // removes crazy seaice effeckt
+          side:        THREE.DoubleSide,
+        }
       }
     },
 

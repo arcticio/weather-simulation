@@ -13,10 +13,12 @@ var SCN = (function () {
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
+    canvas       =    $$('.simulator')[0],
+
     renderer      = new THREE.WebGLRenderer({
-      canvas:    $$('.simulator')[0],
+      canvas,
       antialias: true,
-      // alpha:     true 
+      alpha:     true,
     }),
 
     camera        = CFG.objects.perspective.cam,
@@ -55,6 +57,7 @@ var SCN = (function () {
     home,
     scene,
     camera,
+    canvas,
     monitor,
     objects,
     renderer,
@@ -101,7 +104,8 @@ var SCN = (function () {
       // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
       renderer.setSize(window.innerWidth, window.innerHeight);
       // webgl.min_capability_mode
-      renderer.setClearColor(0x4d4d4d, 1.0)
+      // renderer.setClearColor(0x4d4d4d, 1.0)
+      renderer.setClearColor(0x000000, 0.0)
       renderer.shadowMap.enabled = false;
 
       camera.position.copy(CFG.objects.perspective.pos);
@@ -205,13 +209,14 @@ var SCN = (function () {
 
         materials = responses.map(response => {
 
-          return new THREE.MeshPhongMaterial({ 
+          return new THREE.MeshPhongMaterial(Object.assign({ 
             map:         response.data,
-            transparent: true, 
-            opacity:     1.0, 
-            side:        THREE.FrontSide,
-            shininess:   2,
-          });
+            // transparent: true, 
+            // opacity:     0.99, // removes crazy seaice effeckt
+            // side:        THREE.DoubleSide,
+            shininess:   0,
+            alphaTest: 0.5,
+          }), cfg.material);
 
         });
 
@@ -315,6 +320,7 @@ var SCN = (function () {
         floatFragmentTextures : renderer.capabilities.floatFragmentTextures,
         floatVertexTextures :   renderer.capabilities.floatVertexTextures,
         getMaxAnisotropy :      renderer.capabilities.getMaxAnisotropy,
+        capabilities:           canvas.getContext('webgl').getSupportedExtensions(),
 
       }, null, 2));
 

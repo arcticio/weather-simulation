@@ -119,6 +119,10 @@ var IFC = (function () {
         [simulator, 'mouseout'],
         [simulator, 'click'],
         [simulator, 'dblclick'],
+        [simulator, 'touchstart'],
+        [simulator, 'touchmove'],
+        [simulator, 'touchend'],
+        [simulator, 'touchcancel'],
         [document,  'contextmenu'],
         [window,    'orientationchange'],
         [window,    'deviceorientation'],
@@ -195,6 +199,11 @@ var IFC = (function () {
       mouseleave:  function (event) { /* console.log('mouseleave') */ },
       mouseout:    function (event) { /* console.log('mouseout') */ },
       contextmenu: function (event) { /* console.log('contextmenu') */ },
+
+      touchstart:  function (event) { /* console.log('touchstart') */ },
+      touchmove:   function (event) { /* console.log('touchmove') */ },
+      touchend:    function (event) { /* console.log('touchend') */ },
+      touchcancel: function (event) { /* console.log('touchcancel') */ },
 
       devicemotion:      function (event) { /* console.log('devicemotion', event)      */ },
       orientationchange: function (event) { console.log('orientationchange', event)       },

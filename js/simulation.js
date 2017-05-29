@@ -105,8 +105,8 @@ var SIM = (function () {
 
       // updates
       vectorSun.setFromSpherical(sphererical).normalize();
-      SCN.objects.spot.visible       && SCN.objects.spot.position.copy(vectorSun).multiplyScalar(6);
-      SCN.objects.sun.visible        && SCN.objects.sun.position.copy(vectorSun).multiplyScalar(6);
+      SCN.objects.spot.visible       && SCN.objects.spot.position.copy(vectorSun).multiplyScalar(10);
+      SCN.objects.sun.visible        && SCN.objects.sun.position.copy(vectorSun).multiplyScalar(10);
       SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(vectorSun);
 
       IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
@@ -127,7 +127,7 @@ var SIM = (function () {
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),
         convert       = function (latlon) {
-          return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, 0.01);
+          return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, 0.03);
         },
 
       end;
@@ -141,9 +141,9 @@ var SIM = (function () {
         for (j=0; j<length; j++) {
 
           trailsVectors[i].push(convert([lat, lon]));
-          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 50%, 50%)'));
+          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 45%, 45%)'));
 
-          lat += 0.1;
+          lat += 0.4;
           lon += 60/length;
           col += 360/length;
 
