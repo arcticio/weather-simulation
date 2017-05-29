@@ -4,6 +4,8 @@ function Multiline (meshlines, lineLength) {
 
   // meshlines = nonindexed
 
+  // TODO: keep indexed, replicate process, combine index + counters as float, verify extra
+
   const vertCount = 3; // duplicate fist/last vertices + data
 
   this.loader     = new THREE.TextureLoader();
@@ -188,7 +190,7 @@ Multiline.prototype = {
 
   },
 
-  shaderVertex: function (lineLength) {
+  shaderVertex: function () {
     
     return [
 
