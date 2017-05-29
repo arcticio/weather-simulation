@@ -1,7 +1,7 @@
 'use strict';
 
 const TRAIL_LEN = 60;
-const TRAIL_NUM = 1200;
+const TRAIL_NUM = 100;
 
 var SCN = (function () {
 
@@ -9,7 +9,6 @@ var SCN = (function () {
     self,
     frame         = 0,
     time          = 0,
-    // loader        = new THREE.TextureLoader(),
 
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
@@ -61,9 +60,8 @@ var SCN = (function () {
     renderer,
     timerange,
 
-    boot: function () {
-      return self = this;
-    },
+    boot:     function () { return self = this; },
+    activate: function () { window.addEventListener('resize', self.resize, false); },
     add: function (name, obj) {
       objects[name] = obj;
       objects[name].name = name;
@@ -85,10 +83,51 @@ var SCN = (function () {
       }
 
     },
-    activate: function () {
-      window.addEventListener('resize', self.resize, false);
+    resize: function () {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.domElement.style.width  = window.innerWidth  + 'px';
+      renderer.domElement.style.height = window.innerHeight + 'px';
+      renderer.domElement.width        = window.innerWidth;
+      renderer.domElement.height       = window.innerHeight;
+      camera.aspect                    = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      // console.log(window.innerWidth, window.innerHeight);
+    },
+    init: function () {
+
+      var idx, vertex, onload;
+
+      canvas = renderer.domElement;
+      // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      // webgl.min_capability_mode
+      renderer.setClearColor(0x4d4d4d, 1.0)
+      renderer.shadowMap.enabled = false;
+
+      camera.position.copy(CFG.objects.perspective.pos);
+
+      self.resize();
+
+      timerange.push(dataTimeRanges['3d-simulation'][0]);
+      console.log(timerange.latest());
+
+
+      H.each(CFG.objects, (name, config) => {
+
+        config.name = name;
+
+        if (config.visible){
+          self.loader[config.type](name, config);
+        } else {
+          objects[name] = config;
+        }
+
+      });
+
     },
     loader: {
+
+      // TODO: here async tasks
 
       'mesh.textured': (name, cfg) => {
         RES.load({type: 'texture', urls: [cfg.texture], onFinish: (err, responses) => {
@@ -116,38 +155,6 @@ var SCN = (function () {
       'camera': (name, cfg) => {
 
       },
-
-    },
-    init: function () {
-
-      var idx, vertex, onload;
-
-      canvas = renderer.domElement;
-      renderer.setPixelRatio( window.devicePixelRatio );
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      // webgl.min_capability_mode
-      renderer.setClearColor(0x4d4d4d, 1.0)
-      renderer.shadowMap.enabled = false;
-
-      camera.position.copy(CFG.objects.perspective.pos);
-
-      self.resize();
-
-      timerange.push(dataTimeRanges["3d-simulation"][0]);
-      console.log(timerange.latest());
-
-
-      H.each(CFG.objects, (name, config) => {
-
-        config.name = name;
-
-        if (config.visible){
-          self.loader[config.type](name, config);
-        } else {
-          objects[name] = config;
-        }
-
-      });
 
     },
     loadCube: function (name, cfg, callback) {
@@ -197,20 +204,8 @@ var SCN = (function () {
       }});
 
     },
-    resize: function () {
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.domElement.style.width  = window.innerWidth  + 'px';
-      renderer.domElement.style.height = window.innerHeight + 'px';
-      renderer.domElement.width        = window.innerWidth;
-      renderer.domElement.height       = window.innerHeight;
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      // console.log(window.innerWidth, window.innerHeight);
-    },
 
     actions: function (folder, option, value) {
-
-      // console.log("GUI.change", {action, folder, option, value});
 
       var
         ignore = () => {},
@@ -282,14 +277,23 @@ var SCN = (function () {
     logInfo: function render () {
 
       console.log('renderer', JSON.stringify({
-        trails:     TRAIL_NUM,
-        length:     TRAIL_LEN,
-        children:   scene.children.length,
-        geometries: renderer.info.memory.geometries,
-        calls:      renderer.info.render.calls,
-        textures:   renderer.info.memory.textures,
-        faces:      renderer.info.render.faces,
-        vertices:   renderer.info.render.vertices,
+
+        trails:                 TRAIL_NUM,
+        length:                 TRAIL_LEN,
+        children:               scene.children.length,
+        geometries:             renderer.info.memory.geometries,
+        calls:                  renderer.info.render.calls,
+        textures:               renderer.info.memory.textures,
+        faces:                  renderer.info.render.faces,
+        vertices:               renderer.info.render.vertices,
+        maxAttributes :         renderer.capabilities.maxAttributes,
+        maxTextures :           renderer.capabilities.maxTextures,
+        maxVaryings :           renderer.capabilities.maxVaryings,
+        maxVertexUniforms :     renderer.capabilities.maxVertexUniforms, // this limits multiline amount
+        floatFragmentTextures : renderer.capabilities.floatFragmentTextures,
+        floatVertexTextures :   renderer.capabilities.floatVertexTextures,
+        getMaxAnisotropy :      renderer.capabilities.getMaxAnisotropy,
+
       }, null, 2));
 
     },

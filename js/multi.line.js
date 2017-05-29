@@ -30,9 +30,9 @@ function Multiline (meshlines, lineLength) {
 
   };
 
-  var itemLength   = meshlines[0].geometry.attributes['colors'].count;
+  var itemLength      = meshlines[0].geometry.attributes['colors'].count;
   var lineIndexLength = this.amount * (itemLength) + this.extras;
-  this.lineIndex =  new THREE.BufferAttribute( new Float32Array( lineIndexLength ), 1 );
+  this.lineIndex      = new THREE.BufferAttribute( new Float32Array( lineIndexLength ), 1 );
   this.geometry.addAttribute( 'lineIndex', this.lineIndex );
 
   // var first = meshlines[0].geometry.attributes.counters.array;
@@ -153,25 +153,29 @@ Multiline.prototype = {
       pointers   = heads.map( n => n),
       section    = 10 / this.lineLength,    // length of trail in %
 
-      material   = new THREE.RawShaderMaterial( {
-      uniforms: {
+      material   = new THREE.RawShaderMaterial({
+        uniforms: {
 
-        // alphaMap:         { type: 't',  value: alphaMap },
-        alphaTest:        { type: 'f',  value: alphaTest },
-        color:            { type: 'c',  value: color },
-        opacity:          { type: 'f',  value: opacity },
+          // alphaMap:         { type: 't',  value: alphaMap },
+          // alphaTest:        { type: 'f',  value: alphaTest },
 
-        lineWidth:        { type: 'f',  value: lineWidth },
-        resolution:       { type: 'v2', value: resolution },
+          color:            { type: 'c',    value: color },
+          opacity:          { type: 'f',    value: opacity },
 
-        heads:            { type: '1fv', value: heads },
-        pointers:         { type: '1fv', value: pointers },
-        section:          { type: 'f',   value: section },
+          lineWidth:        { type: 'f',    value: lineWidth },
+          resolution:       { type: 'v2',   value: resolution },
 
-      },
-      vertexShader:   this.shaderVertex(),
-      fragmentShader: this.shaderFragment(),
-    });
+          heads:            { type: '1fv',  value: heads },
+          pointers:         { type: '1fv',  value: pointers },
+          section:          { type: 'f',    value: section },
+
+        },
+
+        vertexShader:   this.shaderVertex(),
+        fragmentShader: this.shaderFragment(),
+
+      })
+    ;
 
       // material.uniforms.alphaMap.repeat = new THREE.Vector2(64, 1);
       // https://threejs.org/docs/index.html#api/materials/ShaderMaterial
@@ -187,13 +191,11 @@ Multiline.prototype = {
       shading:         THREE.SmoothShading,     // *THREE.SmoothShading or THREE.FlatShading
       vertexColors:    THREE.NoColors,          // *THREE.NoColors, THREE.FaceColors and THREE.VertexColors.
 
-
       wireframe:       false,
 
     });
 
     return material;
-
 
   },
 
