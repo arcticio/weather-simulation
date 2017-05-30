@@ -6,7 +6,7 @@
 
 */
 
-function Multiline (trailsVectors, trailsColors, trailsWidths) {
+function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
   var idx = 0;
 
@@ -18,7 +18,7 @@ function Multiline (trailsVectors, trailsColors, trailsWidths) {
   this.points     = this.amount * this.length;
 
   this.geometry   = new THREE.BufferGeometry();
-  this.material   = this.createMaterial();
+  this.material   = this.createMaterial(options);
   this.attributes = {
     lineIndex: Float32Array,
     colors:    Float32Array,
@@ -113,31 +113,30 @@ Multiline.prototype = {
 
   },
 
-  createMaterial: function () {
+  check: function (val, valDefault) {
+    return val === undefined ? valDefault : val;
+  },
+
+  createMaterial: function (options) {
 
     var     
-      // alphaMap   = this.loader.load('images/line.alpha.64.png'),
-      opacity    = 0.8,
-      alphaTest  = 0.5,
-      color      = new THREE.Color('#ff0000'),
+      color      = this.check(options.color, new THREE.Color('#ff0000')),
+      opacity    = this.check(options.opacity, 0.8),
+      lineWidth  = this.check(options.lineWidth, 0.01),
 
-      lineWidth  = (CFG.earth.radius * Math.PI) / this.amount * 0.5,
       resolution = new THREE.Vector2( window.innerWidth, window.innerHeight ),
 
       heads      = new Array(this.amount).fill(0).map( n => Math.random() * this.length ),
       pointers   = heads.map( n => n),
-      section    = 10 / this.length,    // length of trail in %
+      section    = this.check(options.section, 10 / this.length),    // length of trail in %
 
       material   = new THREE.RawShaderMaterial({
         uniforms: {
 
-          // alphaMap:         { type: 't',  value: alphaMap },
-          // alphaTest:        { type: 'f',  value: alphaTest },
-
           color:            { type: 'c',    value: color },
           opacity:          { type: 'f',    value: opacity },
-
           lineWidth:        { type: 'f',    value: lineWidth },
+
           resolution:       { type: 'v2',   value: resolution },
 
           heads:            { type: '1fv',  value: heads },

@@ -1,7 +1,7 @@
 'use strict';
 
 const TRAIL_LEN = 60;
-const TRAIL_NUM = 100;
+const TRAIL_NUM = 750;
 
 var SCN = (function () {
 

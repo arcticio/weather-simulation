@@ -126,7 +126,7 @@ var SIM = (function () {
         trailsWidths  = new Array(amount).fill(0).map( () => []),
 
         convert       = function (latlon) {
-          return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, 0.03);
+          return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, 0.01);
         },
 
       end;
@@ -151,7 +151,13 @@ var SIM = (function () {
 
       }
 
-      trailsWind = new Multiline(trailsVectors, trailsColors, trailsWidths);
+      // preset uniforms, etc
+      trailsWind = new Multiline(trailsVectors, trailsColors, trailsWidths, {
+        color:     new THREE.Color('#ff0000'),
+        opacity:   0.8,
+        section:   10 / length, 
+        lineWidth: (CFG.earth.radius * Math.PI) / amount,  // world coords
+      });
 
       return trailsWind;
       
