@@ -104,8 +104,7 @@ var SCN = (function () {
       // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
       renderer.setSize(window.innerWidth, window.innerHeight);
       // webgl.min_capability_mode
-      // renderer.setClearColor(0x4d4d4d, 1.0)
-      renderer.setClearColor(0x000000, 0.0)
+      renderer.setClearColor(0x000000, 0.0);
       renderer.shadowMap.enabled = false;
 
       camera.position.copy(CFG.objects.perspective.pos);

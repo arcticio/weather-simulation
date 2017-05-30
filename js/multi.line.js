@@ -1,43 +1,36 @@
 
 
-function Multiline (meshlines, lineLength) {
-
-  // meshlines = nonindexed
-
-  // TODO: keep indexed, replicate process, combine index + counters as float, verify extra
-
-  const vertCount = 3; // duplicate fist/last vertices + data
-
-  // this.loader     = new THREE.TextureLoader(); // alpha blocky
+function Multiline (trailsVectors, trailsColors, trailsWidths) {
 
   this.frame      = 0;
 
-  this.lines      = [];
-  this.length     = lineLength;
-
   this.bytes      = NaN;
-  this.amount     = meshlines.length;
-  this.extras     = (this.amount -1) * 2 * vertCount;
+  this.amount     = trailsVectors.length;
+  this.length     = trailsVectors[0].length;
+  this.points     = this.amount * this.length;
+
   this.geometry   = new THREE.BufferGeometry();
   this.material   = this.createMaterial();
-
   this.attributes = {
 
+    lineIndex: Float32Array,
     colors:    Float32Array,
-    counters:  Float32Array,
     next:      Float32Array,
     position:  Float32Array,
     previous:  Float32Array,
     side:      Float32Array,
     uv:        Float32Array,
     width:     Float32Array,
+    index:     Uint16Array,
 
   };
 
-  var itemLength      = meshlines[0].geometry.attributes['colors'].count;
-  var lineIndexLength = this.amount * (itemLength) + this.extras;
-  this.lineIndex      = new THREE.BufferAttribute( new Float32Array( lineIndexLength ), 1 );
-  this.geometry.addAttribute( 'lineIndex', this.lineIndex );
+  var idx = 0;
+
+  this.lines = H.zip(trailsVectors, trailsColors, trailsWidths, (vectors, colors, widths) => {
+    return new Multiline.line(idx++, vectors, colors, widths);
+  });
+
 
   // var first = meshlines[0].geometry.attributes.counters.array;
   // var last  = meshlines[this.amount-1].geometry.attributes.counters.array;
@@ -50,55 +43,42 @@ function Multiline (meshlines, lineLength) {
     var
       target,
       pointer     = 0,
-      itemSize    = meshlines[0].geometry.attributes[name].itemSize,
-      copyCount   = itemSize * vertCount,
-      totalLength = this.amount * (itemLength * itemSize) + this.extras,
-      lineIndexes = this.geometry.attributes['lineIndex'].array;
+      itemSize    = this.lines[0].attributes[name].itemSize,
+      totalLength = this.lines[0].attributes[name].array.length * this.amount,
+      positionsLength = this.lines[0].attributes['position'].count,
+      indexOffset = 0;
 
     this.attributes[name] = new THREE.BufferAttribute( new bufferType( totalLength ), itemSize );
+    
     target = this.attributes[name].array;
 
-    H.each(meshlines, (idx, mesh) => {
+    H.each(this.lines, (idx, mesh) => {
 
-      var 
-        i,
-        source  = mesh.geometry.attributes[name].array,
+      var i,
+        source  = mesh.attributes[name].array,
         length  = source.length;
 
-      // double first vertice data, but not from first line 
-      if (idx !== '0'){
-         
-        for (i=0; i<copyCount; i++) {
-          target[pointer + i]      = source[i];
-          lineIndexes[pointer + i] = idx;
+      if (name === 'index'){
+        for (i=0; i<length; i++) {
+          target[pointer + i] = source[i] + indexOffset;
         }
-        pointer += copyCount;
 
+      } else {
+        for (i=0; i<length; i++) {
+          target[pointer + i] = source[i];
+        }
       }
 
-      // copy vertice data, from all lines
-      for (i=0; i<length; i++) {
-        target[pointer + i]      = source[i];
-        lineIndexes[pointer + i] = idx;
-      }
       pointer += length;
-
-
-      // double last vertice data, but not from last line
-      if (idx !== String(this.amount -1)) {
-
-        for (i=0; i<copyCount; i++) {
-          target[pointer + i]      = source[length - copyCount + i];
-          lineIndexes[pointer + i] = idx;
-
-        }
-        pointer += copyCount;
-
-      }
+      indexOffset += positionsLength;
 
     });
 
-    this.geometry.addAttribute( name, this.attributes[name] );
+    if (name !== 'index'){
+      this.geometry.addAttribute( name, this.attributes[name] );
+    } else {
+      this.geometry.setIndex(this.attributes.index);
+    }
 
   });
 
@@ -106,6 +86,7 @@ function Multiline (meshlines, lineLength) {
   // console.log(this.attributes.counters.array.slice(-12));
 
   // debugger;
+
 
   this.mesh = new THREE.Mesh( this.geometry, this.material );
 
@@ -218,7 +199,6 @@ Multiline.prototype = {
 
       'attribute vec3  colors;',
       'attribute float lineIndex;',
-      'attribute float counters;',
 
       'uniform mat4  projectionMatrix;',
       'uniform mat4  modelViewMatrix;',
@@ -235,7 +215,7 @@ Multiline.prototype = {
       'varying vec4  vColor;',
 
       'varying float vPointer;',
-      'varying float vCounters;',
+      'varying float vCounter;',
 
       'vec2 fix( vec4 i, float aspect ) {',
 
@@ -248,12 +228,9 @@ Multiline.prototype = {
       'void main() {',
 
       '    vUV       = uv;',
-
-      '    vPointer    = pointers[int(lineIndex)];',
-
-      // '    vColor    = vec4( (color + colors) * 0.5, opacity );',
+      '    vPointer  = pointers[int(lineIndex)];',
+      '    vCounter  = fract(lineIndex);',
       '    vColor    = vec4( colors, opacity );',
-      '    vCounters = counters;',
 
       '    float aspect = resolution.x / resolution.y;',
 
@@ -305,30 +282,27 @@ Multiline.prototype = {
 
       'precision mediump float;',
 
-      'uniform sampler2D alphaMap;',
-
       'varying vec2  vUV;',
       'varying vec4  vColor;',
-      'varying float vCounters;',
-
       'varying float vPointer;',
+      'varying float vCounter;',
+
       'uniform float section;',
+      // 'uniform float opacity;',
       
-      'float alpha;',
-      'float alphaTest = 0.5;',
+      'float visibility = 1.0;',
+      'float threshhold = 0.5;',
 
       'void main() {',
 
       '    vec4  color   = vColor;',
-      '    float counter = vCounters  ;',
+      '    float counter = vCounter  ;',
 
-      '    alpha = texture2D( alphaMap, vUV).a;',
+      '    if (counter > vPointer ) visibility = 0.0;',
+      '    if (counter < (vPointer - section) ) visibility = 0.0;',
 
-      '    if (counter > vPointer ) alpha = 0.0;',
-      '    if (counter < (vPointer - section) ) alpha = 0.0;',
-
-      '    if( alpha < alphaTest ) discard;',
-      '    color.a = alpha;',
+      '    if( visibility < threshhold ) discard;',
+      // '    color.a = opacity;',
 
       '    gl_FragColor    = color;',
 
@@ -340,33 +314,36 @@ Multiline.prototype = {
 
 };
 
-Multiline.line = function (vertices, widths, colors) {
+Multiline.line = function ( idx, vertices, colors, widths ) {
 
-  this.counters  = [];
+  this.idx       = idx;
+
   this.indices   = [];
+
+  this.lineIndex = [];
   this.next      = [];
   this.positions = [];
   this.previous  = [];
   this.side      = [];
   this.uvs       = [];
-  this.width     = [];
+  this.widths    = [];
   this.colors    = [];
 
   this.length = vertices.length;
 
-  this.init(vertices, widths, colors);
+  this.init(vertices, colors, widths);
   this.process();
 
   this.attributes = {
-    index:    new THREE.BufferAttribute( new Uint16Array(  this.indices ),   1 ),
-    counters: new THREE.BufferAttribute( new Float32Array( this.counters ),  1 ),
-    next:     new THREE.BufferAttribute( new Float32Array( this.next ),      3 ),
-    position: new THREE.BufferAttribute( new Float32Array( this.positions ), 3 ),
-    previous: new THREE.BufferAttribute( new Float32Array( this.previous ),  3 ),
-    side:     new THREE.BufferAttribute( new Float32Array( this.side ),      1 ),
-    uv:       new THREE.BufferAttribute( new Float32Array( this.uvs ),       2 ),
-    width:    new THREE.BufferAttribute( new Float32Array( this.width ),     1 ),
-    colors:   new THREE.BufferAttribute( new Float32Array( this.colors ),    3 ),
+    index:     new THREE.BufferAttribute( new Uint16Array(  this.indices ),   1 ),
+    lineIndex: new THREE.BufferAttribute( new Float32Array( this.lineIndex ), 1 ),
+    next:      new THREE.BufferAttribute( new Float32Array( this.next ),      3 ),
+    position:  new THREE.BufferAttribute( new Float32Array( this.positions ), 3 ),
+    previous:  new THREE.BufferAttribute( new Float32Array( this.previous ),  3 ),
+    side:      new THREE.BufferAttribute( new Float32Array( this.side ),      1 ),
+    uv:        new THREE.BufferAttribute( new Float32Array( this.uvs ),       2 ),
+    width:     new THREE.BufferAttribute( new Float32Array( this.widths ),     1 ),
+    colors:    new THREE.BufferAttribute( new Float32Array( this.colors ),    3 ),
   }
 
 };
@@ -392,7 +369,7 @@ Multiline.line.prototype = {
 
   },
 
-  init:  function( vertices, widths, colors ) {
+  init:  function( vertices, colors, widths ) {
 
     var j, ver, cou, col;
 
@@ -405,8 +382,8 @@ Multiline.line.prototype = {
 
       this.positions.push( ver.x, ver.y, ver.z );
       this.positions.push( ver.x, ver.y, ver.z );
-      this.counters.push(cou);
-      this.counters.push(cou);
+      this.lineIndex.push(this.idx + cou);
+      this.lineIndex.push(this.idx + cou);
       this.colors.push(col.r, col.g, col.b);
       this.colors.push(col.r, col.g, col.b);
       this.widths.push(wid);
