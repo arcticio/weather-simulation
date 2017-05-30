@@ -8,10 +8,14 @@ function Multiline (meshlines, lineLength) {
 
   const vertCount = 3; // duplicate fist/last vertices + data
 
-  this.loader     = new THREE.TextureLoader();
-  this.bytes      = NaN;
+  // this.loader     = new THREE.TextureLoader(); // alpha blocky
+
   this.frame      = 0;
-  this.lineLength = lineLength;
+
+  this.lines      = [];
+  this.length     = lineLength;
+
+  this.bytes      = NaN;
   this.amount     = meshlines.length;
   this.extras     = (this.amount -1) * 2 * vertCount;
   this.geometry   = new THREE.BufferGeometry();
@@ -130,7 +134,7 @@ Multiline.prototype = {
 
       head        = this.material.uniforms.heads.value[i],
       pointers    = this.material.uniforms.pointers.value;
-      pointers[i] = ((head + this.frame) % this.lineLength) / this.lineLength;
+      pointers[i] = ((head + this.frame) % this.length) / this.length;
 
       this.material.uniforms.pointers.needsUpdate = true;
 
@@ -141,7 +145,7 @@ Multiline.prototype = {
   createMaterial: function () {
 
     var     
-      alphaMap   = this.loader.load('images/line.alpha.64.png'),
+      // alphaMap   = this.loader.load('images/line.alpha.64.png'),
       opacity    = 0.8,
       alphaTest  = 0.5,
       color      = new THREE.Color('#ff0000'),
@@ -149,9 +153,9 @@ Multiline.prototype = {
       lineWidth  = (CFG.earth.radius * Math.PI) / this.amount * 0.5,
       resolution = new THREE.Vector2( window.innerWidth, window.innerHeight ),
 
-      heads      = new Array(this.amount).fill(0).map( n => Math.random() * this.lineLength ),
+      heads      = new Array(this.amount).fill(0).map( n => Math.random() * this.length ),
       pointers   = heads.map( n => n),
-      section    = 10 / this.lineLength,    // length of trail in %
+      section    = 10 / this.length,    // length of trail in %
 
       material   = new THREE.RawShaderMaterial({
         uniforms: {
@@ -332,6 +336,133 @@ Multiline.prototype = {
 
     ].join( '\r\n' );
 
+  },
+
+};
+
+Multiline.line = function (vertices, widths, colors) {
+
+  this.counters  = [];
+  this.indices   = [];
+  this.next      = [];
+  this.positions = [];
+  this.previous  = [];
+  this.side      = [];
+  this.uvs       = [];
+  this.width     = [];
+  this.colors    = [];
+
+  this.length = vertices.length;
+
+  this.init(vertices, widths, colors);
+  this.process();
+
+  this.attributes = {
+    index:    new THREE.BufferAttribute( new Uint16Array(  this.indices ),   1 ),
+    counters: new THREE.BufferAttribute( new Float32Array( this.counters ),  1 ),
+    next:     new THREE.BufferAttribute( new Float32Array( this.next ),      3 ),
+    position: new THREE.BufferAttribute( new Float32Array( this.positions ), 3 ),
+    previous: new THREE.BufferAttribute( new Float32Array( this.previous ),  3 ),
+    side:     new THREE.BufferAttribute( new Float32Array( this.side ),      1 ),
+    uv:       new THREE.BufferAttribute( new Float32Array( this.uvs ),       2 ),
+    width:    new THREE.BufferAttribute( new Float32Array( this.width ),     1 ),
+    colors:   new THREE.BufferAttribute( new Float32Array( this.colors ),    3 ),
   }
 
-}
+};
+
+Multiline.line.prototype = {
+  constructor:  Multiline.line,
+  compareV3:    function( a, b ) {
+
+    var aa = a * 6, ab = b * 6;
+
+    return (
+      ( this.positions[ aa     ] === this.positions[ ab     ] ) && 
+      ( this.positions[ aa + 1 ] === this.positions[ ab + 1 ] ) && 
+      ( this.positions[ aa + 2 ] === this.positions[ ab + 2 ] )
+    );
+
+  },
+
+  copyV3:       function( a ) {
+
+    var aa = a * 6;
+    return [ this.positions[ aa ], this.positions[ aa + 1 ], this.positions[ aa + 2 ] ];
+
+  },
+
+  init:  function( vertices, widths, colors ) {
+
+    var j, ver, cou, col;
+
+    for( j = 0; j < this.length; j++ ) {
+
+      ver = vertices[ j ];
+      col = colors[ j ];
+      wid = widths[ j ];
+      cou = j / vertices.length;
+
+      this.positions.push( ver.x, ver.y, ver.z );
+      this.positions.push( ver.x, ver.y, ver.z );
+      this.counters.push(cou);
+      this.counters.push(cou);
+      this.colors.push(col.r, col.g, col.b);
+      this.colors.push(col.r, col.g, col.b);
+      this.widths.push(wid);
+      this.widths.push(wid);
+    }
+
+  },
+
+  process:      function() {
+
+    var j, c, v, n, w, l = this.positions.length / 6;
+
+    for( j = 0; j < l; j++ ) {
+      this.side.push(  1 );
+      this.side.push( -1 );
+      this.uvs.push( j / ( l - 1 ), 0 );
+      this.uvs.push( j / ( l - 1 ), 1 );
+    }
+
+    if( this.compareV3( 0, l - 1 ) ){
+      v = this.copyV3( l - 2 );
+    } else {
+      v = this.copyV3( 0 );
+    }
+
+    this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+    this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+
+    for( j = 0; j < l - 1; j++ ) {
+      v = this.copyV3( j );
+      this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+      this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+    }
+
+    for( j = 1; j < l; j++ ) {
+      v = this.copyV3( j );
+      this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+      this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+    }
+
+    if( this.compareV3( l - 1, 0 ) ){
+      v = this.copyV3( 1 );
+    } else {
+      v = this.copyV3( l - 1 );
+    }
+
+    this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+    this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+
+    for( j = 0; j < l - 1; j++ ) {
+      n = j + j;
+      this.indices.push( n, n + 1, n + 2 );
+      this.indices.push( n + 2, n + 1, n + 3 );
+    }
+
+  },
+
+
+};

@@ -211,9 +211,6 @@ var SCN = (function () {
 
           return new THREE.MeshPhongMaterial(Object.assign({ 
             map:         response.data,
-            // transparent: true, 
-            // opacity:     0.99, // removes crazy seaice effeckt
-            // side:        THREE.DoubleSide,
             shininess:   0,
             alphaTest: 0.5,
           }), cfg.material);
@@ -327,10 +324,7 @@ var SCN = (function () {
     },
     render: function render (nTime) {
 
-      var v3, 
-        intersection, intersections, 
-        idx = (frame + TRAIL_LEN) % 360,
-        dTime = nTime - time;
+      var dTime = nTime - time;
 
       requestAnimationFrame(render);
 

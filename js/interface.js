@@ -10,13 +10,15 @@ var IFC = (function () {
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
+
+    loader     = $$('.interface img.loader')[0],
+    simulator  = $$('.simulator')[0],
+    fullscreen = $$('.fullscreen')[0],
+
     orbitControls, 
     width, height,
 
     controllers = GUIcontrollers,
-
-    simulator,  // 3D canvas
-    fullscreen, // div full
 
     mouse = {
       x:      NaN, 
@@ -78,8 +80,7 @@ var IFC = (function () {
     },
     init: function () {
 
-      simulator  = $$('.simulator')[0];
-      fullscreen = $$('.fullscreen')[0];
+      loader.style.display = 'block';
 
       width  = simulator.width;
       height = simulator.height;
@@ -88,7 +89,28 @@ var IFC = (function () {
       stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
       fullscreen.appendChild( stats.dom );
 
+      // move gui.dat to fullscreen container
+      fullscreen.appendChild($$('div.dg.ac')[0]);
+
       raycaster.params.Points.threshold = 0.001; // threshold;
+
+
+    },
+    show: function () {
+
+      loader.style.display = 'none';
+      
+      $$('.panel.image')[0].style.display = 'block';
+      $$('.panel.latlon')[0].style.display = 'block';
+      $$('.panel.info')[0].style.display = 'block';
+      $$('.panel.test')[0].style.display = 'block';
+      $$('.panel.expi')[0].style.display = 'block';
+      $$('.interface .labels')[0].style.display = 'block';
+      
+      $$('canvas.simulator')[0].style.display = 'block';
+
+    },
+    activate: function () {
 
       orbitControls = self.orbitControls = new THREE.OOrbitControls(SCN.camera, SCN.renderer.domElement),
 
@@ -101,12 +123,6 @@ var IFC = (function () {
         orbitControls.constraint.smoothZoomSpeed = 2.0;
         orbitControls.constraint.minDistance = RADIUS + 0.1;
         orbitControls.constraint.maxDistance = 8;
-
-      // move gui.dat to fullscreen container
-      fullscreen.appendChild($$('div.dg.ac')[0]);
-
-    },
-    activate: function () {
 
       H.each([
 

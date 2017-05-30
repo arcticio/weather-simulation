@@ -143,7 +143,7 @@ var SIM = (function () {
           trailsVectors[i].push(convert([lat, lon]));
           trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 45%, 45%)'));
 
-          lat += 0.4;
+          lat += (90 - 80) / length;
           lon += 60/length;
           col += 360/length;
 
