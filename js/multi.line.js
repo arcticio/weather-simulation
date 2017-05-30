@@ -1,6 +1,14 @@
+/*
 
+  Borrowed from 
+    https://github.com/spite/THREE.MeshLine/
+  using MIT LICENCE
+
+*/
 
 function Multiline (trailsVectors, trailsColors, trailsWidths) {
+
+  var idx = 0;
 
   this.frame      = 0;
 
@@ -12,7 +20,6 @@ function Multiline (trailsVectors, trailsColors, trailsWidths) {
   this.geometry   = new THREE.BufferGeometry();
   this.material   = this.createMaterial();
   this.attributes = {
-
     lineIndex: Float32Array,
     colors:    Float32Array,
     next:      Float32Array,
@@ -22,41 +29,30 @@ function Multiline (trailsVectors, trailsColors, trailsWidths) {
     uv:        Float32Array,
     width:     Float32Array,
     index:     Uint16Array,
-
   };
-
-  var idx = 0;
 
   this.lines = H.zip(trailsVectors, trailsColors, trailsWidths, (vectors, colors, widths) => {
     return new Multiline.line(idx++, vectors, colors, widths);
   });
-
-
-  // var first = meshlines[0].geometry.attributes.counters.array;
-  // var last  = meshlines[this.amount-1].geometry.attributes.counters.array;
-  // console.log('trails', TRAIL_NUM, 'length', TRAIL_LEN, last.length);
-  // console.log('first', first.slice(0, 12));
-  // console.log('last',  last.slice(-12));
 
   H.each(this.attributes, (name, bufferType) => {
 
     var
       target,
       pointer     = 0,
+      indexOffset = 0,
       itemSize    = this.lines[0].attributes[name].itemSize,
       totalLength = this.lines[0].attributes[name].array.length * this.amount,
-      positionsLength = this.lines[0].attributes['position'].count,
-      indexOffset = 0;
+      positLength = this.lines[0].attributes['position'].count;
 
     this.attributes[name] = new THREE.BufferAttribute( new bufferType( totalLength ), itemSize );
-    
     target = this.attributes[name].array;
-
+    
     H.each(this.lines, (idx, mesh) => {
 
       var i,
-        source  = mesh.attributes[name].array,
-        length  = source.length;
+        source = mesh.attributes[name].array,
+        length = source.length;
 
       if (name === 'index'){
         for (i=0; i<length; i++) {
@@ -69,8 +65,8 @@ function Multiline (trailsVectors, trailsColors, trailsWidths) {
         }
       }
 
-      pointer += length;
-      indexOffset += positionsLength;
+      pointer     += length;
+      indexOffset += positLength;
 
     });
 
@@ -82,21 +78,15 @@ function Multiline (trailsVectors, trailsColors, trailsWidths) {
 
   });
 
-  // console.log(this.attributes.counters.array.slice(0, 12));
-  // console.log(this.attributes.counters.array.slice(-12));
-
-  // debugger;
-
-
   this.mesh = new THREE.Mesh( this.geometry, this.material );
 
   this.bytes = Object
     .keys(this.attributes)
     .map(attr => this.attributes[attr].array.length)
-    .reduce(function(a, b){ return a + b; }, 0) * 4
+    .reduce( (a, b) =>  a + b, 0) * 4
   ;
 
-  console.log('Multiline.length', this.bytes, 'bytes');
+  console.log('Multiline.attributes.length', this.bytes, 'bytes');
 
 }
 
@@ -105,9 +95,9 @@ Multiline.prototype = {
 
   step: function () {
 
-    // TODO: calc offset upfront
+    // TODO: dTime math
 
-    var i, pointer, head;
+    var i, pointer, head, offset = 1 / this.length;
 
     this.frame += 1;
 
@@ -115,7 +105,7 @@ Multiline.prototype = {
 
       head        = this.material.uniforms.heads.value[i],
       pointers    = this.material.uniforms.pointers.value;
-      pointers[i] = ((head + this.frame) % this.length) / this.length;
+      pointers[i] = (pointers[i] + offset) % 1;
 
       this.material.uniforms.pointers.needsUpdate = true;
 
@@ -191,20 +181,20 @@ Multiline.prototype = {
       'precision highp float;',
 
       'attribute float side;',
-      'attribute float width;',
       'attribute vec2  uv;',
       'attribute vec3  next;',
       'attribute vec3  position;',
       'attribute vec3  previous;',
 
+      'attribute float width;',
       'attribute vec3  colors;',
       'attribute float lineIndex;',
 
       'uniform mat4  projectionMatrix;',
       'uniform mat4  modelViewMatrix;',
       'uniform vec2  resolution;',
-      'uniform float lineWidth;',
 
+      'uniform float lineWidth;',
       'uniform vec3  color;',
       'uniform float opacity;',
 
@@ -228,8 +218,8 @@ Multiline.prototype = {
       'void main() {',
 
       '    vUV       = uv;',
-      '    vPointer  = pointers[int(lineIndex)];',
-      '    vCounter  = fract(lineIndex);',
+      '    vPointer  = pointers[int(lineIndex)];',   // get head for this segment
+      '    vCounter  = fract(lineIndex);',           // get pos of this segment 
       '    vColor    = vec4( colors, opacity );',
 
       '    float aspect = resolution.x / resolution.y;',
@@ -282,29 +272,28 @@ Multiline.prototype = {
 
       'precision mediump float;',
 
-      'varying vec2  vUV;',
-      'varying vec4  vColor;',
-      'varying float vPointer;',
-      'varying float vCounter;',
+      'varying vec4  vColor;',    // color from attribute
+      'varying float vPointer;',  // head of line segment
+      'varying float vCounter;',  // goes from 0 to 1 
 
-      'uniform float section;',
-      // 'uniform float opacity;',
+      'uniform float section;',   // visible segment length
       
-      'float visibility = 1.0;',
-      'float threshhold = 0.5;',
+      'bool  visible = true;',    // frag part of segment
 
       'void main() {',
 
-      '    vec4  color   = vColor;',
-      '    float counter = vCounter  ;',
+      '    vec4  color = vColor;',
+      '    float head  = vPointer;',
+      '    float tail  = vPointer - section;',
+      '    float pos   = vCounter;',
 
-      '    if (counter > vPointer ) visibility = 0.0;',
-      '    if (counter < (vPointer - section) ) visibility = 0.0;',
+      '    visible = ( pos > tail ) && ( pos < head );',  // pos within segment
 
-      '    if( visibility < threshhold ) discard;',
-      // '    color.a = opacity;',
+      '    if( !visible ) discard;',
 
-      '    gl_FragColor    = color;',
+      '    color.a = mix (0.0, 1.0, (pos - tail) / section ); ',
+
+      '    gl_FragColor = color;',
 
       '}' 
 

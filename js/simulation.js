@@ -69,9 +69,7 @@ var SIM = (function () {
 
       TIM.step('SIM.load.in');
 
-      trailsWind= self.createWind();
-      trailsWind.mesh.rotation.y += Math.PI / 4;
-
+      trailsWind = self.createWind();
       callback(name, trailsWind.mesh);
 
       TIM.step('SIM.load.out');
@@ -142,7 +140,7 @@ var SIM = (function () {
         for (j=0; j<length; j++) {
 
           trailsVectors[i].push(convert([lat, lon]));
-          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 45%, 45%)'));
+          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 60%, 45%)'));  // 45=nice
           trailsWidths[i].push(1);
 
           lat += (90 - 80) / length;

@@ -99,7 +99,7 @@ var IFC = (function () {
     show: function () {
 
       loader.style.display = 'none';
-      
+
       $$('.panel.image')[0].style.display = 'block';
       $$('.panel.latlon')[0].style.display = 'block';
       $$('.panel.info')[0].style.display = 'block';
@@ -183,6 +183,8 @@ var IFC = (function () {
         mouse.down = true;
         mouse.button = event.button;
         // console.log('mousedown', event.button, event);
+
+        // TODO: swap buttons, mind orbit drag
 
         if (mouse.button === 0) {
           SCN.objects.arrowHelper.setDirection( mouse.intersect );
