@@ -144,7 +144,7 @@ var SIM = (function () {
           trailsWidths[i].push(1);
 
           lat += (90 - 80) / length;
-          lon += 60/length;
+          lon += 240/length;
           col += 360/length;
 
         }
@@ -155,7 +155,7 @@ var SIM = (function () {
       trailsWind = new Multiline(trailsVectors, trailsColors, trailsWidths, {
         color:     new THREE.Color('#ff0000'),
         opacity:   0.8,
-        section:   10 / length, 
+        section:   10 / length, // %
         lineWidth: (CFG.earth.radius * Math.PI) / amount,  // world coords
       });
 

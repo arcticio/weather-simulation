@@ -4,21 +4,21 @@
 
     <script type="text/javascript">
 
-      var DEVELOP = "False" === "True"   ? true : false;
-      var DEBUG   = "False"   === "True" ? true : false;
-      // var ADMIN   = "False"   === "True" ? true : false;
-      var VERSION = "3.4.1";
+      var DEVELOP = 'False' === 'True'   ? true : false;
+      var DEBUG   = 'False'   === 'True' ? true : false;
+      // var ADMIN   = 'False'   === 'True' ? true : false;
+      var VERSION = '3.4.1';
 
       var TIM = (function(){
         
-        var fill = new Array(18).join(" "), 
+        var fill = new Array(18).join(' '), 
             pad  = function(s){return (s+fill).substr(0, fill.length);},
             now  = function( ){return (window.performance.now() / 1000).toFixed(2);}
 
         return {
           now: now,
           step: function(key, com){
-            console.log (pad(key), "-", now() + "s", (com) ? com : "-");
+            console.log (pad(key), '-', now() + 's', (com) ? com : '-');
           }
         };
         

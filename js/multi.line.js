@@ -119,47 +119,23 @@ Multiline.prototype = {
 
   createMaterial: function (options) {
 
+    // https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
+
     var     
       color      = this.check(options.color, new THREE.Color('#ff0000')),
       opacity    = this.check(options.opacity, 0.8),
       lineWidth  = this.check(options.lineWidth, 0.01),
 
-      resolution = new THREE.Vector2( window.innerWidth, window.innerHeight ),
-
       heads      = new Array(this.amount).fill(0).map( n => Math.random() * this.length ),
       pointers   = heads.map( n => n),
-      section    = this.check(options.section, 10 / this.length),    // length of trail in %
+      section    = this.check(options.section, 10 / this.length);    // length of trail in %
 
-      material   = new THREE.RawShaderMaterial({
-        uniforms: {
-
-          color:            { type: 'c',    value: color },
-          opacity:          { type: 'f',    value: opacity },
-          lineWidth:        { type: 'f',    value: lineWidth },
-
-          resolution:       { type: 'v2',   value: resolution },
-
-          heads:            { type: '1fv',  value: heads },
-          pointers:         { type: '1fv',  value: pointers },
-          section:          { type: 'f',    value: section },
-
-        },
-
-        vertexShader:   this.shaderVertex(),
-        fragmentShader: this.shaderFragment(),
-
-      })
-    ;
-
-      // material.uniforms.alphaMap.repeat = new THREE.Vector2(64, 1);
-      // https://threejs.org/docs/index.html#api/materials/ShaderMaterial
-
-    Object.assign(material, {
+    return  new THREE.RawShaderMaterial({
 
       depthTest:       true,                    // false ignores planet
       blending:        THREE.NormalBlending,    // NormalBlending, AdditiveBlending
       side:            THREE.DoubleSide,        // FrontSide (start=skewed), DoubleSide (start=vertical)
-      transparent:     true,                    // needed for alphamap
+      transparent:     true,                    // needed for alphamap, opacity + gradient
       lights:          false,                   // no deco effex, true tries to add scene.lights
 
       shading:         THREE.SmoothShading,     // *THREE.SmoothShading or THREE.FlatShading
@@ -167,136 +143,133 @@ Multiline.prototype = {
 
       wireframe:       false,
 
-    });
+      uniforms: {
 
-    return material;
+        color:            { type: 'c',    value: color },
+        opacity:          { type: 'f',    value: opacity },
+        lineWidth:        { type: 'f',    value: lineWidth },
+
+        heads:            { type: '1fv',  value: heads },
+        pointers:         { type: '1fv',  value: pointers },
+        section:          { type: 'f',    value: section },
+
+      },
+
+      vertexShader:   this.shaderVertex(),
+      fragmentShader: this.shaderFragment(),
+
+    });
 
   },
 
   shaderVertex: function () {
-    
-    return [
 
-      'precision highp float;',
+    return `
 
-      'attribute float side;',
-      'attribute vec2  uv;',
-      'attribute vec3  next;',
-      'attribute vec3  position;',
-      'attribute vec3  previous;',
+      precision highp float;
 
-      'attribute float width;',
-      'attribute vec3  colors;',
-      'attribute float lineIndex;',
+      attribute float side;
+      attribute vec2  uv;
+      attribute vec3  next;
+      attribute vec3  position;
+      attribute vec3  previous;
 
-      'uniform mat4  projectionMatrix;',
-      'uniform mat4  modelViewMatrix;',
-      'uniform vec2  resolution;',
+      attribute float width;
+      attribute vec3  colors;
+      attribute float lineIndex;
 
-      'uniform float lineWidth;',
-      'uniform vec3  color;',
-      'uniform float opacity;',
+      uniform mat4  projectionMatrix;
+      uniform mat4  modelViewMatrix;
 
-      'uniform float heads[    ' + this.amount + ' ];',  // start for each line
-      'uniform float pointers[ ' + this.amount + ' ];',  // start for each line
+      uniform float lineWidth;
+      uniform vec3  color;
+      uniform float opacity;
+
+      uniform float pointers[  ${this.amount}  ];  // start for each line
       
-      'varying vec2  vUV;',
-      'varying vec4  vColor;',
+      varying vec2  vUV;
+      varying vec4  vColor;
+      varying float vHead;
+      varying float vCounter;
 
-      'varying float vPointer;',
-      'varying float vCounter;',
+      vec2 dir;
+      vec2 dir1;
+      vec2 dir2;
+      vec2 normal;
+      vec4 offset;
 
-      'vec2 fix( vec4 i, float aspect ) {',
+      void main() {
 
-      '    vec2 res = i.xy / i.w;',
-      '    res.x *= aspect;',
-      '    return res;',
 
-      '}',
+          // vUV       = uv;
+          vHead     = pointers[int(lineIndex)];   // get head for this segment
+          vCounter  = fract(lineIndex);           // get pos of this segment 
+          vColor    = vec4( colors, opacity );
 
-      'void main() {',
+          mat4 m = projectionMatrix * modelViewMatrix;
 
-      '    vUV       = uv;',
-      '    vPointer  = pointers[int(lineIndex)];',   // get head for this segment
-      '    vCounter  = fract(lineIndex);',           // get pos of this segment 
-      '    vColor    = vec4( colors, opacity );',
+          vec4 finalPosition = m * vec4( position, 1.0 );
+          vec4 prevPos       = m * vec4( previous, 1.0 );
+          vec4 nextPos       = m * vec4( next, 1.0 );
 
-      '    float aspect = resolution.x / resolution.y;',
+          vec2 currP = finalPosition.xy / finalPosition.w;
+          vec2 prevP = prevPos.xy       / prevPos.w;
+          vec2 nextP = nextPos.xy       / nextPos.w;
 
-      '    mat4 m = projectionMatrix * modelViewMatrix;',
+          if      ( nextP == currP ) { dir = normalize( currP - prevP) ;}
+          else if ( prevP == currP ) { dir = normalize( nextP - currP) ;}
+          else {
+              dir1 = normalize( currP - prevP );
+              dir2 = normalize( nextP - currP );
+              dir  = normalize( dir1  + dir2 );
+          }
 
-      '    vec4 finalPosition = m * vec4( position, 1.0 );',
-      '    vec4 prevPos = m * vec4( previous, 1.0 );',
-      '    vec4 nextPos = m * vec4( next, 1.0 );',
+          normal  = vec2( -dir.y, dir.x );
+          normal *= lineWidth * width;
 
-      '    vec2 currP = fix( finalPosition, aspect );',
-      '    vec2 prevP = fix( prevPos, aspect );',
-      '    vec2 nextP = fix( nextPos, aspect );',
+          offset = vec4( normal * side, 0.0, 1.0 );
+          finalPosition.xy += offset.xy;
 
-      '    float w = 1.8 * lineWidth * width;',
+          gl_Position = finalPosition;
 
-      '    vec2 dir;',
-      '    vec2 dir1;',
-      '    vec2 dir2;',
-      '    vec2 normal;',
-      '    vec4 offset;',
+      } 
 
-      '    if      ( nextP == currP ) dir = normalize( currP - prevP );',
-      '    else if ( prevP == currP ) dir = normalize( nextP - currP );',
-      '    else {',
-      '        dir1 = normalize( currP - prevP );',
-      '        dir2 = normalize( nextP - currP );',
-      '        dir  = normalize( dir1 + dir2 );',
-      '    }',
-
-      '    normal = vec2( -dir.y, dir.x );',
-      '    normal.x /= aspect;',
-      '    normal *= lineWidth * width;',
-
-      '    offset = vec4( normal * side, 0.0, 1.0 );',
-      '    finalPosition.xy += offset.xy;',
-
-      '    gl_Position = finalPosition;',
-
-      '}' 
-    
-    ].join( '\r\n' );
-
+    `;
 
   },
 
   shaderFragment: function () {
 
-    return [
+    return `
 
-      'precision mediump float;',
+      precision mediump float;
 
-      'varying vec4  vColor;',    // color from attribute
-      'varying float vPointer;',  // head of line segment
-      'varying float vCounter;',  // goes from 0 to 1 
+      varying vec4  vColor;    // color from attribute, includes uni opacity
+      varying float vHead;     // head of line segment
+      varying float vCounter;  // current position, goes from 0 to 1 
 
-      'uniform float section;',   // visible segment length
+      uniform float section;   // visible segment length
       
-      'bool  visible = true;',    // frag part of segment
+      bool  visible = true;    // frag part of segment
 
-      'void main() {',
+      void main() {
 
-      '    vec4  color = vColor;',
-      '    float head  = vPointer;',
-      '    float tail  = vPointer - section;',
-      '    float pos   = vCounter;',
+          vec4  color = vColor;
+          float head  = vHead;
+          float tail  = vHead - section;
+          float pos   = vCounter;
 
-      '    visible = ( pos > tail ) && ( pos < head );',  // pos within segment
+          visible = ( pos > tail ) && ( pos < head );  // pos within segment
 
-      '    if( !visible ) discard;',
+          if( !visible ) discard;
 
-      '    color.a = mix (0.0, 1.0, (pos - tail) / section ); ',
+          color.a = (pos - tail) / section;
 
-      '    gl_FragColor = color;',
+          gl_FragColor = color;
 
-      '}' 
+      } 
 
-    ].join( '\r\n' );
+    `;
 
   },
 
@@ -307,7 +280,6 @@ Multiline.line = function ( idx, vertices, colors, widths ) {
   this.idx       = idx;
 
   this.indices   = [];
-
   this.lineIndex = [];
   this.next      = [];
   this.positions = [];
@@ -330,7 +302,7 @@ Multiline.line = function ( idx, vertices, colors, widths ) {
     previous:  new THREE.BufferAttribute( new Float32Array( this.previous ),  3 ),
     side:      new THREE.BufferAttribute( new Float32Array( this.side ),      1 ),
     uv:        new THREE.BufferAttribute( new Float32Array( this.uvs ),       2 ),
-    width:     new THREE.BufferAttribute( new Float32Array( this.widths ),     1 ),
+    width:     new THREE.BufferAttribute( new Float32Array( this.widths ),    1 ),
     colors:    new THREE.BufferAttribute( new Float32Array( this.colors ),    3 ),
   }
 
