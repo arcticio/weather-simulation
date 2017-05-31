@@ -12,6 +12,8 @@ data/*.nc
 data/*.hdf
 data/*.zip
 
+images/tmp
+
 images/sources
 
 

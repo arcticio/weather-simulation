@@ -59,7 +59,7 @@ var CFG = {
       visible:    true,
       type:       'light',
       color:      0xffffff,
-      intensity:  0.01,
+      intensity:  0.1,
       light: (cfg) => new THREE.AmbientLight( cfg.color, cfg.intensity )
     },
 
@@ -67,7 +67,7 @@ var CFG = {
       visible:   true,
       type:      'light',
       color:     0xffffff, 
-      intensity: 0.6, 
+      intensity: 1.0, 
       distance:  0.0, 
       angle:     0.3, 
       penumbra:  0.1, 
@@ -79,9 +79,9 @@ var CFG = {
     sun: {
       visible:      true,
       type:         'light',
-      skycolor:     0xffddaa,
-      grdcolor:     0x090950,
-      intensity:    0.4, 
+      skycolor:     0xffddaa, // reddish
+      grdcolor:     0x8989c3, // blueish
+      intensity:    0.6, 
       light:        (cfg) => new THREE.HemisphereLight( cfg.skycolor, cfg.grdcolor, cfg.intensity ),
       pos:          new THREE.Vector3(2, 2, 2)
     },
@@ -172,7 +172,7 @@ var CFG = {
       cube: {
         type: 'globe',
         radius: RADIUS, 
-        texture: 'images/mask/earth.FACE.2048.jpg', 
+        texture: 'images/data/globe.data.FACE.2048.jpg', 
         material: {
           transparent: true, 
           opacity:     0.99,              // removes crazy seaice effeckt
@@ -188,7 +188,7 @@ var CFG = {
       cube: {
         type: 'globe',
         radius: RADIUS - 0.002,
-        texture: 'data/snpp/2017-05-23.globe.snpp.FACE.2048.jpg', 
+        texture: 'data/snpp/2017-05-30.globe.snpp.FACE.2048.jpg', 
         material: {
           transparent: true, 
           opacity:     0.99,              // removes crazy seaice effeckt
@@ -204,7 +204,7 @@ var CFG = {
       cube: {
         type: 'globe',
         radius: RADIUS + 0.001, 
-        texture: 'data/sst/2017-05-22.globe.sst.FACE.1024.png', 
+        texture: 'data/sst/2017-05-30.globe.sst.FACE.1024.png', 
         material: {
           transparent: true, 
           opacity:     0.99,              // removes crazy seaice effeckt
@@ -214,13 +214,13 @@ var CFG = {
     },
 
     seaice: {
-      visible: false,
+      visible: true,
       type: 'cube.textured',
       rotation: [0, Math.PI / 2, 0],
       cube: {
         type: 'polar',
         radius: RADIUS + 0.002, 
-        texture: 'data/seaice/2017-05-22.polar.amsr2.FACE.1024.png', 
+        texture: 'data/seaice/2017-05-30.polar.amsr2.FACE.1024.grey.png', 
         material: {
           transparent: true, 
           opacity:     0.99,              // removes crazy seaice effeckt

@@ -31,20 +31,10 @@ var SIM = (function () {
     sun   = Orb.SolarSystem().Sun(),
 
     time = {
-      // start: moment.utc(timerange[0], 'YYYY-MM-DD'),
       start: moment.utc('2017-01-01-00', 'YYYY-MM-DD-HH'),
-
-      now: moment.utc('2017-05-30-12', 'YYYY-MM-DD-HH'),
-
-      // show: moment.utc('2017-03-20-12', 'YYYY-MM-DD-HH'),
-      show: moment.utc('2017-09-23-12', 'YYYY-MM-DD-HH'),
-
-      // now:   moment.utc(),
-      // show:  moment.utc(),
-
-      // end:   moment.utc(timerange.slice(-1)[0], 'YYYY-MM-DD'),
+      now:   moment.utc('2017-05-30-12', 'YYYY-MM-DD-HH'),
+      show:  moment.utc('2017-09-30-12', 'YYYY-MM-DD-HH'),
       end:   moment.utc('2017-12-31-00', 'YYYY-MM-DD-HH'),
-      // interval: timerange.length * 24 -1, 
       interval: 365 * 24, 
     },
 
@@ -69,10 +59,19 @@ var SIM = (function () {
 
       TIM.step('SIM.load.in');
 
-      trailsWind = self.createWind();
-      callback(name, trailsWind.mesh);
+      // this is testing MultiLInes
+      // trailsWind = self.createWind();
+      // callback(name, trailsWind.mesh);
 
-      TIM.step('SIM.load.out');
+      this.loadModel(function () {
+
+        trailsWind = self.createModelWind();
+        callback(name, trailsWind.mesh);
+
+        TIM.step('SIM.load.out');
+
+      });
+
 
     },
     updateDatetime: function (val) {
@@ -162,17 +161,35 @@ var SIM = (function () {
       return trailsWind;
       
     },
-    loadBetterWind: function () {
+    loadModel: function (callback) {
 
-      return;
+      RES.load({
+        urls: [
+          'data/gfs/2017-05-30-12.tcdcclm.dods',
+          'data/gfs/2017-05-30-12.tmp2m.dods',
+          'data/gfs/2017-05-30-12.ugrd10m.dods',
+          'data/gfs/2017-05-30-12.vgrd10m.dods',
+        ],
+        onFinish: function (err, responses) {
 
-      // https://stackoverflow.com/questions/44098678/how-to-rotate-a-vector3-using-vector2
+          responses.forEach(function (response) {
+            var vari, data;
+            if (response){
+              vari = response.url.split('.').slice(-2)[0];
+              data = SIM.Model.parseMultiDods(vari, response.data);
+              model[vari] = new SIM.Datagram(data);
+            } else {
+              console.log('WTF');
+            }
+          });
+          
+          callback();
 
-      //  For winds, the u wind is parallel to the x axis. 
-      // A positive u wind is from the west. 
-      // A negative u wind is from the east. 
-      // The v wind runs parallel to the y axis. 
-      // A positive v wind is from the south, and a negative v wind is from the north.
+        }
+      });    
+
+    },
+    createModelWind: function () {
       
       TIM.step('Model.loaded');
 
@@ -182,16 +199,17 @@ var SIM = (function () {
         // amount = latlonsStart.length,
 
         length = 60,
-        amount = 3000,
-        latlonsStart = TOOLS.createLatLonsRectRandom([80, 0], [-80, 359], amount),
+        amount = 2000,
+        latlonsStart = TOOLS.createLatLonsRectRandom([60, 0], [-60, 359], amount),
 
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),
+        trailsWidths  = new Array(amount).fill(0).map( () => []),
         convertLL    = function (latlon) {
-          return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, CFG.earth.radius / 45);
+          return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, 0.005);
         },
         convertV3 = function (v3) {
-          return TOOLS.vector3ToLatLong(v3, CFG.earth.radius + CFG.earth.radius / 45);
+          return TOOLS.vector3ToLatLong(v3, CFG.earth.radius + 0.005);
         },
         factor = 0.0004, // TODO: proper Math
         color = new THREE.Color(0xffff88);
@@ -210,52 +228,42 @@ var SIM = (function () {
           trailsVectors[i].push(vector3);
 
           sphericalPosition = new THREE.Spherical().setFromVector3(vector3);
-          sphericalPosition.theta += model.ugrd10.linearXY(0, lat, lon) * factor; // east-direction
-          sphericalPosition.phi   += model.vgrd10.linearXY(0, lat, lon) * factor; // north-direction
+          sphericalPosition.theta += model.ugrd10m.linearXY(0, lat, lon) * factor; // east-direction
+          sphericalPosition.phi   += model.vgrd10m.linearXY(0, lat, lon) * factor; // north-direction
           vector3 = vector3.setFromSpherical(sphericalPosition).clone();
           
           latlon = convertV3(vector3);
           lat = latlon.lat;
           lon = latlon.lon;
 
-          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 50%, 80%)'));
+          col = Math.abs(~~lat);
+
+          // trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 50%, 50%)'));
+          trailsColors[i].push(new THREE.Color('hsl(' + col + ', 50%, 50%)'));
+          // trailsColors[i].push(new THREE.Color('rgb(200, 200, 200)'));
+          trailsWidths[i].push(1);
           col += 360/length;
 
         }
 
       }
 
-      trailsBetterWind = new Trails('nicewind10m', trailsVectors, trailsColors, color);
-      
-      SCN.add('nicewind10m', trailsBetterWind.container);
+      // preset uniforms, etc
+      trailsWind = new Multiline(trailsVectors, trailsColors, trailsWidths, {
+        color:     new THREE.Color('#ff0000'),
+        opacity:   0.8,
+        section:   50 / length, // %
+        // lineWidth: (CFG.earth.radius * Math.PI) / amount,  // world coords
+        lineWidth: (CFG.earth.radius * Math.PI) / 180 * 0.7,  // world coords
+      });
 
       TIM.step('Wind.created');
 
-    },
-    loadModel: function (callback) {
+      return trailsWind;
 
-      return;
-
-      RES.load({
-        urls: [
-          'data/gfs/2017-05-23.tcdcclm.dods',
-          'data/gfs/2017-05-23.tmp2m.dods',
-          'data/gfs/2017-05-23.ugrd10m.dods',
-          'data/gfs/2017-05-23.vgrd10m.dods',
-        ],
-        onFinish: function (err, responses) {
-          responses.forEach(function (response) {
-            var vari, data;
-            if (response){
-              vari = response.url.split('.')[-2];
-              data = SIM.Model.parseMultiDods(vari, response.data);
-              model[vari] = new SIM.Datagram(data);
-            } else {
-              console.log('WTF');
-            }
-          });
-        }
-      });    
+      // trailsBetterWind = new Trails('nicewind10m', trailsVectors, trailsColors, color);
+      // SCN.add('nicewind10m', trailsBetterWind.container);
+      
 
     },
     step: function () {
@@ -278,3 +286,27 @@ var SIM = (function () {
   };
 
 }()).boot();
+
+/*
+
+
+
+// https://stackoverflow.com/questions/44098678/how-to-rotate-a-vector3-using-vector2
+
+//  For winds, the u wind is parallel to the x axis. 
+// A positive u wind is from the west. 
+// A negative u wind is from the east. 
+// The v wind runs parallel to the y axis. 
+// A positive v wind is from the south, and a negative v wind is from the north.
+
+
+
+
+
+
+
+
+
+
+
+*/

@@ -26,7 +26,7 @@ fi
 
 TASKS="dods seaice sst snpp"
 # TASKS="dods seaice snpp"
-TASKS="seaice snpp"
+TASKS="seaice"
 
 echo
 echo "Now: ${DATENOW} Param: ${DATEPAR} Using: ${DATE} SST: ${DATESST} Tasks: ${TASKS}"
@@ -55,6 +55,9 @@ if [[ "$TASKS" =~ "seaice" ]]; then
   echo "amsr2 cube for ${DATE}"
   python seaice.py $DATE
   touch "seaice/$DATE.txt"
+
+  convert "seaice/${DATE}.polar.amsr2.top.1024.png"    -grayscale rec601luma "seaice/${DATE}.polar.amsr2.top.1024.grey.png"
+  convert "seaice/${DATE}.polar.amsr2.bottom.1024.png" -grayscale rec601luma "seaice/${DATE}.polar.amsr2.bottom.1024.grey.png"
 
 fi
 
@@ -90,27 +93,3 @@ echo
 
 
 exit
-
-http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170527/gfs_0p50_00z.ascii?tmp2m[0:4][0:0][0:0]
-
-  tmp2m, [5][1][1]
-  [0][0], 225.58
-
-  [1][0], 225.84999
-
-  [2][0], 225.90001
-
-  [3][0], 225.7
-
-  [4][0], 226.3
-
-
-  time, [5]
-  736477.0, 736477.125, 736477.25, 736477.375, 736477.5
-  lat, [1]
-  -90.0
-  lon, [1]
-  0.0
-
-
-http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170527/gfs_0p50_06z.ascii?tmp2m[0:0][0:2:360][0:2:719]
