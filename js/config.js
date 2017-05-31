@@ -172,7 +172,7 @@ var CFG = {
       cube: {
         type: 'globe',
         radius: RADIUS, 
-        texture: 'images/data/globe.data.FACE.2048.jpg', 
+        texture: 'images/data/globe.data.FACE.4096.comp.png', 
         material: {
           transparent: true, 
           opacity:     0.99,              // removes crazy seaice effeckt
@@ -220,7 +220,7 @@ var CFG = {
       cube: {
         type: 'polar',
         radius: RADIUS + 0.002, 
-        texture: 'data/seaice/2017-05-30.polar.amsr2.FACE.1024.grey.png', 
+        texture: 'data/seaice/2017-05-30.polar.amsr2.FACE.1024.grey.trans.png', 
         material: {
           transparent: true, 
           opacity:     0.99,              // removes crazy seaice effeckt

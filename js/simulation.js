@@ -198,9 +198,11 @@ var SIM = (function () {
         // latlonsStart = TOOLS.createLatLonsRect( [0, 0], [87, 179], 4 ),
         // amount = latlonsStart.length,
 
-        length = 60,
-        amount = 2000,
-        latlonsStart = TOOLS.createLatLonsRectRandom([60, 0], [-60, 359], amount),
+        length = TRAIL_LEN,
+        amount = TRAIL_NUM,
+        
+        // latlonsStart = TOOLS.createLatLonsRectRandom([60, 0], [-60, 359], amount),
+        latlonsStart = TOOLS.createLatLonsRectFibanocci(amount),
 
         trailsVectors = new Array(amount).fill(0).map( () => []),
         trailsColors  = new Array(amount).fill(0).map( () => []),

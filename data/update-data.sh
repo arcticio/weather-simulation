@@ -58,6 +58,9 @@ if [[ "$TASKS" =~ "seaice" ]]; then
 
   convert "seaice/${DATE}.polar.amsr2.top.1024.png"    -grayscale rec601luma "seaice/${DATE}.polar.amsr2.top.1024.grey.png"
   convert "seaice/${DATE}.polar.amsr2.bottom.1024.png" -grayscale rec601luma "seaice/${DATE}.polar.amsr2.bottom.1024.grey.png"
+  
+  ./color2alpha -ca "#000000" "seaice/${DATE}.polar.amsr2.top.1024.grey.png"    "seaice/${DATE}.polar.amsr2.top.1024.grey.trans.png"
+  ./color2alpha -ca "#000000" "seaice/${DATE}.polar.amsr2.bottom.1024.grey.png" "seaice/${DATE}.polar.amsr2.bottom.1024.grey.trans.png"
 
 fi
 
@@ -93,3 +96,14 @@ echo
 
 
 exit
+
+
+
+convert    /
+  2017-05-30.polar.amsr2.top.1024.grey.png /
+  ( -clone 0 -fill "#000000" -colorize 100 ) /
+  ( -clone 0,1 -compose difference -composite -separate +channel -evaluate-sequence max -auto-level ) /
+  -delete 1    /
+  -alpha off   /
+  -compose over -compose copy_opacity -composite /
+  2017-05-30.polar.amsr2.top.1024.grey.trans.png

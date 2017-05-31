@@ -1,6 +1,36 @@
 
 var TOOLS = {
 
+  createLatLonsRectFibanocci: function (samples) {
+
+    // https://stackoverflow.com/questions/9600801/evenly-distributing-n-points-on-a-sphere
+
+    var rnd = Math.random() * samples;
+    var points = [];
+    var offset = 2.0 / samples;
+    var increment = Math.PI * (3.0 - Math.sqrt(5.) );
+
+    H.each(H.range(samples), function (_, i) {
+
+      var y = ((i * offset) - 1) + (offset / 2);
+      var r = Math.sqrt(1 - Math.pow(y, 2));
+
+      var phi = ((i + rnd) % samples) * increment;
+
+      x = Math.cos(phi) * r;
+      z = Math.sin(phi) * r;
+
+      points.push(new THREE.Vector3().fromArray([x, y, z]));
+
+    });
+
+    return points
+      .map( v3 => TOOLS.vector3ToLatLong(v3, 1))
+      .map( ll => [ll.lat, ll.lon]);
+    ;
+
+  },
+
   createLatLonsRectRandom: function (ul, lr, amount) {
 
     var i, lat, lon, latlons = [];
@@ -105,6 +135,7 @@ var TOOLS = {
 
     return vector;
   },
+
   vector3ToLatLong: function (v, radius) {
 
     // var lon = ((270 + (Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360) - 180;
