@@ -216,7 +216,7 @@ var CFG = {
     seaice: {
       visible: false,
       type: 'cube.textured',
-      rotation: [0, Math.PI * 1.5, 0],
+      rotation: [0, Math.PI * 0.5, 0],
       cube: {
         type: 'polar',
         radius: RADIUS + 0.002, 
@@ -233,11 +233,14 @@ var CFG = {
       visible: true,
       type: 'simulation',
       rotation: [0, Math.PI, 0],
+      radius: RADIUS + 0.001, 
       sim: {
         data: [
-          'data/gfs/2017-05-23.tmp2m.dods',
-          'data/gfs/2017-05-23.ugrd10m.dods',
-          'data/gfs/2017-05-23.vgrd10m.dods',
+          'data/gfs/permanent.landsfc.05.dods',
+          'data/gfs/2017-05-30-12.tcdcclm.05.dods',
+          'data/gfs/2017-05-30-12.tmp2m.05.dods',
+          'data/gfs/2017-05-30-12.ugrd10m.05.dods',
+          'data/gfs/2017-05-30-12.vgrd10m.05.dods',
         ]
       }
     },
@@ -277,7 +280,7 @@ const PRESET = {
   Spot: {
     isFolder: true,
     toggle: true,
-    angle:     {val: 0.5, min: 0, max: Math.PI},
+    angle:     {val: 0.26, min: 0, max: 0.5},
     intensity: {val: CFG.objects.spot.intensity, min: 0, max: 1},
     color: '#ffffff'
   },

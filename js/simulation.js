@@ -51,7 +51,7 @@ var SIM = (function () {
       [ 45.0,   90, -45.0,  180 ], // right back
     ],
 
-    end;
+  end;
 
 
   return {
@@ -76,9 +76,9 @@ var SIM = (function () {
       // trailsWind = self.createWind();
       // callback(name, trailsWind.mesh);
 
-      this.loadModel(function () {
+      this.loadModel(config, function () {
 
-        self.createModelWind();
+        self.createModelWind(config);
         callback(name, trailsWind.obj);
 
         TIM.step('SIM.load.out');
@@ -173,16 +173,17 @@ var SIM = (function () {
       return trailsWind;
       
     },
-    loadModel: function (callback) {
+    loadModel: function (cfg, callback) {
 
       RES.load({
-        urls: [
-          'data/gfs/permanent.landsfc.05.dods',
-          'data/gfs/2017-05-30-12.tcdcclm.05.dods',
-          'data/gfs/2017-05-30-12.tmp2m.05.dods',
-          'data/gfs/2017-05-30-12.ugrd10m.05.dods',
-          'data/gfs/2017-05-30-12.vgrd10m.05.dods',
-        ],
+        urls: cfg.sim.data,
+        // [
+        //   'data/gfs/permanent.landsfc.05.dods',
+        //   'data/gfs/2017-05-30-12.tcdcclm.05.dods',
+        //   'data/gfs/2017-05-30-12.tmp2m.05.dods',
+        //   'data/gfs/2017-05-30-12.ugrd10m.05.dods',
+        //   'data/gfs/2017-05-30-12.vgrd10m.05.dods',
+        // ],
         onFinish: function (err, responses) {
 
           responses.forEach(function (response) {
@@ -214,7 +215,7 @@ var SIM = (function () {
 
 
     },
-    createModelWind: function () {
+    createModelWind: function (cfg) {
       
       TIM.step('Model.loaded');
 
@@ -227,8 +228,8 @@ var SIM = (function () {
 
         length = TRAIL_LEN,
         amount = TRAIL_NUM,
-        factor = 0.001,                    // TODO: proper Math
-        alt    = 0.08,                     // 0.001
+        factor = 0.001,                       // TODO: proper Math
+        alt    = cfg.radius - radius,      // 0.001
 
         color     = new THREE.Color('#ff0000'),
         lineWidth = radius * Math.PI / 180 * 0.7,  // deg°
@@ -264,7 +265,7 @@ var SIM = (function () {
 
             spherical.setFromVector3(vec3);
             spherical.theta += model.ugrd10m.linearXY(0, lat, lon) * factor; // east-direction
-            spherical.phi   += model.vgrd10m.linearXY(0, lat, lon) * factor; // north-direction
+            spherical.phi   -= model.vgrd10m.linearXY(0, lat, lon) * factor; // north-direction
             vec3.setFromSpherical(spherical).clone();
             
             latlon = convertV3(vec3);
