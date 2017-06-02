@@ -177,7 +177,7 @@ SIM.Model = (function () {
                 data  = Float32Array.from(
                     self.flatten(lines
                         .slice(1, -6)
-                        .reverse()
+                        // .reverse()
                         .map(line => line.split(trenner).slice(1))
                     ).map(num => num === snan ? NaN : parseFloat(num))
                 ),
@@ -346,8 +346,10 @@ SIM.Datagram.prototype = {
             yi1   = yi0 +1,
 
             // remainders
-            dx    = (lon - ~~lon) / rlon,                // remainders
-            dy    = (lat - ~~lat) / rlat,
+            // dx    = (lon - ~~lon) / rlon,                // remainders
+            // dy    = (lat - ~~lat) / rlat,
+            dx    = (lon - ~~lon),                // remainders
+            dy    = (lat - ~~lat),
 
             val = (
                 plane[ xi0 + (yi0 * xlen) ] * (rlon - dx) * (rlat - dy) + 

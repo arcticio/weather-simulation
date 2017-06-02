@@ -177,6 +177,7 @@ var SIM = (function () {
 
       RES.load({
         urls: [
+          'data/gfs/permanent.landsfc.05.dods',
           'data/gfs/2017-05-30-12.tcdcclm.05.dods',
           'data/gfs/2017-05-30-12.tmp2m.05.dods',
           'data/gfs/2017-05-30-12.ugrd10m.05.dods',
@@ -201,6 +202,18 @@ var SIM = (function () {
       });    
 
     },
+    createModelClouds: function () {
+
+      var t0 = Date.now(), i, j, lat, lon, 
+
+
+      end;
+
+
+
+
+
+    },
     createModelWind: function () {
       
       TIM.step('Model.loaded');
@@ -214,13 +227,13 @@ var SIM = (function () {
 
         length = TRAIL_LEN,
         amount = TRAIL_NUM,
-        factor = 0.0008,                    // TODO: proper Math
+        factor = 0.001,                    // TODO: proper Math
         alt    = 0.08,                     // 0.001
 
         color     = new THREE.Color('#ff0000'),
         lineWidth = radius * Math.PI / 180 * 0.7,  // deg°
         section   = 0.33,
-        opacity   = 0.8,
+        opacity   = 0.9,
 
         convertLL     = (lat, lon) => TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, alt),
         convertV3     = (v3)       => TOOLS.vector3ToLatLong(v3, CFG.earth.radius + alt),
@@ -245,7 +258,8 @@ var SIM = (function () {
             vec3 = convertLL(lat, lon);
 
             trailsPos[i].push(vec3);
-            trailsColors[i].push(new THREE.Color('hsl(' + Math.abs(~~lat) + ', 50%, 50%)'));
+            // trailsColors[i].push(new THREE.Color('hsl(' + Math.abs(~~lat) + ', 50%, 50%)'));
+            trailsColors[i].push(new THREE.Color('hsl(' + Math.abs(~~(model.landsfc.linearXY(0, lat, lon) * 180)) + ', 50%, 50%)'));
             trailsWidths[i].push(0.6);
 
             spherical.setFromVector3(vec3);

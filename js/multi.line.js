@@ -32,8 +32,7 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
   };
 
   this.lines = H.zip(trailsVectors, trailsColors, trailsWidths, (vectors, colors, widths) => {
-    return new
-     Multiline.line(idx++, vectors, colors, widths);
+    return new Multiline.line(idx++, vectors, colors, widths);
   });
 
   H.each(this.attributes, (name, bufferType) => {
@@ -71,20 +70,25 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
     });
 
-    if (name !== 'index'){
-      this.geometry.addAttribute( name, this.attributes[name] );
-    } else {
+    if (name === 'index'){
       this.geometry.setIndex(this.attributes.index);
+      console.log('Multiline.index.length', this.attributes.index.array.length);
+
+    } else {
+      this.geometry.addAttribute( name, this.attributes[name] );
+
     }
 
   });
+
+  this.geometry.computeBoundingSphere();
 
   this.mesh = new THREE.Mesh( this.geometry, this.material );
 
   this.bytes = Object
     .keys(this.attributes)
     .map(attr => this.attributes[attr].array.length)
-    .reduce( (a, b) =>  a + b, 0) * 4
+    .reduce( (a, b) =>  a + b, 0)
   ;
 
   console.log('Multiline.attributes.length', this.bytes, 'bytes');
@@ -133,6 +137,9 @@ Multiline.prototype = {
 
     return  new THREE.RawShaderMaterial({
 
+      vertexShader:    this.shaderVertex(),
+      fragmentShader:  this.shaderFragment(),
+
       depthTest:       true,                    // false ignores planet
       blending:        THREE.NormalBlending,    // NormalBlending, AdditiveBlending
       side:            THREE.DoubleSide,        // FrontSide (start=skewed), DoubleSide (start=vertical)
@@ -146,7 +153,6 @@ Multiline.prototype = {
 
       uniforms: {
 
-
         color:            { type: 'c',    value: color },
         opacity:          { type: 'f',    value: opacity },
         lineWidth:        { type: 'f',    value: lineWidth },
@@ -156,9 +162,6 @@ Multiline.prototype = {
         section:          { type: 'f',    value: section },
 
       },
-
-      vertexShader:   this.shaderVertex(),
-      fragmentShader: this.shaderFragment(),
 
     });
 
@@ -399,7 +402,7 @@ Multiline.line.prototype = {
 
     for( j = 0; j < l - 1; j++ ) {
       n = j + j;
-      this.indices.push( n, n + 1, n + 2 );
+      this.indices.push( n,     n + 1, n + 2 );
       this.indices.push( n + 2, n + 1, n + 3 );
     }
 

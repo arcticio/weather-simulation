@@ -158,7 +158,10 @@ var SCN = (function () {
       },
 
       'simulation': (name, cfg) => {
-        SIM.load(name, cfg, self.add);
+        SIM.load(name, cfg, (name, obj) => {
+          cfg.rotation && obj.rotation.fromArray(cfg.rotation);
+          self.add(name, obj);
+        });
       },
       'cube.textured': (name, cfg) => {
         self.loadCube(name, cfg, self.add);
@@ -283,10 +286,19 @@ var SCN = (function () {
         } else {
           console.log('SCN.actions.ignored', folder, option, value);
         }
-      } catch (e) {console.log("SCN.actions.error", folder, option, value, e)} 
+      } catch (e) {console.log('SCN.actions.error', folder, option, value, e)} 
 
     },
     logInfo: function render () {
+
+      // MAX_VERTEX_UNIFORM_VECTORS
+      // MAX_FRAGMENT_UNIFORM_VECTORS
+
+      var gl = renderer.context;
+
+      console.log(gl.getParameter('MAX_VERTEX_UNIFORM_VECTORS', gl.MAX_VERTEX_UNIFORM_VECTORS));
+      console.log(gl.getParameter('MAX_FRAGMENT_UNIFORM_VECTORS', gl.MAX_FRAGMENT_UNIFORM_VECTORS));
+      console.log(gl.getParameter('MAX_TEXTURE_SIZE', gl.MAX_TEXTURE_SIZE));
 
       console.log('renderer', JSON.stringify({
 
