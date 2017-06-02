@@ -16,7 +16,11 @@ var SIM = (function () {
 
     trails = [],
     
-    trailsWind,
+    trailsWind = {
+      obj:     new THREE.Object3D(),
+      sectors: [],
+    },
+
     trailsBetterWind,
     multiline,
 
@@ -37,6 +41,15 @@ var SIM = (function () {
       end:   moment.utc('2017-12-31-00', 'YYYY-MM-DD-HH'),
       interval: 365 * 24, 
     },
+
+    sectors = [
+      [ 89.9, -180,  45.0,  180 ], // top
+      [-45.0, -180, -89.9,  180 ], // bottom
+      [ 45.0, -180, -45.0,  -90 ], // left back
+      [ 45.0,  -90, -45.0,    0 ], // left front
+      [ 45.0,    0, -45.0,   90 ], // right front
+      [ 45.0,   90, -45.0,  180 ], // right back
+    ],
 
     end;
 
@@ -65,13 +78,12 @@ var SIM = (function () {
 
       this.loadModel(function () {
 
-        trailsWind = self.createModelWind();
-        callback(name, trailsWind.mesh);
+        self.createModelWind();
+        callback(name, trailsWind.obj);
 
         TIM.step('SIM.load.out');
 
       });
-
 
     },
     updateDatetime: function (val) {
@@ -165,17 +177,17 @@ var SIM = (function () {
 
       RES.load({
         urls: [
-          'data/gfs/2017-05-30-12.tcdcclm.dods',
-          'data/gfs/2017-05-30-12.tmp2m.dods',
-          'data/gfs/2017-05-30-12.ugrd10m.dods',
-          'data/gfs/2017-05-30-12.vgrd10m.dods',
+          'data/gfs/2017-05-30-12.tcdcclm.05.dods',
+          'data/gfs/2017-05-30-12.tmp2m.05.dods',
+          'data/gfs/2017-05-30-12.ugrd10m.05.dods',
+          'data/gfs/2017-05-30-12.vgrd10m.05.dods',
         ],
         onFinish: function (err, responses) {
 
           responses.forEach(function (response) {
             var vari, data;
             if (response){
-              vari = response.url.split('.').slice(-2)[0];
+              vari = response.url.split('.').slice(-3)[0];
               data = SIM.Model.parseMultiDods(vari, response.data);
               model[vari] = new SIM.Datagram(data);
             } else {
@@ -193,84 +205,82 @@ var SIM = (function () {
       
       TIM.step('Model.loaded');
 
-      var t0 = Date.now(), i, j, lat, lon, col, vector3, vecWind, sphericalPosition,  latlon, 
+      var t0 = Date.now(), i, j, lat, lon, col, vec3, latlon, 
 
-        // latlonsStart = TOOLS.createLatLonsRect( [0, 0], [87, 179], 4 ),
-        // amount = latlonsStart.length,
+        multiline, trailsPos, trailsWidths, trailsColors, latlonsStart, 
+
+        radius    = CFG.earth.radius, 
+        spherical = new THREE.Spherical(),
 
         length = TRAIL_LEN,
         amount = TRAIL_NUM,
-        
-        // latlonsStart = TOOLS.createLatLonsRectRandom([60, 0], [-60, 359], amount),
-        latlonsStart = TOOLS.createLatLonsRectFibanocci(amount),
+        factor = 0.0008,                    // TODO: proper Math
+        alt    = 0.08,                     // 0.001
 
-        trailsVectors = new Array(amount).fill(0).map( () => []),
-        trailsColors  = new Array(amount).fill(0).map( () => []),
-        trailsWidths  = new Array(amount).fill(0).map( () => []),
-        convertLL    = function (latlon) {
-          return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, 0.005);
-        },
-        convertV3 = function (v3) {
-          return TOOLS.vector3ToLatLong(v3, CFG.earth.radius + 0.005);
-        },
-        factor = 0.0004, // TODO: proper Math
-        color = new THREE.Color(0xffff88);
+        color     = new THREE.Color('#ff0000'),
+        lineWidth = radius * Math.PI / 180 * 0.7,  // deg°
+        section   = 0.33,
+        opacity   = 0.8,
+
+        convertLL     = (lat, lon) => TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, alt),
+        convertV3     = (v3)       => TOOLS.vector3ToLatLong(v3, CFG.earth.radius + alt),
 
       end;
 
-      for (i=0; i<amount; i++) {
+      H.each(sectors, (_, sector)  => {
 
-        col   = 0;
-        lat   = latlonsStart[i][0];
-        lon   = latlonsStart[i][1];
+        latlonsStart = TOOLS.createLatLonsSectorRandom(sector, amount); 
 
-        for (j=0; j<length; j++) {
+        trailsPos     = new Array(amount).fill(0).map( () => []);
+        trailsColors  = new Array(amount).fill(0).map( () => []);
+        trailsWidths  = new Array(amount).fill(0).map( () => []);
 
-          vector3 = convertLL([lat, lon]);
-          trailsVectors[i].push(vector3);
+        for (i=0; i<amount; i++) {
 
-          sphericalPosition = new THREE.Spherical().setFromVector3(vector3);
-          sphericalPosition.theta += model.ugrd10m.linearXY(0, lat, lon) * factor; // east-direction
-          sphericalPosition.phi   += model.vgrd10m.linearXY(0, lat, lon) * factor; // north-direction
-          vector3 = vector3.setFromSpherical(sphericalPosition).clone();
-          
-          latlon = convertV3(vector3);
-          lat = latlon.lat;
-          lon = latlon.lon;
+          lat   = latlonsStart[i][0];
+          lon   = latlonsStart[i][1];
 
-          col = Math.abs(~~lat);
+          for (j=0; j<length; j++) {
 
-          // trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 50%, 50%)'));
-          trailsColors[i].push(new THREE.Color('hsl(' + col + ', 50%, 50%)'));
-          // trailsColors[i].push(new THREE.Color('rgb(200, 200, 200)'));
-          trailsWidths[i].push(1);
-          col += 360/length;
+            vec3 = convertLL(lat, lon);
+
+            trailsPos[i].push(vec3);
+            trailsColors[i].push(new THREE.Color('hsl(' + Math.abs(~~lat) + ', 50%, 50%)'));
+            trailsWidths[i].push(0.6);
+
+            spherical.setFromVector3(vec3);
+            spherical.theta += model.ugrd10m.linearXY(0, lat, lon) * factor; // east-direction
+            spherical.phi   += model.vgrd10m.linearXY(0, lat, lon) * factor; // north-direction
+            vec3.setFromSpherical(spherical).clone();
+            
+            latlon = convertV3(vec3);
+            lat = latlon.lat;
+            lon = latlon.lon;
+
+          }
 
         }
 
-      }
+        multiline = new Multiline (
+          trailsPos, 
+          trailsColors, 
+          trailsWidths, 
+          {color, opacity, section, lineWidth}
+        );
 
-      // preset uniforms, etc
-      trailsWind = new Multiline(trailsVectors, trailsColors, trailsWidths, {
-        color:     new THREE.Color('#ff0000'),
-        opacity:   0.8,
-        section:   50 / length, // %
-        // lineWidth: (CFG.earth.radius * Math.PI) / amount,  // world coords
-        lineWidth: (CFG.earth.radius * Math.PI) / 180 * 0.7,  // world coords
+        trailsWind.obj.add(multiline.mesh);
+        trailsWind.sectors.push(multiline);
+
       });
 
       TIM.step('Wind.created');
 
       return trailsWind;
 
-      // trailsBetterWind = new Trails('nicewind10m', trailsVectors, trailsColors, color);
-      // SCN.add('nicewind10m', trailsBetterWind.container);
-      
-
     },
     step: function () {
 
-      trailsWind && trailsWind.step();
+      H.each(trailsWind.sectors, (_, sec) => sec.step() );
 
       frame += 1;
 

@@ -31,6 +31,20 @@ var TOOLS = {
 
   },
 
+  createLatLonsSectorRandom: function (sec, amount) {
+
+    var i, lat, lon, latlons = [];
+
+    for (i=0; i<amount; i++) {
+      latlons.push([
+        sec[0] + Math.random() * (sec[2] - sec[0]),
+        sec[1] + Math.random() * (sec[3] - sec[1])
+      ]);
+    }
+
+    return latlons;
+
+  },
   createLatLonsRectRandom: function (ul, lr, amount) {
 
     var i, lat, lon, latlons = [];

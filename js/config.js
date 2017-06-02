@@ -166,13 +166,13 @@ var CFG = {
     },
 
     data: {
-      visible: true,
-      type: 'cube.textured',
-      rotation: [0, Math.PI / 2, 0],
+      visible:         true,
+      type:            'cube.textured',
+      rotation:        [0, Math.PI / 2, 0],
       cube: {
-        type: 'globe',
-        radius: RADIUS, 
-        texture: 'images/data/globe.data.FACE.4096.comp.png', 
+        type:          'globe',
+        radius:        RADIUS, 
+        texture:       'images/data/globe.data.FACE.4096.comp.png', 
         material: {
           transparent: true, 
           opacity:     0.99,              // removes crazy seaice effeckt
@@ -214,7 +214,7 @@ var CFG = {
     },
 
     seaice: {
-      visible: true,
+      visible: false,
       type: 'cube.textured',
       rotation: [0, Math.PI / 2, 0],
       cube: {
@@ -254,51 +254,6 @@ var CFG = {
 
   },
 
-  // Galaxy: {
-  //   mesh: new THREE.Mesh(
-  //     new THREE.SphereGeometry(100, 32, 32),                  // SphereGeometry(radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength)
-  //     new THREE.MeshBasicMaterial({side: THREE.BackSide})
-  //   ),
-  //   textures: {
-  //     map: 'images/starfield.png'
-  //   },
-  // },
-
-  // orbitControls: {
-  //   enableDamping:       true,
-  //   dampingFactor:       0.88,
-  //   constraint: {
-  //     smoothZoom:        true,
-  //     smoothZoomSpeed:   5.0,
-  //     zoomDampingFactor: 0.2,
-  //     minDistance:       1,
-  //     maxDistance:       8
-  //   }
-  // },
-
-  // Markers: [{
-  //     label:          'North Pole',
-  //     latitude:        90,
-  //     longitude:       0,
-  //     radius:          0.5,
-  //     height:          0,
-  //     size:            0.01,
-  //     color:           0xff0000
-  //   }
-  // ],
-
-
-  // Cameras: {
-
-  // },
-
-  // preset: {
-
-  // },
-
-
-
-
 };
 
 const PRESET = {
@@ -333,7 +288,7 @@ const PRESET = {
     grdcolor:  CFG.objects.sun.grdcolor,
   },
   Layers: {
-    isFolder: true,
+    isFolder:   true,
     'SNPP':     CFG.objects.snpp.visible,
     'DATA':     CFG.objects.data.visible,
     'SST':      CFG.objects.sst.visible,
@@ -344,26 +299,26 @@ const PRESET = {
     'RIVERS':   CFG.objects.rivers.visible,
   },
   DateTime : {
-    isFolder: true,
-    // choose: {val: 3, min: 0, max: timerange.length * 24, step: 1},
-    choose: {val: 3, min: 0, max: 365 * 24, step: 1},
-    hour1:    () => {},
-    hourn1:    () => {},
-    hour24:   () => {},
-    hourn24:   () => {},
-    day30:    () => {},
-    dayn30:   () => {},
+    isFolder:    true,
+    choose:     {val: 3, min: 0, max: 365 * 24, step: 1},
+    hour1:      () => {},
+    hourn1:     () => {},
+    hour24:     () => {},
+    hourn24:    () => {},
+    day30:      () => {},
+    dayn30:     () => {},
   },
   Extras: {
-    isFolder: true,
-    Axes:     CFG.objects.axes.visible,
-    Rotate:   () => {},
+    isFolder:   true,
+    Axes:       CFG.objects.axes.visible,
+    Rotate:     () => {},
+    ZoomOut:    () => {},
   },
   Simulation: {
-    isFolder: true,
-    start:     () => {},
-    stop:      () => {},
-    pause:     () => {},
+    isFolder:   true,
+    start:      () => {},
+    stop:       () => {},
+    pause:      () => {},
   }
 };
 

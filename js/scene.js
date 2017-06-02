@@ -1,7 +1,7 @@
 'use strict';
 
 const TRAIL_LEN = 60;
-const TRAIL_NUM = 1000;
+const TRAIL_NUM = 512;
 
 var SCN = (function () {
 
@@ -13,12 +13,16 @@ var SCN = (function () {
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
-    canvas       =    $$('.simulator')[0],
+    canvas        = $$('.simulator')[0],
+    monitor       = $$('canvas.panel.test')[0].getContext('2d'),
+    expi          = $$('canvas.panel.expi')[0].getContext('2d'),
+
+    home          = new THREE.Vector3(0, 0, 0),
 
     renderer      = new THREE.WebGLRenderer({
       canvas,
-      antialias: true,
-      alpha:     true,
+      antialias:    true,
+      alpha:        true,
     }),
 
     camera        = CFG.objects.perspective.cam,
@@ -29,25 +33,9 @@ var SCN = (function () {
     doAnimate     = true,
     doSimulate    = true,
 
-    posArrow,
+    objects       = {},
 
-    objects        = {},
-
-    monitor      = $$('canvas.panel.test')[0].getContext('2d'),
-    expi         = $$('canvas.panel.expi')[0].getContext('2d'),
-
-    canvas,
-
-    arrowHelper,
-
-    home = new THREE.Vector3(0, 0, 0),
-
-    galaxy,
-    surface,
-    overlay,
-    sim,
-
-    timerange = new TimeRange(),
+    timerange     = new TimeRange(),
 
   end;
 
@@ -278,6 +266,7 @@ var SCN = (function () {
           Extras: {
             Axes:      (value) => self.toggle(objects.axes, value),
             Rotate:    (value) => ANI.insert(0, ANI.library.example), 
+            ZoomOut:   (value) => ANI.insert(0, ANI.library.zoomout), 
             // Rotate:    (value) => ANI.insert(0, ANI.library.cam2latlon(51, 7, 2)), 
           },
           Simulation: {

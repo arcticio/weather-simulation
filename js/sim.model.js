@@ -264,6 +264,16 @@ SIM.Datagram.prototype = {
     addCyclic: function () {
         // for full globe
     },
+    min: function (data) {
+        var i = data.length, min =+Infinity;
+        while (i--){min = min < data[i] ? min : data[i];}
+        return min;
+    },
+    max: function (data) {
+        var i = data.length, max =-Infinity;
+        while (i--){max = max > data[i] ? max : data[i];}
+        return max;
+    },
     analyze: function () {
 
         var d = this.data;
@@ -278,28 +288,28 @@ SIM.Datagram.prototype = {
             lats: {
                 len:    d.lats.length,
                 res:    d.lats[1] - d.lats[0],
-                min:    Math.min.apply(Math, d.lats),
-                max:    Math.max.apply(Math, d.lats),
+                min:    this.min(d.lats),
+                max:    this.max(d.lats),
             },
 
             lons: {
                 len:    d.lons.length,
                 res:    d.lons[1] - d.lons[0],
-                min:    Math.min.apply(Math, d.lons),
-                max:    Math.max.apply(Math, d.lons),
+                min:    this.min(d.lons),
+                max:    this.max(d.lons),
             },
 
             tims: {
                 len:    d.tims.length,
                 res:    d.tims[1] ? ((d.tims[1] - d.tims[0]) / (60 * 60 * 1000)) + 'h' : NaN,
-                min:    Math.min.apply(Math, d.tims),
-                max:    Math.max.apply(Math, d.tims),
+                min:    this.min(d.tims),
+                max:    this.max(d.tims),
             },
 
             data: {
                 len:    d.data.length,
-                min:    Math.min.apply(Math, d.data),
-                max:    Math.max.apply(Math, d.data),
+                min:    this.min(d.data),
+                max:    this.max(d.data),
                 avg   : d.data.reduce(function(a, b){ return a + b; }, 0) / d.data.length,
             }
 
@@ -311,15 +321,14 @@ SIM.Datagram.prototype = {
 
     },
 
-    linearXY: function (time, lat, lon) {
+    linearXY: function (time, lat, lonin) {
 
         /*
             time  = 0, 1, ...
         */
 
-        // lon = (lon + 270) % 360;
-
         var 
+            lon   = (lonin + 180) % 360,
             plane = this.data.data.subarray(time * this.info.plane, (time + 1) * this.info.plane),
             xlen  = this.data.shape[2],
             ylen  = this.data.shape[1],
@@ -327,15 +336,18 @@ SIM.Datagram.prototype = {
             rlon  = this.info.lons.res,
 
             // array indices
-            xi0   = ( ~~(lon / rlon) - this.info.lons.min) / rlon,
-            yi0   = ( ~~(lat / rlat) - this.info.lats.min) / rlat,
+            // xi0   = ( ~~(lon / rlon) - this.info.lons.min) / rlon,
+            // yi0   = ( ~~(lat / rlat) - this.info.lats.min) / rlat,
+
+            xi0   = ~~((lon - this.info.lons.min) / rlon),
+            yi0   = ~~((lat - this.info.lats.min) / rlat),
 
             xi1   = xi0 +1,
             yi1   = yi0 +1,
 
             // remainders
-            dx    = (lon - ~~lon) * rlon,                // remainders
-            dy    = (lat - ~~lat) * rlat,
+            dx    = (lon - ~~lon) / rlon,                // remainders
+            dy    = (lat - ~~lat) / rlat,
 
             val = (
                 plane[ xi0 + (yi0 * xlen) ] * (rlon - dx) * (rlat - dy) + 
@@ -344,10 +356,13 @@ SIM.Datagram.prototype = {
                 plane[ xi1 + (yi1 * xlen) ] * (       dx) * (       dy)
             );
 
-            return val
+            if (isNaN(val)){
+                debugger;
+            }
+
+            return val;
 
         ;
-
 
     }, 
 

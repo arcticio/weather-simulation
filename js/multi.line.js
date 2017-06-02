@@ -32,7 +32,8 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
   };
 
   this.lines = H.zip(trailsVectors, trailsColors, trailsWidths, (vectors, colors, widths) => {
-    return new Multiline.line(idx++, vectors, colors, widths);
+    return new
+     Multiline.line(idx++, vectors, colors, widths);
   });
 
   H.each(this.attributes, (name, bufferType) => {
@@ -145,6 +146,7 @@ Multiline.prototype = {
 
       uniforms: {
 
+
         color:            { type: 'c',    value: color },
         opacity:          { type: 'f',    value: opacity },
         lineWidth:        { type: 'f',    value: lineWidth },
@@ -256,10 +258,12 @@ Multiline.prototype = {
 
           vec4  color = vColor;
           float head  = vHead;
-          float tail  = vHead - section;
+          float tail  = max(0.0, vHead - section);
           float pos   = vCounter;
 
-          visible = ( pos > tail ) && ( pos < head );  // pos within segment
+          visible =  ( pos > tail ) && ( pos < head );  // pos within segment
+          
+          visible = visible && (pos > 0.0) && (pos < 0.999999);
 
           if( !visible ) discard;
 
