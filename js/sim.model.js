@@ -336,26 +336,21 @@ SIM.Datagram.prototype = {
             rlon  = this.info.lons.res,
 
             // array indices
-            // xi0   = ( ~~(lon / rlon) - this.info.lons.min) / rlon,
-            // yi0   = ( ~~(lat / rlat) - this.info.lats.min) / rlat,
-
             xi0   = ~~((lon - this.info.lons.min) / rlon),
             yi0   = ~~((lat - this.info.lats.min) / rlat),
 
-            xi1   = xi0 +1,
-            yi1   = yi0 +1,
+            xi1   = xi0 + 1,
+            yi1   = yi0 + 1,
 
             // remainders
-            // dx    = (lon - ~~lon) / rlon,                // remainders
-            // dy    = (lat - ~~lat) / rlat,
-            dx    = (lon - ~~lon),                // remainders
-            dy    = (lat - ~~lat),
+            dx    = (lon - ~~lon) * rlon,        
+            dy    = (lat - ~~lat) * rlat,
 
             val = (
-                plane[ xi0 + (yi0 * xlen) ] * (rlon - dx) * (rlat - dy) + 
-                plane[ xi1 + (yi0 * xlen) ] * (       dx) * (rlat - dy) + 
-                plane[ xi0 + (yi1 * xlen) ] * (rlon - dx) * (       dy) + 
-                plane[ xi1 + (yi1 * xlen) ] * (       dx) * (       dy)
+                plane[ xi0 + (yi0 * xlen) ] * (1 - dx) * (1 - dy) + 
+                plane[ xi1 + (yi0 * xlen) ] * (    dx) * (1 - dy) + 
+                plane[ xi0 + (yi1 * xlen) ] * (1 - dx) * (    dy) + 
+                plane[ xi1 + (yi1 * xlen) ] * (    dx) * (    dy)
             );
 
             if (isNaN(val)){

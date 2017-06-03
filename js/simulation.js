@@ -14,23 +14,12 @@ var SIM = (function () {
 
     image  = $$('.panel.image')[0],
 
-    trails = [],
+    datagramm = {},
+    models = {},
     
-    trailsWind = {
-      obj:     new THREE.Object3D(),
-      sectors: [],
-    },
-
-    trailsBetterWind,
-    multiline,
-
     vectorSun = new THREE.Vector3(),
 
     image,
-
-    model = {
-
-    },
 
     sun   = Orb.SolarSystem().Sun(),
 
@@ -42,14 +31,14 @@ var SIM = (function () {
       interval: 365 * 24, 
     },
 
-    sectors = [
-      [ 89.9, -180,  45.0,  180 ], // top
-      [-45.0, -180, -89.9,  180 ], // bottom
-      [ 45.0, -180, -45.0,  -90 ], // left back
-      [ 45.0,  -90, -45.0,    0 ], // left front
-      [ 45.0,    0, -45.0,   90 ], // right front
-      [ 45.0,   90, -45.0,  180 ], // right back
-    ],
+    // sectors = [
+    //   [ 89.9, -180,  45.0,  180 ], // top
+    //   [-45.0, -180, -89.9,  180 ], // bottom
+    //   [ 45.0, -180, -45.0,  -90 ], // left back
+    //   [ 45.0,  -90, -45.0,    0 ], // left front
+    //   [ 45.0,    0, -45.0,   90 ], // right front
+    //   [ 45.0,   90, -45.0,  180 ], // right back
+    // ],
 
   end;
 
@@ -78,8 +67,8 @@ var SIM = (function () {
 
       this.loadModel(config, function () {
 
-        self.createModelWind(config);
-        callback(name, trailsWind.obj);
+        models[name] = SIM.Model[name].create(config, datagramm);
+        callback(name, models[name].obj);
 
         TIM.step('SIM.load.out');
 
@@ -177,13 +166,6 @@ var SIM = (function () {
 
       RES.load({
         urls: cfg.sim.data,
-        // [
-        //   'data/gfs/permanent.landsfc.05.dods',
-        //   'data/gfs/2017-05-30-12.tcdcclm.05.dods',
-        //   'data/gfs/2017-05-30-12.tmp2m.05.dods',
-        //   'data/gfs/2017-05-30-12.ugrd10m.05.dods',
-        //   'data/gfs/2017-05-30-12.vgrd10m.05.dods',
-        // ],
         onFinish: function (err, responses) {
 
           responses.forEach(function (response) {
@@ -191,7 +173,7 @@ var SIM = (function () {
             if (response){
               vari = response.url.split('.').slice(-3)[0];
               data = SIM.Model.parseMultiDods(vari, response.data);
-              model[vari] = new SIM.Datagram(data);
+              datagramm[vari] = new SIM.Datagram(data);
             } else {
               console.log('WTF');
             }
@@ -215,87 +197,10 @@ var SIM = (function () {
 
 
     },
-    createModelWind: function (cfg) {
-      
-      TIM.step('Model.loaded');
 
-      var t0 = Date.now(), i, j, lat, lon, col, vec3, latlon, 
-
-        multiline, trailsPos, trailsWidths, trailsColors, latlonsStart, 
-
-        radius    = CFG.earth.radius, 
-        spherical = new THREE.Spherical(),
-
-        length = TRAIL_LEN,
-        amount = TRAIL_NUM,
-        factor = 0.001,                       // TODO: proper Math
-        alt    = cfg.radius - radius,      // 0.001
-
-        color     = new THREE.Color('#ff0000'),
-        lineWidth = radius * Math.PI / 180 * 0.7,  // deg°
-        section   = 0.33,
-        opacity   = 0.9,
-
-        convertLL     = (lat, lon) => TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, alt),
-        convertV3     = (v3)       => TOOLS.vector3ToLatLong(v3, CFG.earth.radius + alt),
-
-      end;
-
-      H.each(sectors, (_, sector)  => {
-
-        latlonsStart = TOOLS.createLatLonsSectorRandom(sector, amount); 
-
-        trailsPos     = new Array(amount).fill(0).map( () => []);
-        trailsColors  = new Array(amount).fill(0).map( () => []);
-        trailsWidths  = new Array(amount).fill(0).map( () => []);
-
-        for (i=0; i<amount; i++) {
-
-          lat   = latlonsStart[i][0];
-          lon   = latlonsStart[i][1];
-
-          for (j=0; j<length; j++) {
-
-            vec3 = convertLL(lat, lon);
-
-            trailsPos[i].push(vec3);
-            // trailsColors[i].push(new THREE.Color('hsl(' + Math.abs(~~lat) + ', 50%, 50%)'));
-            trailsColors[i].push(new THREE.Color('hsl(' + Math.abs(~~(model.landsfc.linearXY(0, lat, lon) * 180)) + ', 50%, 50%)'));
-            trailsWidths[i].push(0.6);
-
-            spherical.setFromVector3(vec3);
-            spherical.theta += model.ugrd10m.linearXY(0, lat, lon) * factor; // east-direction
-            spherical.phi   -= model.vgrd10m.linearXY(0, lat, lon) * factor; // north-direction
-            vec3.setFromSpherical(spherical).clone();
-            
-            latlon = convertV3(vec3);
-            lat = latlon.lat;
-            lon = latlon.lon;
-
-          }
-
-        }
-
-        multiline = new Multiline (
-          trailsPos, 
-          trailsColors, 
-          trailsWidths, 
-          {color, opacity, section, lineWidth}
-        );
-
-        trailsWind.obj.add(multiline.mesh);
-        trailsWind.sectors.push(multiline);
-
-      });
-
-      TIM.step('Wind.created');
-
-      return trailsWind;
-
-    },
     step: function () {
 
-      H.each(trailsWind.sectors, (_, sec) => sec.step() );
+      H.each(models, (name, model) => model.step() )
 
       frame += 1;
 
@@ -307,9 +212,32 @@ var SIM = (function () {
     },
     resize: function () {
     },
-    render: function () {
+    Pool: function (sector, ) {
 
-    }
+      //  1     256
+      //  4    1024
+      // 16    4096
+      // 64   16384
+      //    + =====
+      // 85   21760
+
+
+
+      // if only 1 pool visible exannd
+
+      // toggle() , adds/subs self to/from scene
+
+      // sector[4],
+      // coords[n],
+      // meshlines[n], // max length 
+      // isInView(),
+      // deepness {0, }, // one sec to full
+
+      // expand(), shrink(),
+
+    },
+
+
   };
 
 }()).boot();

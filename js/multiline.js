@@ -72,7 +72,7 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
     if (name === 'index'){
       this.geometry.setIndex(this.attributes.index);
-      console.log('Multiline.index.length', this.attributes.index.array.length);
+      // console.log('Multiline.index.length', this.attributes.index.array.length);
 
     } else {
       this.geometry.addAttribute( name, this.attributes[name] );
@@ -91,7 +91,7 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
     .reduce( (a, b) =>  a + b, 0)
   ;
 
-  console.log('Multiline.attributes.length', this.bytes, 'bytes');
+  // console.log('Multiline.attributes.length', this.bytes, 'bytes');
 
 }
 
@@ -266,8 +266,6 @@ Multiline.prototype = {
 
           visible =  ( pos > tail ) && ( pos < head );  // pos within segment
           
-          visible = visible && (pos > 0.0) && (pos < 0.999999);
-
           if( !visible ) discard;
 
           color.a = (pos - tail) / section;

@@ -77,7 +77,7 @@ var CFG = {
     },
 
     sun: {
-      visible:      true,
+      visible:      false,
       type:         'light',
       skycolor:     0xffddaa, // reddish
       grdcolor:     0x8989c3, // blueish
@@ -241,7 +241,15 @@ var CFG = {
           'data/gfs/2017-05-30-12.tmp2m.05.dods',
           'data/gfs/2017-05-30-12.ugrd10m.05.dods',
           'data/gfs/2017-05-30-12.vgrd10m.05.dods',
-        ]
+        ],
+        sectors: [
+          [ 89.9, -180,  45.0,  180 ], // top
+          [-45.0, -180, -89.9,  180 ], // bottom
+          [ 45.0, -180, -45.0,  -90 ], // left back
+          [ 45.0,  -90, -45.0,    0 ], // left front
+          [ 45.0,    0, -45.0,   90 ], // right front
+          [ 45.0,   90, -45.0,  180 ], // right back
+        ],
       }
     },
 
