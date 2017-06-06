@@ -44,16 +44,19 @@ SIM.Model.wind = (function () {
         radius    = CFG.earth.radius, 
         spherical = new THREE.Spherical(),
 
-        length = TRAIL_LEN,
-        amount = TRAIL_NUM,
-        factor = 0.0003,                       // TODO: proper Math
-        alt    = cfg.radius - radius,      // 0.001
+        length   = TRAIL_LEN,
+        amount   = NaN,
+        factor   = 0.0003,                       // TODO: proper Math
+        alt      = cfg.radius - radius,      // 0.001
+
+        pool     = SIM.coordsPool.slice(TRAIL_NUM * cfg.sim.sectors.length),
 
       end;
 
       H.each(cfg.sim.sectors, (_, sector)  => {
 
-        latlonsStart = TOOLS.createLatLonsSectorRandom(sector, amount); 
+        latlonsStart = pool.filter(sector).slice(0, TRAIL_NUM);
+        amount       = latlonsStart.length; 
 
         positions = new Array(amount).fill(0).map( () => []);
         colors    = new Array(amount).fill(0).map( () => []);
@@ -61,8 +64,8 @@ SIM.Model.wind = (function () {
 
         for (i=0; i<amount; i++) {
 
-          lat   = latlonsStart[i][0];
-          lon   = latlonsStart[i][1];
+          lat = latlonsStart[i].lat;
+          lon = latlonsStart[i].lon;
 
           for (j=0; j<length; j++) {
 

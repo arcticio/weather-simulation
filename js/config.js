@@ -241,7 +241,7 @@ var CFG = {
       rotation:   [0, Math.PI, 0],
       radius:     RADIUS + 0.001, 
       color:      new THREE.Color('#ff0000'),
-      opacity:    1.0,
+      opacity:    0.5,
       lineWidth:  RADIUS * Math.PI / 180 * 0.2,
       section:    33 * 1/60,
       length:     60,

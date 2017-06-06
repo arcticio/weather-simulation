@@ -1,11 +1,12 @@
 
 
-function CoordsPool(amount, sector) {
+function CoordsPool(amount) {
 
   this.amount  = amount;
-  this.sector  = sector;
+  this.sector  = [];
   this.pool    = [];
   this.pointer = 0;
+  this.parent  = null;
 
 }
 
@@ -30,7 +31,7 @@ CoordsPool.prototype = {
       z = z * d;
 
       lat =   90 - Math.acos(y)      * DEGRAD;
-      lon = (270 + Math.atan2(x , z) * DEGRAD) % 360;
+      lon = (270 + Math.atan2(x , z) * DEGRAD) % 360 - 180;
 
       this.pool.push({ x, y, z, lat, lon });
 
@@ -48,12 +49,16 @@ CoordsPool.prototype = {
       coord = this.pool[i];
       
       if ( 
-          coord.lat > sector[0] && 
+          coord.lat < sector[0] && 
           coord.lon > sector[1] && 
-          coord.lat < sector[2] && 
+          coord.lat > sector[2] && 
           coord.lon < sector[3] 
         ) {
         out.push(coord);
+      
+      } else {
+        // console.log(coord.lat, coord.lon);
+
       }
 
     }
@@ -62,6 +67,17 @@ CoordsPool.prototype = {
 
   }, 
   slice: function (amount) {
+
+    if (this.pointer + amount > this.pool.length) {
+      console.error('SIM.coordsPool overrun');
+      return [];
+    }
+
+    var pool = new CoordsPool(amount);
+    pool.pool = this.pool.slice(this.pointer, this.pointer + amount);
+    pool.parent = this;
+
+    return pool;
 
     var out = this.pool.slice(this.pointer, this.pointer + amount);
     

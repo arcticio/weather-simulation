@@ -26,7 +26,8 @@ SIM.Model.clouds = (function () {
         size     = cfg.size,
         amount   = cfg.amount,
         radius   = cfg.radius,
-        coords   = SIM.coordsPool.slice(amount),
+        pool     = SIM.coordsPool.slice(amount),
+        coords   = pool.pool,
         geometry = new THREE.BufferGeometry(),
 
         attributes = {
