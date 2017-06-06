@@ -22,15 +22,15 @@ SIM.Model.wind = (function () {
     },
     colorTableAlpha: function (c, alpha){
         return (
-            c === 0 ? "rgba(170, 102, 170, " + alpha + ")" :
-            c === 1 ? "rgba(206, 155, 229, " + alpha + ")" :
-            c === 2 ? "rgba(108, 206, 226, " + alpha + ")" :
-            c === 3 ? "rgba(108, 239, 108, " + alpha + ")" :
-            c === 4 ? "rgba(237, 249, 108, " + alpha + ")" :
-            c === 5 ? "rgba(251, 202,  98, " + alpha + ")" :
-            c === 6 ? "rgba(251, 101,  78, " + alpha + ")" :
-            c === 7 ? "rgba(204,  64,  64, " + alpha + ")" :
-                "black"
+            c === 0 ? 'rgba(170, 102, 170, ' + alpha + ')' :
+            c === 1 ? 'rgba(206, 155, 229, ' + alpha + ')' :
+            c === 2 ? 'rgba(108, 206, 226, ' + alpha + ')' :
+            c === 3 ? 'rgba(108, 239, 108, ' + alpha + ')' :
+            c === 4 ? 'rgba(237, 249, 108, ' + alpha + ')' :
+            c === 5 ? 'rgba(251, 202,  98, ' + alpha + ')' :
+            c === 6 ? 'rgba(251, 101,  78, ' + alpha + ')' :
+            c === 7 ? 'rgba(204,  64,  64, ' + alpha + ')' :
+                'black'
         );
     },
     create: function (cfg, datagramm) {
@@ -48,11 +48,6 @@ SIM.Model.wind = (function () {
         amount = TRAIL_NUM,
         factor = 0.0003,                       // TODO: proper Math
         alt    = cfg.radius - radius,      // 0.001
-
-        color     = new THREE.Color('#ff0000'),
-        width = radius * Math.PI / 180 * 0.7,  // deg°
-        section   = 0.33,
-        opacity   = 0.9,
 
       end;
 
@@ -78,10 +73,8 @@ SIM.Model.wind = (function () {
             col = self.colorTableAlpha(col, 1.0);
 
             positions[i].push(vec3);
-            // colors[i].push(new THREE.Color('hsl(' + Math.abs(~~lat) + ', 50%, 50%)'));
-            // colors[i].push(new THREE.Color('hsl(' + Math.abs(~~(datagramm.landsfc.linearXY(0, lat, lon) * 180)) + ', 50%, 50%)'));
             colors[i].push(new THREE.Color(col));
-            widths[i].push(0.6);
+            widths[i].push(1.0);
 
             spherical.setFromVector3(vec3);
             spherical.theta += datagramm.ugrd10m.linearXY(0, lat, lon) * factor; // east-direction
@@ -100,7 +93,7 @@ SIM.Model.wind = (function () {
           positions, 
           colors, 
           widths, 
-          {color, opacity, section, width}
+          cfg
         );
 
         model.obj.add(multiline.mesh);

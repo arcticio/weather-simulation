@@ -52,7 +52,19 @@ var SCN = (function () {
     timerange,
 
     boot:     function () { return self = this; },
-    activate: function () { window.addEventListener('resize', self.resize, false); },
+    activate: function () { 
+      window.addEventListener('resize', self.resize, false); 
+      document.addEventListener('keydown', ev => {
+
+        var keys = {
+          ' ': () => doRender = !doRender,
+        };
+
+        keys[ev.key] ? keys[ev.key]() : console.log('keydown', ev.key);
+
+      });
+
+    },
     add: function (name, obj) {
       objects[name] = obj;
       objects[name].name = name;
@@ -119,6 +131,10 @@ var SCN = (function () {
     loader: {
 
       // TODO: here async tasks
+
+      'custom': (name, cfg) => {
+
+      },
 
       'mesh.textured': (name, cfg) => {
         RES.load({type: 'texture', urls: [cfg.texture], onFinish: (err, responses) => {
@@ -253,6 +269,8 @@ var SCN = (function () {
             'WIND':    (value) => self.toggle(objects.wind, value),
             'LAND':    (value) => self.toggle(objects.land, value),
             'RIVERS':  (value) => self.toggle(objects.rivers, value),
+            'CLOUDS':  (value) => self.toggle(objects.clouds, value),
+            'RANDOM':  (value) => self.toggle(objects.randomizer, value),
           },
           Camera: {
             reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),

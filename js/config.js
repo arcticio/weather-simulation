@@ -48,10 +48,6 @@ var CFG = {
     perspective: {
       type: 'camera',
       cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
-      // pos:             new THREE.Vector3(0.5, 3.4, 0.5),       // Greenland centered
-      // pos:             new THREE.Vector3(0.05, 2.3, -0.08),    // North Pole
-      // pos:             new THREE.Vector3(0.5, -2.2, -3),          // Low near AA
-      // pos:             new THREE.Vector3(0.8, 3.9, 0.0),                // 0,0
       pos:             new THREE.Vector3(4, 0, 0),                // Äq
     },
 
@@ -59,7 +55,7 @@ var CFG = {
       visible:    true,
       type:       'light',
       color:      0xffffff,
-      intensity:  0.1,
+      intensity:  0.3,
       light: (cfg) => new THREE.AmbientLight( cfg.color, cfg.intensity )
     },
 
@@ -129,6 +125,16 @@ var CFG = {
           opacity: 0.1
         })
       ),
+    },
+
+    randomizer: {
+      visible: false,
+      type: 'custom',
+      amount: 100000,
+      color:     0xeeeeee,
+      opacity: 0.1,
+      radius: RADIUS + 0.3,
+      size: 0.01,
     },
 
     land: {
@@ -230,14 +236,18 @@ var CFG = {
     },
 
     wind: {
-      visible: true,
-      type: 'simulation',
-      rotation: [0, Math.PI, 0],
-      radius: RADIUS + 0.001, 
+      visible:    true,
+      type:       'simulation',
+      rotation:   [0, Math.PI, 0],
+      radius:     RADIUS + 0.001, 
+      color:      new THREE.Color('#ff0000'),
+      opacity:    1.0,
+      lineWidth:  RADIUS * Math.PI / 180 * 0.2,
+      section:    33 * 1/60,
+      length:     60,
       sim: {
         data: [
           'data/gfs/permanent.landsfc.05.dods',
-          'data/gfs/2017-05-30-12.tcdcclm.05.dods',
           'data/gfs/2017-05-30-12.tmp2m.05.dods',
           'data/gfs/2017-05-30-12.ugrd10m.05.dods',
           'data/gfs/2017-05-30-12.vgrd10m.05.dods',
@@ -254,12 +264,19 @@ var CFG = {
     },
 
     clouds: {
-      visible: false,
-      type: 'simulation',
+      visible:  false,
+      type:     'simulation',
+      rotation: [0, Math.PI, 0],
+      radius:   RADIUS + 0.005, 
+      amount:   10000,
+      size:     4.0,
       sim: {
         data: [
-          'data/gfs/2017-05-23.tcdcclm.dods',
-        ]
+          'data/gfs/2017-05-30-12.tcdcclm.05.dods',
+        ],
+        sectors: [
+          [ 89.9, -180,  -89.9,  180 ], // all
+        ],
       }
     },
 
@@ -309,6 +326,8 @@ const PRESET = {
     'TEST':     CFG.objects.test.visible,
     'LAND':     CFG.objects.land.visible,
     'RIVERS':   CFG.objects.rivers.visible,
+    'CLOUDS':   CFG.objects.clouds.visible,
+    'RANDOM':   CFG.objects.randomizer.visible,
   },
   DateTime : {
     isFolder:    true,

@@ -72,7 +72,6 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
     if (name === 'index'){
       this.geometry.setIndex(this.attributes.index);
-      // console.log('Multiline.index.length', this.attributes.index.array.length);
 
     } else {
       this.geometry.addAttribute( name, this.attributes[name] );
@@ -85,13 +84,16 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
   this.mesh = new THREE.Mesh( this.geometry, this.material );
 
+  this.mesh.onBeforeRender = function (renderer, scene, camera, geometry, material, group) {
+    material.uniforms.distance.value = camera.position.length() - CFG.earth.radius;
+    material.uniforms.distance.needsUpdate = true;
+  };
+
   this.bytes = Object
     .keys(this.attributes)
     .map(attr => this.attributes[attr].array.length)
     .reduce( (a, b) =>  a + b, 0)
   ;
-
-  // console.log('Multiline.attributes.length', this.bytes, 'bytes');
 
 }
 
@@ -124,16 +126,11 @@ Multiline.prototype = {
 
   createMaterial: function (options) {
 
-    // https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
-
     var     
-      color      = this.check(options.color, new THREE.Color('#ff0000')),
-      opacity    = this.check(options.opacity, 0.8),
-      lineWidth  = this.check(options.lineWidth, 0.01),
-
       heads      = new Array(this.amount).fill(0).map( n => Math.random() * this.length ),
       pointers   = heads.map( n => n),
-      section    = this.check(options.section, 10 / this.length);    // length of trail in %
+      distance   = SCN.camera.position.length() - CFG.earth.radius,
+    end;
 
     return  new THREE.RawShaderMaterial({
 
@@ -153,13 +150,15 @@ Multiline.prototype = {
 
       uniforms: {
 
-        color:            { type: 'c',    value: color },
-        opacity:          { type: 'f',    value: opacity },
-        lineWidth:        { type: 'f',    value: lineWidth },
+        color:            { type: 'c',    value: options.color },
+        opacity:          { type: 'f',    value: options.opacity },
+        lineWidth:        { type: 'f',    value: options.lineWidth },
 
         heads:            { type: '1fv',  value: heads },
         pointers:         { type: '1fv',  value: pointers },
-        section:          { type: 'f',    value: section },
+        section:          { type: 'f',    value: options.section }, // length of trail in %
+        
+        distance:         { type: 'f',    value: distance },
 
       },
 
@@ -186,6 +185,7 @@ Multiline.prototype = {
       uniform mat4  projectionMatrix;
       uniform mat4  modelViewMatrix;
 
+      uniform float distance;
       uniform float lineWidth;
       uniform vec3  color;
       uniform float opacity;
@@ -230,7 +230,7 @@ Multiline.prototype = {
           }
 
           normal  = vec2( -dir.y, dir.x );
-          normal *= lineWidth * width;
+          normal *= lineWidth * width * distance;
 
           offset = vec4( normal * side, 0.0, 1.0 );
           finalPosition.xy += offset.xy;
@@ -242,6 +242,16 @@ Multiline.prototype = {
     `;
 
   },
+
+  /*
+        distance = 1 => width = 1
+                   2 => width = 0.5
+
+
+
+  */
+
+
 
   shaderFragment: function () {
 

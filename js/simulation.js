@@ -19,6 +19,8 @@ var SIM = (function () {
     
     vectorSun = new THREE.Vector3(),
 
+    coordsPool = new CoordsPool(100000).generate(),
+
     image,
 
     sun   = Orb.SolarSystem().Sun(),
@@ -46,6 +48,7 @@ var SIM = (function () {
   return {
 
     vectorSun,
+    coordsPool,
 
     boot: function () {
       return self = this;
@@ -55,24 +58,6 @@ var SIM = (function () {
       var diff = time.now.diff(time.start, 'hours');
 
       IFC.controllers['DateTime']['choose'].setValue(diff);
-
-    },
-    load: function (name, config, callback) {
-
-      TIM.step('SIM.load.in');
-
-      // this is testing MultiLInes
-      // trailsWind = self.createWind();
-      // callback(name, trailsWind.mesh);
-
-      this.loadModel(config, function () {
-
-        models[name] = SIM.Model[name].create(config, datagramm);
-        callback(name, models[name].obj);
-
-        TIM.step('SIM.load.out');
-
-      });
 
     },
     updateDatetime: function (val) {
@@ -108,6 +93,47 @@ var SIM = (function () {
       IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
 
       // console.log(iso, 'dec', posSun.dec, 'ra', posSun.ra);
+
+    },
+    load: function (name, config, callback) {
+
+      TIM.step('SIM.load.in');
+
+      // this is testing MultiLInes
+      // trailsWind = self.createWind();
+      // callback(name, trailsWind.mesh);
+
+      this.loadModel(config, function () {
+
+        models[name] = SIM.Model[name].create(config, datagramm);
+        callback(name, models[name].obj);
+
+        TIM.step('SIM.load.out');
+
+      });
+
+    },
+    loadModel: function (cfg, callback) {
+
+      RES.load({
+        urls: cfg.sim.data,
+        onFinish: function (err, responses) {
+
+          responses.forEach(function (response) {
+            var vari, data;
+            if (response){
+              vari = response.url.split('.').slice(-3)[0];
+              data = SIM.Model.parseMultiDods(vari, response.data);
+              datagramm[vari] = new SIM.Datagram(data);
+            } else {
+              console.log('WTF');
+            }
+          });
+          
+          callback();
+
+        }
+      });    
 
     },
     createWind: function () {
@@ -162,30 +188,7 @@ var SIM = (function () {
       return trailsWind;
       
     },
-    loadModel: function (cfg, callback) {
-
-      RES.load({
-        urls: cfg.sim.data,
-        onFinish: function (err, responses) {
-
-          responses.forEach(function (response) {
-            var vari, data;
-            if (response){
-              vari = response.url.split('.').slice(-3)[0];
-              data = SIM.Model.parseMultiDods(vari, response.data);
-              datagramm[vari] = new SIM.Datagram(data);
-            } else {
-              console.log('WTF');
-            }
-          });
-          
-          callback();
-
-        }
-      });    
-
-    },
-    createModelClouds: function () {
+    createClouds: function () {
 
       var t0 = Date.now(), i, j, lat, lon, 
 
@@ -241,6 +244,11 @@ var SIM = (function () {
   };
 
 }()).boot();
+
+
+
+
+
 
 /*
 
