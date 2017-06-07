@@ -132,8 +132,8 @@ var SCN = (function () {
 
       // TODO: here async tasks
 
-      'custom': (name, cfg) => {
-
+      'mesh-calculate': (name, cfg) => {
+        self.add(name, SCN.tools.calculate(name, cfg));
       },
 
       'mesh.textured': (name, cfg) => {
@@ -216,16 +216,17 @@ var SCN = (function () {
             grdcolor:  (value) => objects.sun.groundColor = new THREE.Color( value ),
           },
           Layers : {
-            'SNPP':    (value) => self.toggle(objects.snpp, value),
-            'DATA':    (value) => self.toggle(objects.data, value),
-            'SST':     (value) => self.toggle(objects.sst, value),
-            'SEAICE':  (value) => self.toggle(objects.seaice, value),
-            'TEST':    (value) => self.toggle(objects.test, value),
-            'WIND':    (value) => self.toggle(objects.wind, value),
-            'LAND':    (value) => self.toggle(objects.land, value),
-            'RIVERS':  (value) => self.toggle(objects.rivers, value),
-            'CLOUDS':  (value) => self.toggle(objects.clouds, value),
-            'RANDOM':  (value) => self.toggle(objects.randomizer, value),
+            'SNPP':       (value) => self.toggle(objects.snpp, value),
+            'DATA':       (value) => self.toggle(objects.data, value),
+            'SST':        (value) => self.toggle(objects.sst, value),
+            'SEAICE':     (value) => self.toggle(objects.seaice, value),
+            'TEST':       (value) => self.toggle(objects.test, value),
+            'WIND':       (value) => self.toggle(objects.wind, value),
+            'LAND':       (value) => self.toggle(objects.land, value),
+            'RIVERS':     (value) => self.toggle(objects.rivers, value),
+            'CLOUDS':     (value) => self.toggle(objects.clouds, value),
+            'RANDOM':     (value) => self.toggle(objects.randomizer, value),
+            'GRATICULE':  (value) => self.toggle(objects.graticule, value),
           },
           Camera: {
             reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),

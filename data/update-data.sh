@@ -26,7 +26,7 @@ fi
 
 TASKS="dods seaice sst snpp"
 # TASKS="dods seaice snpp"
-TASKS="seaice"
+TASKS="sst"
 
 echo
 echo "Now: ${DATENOW} Param: ${DATEPAR} Using: ${DATE} SST: ${DATESST} Tasks: ${TASKS}"

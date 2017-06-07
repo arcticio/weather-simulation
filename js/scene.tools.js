@@ -3,6 +3,52 @@
 
 SCN.tools = {
 
+  calculate: function (name, cfg) {
+    return SCN.tools[name](cfg);
+  },
+  graticule: function (cfg) {
+
+    /*
+      + - + - +
+      |   |   |
+      + - + - +
+      |   |   |
+      + - + - +
+    */
+
+    var 
+      lats = H.linspace(-180, 180, 37),
+      lons = H.linspace( -90,  90, 19),
+      geometry = new THREE.Geometry(),
+      material = new THREE.LineBasicMaterial(cfg.material),
+      toVec3   = function (lat, lon) {
+        return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, cfg.altitude);
+      },
+    end;
+
+    H.each(lats.slice(0, -1), (iLat, lat) => {
+      H.each(lons.slice(0, -1), (iLon, lon) => {
+
+        var 
+          lat0 = lat,
+          lat1 = lats[~~iLat + 1],
+          lon0 = lon,
+          lon1 = lons[~~iLon + 1],
+          v1   = toVec3(lat0, lon0),
+          v2   = toVec3(lat0, lon1),
+          v3   = toVec3(lat0, lon0),
+          v4   = toVec3(lat1, lon0),
+        end;
+
+      geometry.vertices.push(v1, v2, v3, v4);
+
+      });
+    });
+
+    return new THREE.LineSegments(geometry, material);
+
+
+  },
   loadCube: function (name, cfg, callback) {
 
     var

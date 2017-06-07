@@ -130,6 +130,20 @@ var CFG = {
       ),
     },
 
+    graticule: {
+      visible:      true,
+      type:         'mesh-calculate',
+      altitude:     0.01,
+      resolution:   10,
+      material: {
+        transparent:  true,
+        opacity:      0.4,
+        color:        0xffff00,
+        linewidth:    1.1,
+        vertexColors: THREE.NoColors,
+      }
+    },
+
     randomizer: {
       visible: false,
       type: 'custom',
@@ -299,41 +313,41 @@ const PRESET = {
     isFolder: true,
     reset: () => {},
   },
-  Ambient: {
-    isFolder: true,
+
+  Ambient: { isFolder: true,
     toggle: true,
     intensity: {val: CFG.objects.ambient.intensity, min: 0, max: 1},
     color: '#ffffff'
   },
-  Spot: {
-    isFolder: true,
+
+  Spot: { isFolder: true,
     toggle: true,
     angle:     {val: 0.26, min: 0, max: 0.5},
     intensity: {val: CFG.objects.spot.intensity, min: 0, max: 1},
     color: '#ffffff'
   },
-  Sun: {
-    isFolder:  true,
+
+  Sun: { isFolder:  true,
     toggle:    true,
     intensity: {val: CFG.objects.sun.intensity, min: 0, max: 1},
     skycolor:  CFG.objects.sun.skycolor,
     grdcolor:  CFG.objects.sun.grdcolor,
   },
-  Layers: {
-    isFolder:   true,
-    'SNPP':     CFG.objects.snpp.visible,
-    'DATA':     CFG.objects.data.visible,
-    'SST':      CFG.objects.sst.visible,
-    'SEAICE':   CFG.objects.seaice.visible,
-    'WIND':     CFG.objects.wind.visible,
-    'TEST':     CFG.objects.test.visible,
-    'LAND':     CFG.objects.land.visible,
-    'RIVERS':   CFG.objects.rivers.visible,
-    'CLOUDS':   CFG.objects.clouds.visible,
-    'RANDOM':   CFG.objects.randomizer.visible,
+
+  Layers: { isFolder:     true,
+    'SNPP':       CFG.objects.snpp.visible,
+    'DATA':       CFG.objects.data.visible,
+    'SST':        CFG.objects.sst.visible,
+    'SEAICE':     CFG.objects.seaice.visible,
+    'WIND':       CFG.objects.wind.visible,
+    'TEST':       CFG.objects.test.visible,
+    'LAND':       CFG.objects.land.visible,
+    'RIVERS':     CFG.objects.rivers.visible,
+    'CLOUDS':     CFG.objects.clouds.visible,
+    'RANDOM':     CFG.objects.randomizer.visible,
+    'GRATICULE':  CFG.objects.graticule.visible,
   },
-  DateTime : {
-    isFolder:    true,
+  DateTime : { isFolder:    true,
     choose:     {val: 3, min: 0, max: 365 * 24, step: 1},
     hour1:      () => {},
     hourn1:     () => {},
@@ -342,8 +356,8 @@ const PRESET = {
     day30:      () => {},
     dayn30:     () => {},
   },
-  Extras: {
-    isFolder:   true,
+
+  Extras: { isFolder:   true,
     Axes:       CFG.objects.axes.visible,
     Rotate:     () => {},
     ZoomOut:    () => {},

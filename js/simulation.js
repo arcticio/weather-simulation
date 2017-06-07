@@ -90,10 +90,6 @@ var SIM = (function () {
 
       TIM.step('SIM.load.in');
 
-      // this is testing MultiLInes
-      // trailsWind = self.createWind();
-      // callback(name, trailsWind.mesh);
-
       this.loadModel(config, function () {
 
         models[name] = SIM.Model[name].create(config, datagramm);
@@ -127,71 +123,6 @@ var SIM = (function () {
       });    
 
     },
-    createWind: function () {
-
-      var i, j, lat, lon, col,
-
-        amount = TRAIL_NUM,
-        length = TRAIL_LEN,
-        
-        color         = new THREE.Color('rgb(255, 0, 0)'),
-        latsStart     = H.linspace( -80,  80, amount), 
-        lonsStart     = H.linspace( -60,  60, amount), 
-
-        trailsVectors = new Array(amount).fill(0).map( () => []),
-        trailsColors  = new Array(amount).fill(0).map( () => []),
-        trailsWidths  = new Array(amount).fill(0).map( () => []),
-
-        convert       = function (latlon) {
-          return TOOLS.latLongToVector3(latlon[0], latlon[1], CFG.earth.radius, 0.01);
-        },
-
-      end;
-
-      for (i=0; i<amount; i++) {
-
-        col   = 0;
-        lat   = latsStart[i];
-        lon   = lonsStart[i];
-
-        for (j=0; j<length; j++) {
-
-          trailsVectors[i].push(convert([lat, lon]));
-          trailsColors[i].push(new THREE.Color('hsl(' + (col + 360/length) + ', 60%, 45%)'));  // 45=nice
-          trailsWidths[i].push(1);
-
-          lat += (90 - 80) / length;
-          lon += 240/length;
-          col += 360/length;
-
-        }
-
-      }
-
-      // preset uniforms, etc
-      trailsWind = new Multiline(trailsVectors, trailsColors, trailsWidths, {
-        color:     new THREE.Color('#ff0000'),
-        opacity:   0.8,
-        section:   10 / length, // %
-        lineWidth: (CFG.earth.radius * Math.PI) / amount,  // world coords
-      });
-
-      return trailsWind;
-      
-    },
-    createClouds: function () {
-
-      var t0 = Date.now(), i, j, lat, lon, 
-
-
-      end;
-
-
-
-
-
-    },
-
     step: function () {
 
       H.each(models, (name, model) => model.step() )

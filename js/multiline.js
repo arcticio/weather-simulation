@@ -19,6 +19,7 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
   this.geometry   = new THREE.BufferGeometry();
   this.material   = this.createMaterial(options);
+  
   this.attributes = {
     lineIndex: Float32Array,
     colors:    Float32Array,
@@ -114,7 +115,6 @@ Multiline.prototype = {
 
     for (i=0; i<this.amount; i++) {
 
-      // head        = this.material.uniforms.heads.value[i],
       pointers    = this.material.uniforms.pointers.value;
       pointers[i] = (pointers[i] + offset) % 1;
 
@@ -131,9 +131,8 @@ Multiline.prototype = {
   createMaterial: function (options) {
 
     var     
-      pointers   = new Array(this.amount).fill(0).map( n => Math.random() * this.length ),
-      // heads      = pointers.map( n => n),
-      distance   = SCN.camera.position.length() - CFG.earth.radius,
+      pointers = new Array(this.amount).fill(0).map( n => Math.random() * this.length ),
+      distance = SCN.camera.position.length() - CFG.earth.radius,
     end;
 
     return  new THREE.RawShaderMaterial({
@@ -157,11 +156,8 @@ Multiline.prototype = {
         color:            { type: 'c',    value: options.color },
         opacity:          { type: 'f',    value: options.opacity },
         lineWidth:        { type: 'f',    value: options.lineWidth },
-
-        // heads:            { type: '1fv',  value: heads },
         pointers:         { type: '1fv',  value: pointers },
         section:          { type: 'f',    value: options.section }, // length of trail in %
-        
         distance:         { type: 'f',    value: distance },
 
       },
