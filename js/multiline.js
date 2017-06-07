@@ -84,10 +84,7 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
   this.mesh = new THREE.Mesh( this.geometry, this.material );
 
-  this.mesh.onBeforeRender = function (renderer, scene, camera, geometry, material, group) {
-    material.uniforms.distance.value = camera.position.length() - CFG.earth.radius;
-    material.uniforms.distance.needsUpdate = true;
-  };
+  this.mesh.onBeforeRender = this.onBeforeRender;
 
   this.bytes = Object
     .keys(this.attributes)
@@ -100,6 +97,13 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 Multiline.prototype = {
   constructor: Multiline,
 
+  onBeforeRender: function (renderer, scene, camera, geometry, material, group) {
+
+    material.uniforms.distance.value = camera.position.length() - CFG.earth.radius;
+    material.uniforms.distance.needsUpdate = true;
+    
+  },
+
   step: function () {
 
     // TODO: dTime math
@@ -110,7 +114,7 @@ Multiline.prototype = {
 
     for (i=0; i<this.amount; i++) {
 
-      head        = this.material.uniforms.heads.value[i],
+      // head        = this.material.uniforms.heads.value[i],
       pointers    = this.material.uniforms.pointers.value;
       pointers[i] = (pointers[i] + offset) % 1;
 
@@ -127,8 +131,8 @@ Multiline.prototype = {
   createMaterial: function (options) {
 
     var     
-      heads      = new Array(this.amount).fill(0).map( n => Math.random() * this.length ),
-      pointers   = heads.map( n => n),
+      pointers   = new Array(this.amount).fill(0).map( n => Math.random() * this.length ),
+      // heads      = pointers.map( n => n),
       distance   = SCN.camera.position.length() - CFG.earth.radius,
     end;
 
@@ -154,7 +158,7 @@ Multiline.prototype = {
         opacity:          { type: 'f',    value: options.opacity },
         lineWidth:        { type: 'f',    value: options.lineWidth },
 
-        heads:            { type: '1fv',  value: heads },
+        // heads:            { type: '1fv',  value: heads },
         pointers:         { type: '1fv',  value: pointers },
         section:          { type: 'f',    value: options.section }, // length of trail in %
         
@@ -253,40 +257,36 @@ Multiline.prototype = {
 
 
 
-  shaderFragment: function () {
+  shaderFragment: function () { return `
 
-    return `
+    precision mediump float;
 
-      precision mediump float;
+    varying vec4  vColor;    // color from attribute, includes uni opacity
+    varying float vHead;     // head of line segment
+    varying float vCounter;  // current position, goes from 0 to 1 
 
-      varying vec4  vColor;    // color from attribute, includes uni opacity
-      varying float vHead;     // head of line segment
-      varying float vCounter;  // current position, goes from 0 to 1 
+    uniform float section;   // visible segment length
+    
+    bool  visible = true;    // frag part of segment
 
-      uniform float section;   // visible segment length
-      
-      bool  visible = true;    // frag part of segment
+    void main() {
 
-      void main() {
+        vec4  color = vColor;
+        float head  = vHead;
+        float tail  = max(0.0, vHead - section);
+        float pos   = vCounter;
 
-          vec4  color = vColor;
-          float head  = vHead;
-          float tail  = max(0.0, vHead - section);
-          float pos   = vCounter;
+        visible =  ( pos > tail ) && ( pos < head );  // pos within segment
+        
+        if( !visible ) discard;
 
-          visible =  ( pos > tail ) && ( pos < head );  // pos within segment
-          
-          if( !visible ) discard;
+        color.a = (pos - tail) / section;
 
-          color.a = (pos - tail) / section;
+        gl_FragColor = color;
 
-          gl_FragColor = color;
+    } 
 
-      } 
-
-    `;
-
-  },
+  `;},
 
 };
 

@@ -21,11 +21,20 @@ var IFC = (function () {
     controllers = GUIcontrollers,
 
     mouse = {
-      x:      NaN, 
-      y:      NaN, 
-      down:   false, 
-      button: NaN,
-      intersect: new THREE.Vector3(0, 0, 0),
+      x:          NaN, 
+      y:          NaN, 
+      down:       false, 
+      button:     NaN,
+      intersect:  new THREE.Vector3(0, 0, 0),
+      overGlobe:  false,
+    },
+
+    levels  = {
+      '8':  1.2,
+      '7':  1.4,
+      '6':  1.8,
+      '5':  2.6,
+      '4':  4.2,
     },
 
     labels = {
@@ -67,7 +76,7 @@ var IFC = (function () {
   }
 
 
-  return {
+  return self = {
     
     stats,
     mouse,
@@ -121,8 +130,8 @@ var IFC = (function () {
         orbitControls.constraint.smoothZoom = true;
         orbitControls.constraint.zoomDampingFactor = 0.2;
         orbitControls.constraint.smoothZoomSpeed = 2.0;
-        orbitControls.constraint.minDistance = RADIUS + 0.1;
-        orbitControls.constraint.maxDistance = 8;
+        orbitControls.constraint.minDistance = CFG.minDistance;
+        orbitControls.constraint.maxDistance = CFG.maxDistance;
 
       H.each([
 
@@ -167,15 +176,21 @@ var IFC = (function () {
     events: {
       click:   function (event) { 
 
-        GUI.closed = true;
-        // console.log('click')
+        if (!mouse.overGlobe) {GUI.closed = !GUI.closed;}
 
       },      
       dblclick:   function (event) { 
 
-        if (screenfull.enabled) {
-          screenfull.toggle(fullscreen);
-        }        
+        if (!mouse.overGlobe) {
+          if (screenfull.enabled) {
+            screenfull.toggle(fullscreen);
+          }        
+
+        } else {
+          ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2))
+
+        }
+        
         // console.log('dblclick');
 
       },
@@ -252,6 +267,11 @@ var IFC = (function () {
 
       if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
         mouse.intersect.copy(intersection.point).normalize();
+        mouse.overGlobe = true;
+
+      } else {
+        mouse.overGlobe = false;
+
       }
 
     },
@@ -299,11 +319,11 @@ var IFC = (function () {
 
     takeScreenShot: function(){
       // https://developer.mozilla.org/en/DOM/window.open
-      var f = self.getFrame("image/png");
-      var opts = "menubar=no,scrollbars=no,location=no,status=no,resizable=yes,innerHeight=" + (f.height/2) + ",innerWidth=" + (f.width/2);
-      var win = window.open(f.url, "screenshot", opts); 
+      var f = self.getFrame('image/png');
+      var opts = 'menubar=no,scrollbars=no,location=no,status=no,resizable=yes,innerHeight=' + (f.height/2) + ',innerWidth=' + (f.width/2);
+      var win = window.open(f.url, 'screenshot', opts); 
       win.focus();
-      console.log("win.open", win, opts);
+      console.log('win.open', win, opts);
     },   
     getFrame :  function(mimetype){ 
 
@@ -323,4 +343,4 @@ var IFC = (function () {
 
   };
 
-}()).boot();
+}());

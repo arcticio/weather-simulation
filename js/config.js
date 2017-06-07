@@ -43,6 +43,9 @@ var CFG = {
     radiusOverlay: RADIUS + 0.1,
   },
 
+  minDistance:     RADIUS + 0.1,
+  maxDistance:     8,
+
   objects: {
 
     perspective: {
