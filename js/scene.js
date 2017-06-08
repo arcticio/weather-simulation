@@ -227,6 +227,7 @@ var SCN = (function () {
             'CLOUDS':     (value) => self.toggle(objects.clouds, value),
             'RANDOM':     (value) => self.toggle(objects.randomizer, value),
             'GRATICULE':  (value) => self.toggle(objects.graticule, value),
+            'SECTOR':     (value) => self.toggle(objects.sector, value),
           },
           Camera: {
             reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),

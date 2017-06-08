@@ -137,8 +137,23 @@ var CFG = {
       resolution:   10,
       material: {
         transparent:  true,
-        opacity:      0.4,
-        color:        0xffff00,
+        opacity:      0.2,
+        color:        0x000000,
+        linewidth:    1.1,
+        vertexColors: THREE.NoColors,
+      }
+    },
+
+    sector: {
+      visible:      true,
+      type:         'mesh-calculate',
+      altitude:     0.01,
+      resolution:   1,
+      sector:       [15, -15, -15, 15],
+      material: {
+        transparent:  true,
+        opacity:      0.8,
+        color:        0xff00ff,
         linewidth:    1.1,
         vertexColors: THREE.NoColors,
       }
@@ -230,7 +245,7 @@ var CFG = {
         texture: 'data/sst/2017-05-30.globe.sst.FACE.1024.png', 
         material: {
           transparent: true, 
-          opacity:     0.99,              // removes crazy seaice effeckt
+          opacity:     0.50,              // removes crazy seaice effeckt
           side:        THREE.SingleSide,
         }
       }
@@ -253,7 +268,7 @@ var CFG = {
     },
 
     wind: {
-      visible:    true,
+      visible:    false,
       type:       'simulation',
       rotation:   [0, Math.PI, 0],
       radius:     RADIUS + 0.001, 
@@ -281,7 +296,7 @@ var CFG = {
     },
 
     clouds: {
-      visible:  false,
+      visible:  true,
       type:     'simulation',
       rotation: [0, Math.PI, 0],
       radius:   RADIUS + 0.005, 
@@ -346,6 +361,7 @@ const PRESET = {
     'CLOUDS':     CFG.objects.clouds.visible,
     'RANDOM':     CFG.objects.randomizer.visible,
     'GRATICULE':  CFG.objects.graticule.visible,
+    'SECTOR':     CFG.objects.sector.visible,
   },
   DateTime : { isFolder:    true,
     choose:     {val: 3, min: 0, max: 365 * 24, step: 1},
