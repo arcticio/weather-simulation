@@ -131,7 +131,7 @@ var CFG = {
     },
 
     graticule: {
-      visible:      true,
+      visible:      false,
       type:         'mesh-calculate',
       altitude:     0.01,
       resolution:   10,
@@ -145,7 +145,7 @@ var CFG = {
     },
 
     sector: {
-      visible:      true,
+      visible:      false,
       type:         'mesh-calculate',
       altitude:     0.01,
       resolution:   1,
@@ -302,7 +302,7 @@ var CFG = {
       radius:     RADIUS + 0.005, 
       color:      new THREE.Color('#ff0000'),
       opacity:    0.8,
-      lineWidth:  RADIUS * Math.PI / 180 * 0.2,
+      lineWidth:  RADIUS * Math.PI / 180 * 0.1,
       section:    33 * 1/60,
       length:     60,
       sim: {

@@ -15,9 +15,21 @@ var IFC = (function () {
     fullscreen = $$('.fullscreen')[0],
 
     orbitControls, 
-    width, height,
 
     controllers = GUIcontrollers,
+
+    globe = {
+      scan:     NaN,   // -1 = tiny globe, 1 = big, 0 = little smaller than screen
+      pixels:   NaN,   // 2 * radius
+      sector:   []
+    },
+
+    screen = {            // canvas actually
+      height:   NaN,
+      width:    NaN,
+      aspect:   NaN,
+      diameter: NaN,
+    },
 
     mouse = {
       x:          NaN, 
@@ -80,16 +92,20 @@ var IFC = (function () {
     
     stats,
     mouse,
+    screen,
+    globe,
     raycaster,
     controllers,
     orbitControls,
 
     init: function () {
 
+      self.events.resize();
+
       loader.style.display = 'block';
 
-      width  = simulator.width;
-      height = simulator.height;
+      // screen.width  = simulator.width;
+      // screen.height = simulator.height;
 
       self.stats = stats = new Stats();
       stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -145,7 +161,7 @@ var IFC = (function () {
         [simulator, 'touchmove'],
         [simulator, 'touchend'],
         [simulator, 'touchcancel'],
-        [document,  'contextmenu'],
+        // [document,  'contextmenu'],
         [document,  'keydown'],
         [window,    'orientationchange'],
         [window,    'deviceorientation'],
@@ -166,6 +182,7 @@ var IFC = (function () {
       orbitControls.update();
 
       self.updateMouse();
+      self.updateGlobe();
 
       // GUI infos
       // self.updatePanels();
@@ -173,9 +190,17 @@ var IFC = (function () {
 
     },
     events: {
+      resize: function () {
+
+        screen.width  = SCN.renderer.domElement.width;
+        screen.height = SCN.renderer.domElement.height;
+        screen.aspect = screen.width / screen.height;
+        screen.diameter = Math.hypot(screen.width, screen.height);
+
+      },
       click:   function (event) { 
 
-        if (!mouse.overGlobe) {GUI.closed = !GUI.closed;}
+        // if (!mouse.overGlobe) {GUI.closed = !GUI.closed;}
 
       },      
       dblclick:   function (event) { 
@@ -207,7 +232,7 @@ var IFC = (function () {
         }
 
         if (mouse.button === 2) {
-          ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2))
+          ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2));
         }
 
 
@@ -254,15 +279,29 @@ var IFC = (function () {
       devicemotion:      function (event) { /* console.log('devicemotion', event)      */ },
       orientationchange: function (event) { console.log('orientationchange', event)       },
       deviceorientation: function (event) { /* console.log('deviceorientation', event) */ },
-      resize: function () {
-
-        width  = SCN.renderer.domElement.width;
-        height = SCN.renderer.domElement.height;
-
-      },
 
     },
 
+    updateGlobe: function () {
+
+      // https://stackoverflow.com/questions/13350875/three-js-width-of-view
+
+      var 
+        cam = SCN.camera,
+        fov = cam.fov * Math.PI / 180,
+        height = 2 * Math.tan( fov / 2 ) * cam.position.length(),
+        fraction = CFG.earth.radius * 2 / height
+      ;
+
+      globe.pixels = screen.height * fraction;
+
+      globe.scan = (
+        globe.pixels > screen.diameter                              ? 1 : // big
+        globe.pixels > screen.width || globe.pixels > screen.height ? 0 : // fits
+          -1                                                              // tiny
+      );
+
+    },
     updateMouse: function () {
 
       var intersections, intersection, oldMouseOver = mouse.overGlobe;
@@ -281,9 +320,11 @@ var IFC = (function () {
 
       if (oldMouseOver !== mouse.overGlobe){
         if (mouse.overGlobe) {
-          ANI.insert(0, ANI.library.scaleGLobe(1.0, 500));
+          ANI.insert(0, ANI.library.scaleGLobe(1.0, 800));
+          GUI.closed = true;
         } else {
-          ANI.insert(0, ANI.library.scaleGLobe(0.9, 500));
+          ANI.insert(0, ANI.library.scaleGLobe(0.94, 800));
+          GUI.closed = false;
         }
       }
 

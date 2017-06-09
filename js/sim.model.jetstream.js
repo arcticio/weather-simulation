@@ -20,32 +20,11 @@ SIM.Model.jetstream = (function () {
         var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
         return val < min ? min : val > max ? max : val;
     },
-    colorTableAlpha: function (c, alpha){
-      return (
-        c === 0 ? 'rgba(170, 102, 170, ' + alpha + ')' :
-        c === 1 ? 'rgba(206, 155, 229, ' + alpha + ')' :
-        c === 2 ? 'rgba(108, 206, 226, ' + alpha + ')' :
-        c === 3 ? 'rgba(108, 239, 108, ' + alpha + ')' :
-        c === 4 ? 'rgba(237, 249, 108, ' + alpha + ')' :
-        c === 5 ? 'rgba(251, 202,  98, ' + alpha + ')' :
-        c === 6 ? 'rgba(251, 101,  78, ' + alpha + ')' :
-        c === 7 ? 'rgba(204,  64,  64, ' + alpha + ')' :
-            'black'
-      );
-    },
-    latlon2color: function (datagramm, lat, lon) {
-
-      var tmp2m = datagramm.tmp2m.linearXY(0, lat, lon) - 273.15;
-      var col   = ~~self.clampScale(tmp2m, -40, +30, 0, 7);
-
-      return new THREE.Color(self.colorTableAlpha(col, 1.0));
-
-    },
     create: function (cfg, datagramm) {
       
-      TIM.step('Model.jetstream.in');
+      TIM.step('Model.jets.in');
 
-      var t0 = Date.now(), i, j, u, v, speed, lat, lon, color, vec3, latlon, tmp2m,
+      var t0 = Date.now(), i, j, u, v, speed, width, lat, lon, color, vec3, latlon, tmp2m,
 
         multiline, positions, widths, colors, latlonsStart, 
 
@@ -81,9 +60,11 @@ SIM.Model.jetstream = (function () {
             speed = Math.hypot(u, v);
             color = new THREE.Color('hsl(10, 40%, ' +  ~~speed + '%)');
 
+            width = self.clampScale(speed, 0, 50, 0.5, 2.0);
+
             positions[i].push(vec3);
             colors[i].push(color);
-            widths[i].push(1.0);
+            widths[i].push(width);
 
             spherical.setFromVector3(vec3);
             spherical.theta += u * factor; // east-direction
@@ -110,7 +91,7 @@ SIM.Model.jetstream = (function () {
 
       });
 
-      TIM.step('Model.jetstream.out');
+      TIM.step('Model.jets.out');
 
       return model;
 
