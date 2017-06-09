@@ -1,6 +1,17 @@
 #!/bin/bash
 
 
+
+  # DATE="2017-05-21"
+  # DATEGFS="${DATE//-}" 
+  wget -O "gfs/2017-05-30-12.vgrdprs.05.dods"    "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170530/gfs_0p50_06z.ascii?vgrdprs[2:2][28:28][0:360][0:719]"
+  wget -O "gfs/2017-05-30-12.ugrdprs.05.dods"    "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170530/gfs_0p50_06z.ascii?ugrdprs[2:2][28:28][0:360][0:719]"
+
+exit
+
+  wget -O "gfs/2017-05-30-12.vgrdprs.05.dods"    "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170530/gfs_0p50_06z.ascii?vgrdprs[2:2][0:0][0:360][0:719]"
+  wget -O "gfs/2017-05-30-12.ugrdprs.05.dods"    "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170530/gfs_0p50_06z.ascii?ugrdprs[2:2][0:0][0:360][0:719]"
+
   DATE="2017-05-21"
   DATEGFS="${DATE//-}" 
 
@@ -80,4 +91,5 @@
   wget -O "gfs/${DATE}-12.vgrd10m.05.dods"  "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs${DATEGFS}/gfs_0p50_06z.ascii?vgrd10m[2:2][0:360][0:719]"
   wget -O "gfs/${DATE}-12.tcdcclm.05.dods"  "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs${DATEGFS}/gfs_0p50_06z.ascii?tcdcclm[2:2][0:360][0:719]"
   wget -O "gfs/${DATE}-12.tmp2m.05.dods"    "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs${DATEGFS}/gfs_0p50_06z.ascii?tmp2m[2:2][0:360][0:719]"
+  
 

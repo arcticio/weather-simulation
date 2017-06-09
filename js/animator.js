@@ -99,6 +99,29 @@ var ANI = (function () {
 
       },
 
+      scaleGLobe: function(scale, time) {
+
+        var 
+          current = SCN.scene.scale,
+          target  = {x: scale, y: scale, z: scale};
+
+        return function () {
+
+          TWEEN.removeAll();
+
+          var tween = new TWEEN.Tween(current)
+            .easing(TWEEN.Easing.Sinusoidal.Out)
+            .to(target, time)
+            .onUpdate(function(d){
+              SCN.scene.scale.copy(current);
+            })
+            .start()
+          ;
+
+        };
+
+      },
+
       cam2latlon: function (lat, lon, distance){
 
         var 

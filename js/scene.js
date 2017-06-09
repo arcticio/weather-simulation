@@ -60,7 +60,10 @@ var SCN = (function () {
           ' ': () => doRender = !doRender,
         };
 
-        keys[ev.key] ? keys[ev.key]() : console.log('keydown', `'${ev.key}'`);
+        if (keys[ev.key]) {
+          keys[ev.key]();          
+          console.log('keydown', `'${ev.key}'`);
+        }
 
       });
 
@@ -222,6 +225,7 @@ var SCN = (function () {
             'SEAICE':     (value) => self.toggle(objects.seaice, value),
             'TEST':       (value) => self.toggle(objects.test, value),
             'WIND':       (value) => self.toggle(objects.wind, value),
+            'JETSTREAM':  (value) => self.toggle(objects.jetstream, value),
             'LAND':       (value) => self.toggle(objects.land, value),
             'RIVERS':     (value) => self.toggle(objects.rivers, value),
             'CLOUDS':     (value) => self.toggle(objects.clouds, value),

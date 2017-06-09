@@ -10,7 +10,6 @@ var IFC = (function () {
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
-
     loader     = $$('.interface img.loader')[0],
     simulator  = $$('.simulator')[0],
     fullscreen = $$('.fullscreen')[0],
@@ -26,7 +25,7 @@ var IFC = (function () {
       down:       false, 
       button:     NaN,
       intersect:  new THREE.Vector3(0, 0, 0),
-      overGlobe:  false,
+      overGlobe:  NaN,
     },
 
     levels  = {
@@ -73,6 +72,7 @@ var IFC = (function () {
     ll.lon = ll.lon < 0 ? 'E ' + Math.abs(ll.lon).toFixed(0) : 'W ' + Math.abs(ll.lon).toFixed(0);
 
     return `<strong>${prefix}</strong> ${ ll.lat }, ${ ll.lon }`;
+
   }
 
 
@@ -84,9 +84,6 @@ var IFC = (function () {
     controllers,
     orbitControls,
 
-    boot: function () {
-      return self = this;
-    },
     init: function () {
 
       loader.style.display = 'block';
@@ -168,6 +165,8 @@ var IFC = (function () {
 
       orbitControls.update();
 
+      self.updateMouse();
+
       // GUI infos
       // self.updatePanels();
       // self.updateLabels();
@@ -203,7 +202,7 @@ var IFC = (function () {
         // TODO: swap buttons, mind orbit drag
 
         if (mouse.button === 0) {
-          SCN.objects.arrowHelper.setDirection( mouse.intersect );
+          SCN.objects.arrowHelper.visible && SCN.objects.arrowHelper.setDirection( mouse.intersect );
           marker.copy(mouse.intersect);
         }
 
@@ -225,8 +224,6 @@ var IFC = (function () {
         mouse.x =   ( event.clientX / window.innerWidth )  * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
-        self.updateMouse();
-
       },
       mouseenter:  function (event) { /* console.log('mouseenter') */ },
       mouseover:   function (event) { /* console.log('mouseover') */ },
@@ -236,7 +233,16 @@ var IFC = (function () {
       contextmenu: function (event) { /* console.log('contextmenu') */ },
       keydown:     function (event) { 
 
-        /* console.log('keydown') */ 
+        console.log('IFC.keydown.in', `'${event.key}'`);
+
+        var keys = {
+          // ' ': () => doRender = !doRender,
+        };
+
+        if (keys[event.key]) {
+          keys[event.key]();          
+          console.log('IFC.keydown.done', `'${event.key}'`);
+        }
 
       },
 
@@ -257,10 +263,9 @@ var IFC = (function () {
 
     },
 
-
     updateMouse: function () {
 
-      var intersections, intersection;
+      var intersections, intersection, oldMouseOver = mouse.overGlobe;
 
       raycaster.setFromCamera( mouse, SCN.camera );
       intersections = raycaster.intersectObjects( [SCN.objects.pointer] );
@@ -272,6 +277,14 @@ var IFC = (function () {
       } else {
         mouse.overGlobe = false;
 
+      }
+
+      if (oldMouseOver !== mouse.overGlobe){
+        if (mouse.overGlobe) {
+          ANI.insert(0, ANI.library.scaleGLobe(1.0, 500));
+        } else {
+          ANI.insert(0, ANI.library.scaleGLobe(0.9, 500));
+        }
       }
 
     },

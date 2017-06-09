@@ -87,6 +87,8 @@ if [[ "$TASKS" =~ "dods" ]]; then
   wget -O "gfs/${DATE}.vgrd10m.dods" "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATEGFS}/gfs_1p00_00z.ascii?vgrd10m[0:0][0:180][0:359]"
   wget -O "gfs/${DATE}.tmp2m.dods"   "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATEGFS}/gfs_1p00_00z.ascii?tmp2m[0:0][0:180][0:359]"
   wget -O "gfs/${DATE}.tcdcclm.dods" "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATEGFS}/gfs_1p00_00z.ascii?tcdcclm[0:0][0:180][0:359]"
+  
+  # wget -O "gfs/${DATE}.ugrdprs.dods" "http://nomads.ncep.noaa.gov:9090/dods/gfs_1p00/gfs${DATEGFS}/gfs_1p00_00z.ascii?ugrdprs[0:0][17:17][0:180][0:359]"
 
 fi
 

@@ -40,6 +40,8 @@ var SIM = (function () {
 
     vectorSun,
     coordsPool,
+    models,
+    datagramm,
 
     boot: function () {
       return self = this;

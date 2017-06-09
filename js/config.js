@@ -93,7 +93,7 @@ var CFG = {
 
     // lat lon pointer of click marker
     arrowHelper: {
-      visible: true,
+      visible: false,
       type: 'mesh',
       mesh: new THREE.ArrowHelper( 
         new THREE.Vector3( 1, 1,  1), 
@@ -295,8 +295,34 @@ var CFG = {
       }
     },
 
+    jetstream: {
+      visible:    true,
+      type:       'simulation',
+      rotation:   [0, Math.PI, 0],
+      radius:     RADIUS + 0.005, 
+      color:      new THREE.Color('#ff0000'),
+      opacity:    0.8,
+      lineWidth:  RADIUS * Math.PI / 180 * 0.2,
+      section:    33 * 1/60,
+      length:     60,
+      sim: {
+        data: [
+          'data/gfs/2017-05-30-12.ugrdprs.05.dods',
+          'data/gfs/2017-05-30-12.vgrdprs.05.dods',
+        ],
+        sectors: [
+          [ 89.9, -180,  45.0,  180 ], // top
+          [-45.0, -180, -89.9,  180 ], // bottom
+          [ 45.0, -180, -45.0,  -90 ], // left back
+          [ 45.0,  -90, -45.0,    0 ], // left front
+          [ 45.0,    0, -45.0,   90 ], // right front
+          [ 45.0,   90, -45.0,  180 ], // right back
+        ],
+      }
+    },
+
     clouds: {
-      visible:  true,
+      visible:  false,
       type:     'simulation',
       rotation: [0, Math.PI, 0],
       radius:   RADIUS + 0.005, 
@@ -318,51 +344,53 @@ var CFG = {
 };
 
 const PRESET = {
-  Loading: '',
-  SimTime: '',
-  Render: true,
-  Animate: true,
-  Simulate: true,
-  Reload: () => location.reload(),
+  Loading:        '',
+  SimTime:        '',
+  Render:         true,
+  Animate:        true,
+  Simulate:       true,
+  Reload:         () => location.reload(),
   Camera: {
-    isFolder: true,
-    reset: () => {},
+    isFolder:     true,
+    reset:        () => {},
   },
 
   Ambient: { isFolder: true,
-    toggle: true,
-    intensity: {val: CFG.objects.ambient.intensity, min: 0, max: 1},
-    color: '#ffffff'
+    toggle:       true,
+    intensity:    {val: CFG.objects.ambient.intensity, min: 0, max: 1},
+    color:        '#ffffff'
   },
 
   Spot: { isFolder: true,
-    toggle: true,
-    angle:     {val: 0.26, min: 0, max: 0.5},
-    intensity: {val: CFG.objects.spot.intensity, min: 0, max: 1},
-    color: '#ffffff'
+    toggle:       true,
+    angle:        {val: 0.26, min: 0, max: 0.5},
+    intensity:    {val: CFG.objects.spot.intensity, min: 0, max: 1},
+    color:        '#ffffff'
   },
 
-  Sun: { isFolder:  true,
-    toggle:    true,
-    intensity: {val: CFG.objects.sun.intensity, min: 0, max: 1},
-    skycolor:  CFG.objects.sun.skycolor,
-    grdcolor:  CFG.objects.sun.grdcolor,
+  Sun: { isFolder: true,
+    toggle:       true,
+    intensity:    {val: CFG.objects.sun.intensity, min: 0, max: 1},
+    skycolor:     CFG.objects.sun.skycolor,
+    grdcolor:     CFG.objects.sun.grdcolor,
   },
 
-  Layers: { isFolder:     true,
+  Layers: { isFolder: true,
     'SNPP':       CFG.objects.snpp.visible,
     'DATA':       CFG.objects.data.visible,
     'SST':        CFG.objects.sst.visible,
     'SEAICE':     CFG.objects.seaice.visible,
     'WIND':       CFG.objects.wind.visible,
-    'TEST':       CFG.objects.test.visible,
+    'JETSTREAM':  CFG.objects.jetstream.visible,
     'LAND':       CFG.objects.land.visible,
     'RIVERS':     CFG.objects.rivers.visible,
     'CLOUDS':     CFG.objects.clouds.visible,
-    'RANDOM':     CFG.objects.randomizer.visible,
     'GRATICULE':  CFG.objects.graticule.visible,
     'SECTOR':     CFG.objects.sector.visible,
+    // 'TEST':       CFG.objects.test.visible,
+    // 'RANDOM':     CFG.objects.randomizer.visible,
   },
+
   DateTime : { isFolder:    true,
     choose:     {val: 3, min: 0, max: 365 * 24, step: 1},
     hour1:      () => {},
@@ -378,11 +406,12 @@ const PRESET = {
     Rotate:     () => {},
     ZoomOut:    () => {},
   },
-  Simulation: {
-    isFolder:   true,
+
+  Simulation: { isFolder:   true,
     start:      () => {},
     stop:       () => {},
     pause:      () => {},
-  }
+  },
+
 };
 

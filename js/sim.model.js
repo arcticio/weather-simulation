@@ -160,30 +160,32 @@ SIM.Model = (function () {
             var t0 = Date.now(),
 
                 trenner = ', ',
-                snan  = "9.999E20",
-                lines = dods.split("\n").filter(function (l) {return l.trim().length; }),
-                info  = lines.slice(-6),
+                snan  = '9.999E20',
+                lines = dods.split('\n').filter(function (l) {return l.trim().length; }),
                 head  = lines.slice(0, 1)[0],
-
                 vari  = head.split(trenner)[0],
                 shape = head.match( /(\[\d+)/g ).join(' ').match(/(\d+)/g).map(Number),
 
+                info  = lines.slice(-shape.length * 2),
+                hasalt= shape.length === 4 ? 2 : 0,
+
+
                 tims  = info[1].split(trenner).map(self.toDate),
-                lats  = Float32Array.from(info[3].split(trenner).map(Number)),
-                lons  = Float32Array.from(info[5].split(trenner).map(Number)),
+                alts  = hasalt ? Float32Array.from(info[3].split(trenner).map(Number)) : new Float32Array(0),
+                lats  = Float32Array.from(info[hasalt + 3].split(trenner).map(Number)),
+                lons  = Float32Array.from(info[hasalt + 5].split(trenner).map(Number)),
 
                 date  = self.stripHours(tims[0]),
 
                 data  = Float32Array.from(
                     self.flatten(lines
-                        .slice(1, -6)
-                        // .reverse()
+                        .slice(1, -shape.length * 2)
                         .map(line => line.split(trenner).slice(1))
                     ).map(num => num === snan ? NaN : parseFloat(num))
                 ),
                 spend = Date.now() - t0;
 
-            return {name, lats, lons, tims, shape, vari, date, data, spend};
+            return {name, lats, lons, tims, alts, shape, vari, date, data, spend};
 
 
         }, parseSingleDods : function (dods) {
@@ -299,6 +301,13 @@ SIM.Datagram.prototype = {
                 max:    this.max(d.lons),
             },
 
+            alts: {
+                len:    d.alts.length,
+                res:    d.alts.length ? d.alts[1] - d.alts[0] : NaN,
+                min:    d.alts.length ? this.min(d.alts)      : NaN,
+                max:    d.alts.length ? this.max(d.alts)      : NaN,
+            },
+
             tims: {
                 len:    d.tims.length,
                 res:    d.tims[1] ? ((d.tims[1] - d.tims[0]) / (60 * 60 * 1000)) + 'h' : NaN,
@@ -330,8 +339,8 @@ SIM.Datagram.prototype = {
         var 
             lon   = (lonin + 180) % 360,
             plane = this.data.data.subarray(time * this.info.plane, (time + 1) * this.info.plane),
-            xlen  = this.data.shape[2],
-            ylen  = this.data.shape[1],
+            ylen  = this.info.lats.len,
+            xlen  = this.info.lons.len,
             rlat  = this.info.lats.res,
             rlon  = this.info.lons.res,
 
