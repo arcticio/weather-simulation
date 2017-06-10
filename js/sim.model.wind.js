@@ -45,23 +45,23 @@ SIM.Model.wind = (function () {
       
       TIM.step('Model.wind.in');
 
-      var t0 = Date.now(), i, j, lat, lon, color, vec3, latlon, tmp2m,
+      var t0 = Date.now(), i, j, u, v, width, speed, lat, lon, color, vec3, latlon, tmp2m,
 
-        multiline, positions, widths, colors, latlonsStart, 
+        multiline, positions, widths, colors, seeds, 
 
         spherical = new THREE.Spherical(),
         length   = TRAIL_LEN,
         amount   = NaN,
         factor   = 0.0003,                       // TODO: proper Math
         alt      = cfg.radius - CFG.earth.radius,      // 0.001
-        pool     = SIM.coordsPool.slice(TRAIL_NUM * cfg.sim.sectors.length),
+        pool     = SIM.coordsPool.slice(cfg.amount * cfg.sim.sectors.length),
 
       end;
 
       H.each(cfg.sim.sectors, (_, sector)  => {
 
-        latlonsStart = pool.filter(sector).slice(0, TRAIL_NUM);
-        amount       = latlonsStart.length; 
+        seeds   = pool.filter(sector).slice(0, cfg.amount);
+        amount  = seeds.length; 
 
         positions = new Array(amount).fill(0).map( () => []);
         colors    = new Array(amount).fill(0).map( () => []);
@@ -69,21 +69,26 @@ SIM.Model.wind = (function () {
 
         for (i=0; i<amount; i++) {
 
-          lat  = latlonsStart[i].lat;
-          lon  = latlonsStart[i].lon;
+          lat  = seeds[i].lat;
+          lon  = seeds[i].lon;
           vec3 = self.convLL(lat, lon, alt);
 
           for (j=0; j<length; j++) {
 
+            u = datagramm.ugrd10m.linearXY(0, lat, lon);
+            v = datagramm.vgrd10m.linearXY(0, lat, lon);
+
+            speed = Math.hypot(u, v);
             color = self.latlon2color(datagramm, lat, lon);
+            width = self.clampScale(speed, 0, 30, 0.4, 1.4);
 
             positions[i].push(vec3);
             colors[i].push(color);
-            widths[i].push(1.0);
+            widths[i].push(width);
 
             spherical.setFromVector3(vec3);
-            spherical.theta += datagramm.ugrd10m.linearXY(0, lat, lon) * factor; // east-direction
-            spherical.phi   -= datagramm.vgrd10m.linearXY(0, lat, lon) * factor; // north-direction
+            spherical.theta += u * factor; // east-direction
+            spherical.phi   -= v * factor; // north-direction
             vec3 = vec3.setFromSpherical(spherical).clone();
             
             latlon = self.convV3(vec3, alt);

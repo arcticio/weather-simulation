@@ -46,6 +46,25 @@ var CFG = {
   minDistance:     RADIUS + 0.1,
   maxDistance:     8,
 
+  sprites : {
+    fullscreen: {
+      visible:  true,
+      position: {
+        width:   48,
+        height:  48,
+        top:     60,
+        left:    18,
+      },
+      material: {
+        color: '#ff3388',
+        image: 'images/hud/fullscreen.png'
+      },
+      onclick: (sprite) => {
+        console.log('sprite.click', sprite.name);
+      },
+    }
+  },
+
   objects: {
 
     perspective: {
@@ -270,6 +289,7 @@ var CFG = {
     wind: {
       visible:    false,
       type:       'simulation',
+      subtype:    'multiline',
       rotation:   [0, Math.PI, 0],
       radius:     RADIUS + 0.001, 
       color:      new THREE.Color('#ff0000'),
@@ -277,6 +297,7 @@ var CFG = {
       lineWidth:  RADIUS * Math.PI / 180 * 0.2,
       section:    33 * 1/60,
       length:     60,
+      amount:    512,
       sim: {
         data: [
           'data/gfs/permanent.landsfc.05.dods',
@@ -298,6 +319,7 @@ var CFG = {
     jetstream: {
       visible:    true,
       type:       'simulation',
+      subtype:    'multiline',
       rotation:   [0, Math.PI, 0],
       radius:     RADIUS + 0.005, 
       color:      new THREE.Color('#ff0000'),
@@ -305,6 +327,7 @@ var CFG = {
       lineWidth:  RADIUS * Math.PI / 180 * 0.1,
       section:    33 * 1/60,
       length:     60,
+      amount:    512,
       sim: {
         data: [
           'data/gfs/2017-05-30-12.ugrdprs.05.dods',

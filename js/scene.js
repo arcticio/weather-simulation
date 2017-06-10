@@ -1,8 +1,5 @@
 'use strict';
 
-const TRAIL_LEN = 60;
-const TRAIL_NUM = 512;
-
 var SCN = (function () {
 
   var 
@@ -109,6 +106,7 @@ var SCN = (function () {
       // webgl.min_capability_mode
       renderer.setClearColor(0x000000, 0.0);
       renderer.shadowMap.enabled = false;
+      renderer.autoClear = false; // cause HUD
 
       camera.position.copy(CFG.objects.perspective.pos);
 
@@ -247,9 +245,8 @@ var SCN = (function () {
           },
           Extras: {
             Axes:      (value) => self.toggle(objects.axes, value),
-            Rotate:    (value) => ANI.insert(0, ANI.library.example), 
             ZoomOut:   (value) => ANI.insert(0, ANI.library.zoomout), 
-            // Rotate:    (value) => ANI.insert(0, ANI.library.cam2latlon(51, 7, 2)), 
+            Rotate:    (value) => ANI.insert(0, ANI.library.datetime.add(1, 'days', 2000)), 
           },
           Simulation: {
             start:     (value) => SIM.start(),
@@ -268,7 +265,17 @@ var SCN = (function () {
       } catch (e) {console.log('SCN.actions.error', folder, option, value, e)} 
 
     },
-    logInfo: function render () {
+    logInfo: function () {
+
+      var gl = renderer.context;
+
+      // console.log(gl.getParameter('MAX_VERTEX_UNIFORM_VECTORS', gl.MAX_VERTEX_UNIFORM_VECTORS));
+      // console.log(gl.getParameter('MAX_FRAGMENT_UNIFORM_VECTORS', gl.MAX_FRAGMENT_UNIFORM_VECTORS));
+
+      console.log('maxVertexUniforms', renderer.capabilities.maxVertexUniforms);
+
+    },
+    logFullInfo: function () {
 
       // MAX_VERTEX_UNIFORM_VECTORS
       // MAX_FRAGMENT_UNIFORM_VECTORS
@@ -281,8 +288,6 @@ var SCN = (function () {
 
       console.log('renderer', JSON.stringify({
 
-        trails:                 TRAIL_NUM,
-        length:                 TRAIL_LEN,
         children:               scene.children.length,
         geometries:             renderer.info.memory.geometries,
         calls:                  renderer.info.render.calls,
@@ -322,8 +327,17 @@ var SCN = (function () {
         doAnimate  && ANI.step(frame, dTime);
 
         if (!(frame % 1)) {
-          doRender  && renderer.render(scene, camera);
+          // doRender  && renderer.render(scene, camera);
+        } 
+
+        if (doRender){
+          renderer.clear();
+          renderer.render( scene, camera );
+          renderer.clearDepth();
+          renderer.render( IFC.hud.scene, IFC.hud.camera );
         }
+
+
 
       IFC.stats.end();
 

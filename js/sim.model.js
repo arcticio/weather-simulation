@@ -363,7 +363,8 @@ SIM.Datagram.prototype = {
             );
 
             if (isNaN(val)){
-                debugger;
+                // debugger;
+                console.warn('linearXY', this.data.vari, lat, lon);
             }
 
             return val;

@@ -7,6 +7,8 @@ var IFC = (function () {
   var 
     self,
 
+    txloader = new THREE.TextureLoader(),
+
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
@@ -24,7 +26,7 @@ var IFC = (function () {
       sector:   []
     },
 
-    screen = {            // canvas actually
+    canvas = {            // canvas actually
       height:   NaN,
       width:    NaN,
       aspect:   NaN,
@@ -34,10 +36,19 @@ var IFC = (function () {
     mouse = {
       x:          NaN, 
       y:          NaN, 
+      px:         NaN, 
+      py:         NaN, 
       down:       false, 
       button:     NaN,
       intersect:  new THREE.Vector3(0, 0, 0),
       overGlobe:  NaN,
+      sprite:     null,
+    },
+
+    hud = {
+      camera:   null,
+      sprites:  [],
+      scene:    new THREE.Scene(),
     },
 
     levels  = {
@@ -90,9 +101,10 @@ var IFC = (function () {
 
   return self = {
     
+    hud,
     stats,
     mouse,
-    screen,
+    canvas,
     globe,
     raycaster,
     controllers,
@@ -100,12 +112,17 @@ var IFC = (function () {
 
     init: function () {
 
+      var w2, h2;
+
       self.events.resize();
+
+      w2 = canvas.width  / 2;
+      h2 = canvas.height / 2;
 
       loader.style.display = 'block';
 
-      // screen.width  = simulator.width;
-      // screen.height = simulator.height;
+      hud.camera = new THREE.OrthographicCamera (- w2, w2, h2, - h2, 1, 10 );
+      hud.camera.position.z = 10;
 
       self.stats = stats = new Stats();
       stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -116,18 +133,67 @@ var IFC = (function () {
 
       raycaster.params.Points.threshold = 0.001; // threshold;
 
+      H.each(CFG.sprites, (name, cfg) => {
 
+        var material = new THREE.SpriteMaterial( {
+          map: txloader.load(cfg.material.image, function (texture) {
+
+            var sprite = new THREE.Sprite( material );
+
+            sprite.cfg = cfg;
+            sprite.name = name;
+            sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
+
+            sprite.onmouseenter = function () {
+              ANI.insert(0, ANI.library.sprite.enter(sprite, 200));
+            };
+
+            sprite.onmouseleft = function () {
+              ANI.insert(0, ANI.library.sprite.leave(sprite, 200));
+            };
+
+            sprite.click = cfg.onclick.bind(sprite, sprite);
+
+            hud.scene.add( sprite );
+            self.resizeHud();
+
+          })
+        });
+
+      });
+
+    },
+    resizeHud: function () {
+
+      var w2 = canvas.width  / 2;
+      var h2 = canvas.height / 2;
+
+      if (hud.camera) {
+        hud.camera.left   = - w2;
+        hud.camera.right  =   w2;
+        hud.camera.top    =   h2;
+        hud.camera.bottom = - h2;
+        hud.camera.updateProjectionMatrix();
+      }
+
+      H.each(hud.scene.children, (_, sprite) => {
+
+        var pos = sprite.cfg.position;
+
+        sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
+
+      });
     },
     show: function () {
 
       loader.style.display = 'none';
 
-      $$('.panel.image')[0].style.display = 'block';
-      $$('.panel.latlon')[0].style.display = 'block';
-      $$('.panel.info')[0].style.display = 'block';
-      $$('.panel.test')[0].style.display = 'block';
-      $$('.panel.expi')[0].style.display = 'block';
-      $$('.interface .labels')[0].style.display = 'block';
+      // $$('.panel.image')[0].style.display = 'block';
+      // $$('.panel.latlon')[0].style.display = 'block';
+      // $$('.panel.info')[0].style.display = 'block';
+      // $$('.panel.test')[0].style.display = 'block';
+      // $$('.panel.expi')[0].style.display = 'block';
+      // $$('.interface .labels')[0].style.display = 'block';
       
       $$('canvas.simulator')[0].style.display = 'block';
 
@@ -164,8 +230,8 @@ var IFC = (function () {
         // [document,  'contextmenu'],
         [document,  'keydown'],
         [window,    'orientationchange'],
-        [window,    'deviceorientation'],
-        [window,    'devicemotion'],
+        // [window,    'deviceorientation'], // needs https
+        // [window,    'devicemotion'],
         [window,    'resize'],
       
       ], function (_, e) { 
@@ -183,6 +249,7 @@ var IFC = (function () {
 
       self.updateMouse();
       self.updateGlobe();
+      self.updateHud();
 
       // GUI infos
       // self.updatePanels();
@@ -192,10 +259,12 @@ var IFC = (function () {
     events: {
       resize: function () {
 
-        screen.width  = SCN.renderer.domElement.width;
-        screen.height = SCN.renderer.domElement.height;
-        screen.aspect = screen.width / screen.height;
-        screen.diameter = Math.hypot(screen.width, screen.height);
+        canvas.width    = SCN.renderer.domElement.width;
+        canvas.height   = SCN.renderer.domElement.height;
+        canvas.aspect   = canvas.width / canvas.height;
+        canvas.diameter = Math.hypot(canvas.width, canvas.height);
+
+        self.resizeHud();
 
       },
       click:   function (event) { 
@@ -235,19 +304,24 @@ var IFC = (function () {
           ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2));
         }
 
-
       },
       mouseup:     function (event) { 
 
         mouse.down = false;
         mouse.button = NaN;
 
+        if (mouse.sprite){mouse.sprite.click();}
+
       },
       mousemove:   function (event) { 
 
         // TODO: not window
+        mouse.px = event.clientX; 
+        mouse.py = event.clientY;
         mouse.x =   ( event.clientX / window.innerWidth )  * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+        // console.log(mouse.px, mouse.py);
 
       },
       mouseenter:  function (event) { /* console.log('mouseenter') */ },
@@ -277,14 +351,55 @@ var IFC = (function () {
       touchcancel: function (event) { /* console.log('touchcancel') */ },
 
       devicemotion:      function (event) { /* console.log('devicemotion', event)      */ },
-      orientationchange: function (event) { console.log('orientationchange', event)       },
       deviceorientation: function (event) { /* console.log('deviceorientation', event) */ },
+
+      orientationchange: function (event) { console.log('orientationchange', event)       },
+
+    },
+
+    updateHud: function () {
+
+      H.each(hud.scene.children, (_, sprite) => {
+
+        var 
+          x = mouse.px,
+          y = mouse.py,
+          pos = sprite.cfg.position;
+
+        mouse.sprite = null;
+
+        if (
+          x > pos.left && 
+          x < pos.left + pos.width && 
+          y > pos.top && 
+          y < pos.top + pos.height
+        ) {
+
+          if (!sprite.hit) {
+            sprite.onmouseenter();
+            sprite.hit = true;
+          }
+
+          mouse.sprite = sprite;
+
+          // console.log('HIT', sprite.name);
+
+        } else {
+
+          if (sprite.hit) {
+            sprite.onmouseleft();
+            sprite.hit = false;
+          }
+
+        }
+
+      });
 
     },
 
     updateGlobe: function () {
 
-      // https://stackoverflow.com/questions/13350875/three-js-width-of-view
+      // https://stackoverflow.com/questions/15331358/three-js-get-object-size-with-respect-to-camera-and-object-position-on-screen
 
       var 
         cam = SCN.camera,
@@ -293,11 +408,11 @@ var IFC = (function () {
         fraction = CFG.earth.radius * 2 / height
       ;
 
-      globe.pixels = screen.height * fraction;
+      globe.pixels = canvas.height * fraction;
 
       globe.scan = (
-        globe.pixels > screen.diameter                              ? 1 : // big
-        globe.pixels > screen.width || globe.pixels > screen.height ? 0 : // fits
+        globe.pixels > canvas.diameter                              ? 1 : // big
+        globe.pixels > canvas.width || globe.pixels > canvas.height ? 0 : // fits
           -1                                                              // tiny
       );
 
@@ -398,3 +513,17 @@ var IFC = (function () {
   };
 
 }());
+
+IFC.Sprite = function (cfg) {
+  this.cfg = cfg;
+  this.init();
+  this.hotspot = null;
+};
+
+IFC.Sprite.prototype = {
+  constructor: IFC.Sprite,
+  init: function () {
+
+  }
+
+};

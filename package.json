@@ -4,7 +4,8 @@
   "license": "MIT",
   "repository": "",
   "scripts": {
-    "ls": "ls -la"
+    "ls": "ls -la",
+    "serve": "http-server -p 8765 -c10 --proxy http://nomads.ncep.noaa.gov:9090"
   },
   "pre-commit": [],
   "private": true,
@@ -12,8 +13,10 @@
     "node": ">= 6.9.2",
     "npm": ">= 3.10.9"
   },
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
+    "http-server": "^0.10.0",
     "babel-eslint": "^6.1.2",
     "eslint": "^3.19.0"
   }

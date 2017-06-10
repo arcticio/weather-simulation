@@ -98,8 +98,82 @@ var ANI = (function () {
         }
 
       },
+      sprite: {
+        enter: function (sprite, duration) {
 
-      scaleGLobe: function(scale, time) {
+          var 
+            current = {width: sprite.cfg.position.width, height: sprite.cfg.position.height},
+            target  = {width: current.width * 1.1, height: current.height * 1.1}
+          ;
+
+          return function () {
+
+            TWEEN.removeAll();
+
+            var tween = new TWEEN.Tween(current)
+              .easing(TWEEN.Easing.Sinusoidal.Out)
+              .to(target, duration)
+              .onUpdate(function(d){
+                sprite.scale.set( current.width, current.height, 1 );
+              })
+              .start()
+            ;
+
+          };
+
+        },
+        leave: function (sprite, duration) {
+
+          var 
+            current = {width: sprite.cfg.position.width, height: sprite.cfg.position.height},
+            target  = {width: current.width * 1/1.1, height: current.height * 1/1.1}
+          ;
+
+          return function () {
+
+            TWEEN.removeAll();
+
+            var tween = new TWEEN.Tween(current)
+              .easing(TWEEN.Easing.Sinusoidal.Out)
+              .to(target, duration)
+              .onUpdate(function(d){
+                sprite.scale.set( current.width, current.height, 1 );
+              })
+              .start()
+            ;
+
+          };
+
+        },
+      },
+      datetime: {
+        add: function (val, what, duration) {
+
+          var 
+            current = {now: SIM.time.show.unix() * 1000},
+            target  = {now: current.now + 24 * 60 * 60 * 1000};
+
+            return function () {
+
+              TWEEN.removeAll();
+
+              var tween = new TWEEN.Tween(current)
+                .easing(TWEEN.Easing.Sinusoidal.Out)
+                .to(target, duration)
+                .onUpdate(function(d){
+                  SIM.updateDatetime(moment(current.now))
+                })
+                .start()
+              ;
+
+            };
+
+
+        },
+
+      },
+
+      scaleGLobe: function(scale, duration) {
 
         var 
           current = SCN.scene.scale,
@@ -111,7 +185,7 @@ var ANI = (function () {
 
           var tween = new TWEEN.Tween(current)
             .easing(TWEEN.Easing.Sinusoidal.Out)
-            .to(target, time)
+            .to(target, duration)
             .onUpdate(function(d){
               SCN.scene.scale.copy(current);
             })

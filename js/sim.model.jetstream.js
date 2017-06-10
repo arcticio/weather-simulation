@@ -29,17 +29,17 @@ SIM.Model.jetstream = (function () {
         multiline, positions, widths, colors, latlonsStart, 
 
         spherical = new THREE.Spherical(),
-        length   = TRAIL_LEN,
+        length   = cfg.length,
         amount   = NaN,
         factor   = 0.0003,                       // TODO: proper Math
         alt      = cfg.radius - CFG.earth.radius,      // 0.001
-        pool     = SIM.coordsPool.slice(TRAIL_NUM * cfg.sim.sectors.length),
+        pool     = SIM.coordsPool.slice(cfg.amount * cfg.sim.sectors.length),
 
       end;
 
       H.each(cfg.sim.sectors, (_, sector)  => {
 
-        latlonsStart = pool.filter(sector).slice(0, TRAIL_NUM);
+        latlonsStart = pool.filter(sector).slice(0, cfg.amount);
         amount       = latlonsStart.length; 
 
         positions = new Array(amount).fill(0).map( () => []);
