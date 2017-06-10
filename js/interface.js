@@ -140,6 +140,9 @@ var IFC = (function () {
 
             var sprite = new THREE.Sprite( material );
 
+            material.transparent = true;
+            material.opacity = 0.5;
+
             sprite.cfg = cfg;
             sprite.name = name;
             sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
@@ -318,8 +321,8 @@ var IFC = (function () {
         // TODO: not window
         mouse.px = event.clientX; 
         mouse.py = event.clientY;
-        mouse.x =   ( event.clientX / window.innerWidth )  * 2 - 1;
-        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        mouse.x  =   ( event.clientX / window.innerWidth )  * 2 - 1;
+        mouse.y  = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
         // console.log(mouse.px, mouse.py);
 
@@ -359,21 +362,17 @@ var IFC = (function () {
 
     updateHud: function () {
 
+      mouse.sprite = null;
+
       H.each(hud.scene.children, (_, sprite) => {
 
         var 
           x = mouse.px,
           y = mouse.py,
-          pos = sprite.cfg.position;
+          pos = sprite.cfg.position,
+          hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
 
-        mouse.sprite = null;
-
-        if (
-          x > pos.left && 
-          x < pos.left + pos.width && 
-          y > pos.top && 
-          y < pos.top + pos.height
-        ) {
+        if ( hit ) {
 
           if (!sprite.hit) {
             sprite.onmouseenter();
@@ -513,17 +512,3 @@ var IFC = (function () {
   };
 
 }());
-
-IFC.Sprite = function (cfg) {
-  this.cfg = cfg;
-  this.init();
-  this.hotspot = null;
-};
-
-IFC.Sprite.prototype = {
-  constructor: IFC.Sprite,
-  init: function () {
-
-  }
-
-};

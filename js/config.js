@@ -62,6 +62,22 @@ var CFG = {
       onclick: (sprite) => {
         console.log('sprite.click', sprite.name);
       },
+    },
+    movie: {
+      visible:  true,
+      position: {
+        width:    48,
+        height:   48,
+        top:     120,
+        left:     18,
+      },
+      material: {
+        color: '#ff3388',
+        image: 'images/hud/movie.png'
+      },
+      onclick: (sprite) => {
+        console.log('sprite.click', sprite.name);
+      },
     }
   },
 
