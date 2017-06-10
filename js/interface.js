@@ -65,7 +65,6 @@ var IFC = (function () {
 
     panels = {
       latlon:    $$('.panel.latlon')[0],
-
     },
 
     raycaster = new THREE.Raycaster(),

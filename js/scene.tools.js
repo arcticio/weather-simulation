@@ -6,6 +6,53 @@ SCN.tools = {
   calculate: function (name, cfg) {
     return SCN.tools[name](cfg);
   },
+  population: function (cfg) {
+
+    var 
+      i, city, vec3, light, color, 
+      amount    = CITIES.length,
+      geometry  = new THREE.BufferGeometry(),
+      positions = new Float32Array( amount * 3 ),
+      colors    = new Float32Array( amount * 3 ),
+      material  = new THREE.PointsMaterial( { size: 0.004, vertexColors: THREE.VertexColors } ),
+      points    = new THREE.Points( geometry, material ),
+      toVec3    = function (lat, lon) {
+        return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, cfg.altitude);
+      },
+      clampScale = function (x, xMin, xMax, min, max) {
+          var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
+          return val < min ? min : val > max ? max : val;
+      }
+    ;
+
+    for (i=0; i<amount; i++) {
+
+      city = CITIES[i];
+
+      vec3 = toVec3(city.lat, city.lon);
+
+      positions[i*3 + 0] = vec3.x;
+      positions[i*3 + 1] = vec3.y;
+      positions[i*3 + 2] = vec3.z;
+
+      light = ~~clampScale(city.pop, 0, 40000000, 30, 90);
+      color = new THREE.Color('hsl(10, 70%, ' + light + '%)');
+      // color = new THREE.Color(0xffffff);
+
+      colors[ i*3 + 0 ] = color.r;
+      colors[ i*3 + 1 ] = color.g;
+      colors[ i*3 + 2 ] = color.b;
+
+    }
+
+    geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+    geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+
+    geometry.computeBoundingSphere();
+
+    return points;
+
+  },
   sector: function (cfg) {
 
     /*

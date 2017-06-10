@@ -47,6 +47,7 @@ var CFG = {
   maxDistance:     8,
 
   sprites : {
+
     fullscreen: {
       visible:  true,
       position: {
@@ -63,6 +64,7 @@ var CFG = {
         console.log('sprite.click', sprite.name);
       },
     },
+
     movie: {
       visible:  true,
       position: {
@@ -79,6 +81,7 @@ var CFG = {
         console.log('sprite.click', sprite.name);
       },
     }
+
   },
 
   objects: {
@@ -176,6 +179,18 @@ var CFG = {
         color:        0x000000,
         linewidth:    1.1,
         vertexColors: THREE.NoColors,
+      }
+    },
+
+    population: {
+      visible:      true,
+      type:         'mesh-calculate',
+      altitude:     0.01,
+      material: {
+        size:         0.004, 
+        vertexColors: THREE.VertexColors,
+        transparent:  true,
+        opacity:      0.9,
       }
     },
 
@@ -426,6 +441,7 @@ const PRESET = {
     'CLOUDS':     CFG.objects.clouds.visible,
     'GRATICULE':  CFG.objects.graticule.visible,
     'SECTOR':     CFG.objects.sector.visible,
+    'POPULATION': CFG.objects.population.visible,
     // 'TEST':       CFG.objects.test.visible,
     // 'RANDOM':     CFG.objects.randomizer.visible,
   },

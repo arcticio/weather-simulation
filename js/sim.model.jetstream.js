@@ -8,7 +8,7 @@ SIM.Model.jetstream = (function () {
     model = {
       obj:     new THREE.Object3D(),
       sectors: [],
-      step:   function () {
+      step:   function jetstep () {
         H.each(model.sectors, (_, sec) => sec.step() )
       },
     };

@@ -19,7 +19,7 @@ var SCN = (function () {
     renderer      = new THREE.WebGLRenderer({
       canvas,
       antialias:    true,
-      alpha:        true,
+      // alpha:        true,
     }),
 
     camera        = CFG.objects.perspective.cam,
@@ -104,7 +104,7 @@ var SCN = (function () {
       // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
       renderer.setSize(window.innerWidth, window.innerHeight);
       // webgl.min_capability_mode
-      renderer.setClearColor(0x000000, 0.0);
+      renderer.setClearColor(0x444444, 1.0);
       renderer.shadowMap.enabled = false;
       renderer.autoClear = false; // cause HUD
 
@@ -230,6 +230,7 @@ var SCN = (function () {
             'RANDOM':     (value) => self.toggle(objects.randomizer, value),
             'GRATICULE':  (value) => self.toggle(objects.graticule, value),
             'SECTOR':     (value) => self.toggle(objects.sector, value),
+            'POPULATION': (value) => self.toggle(objects.population, value),
           },
           Camera: {
             reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),
@@ -315,7 +316,7 @@ var SCN = (function () {
       // drop first call, need dTime
       if (!nTime){return;}
 
-      IFC.stats.begin();
+      // IFC.stats.begin();
 
         IFC.step();
 
@@ -337,9 +338,7 @@ var SCN = (function () {
           renderer.render( IFC.hud.scene, IFC.hud.camera );
         }
 
-
-
-      IFC.stats.end();
+      // IFC.stats.end();
 
       time   = nTime;
       frame += 1;
