@@ -231,6 +231,7 @@ var SCN = (function () {
             'GRATICULE':  (value) => self.toggle(objects.graticule, value),
             'SECTOR':     (value) => self.toggle(objects.sector, value),
             'POPULATION': (value) => self.toggle(objects.population, value),
+            'BACKGROUND': (value) => self.toggle(objects.background, value),
           },
           Camera: {
             reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),
@@ -307,6 +308,21 @@ var SCN = (function () {
       }, null, 2));
 
     },
+    updateBackground: function () {
+
+      // TODO: make globe scale independent from scene + vertex colors for gradient
+
+      var aspect = window.innerWidth / window.innerHeight;
+      var vFov = camera.fov * Math.PI / 180;
+      var height = 2 * Math.tan(vFov / 2) * camera.position.length() + 2;
+      var width = height * aspect;
+      var factor = 1/scene.scale.x * 0.9;
+
+      objects.background.position.copy(SCN.camera.position.clone().negate().normalize().multiplyScalar(2));
+      objects.background.lookAt(camera.position);
+      objects.background.scale.set(width * factor, height * factor, 1);
+
+    },
     render: function render (nTime) {
 
       var dTime = nTime - time;
@@ -319,6 +335,8 @@ var SCN = (function () {
       IFC.stats.begin();
 
         IFC.step();
+
+        self.updateBackground();
 
         if (!(frame % 1)) {
           doSimulate && SIM.step(frame, dTime);

@@ -6,6 +6,25 @@ SCN.tools = {
   calculate: function (name, cfg) {
     return SCN.tools[name](cfg);
   },
+  background: function (cfg) {
+
+    // PlaneBufferGeometry(width, height, widthSegments, heightSegments)
+
+    var geometry = new THREE.PlaneBufferGeometry( 1, 1, 1, 1);
+    var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.FrontSide} );
+    var plane    = new THREE.Mesh( geometry, material );
+
+
+        material.vertexColors = THREE.VertexColors;
+
+    // geometry.computeBoundingSphere();
+    
+    // plane.position.copy(SCN.camera.position.clone().negate().normalize().multiplyScalar(2));
+    // plane.lookAt(SCN.camera.position);
+
+    return plane;
+
+  },
   population: function (cfg) {
 
     // check shaders here:

@@ -141,6 +141,18 @@ var CFG = {
       )
     },
 
+    background: {
+      visible:      true,
+      type:         'mesh-calculate',
+      size:         4.0,
+      colors: [
+        new THREE.Color(0xff0000),
+        new THREE.Color(0x00ff00),
+        new THREE.Color(0x0000ff),
+        new THREE.Color(0xff00ff),
+      ]
+    },
+
     sunPointer: {
       // sun dir pointer
       visible: false,
@@ -345,7 +357,7 @@ var CFG = {
     },
 
     jetstream: {
-      visible:    true,
+      visible:    false,
       type:       'simulation',
       subtype:    'multiline',
       rotation:   [0, Math.PI, 0],
@@ -427,6 +439,8 @@ const PRESET = {
   },
 
   Layers: { isFolder: true,
+    'BACKGROUND': CFG.objects.background.visible,
+    'POPULATION': CFG.objects.population.visible,
     'SNPP':       CFG.objects.snpp.visible,
     'DATA':       CFG.objects.data.visible,
     'SST':        CFG.objects.sst.visible,
@@ -438,7 +452,6 @@ const PRESET = {
     'CLOUDS':     CFG.objects.clouds.visible,
     'GRATICULE':  CFG.objects.graticule.visible,
     'SECTOR':     CFG.objects.sector.visible,
-    'POPULATION': CFG.objects.population.visible,
     // 'TEST':       CFG.objects.test.visible,
     // 'RANDOM':     CFG.objects.randomizer.visible,
   },
