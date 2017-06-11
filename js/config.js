@@ -43,7 +43,7 @@ var CFG = {
     radiusOverlay: RADIUS + 0.1,
   },
 
-  minDistance:     RADIUS + 0.1,
+  minDistance:     RADIUS + 0.2,
   maxDistance:     8,
 
   sprites : {
@@ -51,10 +51,10 @@ var CFG = {
     fullscreen: {
       visible:  true,
       position: {
-        width:   48,
-        height:  48,
         top:     60,
         left:    18,
+        width:   48,
+        height:  48,
       },
       material: {
         color: '#ff3388',
@@ -68,14 +68,31 @@ var CFG = {
     movie: {
       visible:  true,
       position: {
-        width:    48,
-        height:   48,
         top:     120,
         left:     18,
+        width:    48,
+        height:   48,
       },
       material: {
         color: '#ff3388',
         image: 'images/hud/movie.png'
+      },
+      onclick: (sprite) => {
+        console.log('sprite.click', sprite.name);
+      },
+    },
+
+    graticule: {
+      visible:  true,
+      position: {
+        top:     180,
+        left:     18,
+        width:    48,
+        height:   48,
+      },
+      material: {
+        color: '#ff3388',
+        image: 'images/hud/graticule.png'
       },
       onclick: (sprite) => {
         console.log('sprite.click', sprite.name);

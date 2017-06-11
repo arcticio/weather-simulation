@@ -87,13 +87,18 @@ var SCN = (function () {
 
     },
     resize: function () {
+
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.domElement.style.width  = window.innerWidth  + 'px';
       renderer.domElement.style.height = window.innerHeight + 'px';
       renderer.domElement.width        = window.innerWidth;
       renderer.domElement.height       = window.innerHeight;
+
       camera.aspect                    = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
+      
+      // IFC.orbitControls.handleResize();
+
       // console.log(window.innerWidth, window.innerHeight);
     },
     init: function () {
@@ -189,6 +194,19 @@ var SCN = (function () {
 
     },
 
+    reset: {
+      camera: function () {
+
+        // camera.position.copy(CFG.objects.perspective.pos);
+        // camera.lookAt(scene.position);
+        // camera.updateProjectionMatrix();
+        // camera.zoom = 1.0;
+
+        IFC.orbitControls.reset();
+
+      }
+    },
+
     actions: function (folder, option, value) {
 
       var
@@ -234,26 +252,26 @@ var SCN = (function () {
             'BACKGROUND': (value) => self.toggle(objects.background, value),
           },
           Camera: {
-            reset:     (value) => camera.position.copy(CFG.objects.perspective.pos),
+            reset:        (value) => self.reset.camera(),
           },
           DateTime: {
-            choose:    (value) => SIM.updateDatetime(value),
-            hourn1:     (value) => SIM.updateDatetime('-1'),
-            hour1:     (value) => SIM.updateDatetime('+1'),
-            hour24:    (value) => SIM.updateDatetime('+24'),
-            hourn24:    (value) => SIM.updateDatetime('-24'),
-            day30:     (value) => SIM.updateDatetime('+' + 24*30),
-            dayn30:    (value) => SIM.updateDatetime('-' + 24*30),
+            choose:       (value) => SIM.updateDatetime(value),
+            hourn1:       (value) => SIM.updateDatetime('-1'),
+            hour1:        (value) => SIM.updateDatetime('+1'),
+            hour24:       (value) => SIM.updateDatetime('+24'),
+            hourn24:      (value) => SIM.updateDatetime('-24'),
+            day30:        (value) => SIM.updateDatetime('+' + 24*30),
+            dayn30:       (value) => SIM.updateDatetime('-' + 24*30),
           },
           Extras: {
-            Axes:      (value) => self.toggle(objects.axes, value),
-            ZoomOut:   (value) => ANI.insert(0, ANI.library.zoomout), 
-            Rotate:    (value) => ANI.insert(0, ANI.library.datetime.add(1, 'days', 800)), 
+            Axes:         (value) => self.toggle(objects.axes, value),
+            ZoomOut:      (value) => ANI.insert(0, ANI.library.zoomout), 
+            Rotate:       (value) => ANI.insert(0, ANI.library.datetime.add(1, 'days', 800)), 
           },
           Simulation: {
-            start:     (value) => SIM.start(),
-            stop:      (value) => SIM.stop(),
-            pause:     (value) => SIM.pause(),
+            start:        (value) => SIM.start(),
+            stop:         (value) => SIM.stop(),
+            pause:        (value) => SIM.pause(),
           }
         },
       end;
@@ -316,7 +334,7 @@ var SCN = (function () {
       var vFov = camera.fov * Math.PI / 180;
       var height = 2 * Math.tan(vFov / 2) * camera.position.length() + 2;
       var width = height * aspect;
-      var factor = 1/scene.scale.x * 0.9;
+      var factor = 1/scene.scale.x * 1.0; // 0.9
 
       objects.background.position.copy(SCN.camera.position.clone().negate().normalize().multiplyScalar(2));
       objects.background.lookAt(camera.position);

@@ -132,6 +132,9 @@ var IFC = (function () {
 
       raycaster.params.Points.threshold = 0.001; // threshold;
 
+      orbitControls = self.orbitControls = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement),
+      // orbitControls.noRoll = true; // nowheel
+
       H.each(CFG.sprites, (name, cfg) => {
 
         var material = new THREE.SpriteMaterial( {
@@ -198,21 +201,40 @@ var IFC = (function () {
       // $$('.interface .labels')[0].style.display = 'block';
       
       $$('canvas.simulator')[0].style.display = 'block';
+      orbitControls.handleResize();
 
     },
     activate: function () {
 
-      orbitControls = self.orbitControls = new THREE.OOrbitControls(SCN.camera, SCN.renderer.domElement),
+      orbitControls.handleResize();
+
+      // orbitControls = self.orbitControls = new THREE.OOrbitControls(SCN.camera, SCN.renderer.domElement),
+
+      // orbitControls.enabled = true;
+      //   orbitControls.enablePan = false;
+      //   orbitControls.enableDamping = true;
+      //   orbitControls.dampingFactor = 0.88;
+      //   orbitControls.constraint.smoothZoom = true;
+      //   orbitControls.constraint.zoomDampingFactor = 0.2;
+      //   orbitControls.constraint.smoothZoomSpeed = 2.0;
+      //   orbitControls.constraint.minDistance = CFG.minDistance;
+      //   orbitControls.constraint.maxDistance = CFG.maxDistance;
+
+      // orbitControls = self.orbitControls = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement),
 
       orbitControls.enabled = true;
-        orbitControls.enablePan = false;
-        orbitControls.enableDamping = true;
-        orbitControls.dampingFactor = 0.88;
-        orbitControls.constraint.smoothZoom = true;
-        orbitControls.constraint.zoomDampingFactor = 0.2;
-        orbitControls.constraint.smoothZoomSpeed = 2.0;
-        orbitControls.constraint.minDistance = CFG.minDistance;
-        orbitControls.constraint.maxDistance = CFG.maxDistance;
+        orbitControls.rotateSpeed = 1.0;
+        orbitControls.zoomSpeed = 1.4;
+        orbitControls.panSpeed = 0.3;
+        orbitControls.noRotate = false;
+        orbitControls.noZoom = false;
+        orbitControls.noPan = false;
+        orbitControls.staticMoving = false;          // inertia
+        orbitControls.dynamicDampingFactor = 0.05;
+        orbitControls.minDistance = CFG.minDistance;
+        orbitControls.maxDistance = CFG.maxDistance;
+
+        // orbitControls.addEventListener( 'change', SCN.render );
 
       H.each([
 
@@ -265,6 +287,8 @@ var IFC = (function () {
         canvas.height   = SCN.renderer.domElement.height;
         canvas.aspect   = canvas.width / canvas.height;
         canvas.diameter = Math.hypot(canvas.width, canvas.height);
+
+        orbitControls && orbitControls.handleResize();
 
         self.resizeHud();
 
