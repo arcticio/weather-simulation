@@ -14,13 +14,7 @@ SCN.tools = {
     var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.FrontSide} );
     var plane    = new THREE.Mesh( geometry, material );
 
-
-        material.vertexColors = THREE.VertexColors;
-
-    // geometry.computeBoundingSphere();
-    
-    // plane.position.copy(SCN.camera.position.clone().negate().normalize().multiplyScalar(2));
-    // plane.lookAt(SCN.camera.position);
+    material.vertexColors = THREE.VertexColors;
 
     return plane;
 

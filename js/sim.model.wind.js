@@ -50,7 +50,7 @@ SIM.Model.wind = (function () {
         multiline, positions, widths, colors, seeds, 
 
         spherical = new THREE.Spherical(),
-        length   = TRAIL_LEN,
+        length   = cfg.length,
         amount   = NaN,
         factor   = 0.0003,                       // TODO: proper Math
         alt      = cfg.radius - CFG.earth.radius,      // 0.001
