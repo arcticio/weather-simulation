@@ -153,20 +153,20 @@ var ANI = (function () {
             current = {now: SIM.time.show.unix() * 1000},
             target  = {now: current.now + 24 * 60 * 60 * 1000};
 
-            return function () {
+          return function () {
 
-              TWEEN.removeAll();
+            TWEEN.removeAll();
 
-              var tween = new TWEEN.Tween(current)
-                .easing(TWEEN.Easing.Sinusoidal.Out)
-                .to(target, duration)
-                .onUpdate(function(d){
-                  SIM.updateDatetime(moment(current.now))
-                })
-                .start()
-              ;
+            var tween = new TWEEN.Tween(current)
+              .easing(TWEEN.Easing.Quadratic.Out)
+              .to(target, duration)
+              .onUpdate(function(d){
+                SIM.updateDatetime(moment(current.now))
+              })
+              .start()
+            ;
 
-            };
+          };
 
 
         },

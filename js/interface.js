@@ -320,8 +320,8 @@ var IFC = (function () {
         // TODO: not window
         mouse.px = event.clientX; 
         mouse.py = event.clientY;
-        mouse.x  =   ( event.clientX / window.innerWidth )  * 2 - 1;
-        mouse.y  = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        mouse.x  =   ( event.clientX / canvas.width )  * 2 - 1;
+        mouse.y  = - ( event.clientY / canvas.height ) * 2 + 1;
 
         // console.log(mouse.px, mouse.py);
 

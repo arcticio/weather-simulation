@@ -247,7 +247,7 @@ var SCN = (function () {
           Extras: {
             Axes:      (value) => self.toggle(objects.axes, value),
             ZoomOut:   (value) => ANI.insert(0, ANI.library.zoomout), 
-            Rotate:    (value) => ANI.insert(0, ANI.library.datetime.add(1, 'days', 2000)), 
+            Rotate:    (value) => ANI.insert(0, ANI.library.datetime.add(1, 'days', 800)), 
           },
           Simulation: {
             start:     (value) => SIM.start(),
@@ -316,7 +316,7 @@ var SCN = (function () {
       // drop first call, need dTime
       if (!nTime){return;}
 
-      // IFC.stats.begin();
+      IFC.stats.begin();
 
         IFC.step();
 
@@ -338,7 +338,7 @@ var SCN = (function () {
           renderer.render( IFC.hud.scene, IFC.hud.camera );
         }
 
-      // IFC.stats.end();
+      IFC.stats.end();
 
       time   = nTime;
       frame += 1;

@@ -185,13 +185,10 @@ var CFG = {
     population: {
       visible:      true,
       type:         'mesh-calculate',
-      altitude:     0.01,
-      material: {
-        size:         0.004, 
-        vertexColors: THREE.VertexColors,
-        transparent:  true,
-        opacity:      0.9,
-      }
+      altitude:     0.001,
+      opacity:      0.8,
+      radius:       1.0,
+      ucolor:       new THREE.Color(0xffffff),
     },
 
     sector: {
