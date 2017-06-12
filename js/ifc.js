@@ -45,11 +45,11 @@ var IFC = (function () {
       sprite:     null,
     },
 
-    hud = {
-      camera:   null,
-      sprites:  [],
-      scene:    new THREE.Scene(),
-    },
+    // hud = {
+    //   camera:   null,
+    //   sprites:  [],
+    //   scene:    new THREE.Scene(),
+    // },
 
     levels  = {
       '8':  1.2,
@@ -100,10 +100,9 @@ var IFC = (function () {
 
   return self = {
     
-    hud,
     stats,
     mouse,
-    canvas,
+    // canvas,
     globe,
     raycaster,
     controllers,
@@ -120,9 +119,6 @@ var IFC = (function () {
 
       loader.style.display = 'block';
 
-      hud.camera = new THREE.OrthographicCamera (- w2, w2, h2, - h2, 1, 10 );
-      hud.camera.position.z = 10;
-
       self.stats = stats = new Stats();
       stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
       fullscreen.appendChild( stats.dom );
@@ -132,63 +128,65 @@ var IFC = (function () {
 
       raycaster.params.Points.threshold = 0.001; // threshold;
 
-      orbitControls = self.orbitControls = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement),
+      orbitControls = self.orbitControls = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement);
       // orbitControls.noRoll = true; // nowheel
 
-      H.each(CFG.sprites, (name, cfg) => {
+      // H.each(CFG.sprites, (name, cfg) => {
 
-        var material = new THREE.SpriteMaterial( {
-          map: txloader.load(cfg.material.image, function (texture) {
+      //   var material = new THREE.SpriteMaterial( {
+      //     map: txloader.load(cfg.material.image, function (texture) {
 
-            var sprite = new THREE.Sprite( material );
+      //       var sprite = new THREE.Sprite( material );
 
-            material.transparent = true;
-            material.opacity = 0.5;
+      //       material.transparent = true;
+      //       material.opacity = 0.5;
 
-            sprite.cfg = cfg;
-            sprite.name = name;
-            sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
+      //       sprite.cfg = cfg;
+      //       sprite.name = name;
+      //       sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
 
-            sprite.onmouseenter = function () {
-              ANI.insert(0, ANI.library.sprite.enter(sprite, 200));
-            };
+      //       sprite.onmouseenter = function () {
+      //         ANI.insert(0, ANI.library.sprite.enter(sprite, 200));
+      //       };
 
-            sprite.onmouseleft = function () {
-              ANI.insert(0, ANI.library.sprite.leave(sprite, 200));
-            };
+      //       sprite.onmouseleft = function () {
+      //         ANI.insert(0, ANI.library.sprite.leave(sprite, 200));
+      //       };
 
-            sprite.click = cfg.onclick.bind(sprite, sprite);
+      //       sprite.click = cfg.onclick.bind(sprite, sprite);
 
-            hud.scene.add( sprite );
-            self.resizeHud();
+      //       hud.scene.add( sprite );
+      //       self.resizeHud();
 
-          })
-        });
+      //     })
+      //   });
 
-      });
+      // });
+
+      IFC.Hud.init();
 
     },
-    resizeHud: function () {
+    // resizeHud: function () {
 
-      var w2 = canvas.width  / 2;
-      var h2 = canvas.height / 2;
+    //   var w2 = canvas.width  / 2;
+    //   var h2 = canvas.height / 2;
 
-      if (hud.camera) {
-        hud.camera.left   = - w2;
-        hud.camera.right  =   w2;
-        hud.camera.top    =   h2;
-        hud.camera.bottom = - h2;
-        hud.camera.updateProjectionMatrix();
-      }
+    //   if (hud.camera) {
+    //     hud.camera.left   = - w2;
+    //     hud.camera.right  =   w2;
+    //     hud.camera.top    =   h2;
+    //     hud.camera.bottom = - h2;
+    //     hud.camera.updateProjectionMatrix();
+    //   }
 
-      H.each(hud.scene.children, (_, sprite) => {
+    //   H.each(hud.scene.children, (_, sprite) => {
 
-        var pos = sprite.cfg.position;
+    //     var pos = sprite.cfg.position;
 
-        sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
+    //     sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
 
-      });
-    },
+    //   });
+    // },
     show: function () {
 
       loader.style.display = 'none';
@@ -201,7 +199,7 @@ var IFC = (function () {
       // $$('.interface .labels')[0].style.display = 'block';
       
       $$('canvas.simulator')[0].style.display = 'block';
-      orbitControls.handleResize();
+      // orbitControls.handleResize();
 
     },
     activate: function () {
@@ -273,7 +271,8 @@ var IFC = (function () {
 
       self.updateMouse();
       self.updateGlobe();
-      self.updateHud();
+      // self.updateHud();
+      IFC.Hud.step();
 
       // GUI infos
       // self.updatePanels();
@@ -290,7 +289,10 @@ var IFC = (function () {
 
         orbitControls && orbitControls.handleResize();
 
-        self.resizeHud();
+        // self.resizeHud();
+
+        IFC.Hud.resize();
+
 
       },
       click:   function (event) { 
@@ -383,41 +385,41 @@ var IFC = (function () {
 
     },
 
-    updateHud: function () {
+    // updateHud: function () {
 
-      mouse.sprite = null;
+    //   mouse.sprite = null;
 
-      H.each(hud.scene.children, (_, sprite) => {
+    //   H.each(hud.scene.children, (_, sprite) => {
 
-        var 
-          x = mouse.px,
-          y = mouse.py,
-          pos = sprite.cfg.position,
-          hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
+    //     var 
+    //       x = mouse.px,
+    //       y = mouse.py,
+    //       pos = sprite.cfg.position,
+    //       hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
 
-        if ( hit ) {
+    //     if ( hit ) {
 
-          if (!sprite.hit) {
-            sprite.onmouseenter();
-            sprite.hit = true;
-          }
+    //       if (!sprite.hit) {
+    //         sprite.onmouseenter();
+    //         sprite.hit = true;
+    //       }
 
-          mouse.sprite = sprite;
+    //       mouse.sprite = sprite;
 
-          // console.log('HIT', sprite.name);
+    //       // console.log('HIT', sprite.name);
 
-        } else {
+    //     } else {
 
-          if (sprite.hit) {
-            sprite.onmouseleft();
-            sprite.hit = false;
-          }
+    //       if (sprite.hit) {
+    //         sprite.onmouseleft();
+    //         sprite.hit = false;
+    //       }
 
-        }
+    //     }
 
-      });
+    //   });
 
-    },
+    // },
 
     updateGlobe: function () {
 
@@ -504,9 +506,6 @@ var IFC = (function () {
 
 
     },
-
-
-
 
     takeScreenShot: function(){
       // https://developer.mozilla.org/en/DOM/window.open

@@ -139,7 +139,7 @@ var SCN = (function () {
       // TODO: here async tasks
 
       'mesh-calculate': (name, cfg) => {
-        self.add(name, SCN.tools.calculate(name, cfg));
+        self.add(name, SCN.Meshes.calculate(name, cfg));
       },
 
       'mesh.textured': (name, cfg) => {
@@ -371,7 +371,7 @@ var SCN = (function () {
           renderer.clear();
           renderer.render( scene, camera );
           renderer.clearDepth();
-          renderer.render( IFC.hud.scene, IFC.hud.camera );
+          renderer.render( IFC.Hud.scene, IFC.Hud.camera );
         }
 
       IFC.stats.end();

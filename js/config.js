@@ -48,10 +48,27 @@ var CFG = {
 
   sprites : {
 
-    fullscreen: {
+    hamburger: {
       visible:  true,
       position: {
         top:     60,
+        left:    18,
+        width:   48,
+        height:  48,
+      },
+      material: {
+        color: '#ff3388',
+        image: 'images/hud/hamburger.png'
+      },
+      onclick: (sprite) => {
+        console.log('sprite.click', sprite.name);
+      },
+    },
+
+    fullscreen: {
+      visible:  true,
+      position: {
+        top:     120,
         left:    18,
         width:   48,
         height:  48,
@@ -68,7 +85,7 @@ var CFG = {
     movie: {
       visible:  true,
       position: {
-        top:     120,
+        top:     180,
         left:     18,
         width:    48,
         height:   48,
@@ -85,7 +102,7 @@ var CFG = {
     graticule: {
       visible:  true,
       position: {
-        top:     180,
+        top:     240,
         left:     18,
         width:    48,
         height:   48,
