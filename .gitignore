@@ -4,6 +4,7 @@ appengine-generated/
 /stuff.txt
 /http-8765.sh
 /npm-debug.log
+.eslintrc
 
 stuff/
 doc/
