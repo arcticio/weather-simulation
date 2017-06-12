@@ -50,6 +50,8 @@ var CFG = {
 
     hamburger: {
       visible:  true,
+      type:     'toggle',
+      toggled:  false,
       position: {
         top:     60,
         left:    18,
@@ -57,16 +59,19 @@ var CFG = {
         height:  48,
       },
       material: {
-        color: '#ff3388',
+        opacity: 0.5,
         image: 'images/hud/hamburger.png'
       },
       onclick: (sprite) => {
+        IFC.Hud.toggle();
         console.log('sprite.click', sprite.name);
       },
     },
 
     fullscreen: {
       visible:  true,
+      type:     'toggle',
+      toggled:  false,
       position: {
         top:     120,
         left:    18,
@@ -74,7 +79,7 @@ var CFG = {
         height:  48,
       },
       material: {
-        color: '#ff3388',
+        opacity: 0.5,
         image: 'images/hud/fullscreen.png'
       },
       onclick: (sprite) => {
@@ -91,7 +96,7 @@ var CFG = {
         height:   48,
       },
       material: {
-        color: '#ff3388',
+        opacity: 0.5,
         image: 'images/hud/movie.png'
       },
       onclick: (sprite) => {
@@ -101,6 +106,8 @@ var CFG = {
 
     graticule: {
       visible:  true,
+      type:     'toggle',
+      toggled:  false,
       position: {
         top:     240,
         left:     18,
@@ -108,7 +115,7 @@ var CFG = {
         height:   48,
       },
       material: {
-        color: '#ff3388',
+        opacity: 0.5,
         image: 'images/hud/graticule.png'
       },
       onclick: (sprite) => {

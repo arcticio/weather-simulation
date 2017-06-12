@@ -98,23 +98,30 @@ var ANI = (function () {
         }
 
       },
+
       sprite: {
+
         enter: function (sprite, duration) {
 
           var 
-            current = {width: sprite.cfg.position.width, height: sprite.cfg.position.height},
-            target  = {width: current.width * 1.1, height: current.height * 1.1}
+            pos     = sprite.cfg.position,
+            mat     = sprite.cfg.material,
+            current = {width: pos.width, height: pos.height, opacity: mat.opacity},
+            target  = {
+              width:  current.width  * 1.1, 
+              height: current.height * 1.1,
+              opacity: 0.9,
+            }
           ;
 
           return function () {
-
-            TWEEN.removeAll();
 
             var tween = new TWEEN.Tween(current)
               .easing(TWEEN.Easing.Sinusoidal.Out)
               .to(target, duration)
               .onUpdate(function(d){
                 sprite.scale.set( current.width, current.height, 1 );
+                sprite.material.opacity = current.opacity;
               })
               .start()
             ;
@@ -125,19 +132,28 @@ var ANI = (function () {
         leave: function (sprite, duration) {
 
           var 
-            current = {width: sprite.cfg.position.width, height: sprite.cfg.position.height},
-            target  = {width: current.width * 1/1.1, height: current.height * 1/1.1}
+            pos = sprite.cfg.position,
+            mat = sprite.cfg.material,
+            current = {
+              width:   pos.width  * 1.1, 
+              height:  pos.height * 1.1, 
+              opacity: sprite.material.opacity
+            },
+            target  = {
+              width:   pos.width, 
+              height:  pos.heigh,
+              opacity: mat.opacity,
+            }
           ;
 
           return function () {
-
-            TWEEN.removeAll();
 
             var tween = new TWEEN.Tween(current)
               .easing(TWEEN.Easing.Sinusoidal.Out)
               .to(target, duration)
               .onUpdate(function(d){
                 sprite.scale.set( current.width, current.height, 1 );
+                sprite.material.opacity = current.opacity;
               })
               .start()
             ;
@@ -146,7 +162,9 @@ var ANI = (function () {
 
         },
       },
+
       datetime: {
+
         add: function (val, what, duration) {
 
           var 

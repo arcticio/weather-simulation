@@ -97,9 +97,6 @@ var SCN = (function () {
       camera.aspect                    = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       
-      // IFC.orbitControls.handleResize();
-
-      // console.log(window.innerWidth, window.innerHeight);
     },
     init: function () {
 
@@ -195,14 +192,9 @@ var SCN = (function () {
     },
 
     reset: {
-      camera: function () {
+      controller: function () {
 
-        // camera.position.copy(CFG.objects.perspective.pos);
-        // camera.lookAt(scene.position);
-        // camera.updateProjectionMatrix();
-        // camera.zoom = 1.0;
-
-        IFC.orbitControls.reset();
+        IFC.controller.reset();
 
       }
     },
@@ -252,7 +244,7 @@ var SCN = (function () {
             'BACKGROUND': (value) => self.toggle(objects.background, value),
           },
           Camera: {
-            reset:        (value) => self.reset.camera(),
+            reset:        (value) => self.reset.controller(),
           },
           DateTime: {
             choose:       (value) => SIM.updateDatetime(value),
@@ -348,7 +340,7 @@ var SCN = (function () {
       requestAnimationFrame(render);
 
       // drop first call, need dTime
-      if (!nTime){return;}
+      // if (!nTime){return;}
 
       IFC.stats.begin();
 

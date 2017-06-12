@@ -15,35 +15,12 @@ IFC.Hud = (function () {
     loader     = $$('.interface img.loader')[0],
     simulator  = $$('.simulator')[0],
 
-    camera     =  null,
-    sprites    =  [],
-    scene      =  new THREE.Scene(),
+    camera     = new THREE.OrthographicCamera (0, 0, 100, 100, 1, 10 ),
+    scene      = new THREE.Scene(),
+    menu       = new THREE.Object3D(),
+    sprites    = [],
 
   end;
-
-  function vector3ToLatLong (v3) {
-
-    var v = v3.clone().normalize();
-    var lon = ((270 + (Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360);
-
-    lon = lon > 180 ? -(360 - lon) : lon;
-
-    return {
-      lat: 90 - (Math.acos(v.y))  * 180 / Math.PI,
-      lon: lon,
-    };
-
-  }
-
-  function formatLatLon (prefix, ll) {
-    
-    ll.lat = ll.lat < 0 ? 'S ' + Math.abs(ll.lat).toFixed(0) : 'N ' + Math.abs(ll.lat).toFixed(0);
-    ll.lon = ll.lon < 0 ? 'E ' + Math.abs(ll.lon).toFixed(0) : 'W ' + Math.abs(ll.lon).toFixed(0);
-
-    return `<strong>${prefix}</strong> ${ ll.lat }, ${ ll.lon }`;
-
-  }
-
 
   return self = {
 
@@ -52,23 +29,31 @@ IFC.Hud = (function () {
     
     init: function () {
 
-      var w2, h2;
-
-      w2 = SCN.canvas.width  / 2;
-      h2 = SCN.canvas.height / 2;
-
-      camera = self.camera = new THREE.OrthographicCamera (- w2, w2, h2, - h2, 1, 10 );
       camera.position.z = 10;
+
+      self.initSprites();
+      scene.add(menu);
+      scene.add(camera);
+      self.resize();
+
+    },
+    initSprites: function () {
+
+      var w2 = SCN.canvas.width  / 2;
+      var h2 = SCN.canvas.height / 2;
 
       H.each(CFG.sprites, (name, cfg) => {
 
         var material = new THREE.SpriteMaterial( {
           map: txloader.load(cfg.material.image, function (texture) {
 
-            var sprite = new THREE.Sprite( material );
+            var 
+              sprite = new THREE.Sprite( material ),
+              pos = cfg.position
+            ;
 
             material.transparent = true;
-            material.opacity = 0.5;
+            material.opacity = cfg.material.opacity;
 
             sprite.cfg = cfg;
             sprite.name = name;
@@ -84,8 +69,14 @@ IFC.Hud = (function () {
 
             sprite.click = cfg.onclick.bind(sprite, sprite);
 
-            scene.add( sprite );
-            self.resize();
+            sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
+
+            if (name === 'hamburger') {
+              scene.add( sprite );
+            } else {
+              menu.add( sprite );              
+            }
+            sprites.push(sprite);
 
           })
         });
@@ -98,15 +89,13 @@ IFC.Hud = (function () {
       var w2 = SCN.canvas.width  / 2;
       var h2 = SCN.canvas.height / 2;
 
-      if (camera) {
-        camera.left   = - w2;
-        camera.right  =   w2;
-        camera.top    =   h2;
-        camera.bottom = - h2;
-        camera.updateProjectionMatrix();
-      }
+      camera.left   = - w2;
+      camera.right  =   w2;
+      camera.top    =   h2;
+      camera.bottom = - h2;
+      camera.updateProjectionMatrix();
 
-      H.each(scene.children, (_, sprite) => {
+      H.each(sprites, (_, sprite) => {
 
         var pos = sprite.cfg.position;
 
@@ -115,8 +104,6 @@ IFC.Hud = (function () {
       });
     },
     show: function () {
-
-      loader.style.display = 'none';
 
       // $$('.panel.image')[0].style.display = 'block';
       // $$('.panel.latlon')[0].style.display = 'block';
@@ -128,15 +115,22 @@ IFC.Hud = (function () {
     },
     activate: function () {
 
+      // self.resize();
+
     },
 
+    toggle: function () {
+
+
+
+    },
     step: function () {
 
       var mouse = IFC.mouse;
 
       mouse.sprite = null;
 
-      H.each(scene.children, (_, sprite) => {
+      H.each(sprites, (_, sprite) => {
 
         var 
           x = mouse.px,

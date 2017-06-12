@@ -16,7 +16,7 @@ var IFC = (function () {
     simulator  = $$('.simulator')[0],
     fullscreen = $$('.fullscreen')[0],
 
-    orbitControls, 
+    controller, 
 
     controllers = GUIcontrollers,
 
@@ -106,7 +106,7 @@ var IFC = (function () {
     globe,
     raycaster,
     controllers,
-    orbitControls,
+    controller,
 
     init: function () {
 
@@ -128,8 +128,8 @@ var IFC = (function () {
 
       raycaster.params.Points.threshold = 0.001; // threshold;
 
-      orbitControls = self.orbitControls = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement);
-      // orbitControls.noRoll = true; // nowheel
+      controller = self.controller = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement);
+      // controller.noRoll = true; // nowheel
 
       // H.each(CFG.sprites, (name, cfg) => {
 
@@ -166,73 +166,46 @@ var IFC = (function () {
       IFC.Hud.init();
 
     },
-    // resizeHud: function () {
-
-    //   var w2 = canvas.width  / 2;
-    //   var h2 = canvas.height / 2;
-
-    //   if (hud.camera) {
-    //     hud.camera.left   = - w2;
-    //     hud.camera.right  =   w2;
-    //     hud.camera.top    =   h2;
-    //     hud.camera.bottom = - h2;
-    //     hud.camera.updateProjectionMatrix();
-    //   }
-
-    //   H.each(hud.scene.children, (_, sprite) => {
-
-    //     var pos = sprite.cfg.position;
-
-    //     sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
-
-    //   });
-    // },
     show: function () {
 
       loader.style.display = 'none';
-
-      // $$('.panel.image')[0].style.display = 'block';
-      // $$('.panel.latlon')[0].style.display = 'block';
-      // $$('.panel.info')[0].style.display = 'block';
-      // $$('.panel.test')[0].style.display = 'block';
-      // $$('.panel.expi')[0].style.display = 'block';
-      // $$('.interface .labels')[0].style.display = 'block';
       
       $$('canvas.simulator')[0].style.display = 'block';
-      // orbitControls.handleResize();
+
+      IFC.Hud.resize();
 
     },
     activate: function () {
 
-      orbitControls.handleResize();
+      // controller.handleResize();
 
-      // orbitControls = self.orbitControls = new THREE.OOrbitControls(SCN.camera, SCN.renderer.domElement),
+      // controller = self.controller = new THREE.Ocontroller(SCN.camera, SCN.renderer.domElement),
 
-      // orbitControls.enabled = true;
-      //   orbitControls.enablePan = false;
-      //   orbitControls.enableDamping = true;
-      //   orbitControls.dampingFactor = 0.88;
-      //   orbitControls.constraint.smoothZoom = true;
-      //   orbitControls.constraint.zoomDampingFactor = 0.2;
-      //   orbitControls.constraint.smoothZoomSpeed = 2.0;
-      //   orbitControls.constraint.minDistance = CFG.minDistance;
-      //   orbitControls.constraint.maxDistance = CFG.maxDistance;
+      // controller.enabled = true;
+      //   controller.enablePan = false;
+      //   controller.enableDamping = true;
+      //   controller.dampingFactor = 0.88;
+      //   controller.constraint.smoothZoom = true;
+      //   controller.constraint.zoomDampingFactor = 0.2;
+      //   controller.constraint.smoothZoomSpeed = 2.0;
+      //   controller.constraint.minDistance = CFG.minDistance;
+      //   controller.constraint.maxDistance = CFG.maxDistance;
 
-      // orbitControls = self.orbitControls = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement),
+      // controller = self.controller = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement),
 
-      orbitControls.enabled = true;
-        orbitControls.rotateSpeed = 1.0;
-        orbitControls.zoomSpeed = 1.4;
-        orbitControls.panSpeed = 0.3;
-        orbitControls.noRotate = false;
-        orbitControls.noZoom = false;
-        orbitControls.noPan = false;
-        orbitControls.staticMoving = false;          // inertia
-        orbitControls.dynamicDampingFactor = 0.05;
-        orbitControls.minDistance = CFG.minDistance;
-        orbitControls.maxDistance = CFG.maxDistance;
+      controller.enabled = true;
+        controller.rotateSpeed = 1.0;
+        controller.zoomSpeed = 1.4;
+        controller.panSpeed = 0.3;
+        controller.noRotate = false;
+        controller.noZoom = false;
+        controller.noPan = false;
+        controller.staticMoving = false;          // inertia
+        controller.dynamicDampingFactor = 0.05;
+        controller.minDistance = CFG.minDistance;
+        controller.maxDistance = CFG.maxDistance;
 
-        // orbitControls.addEventListener( 'change', SCN.render );
+        // controller.addEventListener( 'change', SCN.render );
 
       H.each([
 
@@ -267,11 +240,10 @@ var IFC = (function () {
 
       TWEEN.update();
 
-      orbitControls.update();
+      controller.update();
 
       self.updateMouse();
       self.updateGlobe();
-      // self.updateHud();
       IFC.Hud.step();
 
       // GUI infos
@@ -287,12 +259,9 @@ var IFC = (function () {
         canvas.aspect   = canvas.width / canvas.height;
         canvas.diameter = Math.hypot(canvas.width, canvas.height);
 
-        orbitControls && orbitControls.handleResize();
-
-        // self.resizeHud();
+        controller && controller.handleResize();
 
         IFC.Hud.resize();
-
 
       },
       click:   function (event) { 
@@ -384,42 +353,6 @@ var IFC = (function () {
       orientationchange: function (event) { console.log('orientationchange', event)       },
 
     },
-
-    // updateHud: function () {
-
-    //   mouse.sprite = null;
-
-    //   H.each(hud.scene.children, (_, sprite) => {
-
-    //     var 
-    //       x = mouse.px,
-    //       y = mouse.py,
-    //       pos = sprite.cfg.position,
-    //       hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
-
-    //     if ( hit ) {
-
-    //       if (!sprite.hit) {
-    //         sprite.onmouseenter();
-    //         sprite.hit = true;
-    //       }
-
-    //       mouse.sprite = sprite;
-
-    //       // console.log('HIT', sprite.name);
-
-    //     } else {
-
-    //       if (sprite.hit) {
-    //         sprite.onmouseleft();
-    //         sprite.hit = false;
-    //       }
-
-    //     }
-
-    //   });
-
-    // },
 
     updateGlobe: function () {
 
