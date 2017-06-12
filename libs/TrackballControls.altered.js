@@ -75,6 +75,17 @@ THREE.TrackballControls = function ( object, domElement ) {
 	var startEvent = { type: 'start' };
 	var endEvent = { type: 'end' };
 
+	function latCamera () {
+
+	  var 
+	  	pos = object.position,
+	  	radius = pos.length(),
+	  	lat = 90 - (Math.acos(pos.y / radius))  * 180 / Math.PI;
+
+	  return lat;
+
+	}
+
 
 	// methods
 
@@ -157,6 +168,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		return function rotateCamera() {
 
+			var lat = latCamera();
+
 			moveDirection.set( _moveCurr.x - _movePrev.x, _moveCurr.y - _movePrev.y, 0 );
 			angle = moveDirection.length();
 
@@ -165,6 +178,17 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 			// acc limit
 			angle = Math.min(angle, _lastAngle + this.maxAcceleration);
+
+			if (lat > 80 || lat < -80 ){
+
+				angle /= 2;
+
+				if (lat > 88.0 || lat < -88.0 ){
+					angle /= 10 ;
+					objectUpDirection.setY(0);
+				}
+
+			}
 
 			if ( angle ) {
 
@@ -487,10 +511,10 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		switch ( event.deltaMode ) {
 
-                        case 2:
-                                // Zoom in pages
-                                _zoomStart.y -= event.deltaY * 0.025;
-                                break;
+      case 2:
+        // Zoom in pages
+        _zoomStart.y -= event.deltaY * 0.025;
+        break;
 
 			case 1:
                                 // Zoom in lines

@@ -345,7 +345,7 @@ var CFG = {
     },
 
     data: {
-      visible:         true,
+      visible:         false,
       type:            'cube.textured',
       rotation:        [0, Math.PI / 2, 0],
       cube: {

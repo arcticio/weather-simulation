@@ -129,6 +129,8 @@ var SCN = (function () {
 
       });
 
+      objects.pointer.visible = false;
+
     },
     loader: {
 

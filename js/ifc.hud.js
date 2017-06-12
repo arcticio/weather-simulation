@@ -158,8 +158,12 @@ IFC.Hud = (function () {
 
     events: {
 
-      mousedown: function (event) {console.log('HUD.mousedown')},
-      mouseup: function (event) {console.log('HUD.mouseup')},
+      mousedown: function (event) {
+        // console.log('HUD.mousedown')
+      },
+      mouseup: function (event) {
+        // console.log('HUD.mouseup')
+      },
       mousemove: function (event) {
         // console.log('HUD.mousemove')
       },
@@ -281,7 +285,7 @@ IFC.Hud.performance = (function () {
 
         ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-        ctx.fillStyle = '#222';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0)';
         ctx.fillRect(0, 0, cvs.width, cvs.height);
 
         ctx.fillStyle = '#ffffff';

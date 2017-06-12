@@ -329,7 +329,10 @@ var IFC = (function () {
       var intersections, intersection, oldMouseOver = mouse.overGlobe;
 
       raycaster.setFromCamera( mouse, SCN.camera );
-      intersections = raycaster.intersectObjects( [SCN.objects.pointer] );
+      // intersections = raycaster.intersectObjects( [SCN.objects.pointer] );
+
+      intersections = [];
+      SCN.objects.pointer.raycast(raycaster, intersections)
 
       if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
         mouse.intersect.copy(intersection.point).normalize();
@@ -345,8 +348,10 @@ var IFC = (function () {
           ANI.insert(0, ANI.library.scaleGLobe(1.0, 800));
           GUI.closed = true;
         } else {
+          if (!isNaN(oldMouseOver)) {
+            GUI.closed = false;
+          }
           ANI.insert(0, ANI.library.scaleGLobe(0.94, 800));
-          GUI.closed = false;
         }
       }
 

@@ -16,3 +16,5 @@ data/*.zip
 
 images/tmp
 images/sources
+
+## git rm --cached FILENAME
