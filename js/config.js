@@ -53,7 +53,7 @@ var CFG = {
       type:     'toggle',
       toggled:  false,
       position: {
-        top:     60,
+        top:     14,
         left:    18,
         width:   48,
         height:  48,
@@ -73,7 +73,7 @@ var CFG = {
       type:     'toggle',
       toggled:  false,
       position: {
-        top:     120,
+        top:     74,
         left:    18,
         width:   48,
         height:  48,
@@ -83,14 +83,15 @@ var CFG = {
         image: 'images/hud/fullscreen.png'
       },
       onclick: (sprite) => {
-        console.log('sprite.click', sprite.name);
+        screenfull.enabled && screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
+        console.log('sprite.clicked', sprite.name);
       },
     },
 
     movie: {
       visible:  true,
       position: {
-        top:     180,
+        top:     134,
         left:     18,
         width:    48,
         height:   48,
@@ -109,7 +110,7 @@ var CFG = {
       type:     'toggle',
       toggled:  false,
       position: {
-        top:     240,
+        top:     194,
         left:     18,
         width:    48,
         height:   48,
@@ -119,7 +120,27 @@ var CFG = {
         image: 'images/hud/graticule.png'
       },
       onclick: (sprite) => {
-        console.log('sprite.click', sprite.name);
+        SCN.toggle(SCN.objects.graticule);
+        console.log('sprite.clicked', sprite.name);
+      },
+    },
+
+    performance: {
+      visible:  true,
+      type:     'toggle',
+      canvas:   document.createElement('CANVAS'),
+      position: {
+        bottom:   18,
+        left:     18,
+        width:    96,
+        height:   48,
+      },
+      material: {
+        opacity: 0.9,
+        image: 'images/hud/performance.png'
+      },
+      onclick: (sprite) => {
+        console.log('sprite.clicked', sprite.name);
       },
     }
 

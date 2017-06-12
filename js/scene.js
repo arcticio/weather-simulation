@@ -36,7 +36,7 @@ var SCN = (function () {
 
   end;
 
-  return {
+  return self = {
     
     expi,
     home,
@@ -48,7 +48,6 @@ var SCN = (function () {
     renderer,
     timerange,
 
-    boot:     function () { return self = this; },
     activate: function () { 
       window.addEventListener('resize', self.resize, false); 
       document.addEventListener('keydown', ev => {
@@ -342,7 +341,8 @@ var SCN = (function () {
       // drop first call, need dTime
       // if (!nTime){return;}
 
-      IFC.stats.begin();
+      // IFC.stats.begin();
+      IFC.Hud.performance.begin();
 
         IFC.step();
 
@@ -366,7 +366,8 @@ var SCN = (function () {
           renderer.render( IFC.Hud.scene, IFC.Hud.camera );
         }
 
-      IFC.stats.end();
+      IFC.Hud.performance.end();
+      // IFC.stats.end();
 
       time   = nTime;
       frame += 1;
@@ -374,8 +375,7 @@ var SCN = (function () {
     }
   };
 
-}()).boot();
-
+}());
 
 
 /*

@@ -45,12 +45,6 @@ var IFC = (function () {
       sprite:     null,
     },
 
-    // hud = {
-    //   camera:   null,
-    //   sprites:  [],
-    //   scene:    new THREE.Scene(),
-    // },
-
     levels  = {
       '8':  1.2,
       '7':  1.4,
@@ -102,7 +96,6 @@ var IFC = (function () {
     
     stats,
     mouse,
-    // canvas,
     globe,
     raycaster,
     controllers,
@@ -119,9 +112,9 @@ var IFC = (function () {
 
       loader.style.display = 'block';
 
-      self.stats = stats = new Stats();
-      stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-      fullscreen.appendChild( stats.dom );
+      // self.stats = stats = new Stats();
+      // stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+      // fullscreen.appendChild( stats.dom );
 
       // move gui.dat to fullscreen container
       fullscreen.appendChild($$('div.dg.ac')[0]);
@@ -129,39 +122,6 @@ var IFC = (function () {
       raycaster.params.Points.threshold = 0.001; // threshold;
 
       controller = self.controller = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement);
-      // controller.noRoll = true; // nowheel
-
-      // H.each(CFG.sprites, (name, cfg) => {
-
-      //   var material = new THREE.SpriteMaterial( {
-      //     map: txloader.load(cfg.material.image, function (texture) {
-
-      //       var sprite = new THREE.Sprite( material );
-
-      //       material.transparent = true;
-      //       material.opacity = 0.5;
-
-      //       sprite.cfg = cfg;
-      //       sprite.name = name;
-      //       sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
-
-      //       sprite.onmouseenter = function () {
-      //         ANI.insert(0, ANI.library.sprite.enter(sprite, 200));
-      //       };
-
-      //       sprite.onmouseleft = function () {
-      //         ANI.insert(0, ANI.library.sprite.leave(sprite, 200));
-      //       };
-
-      //       sprite.click = cfg.onclick.bind(sprite, sprite);
-
-      //       hud.scene.add( sprite );
-      //       self.resizeHud();
-
-      //     })
-      //   });
-
-      // });
 
       IFC.Hud.init();
 
@@ -174,24 +134,10 @@ var IFC = (function () {
 
       IFC.Hud.resize();
 
+      controller.handleResize();
+
     },
     activate: function () {
-
-      // controller.handleResize();
-
-      // controller = self.controller = new THREE.Ocontroller(SCN.camera, SCN.renderer.domElement),
-
-      // controller.enabled = true;
-      //   controller.enablePan = false;
-      //   controller.enableDamping = true;
-      //   controller.dampingFactor = 0.88;
-      //   controller.constraint.smoothZoom = true;
-      //   controller.constraint.zoomDampingFactor = 0.2;
-      //   controller.constraint.smoothZoomSpeed = 2.0;
-      //   controller.constraint.minDistance = CFG.minDistance;
-      //   controller.constraint.maxDistance = CFG.maxDistance;
-
-      // controller = self.controller = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement),
 
       controller.enabled = true;
         controller.rotateSpeed = 1.0;
@@ -204,8 +150,6 @@ var IFC = (function () {
         controller.dynamicDampingFactor = 0.05;
         controller.minDistance = CFG.minDistance;
         controller.maxDistance = CFG.maxDistance;
-
-        // controller.addEventListener( 'change', SCN.render );
 
       H.each([
 
@@ -271,15 +215,15 @@ var IFC = (function () {
       },      
       dblclick:   function (event) { 
 
-        if (!mouse.overGlobe) {
-          if (screenfull.enabled) {
-            screenfull.toggle(fullscreen);
-          }        
+        // if (!mouse.overGlobe) {
+        //   if (screenfull.enabled) {
+        //     screenfull.toggle(fullscreen);
+        //   }        
 
-        } else {
-          ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2))
+        // } else {
+        //   ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2))
 
-        }
+        // }
         
         // console.log('dblclick');
 

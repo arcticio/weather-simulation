@@ -74,14 +74,24 @@ IFC.Hud = (function () {
 
             sprite.click = cfg.onclick.bind(sprite, sprite);
 
-            sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
+            if (pos.bottom){
+              sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
 
-            if (name === 'hamburger') {
+            } else {
+              sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
+
+            }
+
+            if (name === 'hamburger' || name === 'performance') {
               scene.add( sprite );
             } else {
               menu.add( sprite );              
             }
             sprites.push(sprite);
+
+            if (IFC.Hud[name]) {
+              IFC.Hud[name].init(sprite, cfg);
+            }
 
           })
         });
@@ -104,7 +114,14 @@ IFC.Hud = (function () {
 
         var pos = sprite.cfg.position;
 
-        sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
+        if (pos.bottom){
+          sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
+
+        } else {
+          sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
+
+        }
+
 
       });
     },
@@ -139,11 +156,15 @@ IFC.Hud = (function () {
     },
     step: function () {
 
+      // buttons hit test
+
       var mouse = IFC.mouse;
 
       mouse.sprite = null;
 
       H.each(sprites, (_, sprite) => {
+
+        // TODO: respect pos.bottom
 
         var 
           x = mouse.px,
@@ -151,24 +172,28 @@ IFC.Hud = (function () {
           pos = sprite.cfg.position,
           hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
 
-        if ( hit ) {
+        if (toggled || !toggled && (sprite.name === 'hamburger' || sprite.name === 'performance' )){
 
-          if (!sprite.hit) {
-            sprite.onmouseenter();
-            sprite.hit = true;
+          if ( hit ) {
+
+            if (!sprite.hit) {
+              sprite.onmouseenter();
+              sprite.hit = true;
+            }
+
+            mouse.sprite = sprite;
+
+            // console.log('HIT', sprite.name);
+
+          } else {
+
+            if (sprite.hit) {
+              sprite.onmouseleft();
+              sprite.hit = false;
+            }
+
           }
-
-          mouse.sprite = sprite;
-
-          // console.log('HIT', sprite.name);
-
-        } else {
-
-          if (sprite.hit) {
-            sprite.onmouseleft();
-            sprite.hit = false;
-          }
-
+          
         }
 
       });
@@ -176,5 +201,80 @@ IFC.Hud = (function () {
     },
 
   };
+
+}());
+
+
+IFC.Hud.performance = (function () {
+
+  var 
+    self,
+    sprite,
+    cfg,
+    cvs, ctx, img,
+    texture,
+    width, height,
+    now, duration, 
+
+  end;
+
+  return self = {
+    init:  function (mesh, config) {
+
+      sprite = mesh;
+      cfg    = config;
+      cvs    = cfg.canvas;
+      ctx    = cvs.getContext('2d');
+      img    = sprite.material.map.image;
+
+      width  = cfg.position.width;
+      height = cfg.position.height;
+
+      cvs.width  = 256;
+      cvs.height = 128;
+
+      // CanvasTexture( canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy )
+      texture = new THREE.CanvasTexture(cvs);
+
+      sprite.material.map = texture;
+
+    },
+    begin: function () {
+
+      var i;
+
+      now = window.performance.now();
+
+      if (ctx) {
+
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+        ctx.fillStyle = '#222';
+        ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+        ctx.fillStyle = '#ffffff';
+        for (i=0; i<3; i++){
+          ctx.fillRect(0, cvs.height/4 * (i +1), cvs.width, 2);
+        }
+
+        ctx.font = '28px monospace'
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('D: ' + duration.toFixed(1), 150, 124);
+
+        texture.needsUpdate = true;
+
+      }
+
+    },
+    end:   function () {
+
+      duration = window.performance.now() - now;
+
+      // sprite.material.map.needsUpdate = true;
+
+
+    },
+  };
+
 
 }());
