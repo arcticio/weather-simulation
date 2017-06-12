@@ -20,16 +20,21 @@ IFC.Hud = (function () {
     menu       = new THREE.Object3D(),
     sprites    = [],
 
+    toggled    = false,
+
   end;
 
   return self = {
 
+    menu,
     scene,
     camera,
     
     init: function () {
 
       camera.position.z = 10;
+
+      menu.position.setX(-100);
 
       self.initSprites();
       scene.add(menu);
@@ -121,7 +126,15 @@ IFC.Hud = (function () {
 
     toggle: function () {
 
+      toggled = !toggled;
 
+      if (toggled){
+        ANI.insert(0, ANI.library.menu.toggle(0, 200));
+
+      } else {
+        ANI.insert(0, ANI.library.menu.toggle(-100, 200));
+
+      }
 
     },
     step: function () {

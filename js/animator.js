@@ -99,6 +99,30 @@ var ANI = (function () {
 
       },
 
+      menu: {
+        toggle: function (newx, duration) {
+
+          var 
+            current = {x: IFC.Hud.menu.position.x},
+            target  = {x: newx}
+          ;
+
+          return function () {
+
+            var tween = new TWEEN.Tween(current)
+              .easing(TWEEN.Easing.Sinusoidal.Out)
+              .to(target, duration)
+              .onUpdate(function(d){
+                IFC.Hud.menu.position.setX(current.x);
+              })
+              .start()
+            ;
+
+          };
+
+        }
+      },
+
       sprite: {
 
         enter: function (sprite, duration) {
