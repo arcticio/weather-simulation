@@ -147,18 +147,24 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	this.rotateCamera = ( function() {
 
-		var axis = new THREE.Vector3(),
-			quaternion = new THREE.Quaternion(),
-			eyeDirection = new THREE.Vector3(),
+		var axis            = new THREE.Vector3(),
+			quaternion        = new THREE.Quaternion(),
+			eyeDirection      = new THREE.Vector3(),
 			objectUpDirection = new THREE.Vector3(),
 			objectSidewaysDirection = new THREE.Vector3(),
-			moveDirection = new THREE.Vector3(),
+			moveDirection     = new THREE.Vector3(),
 			angle;
 
 		return function rotateCamera() {
 
 			moveDirection.set( _moveCurr.x - _movePrev.x, _moveCurr.y - _movePrev.y, 0 );
 			angle = moveDirection.length();
+
+			// speed limit
+			angle = Math.min(angle, this.maxAngle);
+
+			// acc limit
+			angle = Math.min(angle, _lastAngle + this.maxAcceleration);
 
 			if ( angle ) {
 
@@ -253,7 +259,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 				pan.add( objectUp.copy( _this.object.up ).setLength( mouseChange.y ) );
 
 				_this.object.position.add( pan );
-				// _this.target.add( pan ); // noiv: keeps looking at center, great for better close ups.
+				_this.target.add( pan ); // noiv: keeps looking at center, great for better close ups.
 
 				if ( _this.staticMoving ) {
 
@@ -296,10 +302,11 @@ THREE.TrackballControls = function ( object, domElement ) {
 	this.update = function () {
 
 
-		_this.object.up.copy( _this.up0 ); // noiv: very good insert, very good position
+		_this.object.up.copy( _this.up0 ); // noiv: preserves up nicely
 
 
 		_eye.subVectors( _this.object.position, _this.target );
+
 
 		if ( ! _this.noRotate ) {
 
@@ -327,7 +334,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		if ( lastPosition.distanceToSquared( _this.object.position ) > EPS ) {
 
-			_this.dispatchEvent( changeEvent );
+			// _this.dispatchEvent( changeEvent );
 
 			lastPosition.copy( _this.object.position );
 

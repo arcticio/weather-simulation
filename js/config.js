@@ -84,6 +84,7 @@ var CFG = {
       },
       onclick: (sprite) => {
         screenfull.enabled && screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
+        IFC.Hud.resize();
         console.log('sprite.clicked', sprite.name);
       },
     },
@@ -122,6 +123,25 @@ var CFG = {
       onclick: (sprite) => {
         SCN.toggle(SCN.objects.graticule);
         console.log('sprite.clicked', sprite.name);
+      },
+    },
+
+    info: {
+      visible:  true,
+      type:     'toggle',
+      toggled:  false,
+      position: {
+        top:     254,
+        left:     18,
+        width:    48,
+        height:   48,
+      },
+      material: {
+        opacity: 0.5,
+        image: 'images/hud/info.png'
+      },
+      onclick: (sprite) => {
+        location.href = 'https://github.com/arcticio/weather-simulation';
       },
     },
 

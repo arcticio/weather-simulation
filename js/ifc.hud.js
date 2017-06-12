@@ -137,7 +137,39 @@ IFC.Hud = (function () {
     },
     activate: function () {
 
-      // self.resize();
+      H.each([
+
+        [simulator, 'mousedown'],
+        [simulator, 'mouseup'],
+        [simulator, 'mousemove'],
+        [simulator, 'touchstart'],
+        [simulator, 'touchmove'],
+        [simulator, 'touchend'],
+        [simulator, 'touchcancel'],
+        [window,    'orientationchange'],
+      
+      ], function (_, e) { 
+
+        e[0].addEventListener(e[1], self.events[e[1]], false) 
+
+      });
+
+    },
+
+    events: {
+
+      mousedown: function (event) {console.log('HUD.mousedown')},
+      mouseup: function (event) {console.log('HUD.mouseup')},
+      mousemove: function (event) {
+        // console.log('HUD.mousemove')
+      },
+      touchstart: function (event) {console.log('HUD.touchstart')},
+      touchmove: function (event) {console.log('HUD.touchmove')},
+      touchend: function (event) {console.log('HUD.touchend')},
+      orientationchange: function (event) {
+        self.resize();
+        console.log('HUD.orientationchange')
+      },
 
     },
 
@@ -156,7 +188,7 @@ IFC.Hud = (function () {
     },
     step: function () {
 
-      // buttons hit test
+      // buttons hit test for mouse
 
       var mouse = IFC.mouse;
 

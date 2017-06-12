@@ -1,8 +1,8 @@
 # Google App Engine generated folder
 appengine-generated/
 
-stuff.txt
-http-8765.sh
+/stuff.txt
+/http-8765.sh
 
 stuff/
 doc/
@@ -13,7 +13,4 @@ data/*.hdf
 data/*.zip
 
 images/tmp
-
 images/sources
-
-

@@ -30,7 +30,7 @@ var IFC = (function () {
       height:   NaN,
       width:    NaN,
       aspect:   NaN,
-      diameter: NaN,
+      diagonal: NaN,
     },
 
     mouse = {
@@ -142,14 +142,16 @@ var IFC = (function () {
       controller.enabled = true;
         controller.rotateSpeed = 1.0;
         controller.zoomSpeed = 1.4;
-        controller.panSpeed = 0.3;
+        // controller.panSpeed = 0.3;
         controller.noRotate = false;
         controller.noZoom = false;
-        controller.noPan = false;
+        controller.noPan = true;                  // target = scene.position
         controller.staticMoving = false;          // inertia
         controller.dynamicDampingFactor = 0.05;
         controller.minDistance = CFG.minDistance;
         controller.maxDistance = CFG.maxDistance;
+        controller.maxAngle    = 0.04;
+        controller.maxAcceleration = 0.01;
 
       H.each([
 
@@ -179,6 +181,8 @@ var IFC = (function () {
 
       });
 
+      IFC.Hud.activate();
+
     },
     step: function step () {
 
@@ -201,11 +205,13 @@ var IFC = (function () {
         canvas.width    = SCN.renderer.domElement.width;
         canvas.height   = SCN.renderer.domElement.height;
         canvas.aspect   = canvas.width / canvas.height;
-        canvas.diameter = Math.hypot(canvas.width, canvas.height);
+        canvas.diagonal = Math.hypot(canvas.width, canvas.height);
 
         controller && controller.handleResize();
 
         IFC.Hud.resize();
+
+        console.log('IFC.resize', 'w', canvas.width, 'h', canvas.height);
 
       },
       click:   function (event) { 
@@ -312,7 +318,7 @@ var IFC = (function () {
       globe.pixels = canvas.height * fraction;
 
       globe.scan = (
-        globe.pixels > canvas.diameter                              ? 1 : // big
+        globe.pixels > canvas.diagonal                              ? 1 : // big
         globe.pixels > canvas.width || globe.pixels > canvas.height ? 0 : // fits
           -1                                                              // tiny
       );
