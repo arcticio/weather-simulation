@@ -18,7 +18,7 @@ IFC.Hud = (function () {
     camera     = new THREE.OrthographicCamera (0, 0, 100, 100, 1, 10 ),
     scene      = new THREE.Scene(),
     menu       = new THREE.Object3D(),
-    sprites    = [],
+    sprites    = {},
 
     toggled    = false,
 
@@ -29,6 +29,7 @@ IFC.Hud = (function () {
     menu,
     scene,
     camera,
+    sprites,
     
     init: function () {
 
@@ -47,7 +48,9 @@ IFC.Hud = (function () {
       var w2 = SCN.canvas.width  / 2;
       var h2 = SCN.canvas.height / 2;
 
-      H.each(CFG.sprites, (name, cfg) => {
+      H.each(CFG.Sprites, (name, cfg) => {
+
+        // TODO: async
 
         var material = new THREE.SpriteMaterial( {
           map: txloader.load(cfg.material.image, function (texture) {
@@ -77,17 +80,23 @@ IFC.Hud = (function () {
             if (pos.bottom){
               sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
 
+            } else if (pos.center && pos.center === 'x') {
+              sprite.position.set( 0, h2 - pos.top - pos.height / 2 , 1 );
+
             } else {
               sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
 
             }
 
-            if (name === 'hamburger' || name === 'performance') {
+            if (name === 'hamburger' || name === 'performance' || name === 'time') {
               scene.add( sprite );
+
             } else {
-              menu.add( sprite );              
+              menu.add( sprite );     
+
             }
-            sprites.push(sprite);
+
+            sprites[name] = sprite;
 
             if (IFC.Hud[name]) {
               IFC.Hud[name].init(sprite, cfg);
@@ -97,6 +106,8 @@ IFC.Hud = (function () {
         });
 
       });
+
+      // self.resize();
 
     },
     resize: function () {
@@ -110,20 +121,24 @@ IFC.Hud = (function () {
       camera.bottom = - h2;
       camera.updateProjectionMatrix();
 
-      H.each(sprites, (_, sprite) => {
+      H.each(sprites, (name, sprite) => {
 
         var pos = sprite.cfg.position;
 
         if (pos.bottom){
           sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
 
+        } else if (pos.center && pos.center === 'x') {
+          // sprite.position.set( - w2 + 200 + pos.width / 2, -h2 + pos.top + pos.height / 2 , 1 );
+          sprite.position.set( 0, h2 - pos.top - pos.height / 2 , 1 );
+
         } else {
           sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
 
         }
 
-
       });
+
     },
     show: function () {
 
@@ -198,7 +213,7 @@ IFC.Hud = (function () {
 
       mouse.sprite = null;
 
-      H.each(sprites, (_, sprite) => {
+      H.each(sprites, (name, sprite) => {
 
         // TODO: respect pos.bottom
 
@@ -207,6 +222,9 @@ IFC.Hud = (function () {
           y = mouse.py,
           pos = sprite.cfg.position,
           hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
+
+
+        if ( !!sprite.cfg.events.length ){return;}
 
         if (toggled || !toggled && (sprite.name === 'hamburger' || sprite.name === 'performance' )){
 
@@ -310,6 +328,78 @@ IFC.Hud.performance = (function () {
 
 
     },
+  };
+
+
+}());
+
+
+IFC.Hud.time = (function () {
+
+  var 
+    self,
+    sprite,
+    cfg,
+    cvs, ctx, img,
+    texture,
+    width, height,
+    simtime, 
+
+  end;
+
+  return self = {
+    init:  function (mesh, config) {
+
+      sprite = mesh;
+      cfg    = config;
+      cvs    = cfg.canvas;
+      ctx    = cvs.getContext('2d');
+      img    = sprite.material.map.image;
+
+      width  = cfg.position.width;
+      height = cfg.position.height;
+
+      cvs.width  = 256;
+      cvs.height = 128;
+
+      ctx.font = '24px monospace'
+      ctx.fillStyle = '#ffffff';
+      ctx.textBaseline = 'bottom';
+
+      // CanvasTexture( canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy )
+      texture = new THREE.CanvasTexture(cvs);
+
+      sprite.material.map = texture;
+
+      self.render();
+
+    },
+    setSim: function (momSim) {
+      simtime = momSim.clone();
+      self.render();
+    },
+    render: function () {
+
+      var 
+        now = moment().format('YYYY-MM-DD HH:mm:ss'),
+        sim = (simtime || moment.utc()).format('YYYY-MM-DD HH:[00 UTC]');
+
+      if (ctx) {
+
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+        ctx.font = 'bold 20px monospace'
+        ctx.fillText(sim, 4, 24);
+
+        ctx.font = '16px monospace'
+        ctx.fillText(now, 4, 60);
+
+        texture.needsUpdate = true;
+
+      }
+
+    },
+
   };
 
 

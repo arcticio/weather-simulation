@@ -26,11 +26,13 @@ var SIM = (function () {
     sun   = Orb.SolarSystem().Sun(),
 
     time = {
+      iso:   '',
       start: moment.utc('2017-01-01-00', 'YYYY-MM-DD-HH'),
       now:   moment.utc('2017-05-30-12', 'YYYY-MM-DD-HH'),
       show:  moment.utc('2017-09-30-12', 'YYYY-MM-DD-HH'),
-      end:   moment.utc('2017-12-31-00', 'YYYY-MM-DD-HH'),
+      end:   moment.utc('2017-12-31-18', 'YYYY-MM-DD-HH'),
       interval: 365 * 24, 
+      pointer:  NaN,
     },
 
   end;
@@ -49,9 +51,45 @@ var SIM = (function () {
     },
     init: function () {
 
-      var diff = time.now.diff(time.start, 'hours');
+      time.pointer = time.now.diff(time.start, 'hours');
 
-      IFC.controllers['DateTime']['choose'].setValue(diff);
+      IFC.controllers['DateTime']['choose'].setValue(time.pointer);
+
+    },
+    setSimTime: function (val, what) {
+
+      if (typeof val === 'number' && what === undefined) {
+
+        // set hours directly
+        time.show = time.start.clone().add(val, 'hours');
+
+      } else if (typeof val === 'number') {
+
+        // set some delta
+        time.show.add(val, what);
+      
+      } else if (val._isAMomentObject) {
+
+        // have a moment
+        time.show = val.clone();
+
+      } else {
+        console.log('WTF');
+      }
+
+      // time.show = (
+      //   typeof val === 'string' ? time.show.clone().add(~~val, what) : 
+      //   typeof val === 'number' ? time.start.clone().add(val, what) : 
+      //   val._isAMomentObject    ? time.show = val :
+      //     console.log('updateTIme:', val)
+      //   ); 
+
+      time.iso     = time.show.format('YYYY-MM-DD HH');
+      time.pointer = time.now.diff(time.start, 'hours');
+
+      IFC.Hud.time.setSim(time.show);
+
+      self.updateDatetime();
 
     },
     updateDatetime: function (val) {
@@ -62,14 +100,6 @@ var SIM = (function () {
 
       var iso, orbTime, orbSun, sphererical;
 
-      time.show = (
-        typeof val === 'string' ? time.show.clone().add(~~val, 'hours') : 
-        typeof val === 'number' ? time.start.clone().add(val, 'hours') : 
-        val._isAMomentObject    ? time.show = val :
-          console.log('updateTIme:', val)
-        ); 
-
-      iso = time.show.format('YYYY-MM-DD HH');
 
       // console.log('SIM.time.show', time.show.format('YYYY-MM-DD HH:mm:ss'));
 

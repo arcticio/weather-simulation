@@ -17,7 +17,7 @@
 
   // dat.GUI.toggleHide(); // total hide
 
-  H.each(PRESET, (folder, options) => {
+  H.each(CFG.Preset, (folder, options) => {
 
     var defs = {}, fn;
 

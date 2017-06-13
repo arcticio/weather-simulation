@@ -43,6 +43,7 @@ var IFC = (function () {
       intersect:  new THREE.Vector3(0, 0, 0),
       overGlobe:  NaN,
       sprite:     null,
+      wheel:      {x: 0, y:0},
     },
 
     levels  = {
@@ -147,7 +148,8 @@ var IFC = (function () {
         controller.noZoom = false;
         controller.noPan = true;                  // target = scene.position
         controller.staticMoving = false;          // inertia
-        controller.dynamicDampingFactor = 0.05;
+        controller.dynamicDampingFactorRotate = 0.05;
+        controller.dynamicDampingFactorZoom = 0.1;
         controller.minDistance = CFG.minDistance;
         controller.maxDistance = CFG.maxDistance;
         controller.maxAngle    = 0.04;
@@ -162,6 +164,7 @@ var IFC = (function () {
         [simulator, 'mouseover'],
         [simulator, 'mouseleave'],
         [simulator, 'mouseout'],
+        [simulator, 'wheel'],
         [simulator, 'click'],
         [simulator, 'dblclick'],
         [simulator, 'touchstart'],
@@ -248,7 +251,7 @@ var IFC = (function () {
         }
 
         if (mouse.button === 2) {
-          ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2));
+          // ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2));
         }
 
       },
@@ -269,6 +272,36 @@ var IFC = (function () {
         mouse.y  = - ( event.clientY / canvas.height ) * 2 + 1;
 
         // console.log(mouse.px, mouse.py);
+
+      },
+      wheel:   function (event) { 
+
+        var x = 0;
+
+        switch ( event.deltaMode ) {
+
+          case 2:
+            // Zoom in pages
+            x = -event.deltaX * 100; // new
+            break;
+
+          case 1:
+            // Zoom in lines
+            x = -event.deltaX * 10;
+            break;
+
+          default:
+            // undefined, 0, assume pixels
+            x = -event.deltaX * 1;
+            break;
+
+        }
+
+        if (!mouse.overGlobe){
+          mouse.wheel.x += x;
+          console.log('wheel', mouse.wheel.x, x, event.deltaMode);
+          SIM.setSimTime(x*10, 'minutes');
+        }
 
       },
       mouseenter:  function (event) { /* console.log('mouseenter') */ },

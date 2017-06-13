@@ -352,8 +352,10 @@ SIM.Datagram.prototype = {
             yi1   = yi0 + 1,
 
             // remainders
-            dx    = (lon - ~~lon) * rlon,        
-            dy    = (lat - ~~lat) * rlat,
+            // dx    = (lon - ~~lon) * rlon,        
+            // dy    = (lat - ~~lat) * rlat,
+            dx    = (lon - ~~lon) / rlon,        
+            dy    = (lat - ~~lat) / rlat,
 
             val = (
                 plane[ xi0 + (yi0 * xlen) ] * (1 - dx) * (1 - dy) + 

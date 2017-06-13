@@ -22,7 +22,7 @@ var SCN = (function () {
       // alpha:        true,
     }),
 
-    camera        = CFG.objects.perspective.cam,
+    camera        = CFG.Objects.perspective.cam,
     scene         = new THREE.Scene(),
     axes,
 
@@ -109,7 +109,7 @@ var SCN = (function () {
       renderer.shadowMap.enabled = false;
       renderer.autoClear = false; // cause HUD
 
-      camera.position.copy(CFG.objects.perspective.pos);
+      camera.position.copy(CFG.Objects.perspective.pos);
 
       self.resize();
 
@@ -117,7 +117,7 @@ var SCN = (function () {
       console.log(timerange.latest());
 
 
-      H.each(CFG.objects, (name, config) => {
+      H.each(CFG.Objects, (name, config) => {
 
         config.name = name;
 
@@ -248,7 +248,8 @@ var SCN = (function () {
             reset:        (value) => self.reset.controller(),
           },
           DateTime: {
-            choose:       (value) => SIM.updateDatetime(value),
+            // choose:       (value) => SIM.updateDatetime(value),
+            choose:       (value) => SIM.setSimTime(value),
             hourn1:       (value) => SIM.updateDatetime('-1'),
             hour1:        (value) => SIM.updateDatetime('+1'),
             hour24:       (value) => SIM.updateDatetime('+24'),
@@ -347,6 +348,12 @@ var SCN = (function () {
       IFC.Hud.performance.begin();
 
         IFC.step();
+
+        if (!(frame % 60)) {
+          // update now
+          IFC.Hud.time.render();
+        }
+
 
         self.updateBackground();
 

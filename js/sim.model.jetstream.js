@@ -26,7 +26,7 @@ SIM.Model.jetstream = (function () {
 
       var t0 = Date.now(), i, j, u, v, speed, width, lat, lon, color, vec3, latlon, tmp2m,
 
-        multiline, positions, widths, colors, latlonsStart, 
+        multiline, positions, widths, colors, latlonsStart, hsl,
 
         spherical = new THREE.Spherical(),
         length   = cfg.length,
@@ -58,7 +58,9 @@ SIM.Model.jetstream = (function () {
             v = datagramm.vgrdprs.linearXY(0, lat, lon);
 
             speed = Math.hypot(u, v);
-            color = new THREE.Color('hsl(10, 40%, ' +  ~~speed + '%)');
+
+            hsl   = 'hsl(' + cfg.hue + ', 40%, ' +  ~~speed + '%)'
+            color = new THREE.Color(hsl);
 
             width = self.clampScale(speed, 0, 50, 0.5, 2.0);
 
