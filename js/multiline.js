@@ -257,13 +257,13 @@ Multiline.prototype = {
 
     precision mediump float;
 
+    float alpha  = 0.0;
+
+    uniform float section;   // visible segment length
+
     varying vec4  vColor;    // color from attribute, includes uni opacity
     varying float vHead;     // head of line segment
     varying float vCounter;  // current position, goes from 0 to 1 
-
-    uniform float section;   // visible segment length
-    
-    bool  visible = true;    // frag part of segment
 
     void main() {
 
@@ -272,13 +272,18 @@ Multiline.prototype = {
         float tail  = max(0.0, vHead - section);
         float pos   = vCounter;
 
-        visible =  ( pos > tail ) && ( pos < head );  // pos within segment
-        
-        if( !visible ) discard;
+        if ( pos > tail && pos < head ) {
+          alpha = (pos - tail) / section;
 
-        color.a = (pos - tail) / section;
+        } else if ( pos > ( 1.0 - section ) && head < section ) {
+          alpha = ( pos - section - head ) / section; 
 
-        gl_FragColor = color;
+        } else {
+          discard;
+
+        }
+
+        gl_FragColor = vec4( color.rgb, alpha * color.a );
 
     } 
 
@@ -342,23 +347,35 @@ Multiline.line.prototype = {
 
   init:  function( vertices, colors, widths ) {
 
-    var j, ver, cou, col;
+    var j, ver, cnt, col, n, l = this.length;
 
-    for( j = 0; j < this.length; j++ ) {
+    for( j = 0; j < l; j++ ) {
 
       ver = vertices[ j ];
       col = colors[ j ];
       wid = widths[ j ];
-      cou = j / vertices.length;
+      cnt = j / vertices.length;
 
       this.positions.push( ver.x, ver.y, ver.z );
       this.positions.push( ver.x, ver.y, ver.z );
-      this.lineIndex.push(this.idx + cou);
-      this.lineIndex.push(this.idx + cou);
+      this.lineIndex.push(this.idx + cnt);
+      this.lineIndex.push(this.idx + cnt);
       this.colors.push(col.r, col.g, col.b);
       this.colors.push(col.r, col.g, col.b);
       this.widths.push(wid);
       this.widths.push(wid);
+
+      this.side.push(  1 );
+      this.side.push( -1 );
+      this.uvs.push( j / ( l - 1 ), 0 );
+      this.uvs.push( j / ( l - 1 ), 1 );
+
+    }
+
+    for( j = 0; j < l - 1; j++ ) {
+      n = j + j;
+      this.indices.push( n,     n + 1, n + 2 );
+      this.indices.push( n + 2, n + 1, n + 3 );
     }
 
   },
@@ -367,19 +384,7 @@ Multiline.line.prototype = {
 
     var j, c, v, n, w, l = this.positions.length / 6;
 
-    for( j = 0; j < l; j++ ) {
-      this.side.push(  1 );
-      this.side.push( -1 );
-      this.uvs.push( j / ( l - 1 ), 0 );
-      this.uvs.push( j / ( l - 1 ), 1 );
-    }
-
-    if( this.compareV3( 0, l - 1 ) ){
-      v = this.copyV3( l - 2 );
-    } else {
-      v = this.copyV3( 0 );
-    }
-
+    v = this.compareV3( 0, l - 1 ) ? this.copyV3( l - 2 ) : this.copyV3( 0 ) ;
     this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
     this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
 
@@ -395,22 +400,10 @@ Multiline.line.prototype = {
       this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
     }
 
-    if( this.compareV3( l - 1, 0 ) ){
-      v = this.copyV3( 1 );
-    } else {
-      v = this.copyV3( l - 1 );
-    }
-
+    v = this.compareV3( l - 1, 0 ) ? this.copyV3( 1 ) : this.copyV3( l - 1 ) ;
     this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
     this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
-
-    for( j = 0; j < l - 1; j++ ) {
-      n = j + j;
-      this.indices.push( n,     n + 1, n + 2 );
-      this.indices.push( n + 2, n + 1, n + 3 );
-    }
 
   },
-
 
 };

@@ -1,0 +1,13 @@
+application: ice-sim
+version: alpha
+runtime: python
+api_version: 1
+
+handlers:
+
+# site root
+- url: /
+  static_files: index.html
+  upload: index.html
+  
+

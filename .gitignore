@@ -1,5 +1,6 @@
 # Google App Engine generated folder
 appengine-generated/
+google_appengine/
 
 /stuff.txt
 /http-8765.sh

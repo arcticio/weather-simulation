@@ -177,14 +177,54 @@ IFC.Hud = (function () {
         // console.log('HUD.mousedown')
       },
       mouseup: function (event) {
+
+        if (IFC.mouse.sprite){IFC.mouse.sprite.click();}
+
         // console.log('HUD.mouseup')
       },
       mousemove: function (event) {
         // console.log('HUD.mousemove')
       },
-      touchstart: function (event) {console.log('HUD.touchstart')},
+      touchstart: function (event) {
+
+        var x, y;
+
+        console.log('HUD.touchstart')
+
+        switch ( event.touches.length ) {
+
+          case 1:
+            x = event.touches[ 0 ].pageX;
+            y = event.touches[ 0 ].pageY;
+
+
+          case 2:
+          break;
+          
+          case 3:
+          break;
+
+        }
+
+        IFC.touch.x = x;
+        IFC.touch.y = y;
+
+        self.hitTest(x, y);
+
+        console.log('touchstart', x, y)
+
+
+      },
       touchmove: function (event) {console.log('HUD.touchmove')},
-      touchend: function (event) {console.log('HUD.touchend')},
+      touchend: function (event) {
+
+        IFC.touch.x = NaN;
+        IFC.touch.y = NaN;
+
+        console.log('HUD.touchend')
+
+      },
+
       orientationchange: function (event) {
         self.resize();
         console.log('HUD.orientationchange')
@@ -203,6 +243,48 @@ IFC.Hud = (function () {
         ANI.insert(0, ANI.library.menu.toggle(-100, 200));
 
       }
+
+    },
+    hitTest: function (xTest, y) {
+
+      var 
+        xOff = IFC.Hud.menu.position.x,
+        x = xOff + xTest,
+        element = null;
+
+      H.each(sprites, (name, sprite) => {
+
+        // TODO: respect pos.bottom
+
+        var 
+          pos = sprite.cfg.position,
+          hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
+
+        if ( sprite.cfg.events.length ){
+
+          if ( hit ) {
+
+            if (!sprite.hit) {
+              sprite.onmouseenter();
+              sprite.hit = true;
+            }
+
+            IFC.touch.sprite = sprite;
+
+            console.log('HIT', sprite.name);
+
+          } else {
+
+            if (sprite.hit) {
+              sprite.onmouseleft();
+              sprite.hit = false;
+            }
+
+          }
+
+        }
+
+      });
 
     },
     step: function () {
@@ -224,7 +306,7 @@ IFC.Hud = (function () {
           hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
 
 
-        if ( !!sprite.cfg.events.length ){return;}
+        if ( !sprite.cfg.events.length ){return;}
 
         if (toggled || !toggled && (sprite.name === 'hamburger' || sprite.name === 'performance' )){
 

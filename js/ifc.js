@@ -46,6 +46,16 @@ var IFC = (function () {
       wheel:      {x: 0, y:0},
     },
 
+    touch = {
+      x:          NaN, 
+      y:          NaN, 
+      px:         NaN, 
+      py:         NaN, 
+      down:       false, 
+      buttons:    NaN,
+      sprite:     null,
+    },
+
     levels  = {
       '8':  1.2,
       '7':  1.4,
@@ -98,6 +108,7 @@ var IFC = (function () {
     stats,
     mouse,
     globe,
+    touch,
     raycaster,
     controllers,
     controller,
@@ -260,7 +271,7 @@ var IFC = (function () {
         mouse.down = false;
         mouse.button = NaN;
 
-        if (mouse.sprite){mouse.sprite.click();}
+        // if (mouse.sprite){mouse.sprite.click();}
 
       },
       mousemove:   function (event) { 
