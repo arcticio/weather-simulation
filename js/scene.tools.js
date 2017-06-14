@@ -8,15 +8,72 @@ SCN.tools = {
   },
   background: function (cfg) {
 
-    // PlaneBufferGeometry(width, height, widthSegments, heightSegments)
+    var
+      geometry = new THREE.PlaneBufferGeometry( 1, 1, 1, 1),
+      vertexShader = `
 
-    var geometry = new THREE.PlaneBufferGeometry( 1, 1, 1, 1);
-    var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.FrontSide} );
-    var plane    = new THREE.Mesh( geometry, material );
+        attribute vec3 colors;
+        varying   vec2 vUv;  
+        varying   vec3 vColor;  
 
-    material.vertexColors = THREE.VertexColors;
+        void main() {
+          vUv         = uv;
+          vColor      = colors;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        }
+      `,
+      fragmentShader = `
+
+        varying vec3 vColor;  
+
+        uniform float opacity;
+
+        void main() {
+          gl_FragColor = vec4(vColor, opacity);
+        }
+      `,
+      material = new THREE.ShaderMaterial( {
+        fragmentShader,
+        vertexShader,
+        side: THREE.FrontSide,
+        transparent: true,
+        vertexColors: THREE.VertexColors,
+        uniforms: {
+          opacity: {type: 'f', value: 0.8}
+        }
+      }),
+      plane = new THREE.Mesh( geometry, material )
+    ;
+
+    function updateColors(colors) {
+
+      // 0, 1
+      // 2, 3
+
+      var pointer = 0, target = geometry.attributes.colors.array;
+
+      colors.forEach( (col) => {
+
+        target[pointer + 0] = col.r;
+        target[pointer + 1] = col.g;
+        target[pointer + 2] = col.b;
+
+        pointer += 3;
+
+      });
+
+      geometry.attributes.colors.needsUpdate = true;
+
+    }
+
+    geometry.addAttribute( 'colors', new THREE.BufferAttribute( new Float32Array( 12 ), 3 ));
+
+    updateColors(cfg.colors);
+
+    plane.updateColors = updateColors;
 
     return plane;
+
 
   },
   population: function (cfg) {

@@ -248,14 +248,15 @@ var SCN = (function () {
             reset:        (value) => self.reset.controller(),
           },
           DateTime: {
-            // choose:       (value) => SIM.updateDatetime(value),
             choose:       (value) => SIM.setSimTime(value),
-            hourn1:       (value) => SIM.updateDatetime('-1'),
-            hour1:        (value) => SIM.updateDatetime('+1'),
-            hour24:       (value) => SIM.updateDatetime('+24'),
-            hourn24:      (value) => SIM.updateDatetime('-24'),
-            day30:        (value) => SIM.updateDatetime('+' + 24*30),
-            dayn30:       (value) => SIM.updateDatetime('-' + 24*30),
+            'hour  +1':   (value) => SIM.setSimTime(  1, 'hours'),
+            'hour  -1':   (value) => SIM.setSimTime( -1, 'hours'),
+            'hour  +6':   (value) => SIM.setSimTime(  4, 'hours'),
+            'hour  -6':   (value) => SIM.setSimTime( -4, 'hours'),
+            'hour +24':   (value) => SIM.setSimTime( 24, 'hours'),
+            'hour -24':   (value) => SIM.setSimTime(-24, 'hours'),
+            'day  +30':   (value) => SIM.setSimTime( 30, 'days'),
+            'day  -30':   (value) => SIM.setSimTime(-30, 'days'),
           },
           Extras: {
             Axes:         (value) => self.toggle(objects.axes, value),
@@ -325,7 +326,7 @@ var SCN = (function () {
       SCN.objects.spot.visible       && SCN.objects.spot.position.copy(sunVector).multiplyScalar(10);
       SCN.objects.sun.visible        && SCN.objects.sun.position.copy(sunVector).multiplyScalar(10);
       SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(sunVector);
-      
+
     },
     updateBackground: function () {
 

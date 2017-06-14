@@ -5,7 +5,7 @@ CFG.Objects = {
     type: 'camera',
     cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
     // pos:             new THREE.Vector3(4, 0, 0),                // Äq
-    pos:             new THREE.Vector3().add({x: 1.055, y: 1.111, z: 1.144}),
+    pos:             new THREE.Vector3().add({x: 2.555, y: 1.111, z: 1.144}),
   },
 
   ambient: {
@@ -62,10 +62,10 @@ CFG.Objects = {
     type:         'mesh-calculate',
     size:         4.0,
     colors: [
-      new THREE.Color(0xff0000),
-      new THREE.Color(0x00ff00),
-      new THREE.Color(0x0000ff),
-      new THREE.Color(0xff00ff),
+      new THREE.Color(0x666666),
+      new THREE.Color(0x666666),
+      new THREE.Color(0x222222),
+      new THREE.Color(0x222222),
     ]
   },
 

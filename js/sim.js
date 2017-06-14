@@ -59,6 +59,10 @@ var SIM = (function () {
         // set hours directly
         time.show = time.start.clone().add(val, 'hours');
 
+      } else if (typeof val === 'number' && typeof what in ['hours', 'days']) {
+        time.show = time.start.clone().add(val, what);
+
+
       } else if (typeof val === 'number') {
 
         // set some delta
