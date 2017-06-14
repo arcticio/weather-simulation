@@ -59,9 +59,10 @@ var SIM = (function () {
         // set hours directly
         time.show = time.start.clone().add(val, 'hours');
 
-      } else if (typeof val === 'number' && typeof what in ['hours', 'days']) {
-        time.show = time.start.clone().add(val, what);
+      } else if (typeof val === 'number' && what in ['hours', 'days']) {
 
+        // add/sub some diff
+        time.show = time.start.clone().add(val, what);
 
       } else if (typeof val === 'number') {
 
@@ -93,9 +94,9 @@ var SIM = (function () {
 
       var hours = time.show.hours() % 6;
 
-      time.model = time.show.clone().hours(hours);
+      time.model = time.show.clone().hours(-time.show.hours()).hours(hours);
 
-      console.log(time.model.format('YYYY-MM-DD HH:mm'));
+      console.log(time.model.format('YYYY-MM-DD HH:mm'), hours);
 
 
     },
