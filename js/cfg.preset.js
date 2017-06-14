@@ -13,20 +13,20 @@ CFG.Preset = {
   },
 
   Ambient: { isFolder: true,
-    toggle:       true,
+    toggle:       CFG.Objects.ambient.visible,
     intensity:    {val: CFG.Objects.ambient.intensity, min: 0, max: 1},
     color:        '#ffffff'
   },
 
   Spot: { isFolder: true,
-    toggle:       true,
+    toggle:       CFG.Objects.spot.visible,
     angle:        {val: 0.26, min: 0, max: 0.5},
     intensity:    {val: CFG.Objects.spot.intensity, min: 0, max: 1},
     color:        '#ffffff'
   },
 
   Sun: { isFolder: true,
-    toggle:       true,
+    toggle:       CFG.Objects.sun.visible,
     intensity:    {val: CFG.Objects.sun.intensity, min: 0, max: 1},
     skycolor:     CFG.Objects.sun.skycolor,
     grdcolor:     CFG.Objects.sun.grdcolor,

@@ -30,7 +30,7 @@ CFG.Objects = {
   },
 
   sun: {
-    visible:      false,
+    visible:      true,
     type:         'light',
     skycolor:     0xffddaa, // reddish
     grdcolor:     0x8989c3, // blueish
@@ -256,9 +256,9 @@ CFG.Objects = {
     amount:    512,
     sim: {
       data: [
-        'data/gfs/tmp2m/2017-06-13-12.tmp2m.05.dods',
-        'data/gfs/ugrd10m/2017-06-13-12.ugrd10m.05.dods',
-        'data/gfs/vgrd10m/2017-06-13-12.vgrd10m.05.dods',
+        'data/gfs/tmp2m/2017-06-13-12.tmp2m.10.dods',
+        'data/gfs/ugrd10m/2017-06-13-12.ugrd10m.10.dods',
+        'data/gfs/vgrd10m/2017-06-13-12.vgrd10m.10.dods',
       ],
       sectors: [
         [ 89.9, -180,  45.0,  180 ], // top
@@ -311,7 +311,7 @@ CFG.Objects = {
     size:     4.0,
     sim: {
       data: [
-        'data/gfs/tcdcclm/2017-06-13-12.tcdcclm.05.dods',
+        'data/gfs/tcdcclm/2017-06-13-12.tcdcclm.10.dods',
       ],
       sectors: [
         [ 89.9, -180,  -89.9,  180 ], // all

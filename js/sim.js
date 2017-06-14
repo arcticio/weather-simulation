@@ -15,23 +15,19 @@ var SIM = (function () {
     image  = $$('.panel.image')[0],
 
     datagramm = {},
-    models = {},
+    models    = {},
     
+    coordsPool     = new CoordsPool(100000).generate(),
+
     sunVector      = new THREE.Vector3(),
     sunSphererical = new THREE.Spherical(4, 0, -Math.PI / 2),
-
-
-    coordsPool = new CoordsPool(100000).generate(),
-
-    image,
-
-    sun   = Orb.SolarSystem().Sun(),
+    sun            = Orb.SolarSystem().Sun(),
 
     time = {
       iso:   '',
       start: moment.utc('2017-01-01-00', 'YYYY-MM-DD-HH'),
-      now:   moment.utc('2017-05-30-12', 'YYYY-MM-DD-HH'),
-      show:  moment.utc('2017-09-30-12', 'YYYY-MM-DD-HH'),
+      now:   moment.utc(),
+      show:  moment.utc('2017-06-13-12', 'YYYY-MM-DD-HH'),
       end:   moment.utc('2017-12-31-18', 'YYYY-MM-DD-HH'),
       model: null,
       interval: 365 * 24, 
