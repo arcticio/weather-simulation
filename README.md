@@ -20,8 +20,7 @@ Renders current weather parameters onto a 3D sphere
   * PIOMAS, SIT
 
 ## Current Shot
-
-[!https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-14-21-11-30.png](Screenshot)
+![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-14-21-11-30.png)
 
 Showing jetstream at 300hpa.
 
