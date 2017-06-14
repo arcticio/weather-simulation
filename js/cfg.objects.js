@@ -287,8 +287,10 @@ CFG.Objects = {
     hue:       220,
     sim: {
       data: [
-        'data/gfs/2017-05-30-12.ugrdprs.10.dods',
-        'data/gfs/2017-05-30-12.vgrdprs.10.dods',
+        // 'data/gfs/2017-05-30-12.ugrdprs.10.dods',
+        // 'data/gfs/2017-05-30-12.vgrdprs.10.dods',
+        'data/gfs/DATETIME.ugrdprs.10.dods',
+        'data/gfs/DATETIME.vgrdprs.10.dods',
       ],
       sectors: [
         [ 89.9, -180,  45.0,  180 ], // top

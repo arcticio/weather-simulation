@@ -287,26 +287,15 @@ var IFC = (function () {
       },
       wheel:   function (event) { 
 
-        var x = 0;
+        var 
+          x = 0,
+          deltamode = {
+            '0': () => -event.deltaX * 1,
+            '1': () => -event.deltaX * 10,
+            '2': () => -event.deltaX * 100,
+          };
 
-        switch ( event.deltaMode ) {
-
-          case 2:
-            // Zoom in pages
-            x = -event.deltaX * 100; // new
-            break;
-
-          case 1:
-            // Zoom in lines
-            x = -event.deltaX * 10;
-            break;
-
-          default:
-            // undefined, 0, assume pixels
-            x = -event.deltaX * 1;
-            break;
-
-        }
+        x += deltamode[event.deltaMode]();
 
         if (!mouse.overGlobe){
           mouse.wheel.x += x;

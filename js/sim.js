@@ -17,7 +17,9 @@ var SIM = (function () {
     datagramm = {},
     models = {},
     
-    vectorSun = new THREE.Vector3(),
+    sunVector      = new THREE.Vector3(),
+    sunSphererical = new THREE.Spherical(4, 0, -Math.PI / 2),
+
 
     coordsPool = new CoordsPool(100000).generate(),
 
@@ -31,6 +33,7 @@ var SIM = (function () {
       now:   moment.utc('2017-05-30-12', 'YYYY-MM-DD-HH'),
       show:  moment.utc('2017-09-30-12', 'YYYY-MM-DD-HH'),
       end:   moment.utc('2017-12-31-18', 'YYYY-MM-DD-HH'),
+      model: null,
       interval: 365 * 24, 
       pointer:  NaN,
     },
@@ -38,17 +41,13 @@ var SIM = (function () {
   end;
 
 
-  return {
+  return self = {
 
     time,
-    vectorSun,
-    coordsPool,
     models,
     datagramm,
+    coordsPool,
 
-    boot: function () {
-      return self = this;
-    },
     init: function () {
 
       time.pointer = time.now.diff(time.start, 'hours');
@@ -75,53 +74,51 @@ var SIM = (function () {
 
       } else {
         console.log('WTF');
-      }
 
-      // time.show = (
-      //   typeof val === 'string' ? time.show.clone().add(~~val, what) : 
-      //   typeof val === 'number' ? time.start.clone().add(val, what) : 
-      //   val._isAMomentObject    ? time.show = val :
-      //     console.log('updateTIme:', val)
-      //   ); 
+      }
 
       time.iso     = time.show.format('YYYY-MM-DD HH');
       time.pointer = time.now.diff(time.start, 'hours');
 
       IFC.Hud.time.setSim(time.show);
 
-      self.updateDatetime();
+      IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
+
+      self.updateSun();
+      self.updateModels();
 
     },
-    updateDatetime: function (val) {
+    updateModels: function () {
+
+      var hours = time.show.hours() % 6;
+
+      time.model = time.show.clone().hours(hours);
+
+      console.log(time.model.format('YYYY-MM-DD HH:mm'));
+
+
+    },
+    updateSun: function (val) {
 
       // TODO: adjust for ra
       // https://www.timeanddate.com/scripts/sunmap.php?iso=20170527T1200
       // image && (image.src = '//www.timeanddate.com/scripts/sunmap.php?iso=' + time.show.format('YYYYMMDD[T]HHmm'));
 
-      var iso, orbTime, orbSun, sphererical;
-
-
-      // console.log('SIM.time.show', time.show.format('YYYY-MM-DD HH:mm:ss'));
+      var orbTime, orbSun;
 
       // query sun by time
       orbTime = new Orb.Time(time.show.toDate());
       orbSun  = sun.position.equatorial(orbTime);
 
-      //  Spherical(                      radius, phi, theta )
-      sphererical = new THREE.Spherical(4, 0, -Math.PI / 2);
-      sphererical.phi    -= orbSun.dec * Math.PI / 180;             // raise sun
-      sphererical.phi    += Math.PI / 2;                            // change coord system
-      sphererical.theta  -= ( time.show.hour() * (Math.PI / 12) ) ; // rot by planet
+      //  Spherical( radius, phi, theta )
+      sunSphererical.set(4, 0, -Math.PI / 2);
+      sunSphererical.phi    -= orbSun.dec * Math.PI / 180;             // raise sun
+      sunSphererical.phi    += Math.PI / 2;                            // change coord system
+      sunSphererical.theta  -= ( time.show.hour() * (Math.PI / 12) ) ; // rot by planet
 
       // updates
-      vectorSun.setFromSpherical(sphererical).normalize();
-      SCN.objects.spot.visible       && SCN.objects.spot.position.copy(vectorSun).multiplyScalar(10);
-      SCN.objects.sun.visible        && SCN.objects.sun.position.copy(vectorSun).multiplyScalar(10);
-      SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(vectorSun);
-
-      IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
-
-      // console.log(iso, 'dec', posSun.dec, 'ra', posSun.ra);
+      sunVector.setFromSpherical(sunSphererical).normalize();
+      SCN.updateSun(sunVector);
 
     },
     load: function (name, cfg, callback) {
@@ -169,47 +166,15 @@ var SIM = (function () {
     },
     step: function () {
 
-      H.each(models, (name, model) => model.step() )
+      H.each(models, (name, model) => model.step() );
 
       frame += 1;
 
     },
-    start: function () {},
-    stop: function () {},
-    pause: function () {},
-    activate: function () {
-    },
-    resize: function () {
-    },
-    Pool: function (sector, ) {
-
-      //  1     256
-      //  4    1024
-      // 16    4096
-      // 64   16384
-      //    + =====
-      // 85   21760
-
-
-
-      // if only 1 pool visible exannd
-
-      // toggle() , adds/subs self to/from scene
-
-      // sector[4],
-      // coords[n],
-      // meshlines[n], // max length 
-      // isInView(),
-      // deepness {0, }, // one sec to full
-
-      // expand(), shrink(),
-
-    },
-
 
   };
 
-}()).boot();
+}());
 
 
 

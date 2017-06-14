@@ -320,6 +320,13 @@ var SCN = (function () {
       }, null, 2));
 
     },
+    updateSun: function (sunVector) {
+
+      SCN.objects.spot.visible       && SCN.objects.spot.position.copy(sunVector).multiplyScalar(10);
+      SCN.objects.sun.visible        && SCN.objects.sun.position.copy(sunVector).multiplyScalar(10);
+      SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(sunVector);
+      
+    },
     updateBackground: function () {
 
       // TODO: make globe scale independent from scene + vertex colors for gradient
