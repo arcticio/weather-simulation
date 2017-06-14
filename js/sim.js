@@ -55,6 +55,7 @@ var SIM = (function () {
       IFC.controllers['DateTime']['choose'].setValue(time.pointer);
 
     },
+    activate: function () {},
     setSimTime: function (val, what) {
 
       if (typeof val === 'number' && what === undefined) {

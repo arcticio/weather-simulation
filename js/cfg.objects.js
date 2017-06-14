@@ -256,10 +256,9 @@ CFG.Objects = {
     amount:    512,
     sim: {
       data: [
-        'data/gfs/permanent.landsfc.05.dods',
-        'data/gfs/2017-05-30-12.tmp2m.05.dods',
-        'data/gfs/2017-05-30-12.ugrd10m.05.dods',
-        'data/gfs/2017-05-30-12.vgrd10m.05.dods',
+        'data/gfs/tmp2m/2017-06-13-12.tmp2m.05.dods',
+        'data/gfs/ugrd10m/2017-06-13-12.ugrd10m.05.dods',
+        'data/gfs/vgrd10m/2017-06-13-12.vgrd10m.05.dods',
       ],
       sectors: [
         [ 89.9, -180,  45.0,  180 ], // top
@@ -287,10 +286,10 @@ CFG.Objects = {
     hue:       220,
     sim: {
       data: [
-        // 'data/gfs/2017-05-30-12.ugrdprs.10.dods',
-        // 'data/gfs/2017-05-30-12.vgrdprs.10.dods',
-        'data/gfs/DATETIME.ugrdprs.10.dods',
-        'data/gfs/DATETIME.vgrdprs.10.dods',
+        'data/gfs/ugrdprs/2017-06-13-12.ugrdprs.10.dods',
+        'data/gfs/vgrdprs/2017-06-13-12.vgrdprs.10.dods',
+        // 'data/gfs/DATETIME.ugrdprs.10.dods',
+        // 'data/gfs/DATETIME.vgrdprs.10.dods',
       ],
       sectors: [
         [ 89.9, -180,  45.0,  180 ], // top
@@ -312,7 +311,7 @@ CFG.Objects = {
     size:     4.0,
     sim: {
       data: [
-        'data/gfs/2017-05-30-12.tcdcclm.05.dods',
+        'data/gfs/tcdcclm/2017-06-13-12.tcdcclm.05.dods',
       ],
       sectors: [
         [ 89.9, -180,  -89.9,  180 ], // all
