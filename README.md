@@ -19,6 +19,12 @@ Renders current weather parameters onto a 3D sphere
   * UNI Bremen, AMSR2, SIC
   * PIOMAS, SIT
 
+## Current Shot
+
+[!https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-14-21-11-30.png](Screenshot)
+
+Showing jetstream at 300hpa.
+
 ## Purpose
 
   There is a myriad of weather and climate data describing the physical parameters this planet describing now, in the past and in the near or far future. Only a subset is actually useful for the general public. Temperature at 2 meters, wind at 10 meters, sea surface level are examples to plan ahead. An astonishing amount of these data sets are in the public domain or otherwise available without a commercial handshake. 
