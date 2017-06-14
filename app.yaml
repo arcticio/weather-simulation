@@ -1,13 +1,118 @@
 application: ice-sim
 version: alpha
-runtime: python
+runtime: python27
 api_version: 1
+threadsafe: yes
+
+builtins:
+- remote_api: on
 
 handlers:
+
+## DOCS
+## https://stackoverflow.com/questions/20425364/could-not-guess-mimetype
 
 # site root
 - url: /
   static_files: index.html
   upload: index.html
-  
 
+# timeranges ### TEMPORARY ###
+- url: /timeranges.js
+  static_files: timeranges.js
+  upload: timeranges.js
+
+## FAVICON
+- url: /favicon\.ico
+  static_files: images/favicon.ico
+  upload: images/favicon\.ico
+
+## JSON / GEOJSON
+- url: /data/json/(.*\.json)
+  static_files: data/json/\1
+  upload: data/json/(.*\.json)
+  mime_type: text/plain
+  expiration: "1d"
+
+- url: /data/json/(.*\.geojson)
+  static_files: data/json/\1
+  upload: data/json/(.*\.geojson)
+  mime_type: text/plain
+  expiration: "1d"
+
+## DODS
+- url: /data/gfs/(.*\.dods)
+  static_files: data/gfs/\1
+  upload: data/gfs/(.*\.dods)
+  mime_type: text/plain
+  expiration: "1h"
+
+## DATA
+- url: /data
+  static_dir: data
+  expiration: "1d"
+
+## IMAGES
+- url: /images
+  static_dir: images
+  expiration: "1d"
+
+## JS
+- url: /js
+  static_dir: js
+  expiration: "1d"
+
+## LIBS
+- url: /libs
+  static_dir: libs
+  expiration: "1d"
+
+## CSS
+- url: /css
+  static_dir: css
+  expiration: "1d"
+
+
+## IGNORE
+skip_files: |
+ ^(.*/)?(
+ (#.*#)|
+ (.*~)|
+ (.*\.bat)|
+ (.*\.xcf)|
+ (.*\.rar)|
+ (.*\.zip)|
+ (.*\.gz)|
+ (.*\.py[co])|
+ (.*/RCS/.*)|
+ (\..*)|
+ (dev/.*)|
+ (static/debug/.*)|
+ (static/stuff/.*)|
+ (templates/debug/.*)|
+ (tests/.*)|
+ (docs/.*)|
+ (.*\.markdown)|
+ (license\.txt)|
+ (Makefile)|
+ (datastore)|
+ (stuff)|
+ (org)|
+ (setup.py)|
+
+ (node_modules/.*)|
+ (stuff/.*)|
+ (doc/.*)|
+
+ (LICENSE)|
+ (http-8765.sh)|
+ (stuff.txt)|
+ (.eslintrc)|
+ (README.md)|
+ (npm-debug.log)|
+ (package.json)|
+ (.gitignore)|
+ (upload.sh)|
+ (.git)
+ 
+ )$
