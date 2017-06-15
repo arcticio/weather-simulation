@@ -13,13 +13,11 @@ Renders current weather parameters onto a 3D sphere
 ## Data Sources (+ planned)
   
   * [Greenland and Antarctic ice sheet topography](https://doi.pangaea.de/10.1594/PANGAEA.856844)
-  * [Global Forecast System (GFS)](https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-forcast-system-gfs)
-  * GFS (model: wind10m, tmp2m)
-  * GIBS (sea ice conc., sea surface temperature)
-  * Cryosat Antartic DEM
-  * High Resolution Ice Shelf
-  * UNI Bremen, AMSR2, SIC
-  * PIOMAS, SIT
+  * [Global Forecast System (GFS), wind10m, tmp2m, jetstream](https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-forcast-system-gfs)
+  * [Global Imagery Browse Services, GIBS (sea ice conc., sea surface temperature)](https://earthdata.nasa.gov/about/science-system-description/eosdis-components/global-imagery-browse-services-gibs)
+  * [Cryosat Antartic DEM](http://www.cpom.ucl.ac.uk/csopr/icesheets2/)
+  * [UNI Bremen, AMSR2, SIC](https://seaice.uni-bremen.de/sea-ice-concentration/)
+  * [Polar Science Center, PIOMAS, SIT](http://psc.apl.uw.edu/research/projects/arctic-sea-ice-volume-anomaly/)
 
 ## Current Shot
 ![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-14-21-11-30.png)
