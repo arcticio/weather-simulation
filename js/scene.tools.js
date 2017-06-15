@@ -54,11 +54,9 @@ SCN.tools = {
 
       colors.forEach( (col) => {
 
-        target[pointer + 0] = col.r;
-        target[pointer + 1] = col.g;
-        target[pointer + 2] = col.b;
-
-        pointer += 3;
+        target[pointer++] = col.r;
+        target[pointer++] = col.g;
+        target[pointer++] = col.b;
 
       });
 

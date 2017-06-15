@@ -18,5 +18,6 @@ data/*.zip
 
 images/tmp
 images/sources
+images/.ipynb_checkpoints
 
 ## git rm --cached FILENAME

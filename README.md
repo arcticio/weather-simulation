@@ -11,7 +11,9 @@ Renders current weather parameters onto a 3D sphere
   * https://github.com/qkevinto/planetarium/blob/master/app/js/app.js
 
 ## Data Sources (+ planned)
-
+  
+  * [Greenland and Antarctic ice sheet topography](https://doi.pangaea.de/10.1594/PANGAEA.856844)
+  * [Global Forecast System (GFS)](https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-forcast-system-gfs)
   * GFS (model: wind10m, tmp2m)
   * GIBS (sea ice conc., sea surface temperature)
   * Cryosat Antartic DEM
