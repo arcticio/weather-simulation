@@ -7,15 +7,15 @@ var SIM = (function () {
     renderer,
     camera,
 
-    frame = 0,
+    frame          = 0,
     sim,
 
-    $$ = document.querySelectorAll.bind(document),
+    $$             = document.querySelectorAll.bind(document),
 
-    image  = $$('.panel.image')[0],
+    image          = $$('.panel.image')[0],
 
-    datagramm = {},
-    models    = {},
+    datagramm      = {},
+    models         = {},
     
     coordsPool     = new CoordsPool(100000).generate(),
 
@@ -23,15 +23,17 @@ var SIM = (function () {
     sunSphererical = new THREE.Spherical(4, 0, -Math.PI / 2),
     sun            = Orb.SolarSystem().Sun(),
 
+    timerange      = new TimeRange(),
+
     time = {
-      iso:   '',
-      start: moment.utc('2017-01-01-00', 'YYYY-MM-DD-HH'),
-      now:   moment.utc(),
-      show:  moment.utc('2017-06-13-12', 'YYYY-MM-DD-HH'),
-      end:   moment.utc('2017-12-31-18', 'YYYY-MM-DD-HH'),
-      model: null,
-      interval: 365 * 24, 
-      pointer:  NaN,
+      iso:         '',
+      start:       moment.utc('2017-01-01-00', 'YYYY-MM-DD-HH'),
+      now:         moment.utc(),
+      show:        moment.utc('2017-06-13-12', 'YYYY-MM-DD-HH'),
+      end:         moment.utc('2017-12-31-18', 'YYYY-MM-DD-HH'),
+      model:       null,
+      interval:    365 * 24, 
+      pointer:     NaN,
     },
 
   end;
@@ -43,15 +45,21 @@ var SIM = (function () {
     models,
     datagramm,
     coordsPool,
+    timerange,
 
     init: function () {
 
       time.pointer = time.now.diff(time.start, 'hours');
+      timerange.push(dataTimeRanges['3d-simulation'][0]);
+
+      TIM.step('SIM.timerange', timerange.latest());
+
+    },
+    activate: function () {
 
       IFC.controllers['DateTime']['choose'].setValue(time.pointer);
 
     },
-    activate: function () {},
     setSimTime: function (val, what) {
 
       if (typeof val === 'number' && what === undefined) {
@@ -97,7 +105,6 @@ var SIM = (function () {
       time.model = time.show.clone().hours(-time.show.hours()).hours(hours);
 
       console.log(time.model.format('YYYY-MM-DD HH:mm'), hours);
-
 
     },
     updateSun: function (val) {

@@ -13,7 +13,7 @@ var ANI = (function () {
     end;
 
 
-  return {
+  return self = {
 
     status,
 
@@ -343,7 +343,7 @@ var ANI = (function () {
 
   };
 
-}()).boot();
+}());
 
 
 /*

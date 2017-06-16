@@ -17,8 +17,9 @@
 
         return {
           now: now,
-          step: function(key, com){
-            console.log (pad(key), '-', now() + 's', (com) ? com : '-');
+          step: function( /* */ ){
+            var args = [].slice.call(arguments);
+            console.log (pad(args[0]), '-', now() + 's', ...args.slice(1));
           }
         };
         
@@ -260,8 +261,6 @@
 
   <script type="text/javascript">
     
-    console.log( 'devicePixelRatio', devicePixelRatio);
-
     Orb.Time = Orb.Core.Time;
     Orb.Tool = Orb.Core.Tool;
 
@@ -270,24 +269,19 @@
       TIM.step('WIN.load.in');
 
       RES.init();
-      SCN.init();
       IFC.init();
       ANI.init();
       SIM.init();
 
-      RES.activate();
-      SCN.activate();
-      IFC.activate(); 
-      ANI.activate();
-      SIM.activate();
+      SCN.init(function () {
 
-      SCN.render();
+        IFC.activate(); 
+        SCN.render();
+        IFC.show();
 
-      IFC.show();
+        TIM.step('WIN.load.out');
 
-      TIM.step('WIN.load.out');
-
-      setTimeout(SCN.logInfo, 2000);
+      });
 
     }
 

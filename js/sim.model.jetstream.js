@@ -24,23 +24,22 @@ SIM.Model.jetstream = (function () {
       
       TIM.step('Model.jets.in');
 
-      var t0 = Date.now(), i, j, u, v, speed, width, lat, lon, color, vec3, latlon, tmp2m,
-
-        multiline, positions, widths, colors, latlonsStart, hsl,
-
-        spherical = new THREE.Spherical(),
-        length   = cfg.length,
-        amount   = NaN,
-        factor   = 0.0003,                       // TODO: proper Math
-        alt      = cfg.radius - CFG.earth.radius,      // 0.001
-        pool     = SIM.coordsPool.slice(cfg.amount * cfg.sim.sectors.length),
+      var 
+        t0         = Date.now(), 
+        i, j, u, v, speed, width, lat, lon, color, vec3, latlon, tmp2m, multiline, positions, widths, colors, seeds, hsl,
+        spcl      = new THREE.Spherical(),
+        length    = cfg.length,
+        amount    = NaN,
+        factor    = 0.0003,                       // TODO: proper Math, also sync with wind10m
+        alt       = cfg.radius - CFG.earth.radius,      // 0.001
+        pool      = SIM.coordsPool.slice(cfg.amount * cfg.sim.sectors.length),
 
       end;
 
       H.each(cfg.sim.sectors, (_, sector)  => {
 
-        latlonsStart = pool.filter(sector).slice(0, cfg.amount);
-        amount       = latlonsStart.length; 
+        seeds     = pool.filter(sector).slice(0, cfg.amount);
+        amount    = seeds.length; 
 
         positions = new Array(amount).fill(0).map( () => []);
         colors    = new Array(amount).fill(0).map( () => []);
@@ -48,8 +47,8 @@ SIM.Model.jetstream = (function () {
 
         for (i=0; i<amount; i++) {
 
-          lat  = latlonsStart[i].lat;
-          lon  = latlonsStart[i].lon;
+          lat  = seeds[i].lat;
+          lon  = seeds[i].lon;
           vec3 = self.convLL(lat, lon, alt);
 
           for (j=0; j<length; j++) {
@@ -68,10 +67,10 @@ SIM.Model.jetstream = (function () {
             colors[i].push(color);
             widths[i].push(width);
 
-            spherical.setFromVector3(vec3);
-            spherical.theta += u * factor; // east-direction
-            spherical.phi   -= v * factor; // north-direction
-            vec3 = vec3.setFromSpherical(spherical).clone();
+            spcl.setFromVector3(vec3);
+            spcl.theta += u * factor;                   // east-direction
+            spcl.phi   -= v * factor;                   // north-direction
+            vec3 = vec3.setFromSpherical(spcl).clone();
             
             latlon = self.convV3(vec3, alt);
             lat = latlon.lat;
@@ -99,6 +98,5 @@ SIM.Model.jetstream = (function () {
 
     },
   };
-
 
 }());

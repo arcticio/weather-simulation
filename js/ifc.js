@@ -216,6 +216,8 @@ var IFC = (function () {
     events: {
       resize: function () {
 
+        SCN.resize();
+
         canvas.width    = SCN.renderer.domElement.width;
         canvas.height   = SCN.renderer.domElement.height;
         canvas.aspect   = canvas.width / canvas.height;
@@ -225,7 +227,7 @@ var IFC = (function () {
 
         IFC.Hud.resize();
 
-        console.log('IFC.resize', 'w', canvas.width, 'h', canvas.height);
+        // console.log('IFC.resize', 'w', canvas.width, 'h', canvas.height);
 
       },
       click:   function (event) { 
@@ -315,7 +317,7 @@ var IFC = (function () {
         console.log('IFC.keydown.in', `'${event.key}'`);
 
         var keys = {
-          // ' ': () => doRender = !doRender,
+          ' ': () => SCN.toggleRender(),
         };
 
         if (keys[event.key]) {
@@ -359,12 +361,13 @@ var IFC = (function () {
     },
     updateMouse: function () {
 
-      var intersections, intersection, oldMouseOver = mouse.overGlobe;
+      var 
+        intersection, 
+        oldMouseOver = mouse.overGlobe,
+        intersections = [];
 
       raycaster.setFromCamera( mouse, SCN.camera );
-      // intersections = raycaster.intersectObjects( [SCN.objects.pointer] );
 
-      intersections = [];
       SCN.objects.pointer.raycast(raycaster, intersections)
 
       if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
@@ -395,7 +398,8 @@ var IFC = (function () {
         cam = SCN.camera,
         convert = TOOLS.vector3toScreenXY,
         camDistance = cam.position.distanceTo(SCN.home),
-        sunDistance = cam.position.distanceTo(SIM.vectorSun);
+        sunDistance = cam.position.distanceTo(SIM.vectorSun)
+      ;
 
       if (camDistance < sunDistance) {
         SIM.vectorSun && self.updateLabel(labels.sun, {x: -1000, y: -1000});
@@ -416,15 +420,13 @@ var IFC = (function () {
 
       var 
         cam    = SCN.camera.position,
-        marker = SCN.objects.arrowHelper.cone.position,
-
-      end;
+        marker = SCN.objects.arrowHelper.cone.position
+      ;
 
       panels.latlon.innerHTML = (
         formatLatLon('C', vector3ToLatLong(cam)) + '<br>' + 
         formatLatLon('M', vector3ToLatLong(marker))
       );
-
 
     },
 

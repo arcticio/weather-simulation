@@ -57,7 +57,7 @@ var RES = (function () {
 
   }
 
-  return {
+  return self = {
 
     boot: function () {
       return self = this;
@@ -268,4 +268,4 @@ var RES = (function () {
 
   };
 
-}()).boot();
+}());

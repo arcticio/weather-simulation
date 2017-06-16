@@ -129,7 +129,6 @@ IFC.Hud = (function () {
           sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
 
         } else if (pos.center && pos.center === 'x') {
-          // sprite.position.set( - w2 + 200 + pos.width / 2, -h2 + pos.top + pos.height / 2 , 1 );
           sprite.position.set( 0, h2 - pos.top - pos.height / 2 , 1 );
 
         } else {
@@ -196,7 +195,6 @@ IFC.Hud = (function () {
           case 1:
             x = event.touches[ 0 ].pageX;
             y = event.touches[ 0 ].pageY;
-
 
           case 2:
           break;
@@ -444,8 +442,8 @@ IFC.Hud.time = (function () {
       cvs.width  = 256;
       cvs.height = 128;
 
-      ctx.font = '24px monospace'
-      ctx.fillStyle = '#ffffff';
+      ctx.font         = '24px monospace'
+      ctx.fillStyle    = '#ffffff';
       ctx.textBaseline = 'bottom';
 
       // CanvasTexture( canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy )

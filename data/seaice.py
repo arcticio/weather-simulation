@@ -10,7 +10,7 @@ size    = 1024
 quality = 90
 level   = 4
 sat     = 'AMSR2_Sea_Ice_Concentration_12km'
-target  = './seaice'
+target  = './amsr2'
 xmlFileTemplate = 'GIBS_Polar_AMSR2_%s_tmp.xml'
 
 # works
@@ -104,6 +104,9 @@ for (face, lon, lat, extra, epsg) in tasks :
 
   cmds.append("rm %s" % (xmlFileTemplate % face))
 
+
+## TODO
+echo "Add greyscale and color2alpha"
 
 for cmd in cmds :
     # print cmd

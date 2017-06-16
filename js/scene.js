@@ -7,8 +7,8 @@ var SCN = (function () {
     frame         = 0,
     time          = 0,
 
-    $  = document.getElementById.bind(document),
-    $$ = document.querySelectorAll.bind(document),
+    $             = document.getElementById.bind(document),
+    $$            = document.querySelectorAll.bind(document),
 
     canvas        = $$('.simulator')[0],
     monitor       = $$('canvas.panel.test')[0].getContext('2d'),
@@ -32,8 +32,6 @@ var SCN = (function () {
 
     objects       = {},
 
-    timerange     = new TimeRange(),
-
   end;
 
   return self = {
@@ -46,28 +44,17 @@ var SCN = (function () {
     monitor,
     objects,
     renderer,
-    timerange,
 
     activate: function () { 
-      window.addEventListener('resize', self.resize, false); 
-      document.addEventListener('keydown', ev => {
-
-        var keys = {
-          ' ': () => doRender = !doRender,
-        };
-
-        if (keys[ev.key]) {
-          keys[ev.key]();          
-          console.log('keydown', `'${ev.key}'`);
-        }
-
-      });
 
     },
     add: function (name, obj) {
       objects[name] = obj;
       objects[name].name = name;
       scene.add(obj);
+    },
+    toggleRender: function () {
+      doRender = !doRender;
     },
     toggle: function (obj, force) {
 
@@ -97,7 +84,7 @@ var SCN = (function () {
       camera.updateProjectionMatrix();
       
     },
-    init: function () {
+    init: function (callback) {
 
       var idx, vertex, onload;
 
@@ -112,10 +99,7 @@ var SCN = (function () {
       camera.position.copy(CFG.Objects.perspective.pos);
 
       self.resize();
-
-      timerange.push(dataTimeRanges['3d-simulation'][0]);
-      console.log(timerange.latest());
-
+      self.logInfo();
 
       H.each(CFG.Objects, (name, config) => {
 
@@ -130,6 +114,8 @@ var SCN = (function () {
       });
 
       objects.pointer.visible = false;
+
+      callback();
 
     },
     loader: {
@@ -284,10 +270,8 @@ var SCN = (function () {
 
       var gl = renderer.context;
 
-      // console.log(gl.getParameter('MAX_VERTEX_UNIFORM_VECTORS', gl.MAX_VERTEX_UNIFORM_VECTORS));
-      // console.log(gl.getParameter('MAX_FRAGMENT_UNIFORM_VECTORS', gl.MAX_FRAGMENT_UNIFORM_VECTORS));
-
-      console.log('maxVertexUniforms', renderer.capabilities.maxVertexUniforms);
+      TIM.step('REN.info', 'maxVertexUniforms', renderer.capabilities.maxVertexUniforms);
+      TIM.step('REN.info', 'devicePixelRatio', devicePixelRatio);
 
     },
     logFullInfo: function () {
