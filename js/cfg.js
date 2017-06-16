@@ -7,10 +7,12 @@
 
 */
 
+/* GLOBAL */
+
 const 
-  PI = Math.PI,
-  TAU = 2 * PI,
-  PI2 = PI / 2,
+  PI     = Math.PI,
+  TAU    = 2 * PI,
+  PI2    = PI / 2,
   RADIUS = 1.0,
   DISTANCE_OVERLAY = 0.01,
   DISTANCE_TRAILS  = 0.03
@@ -75,6 +77,3 @@ var CFG = {
   maxDistance:     8,
 
 };
-
-
-

@@ -27,8 +27,8 @@ SCN.Meshes.background = function (cfg) {
     material = new THREE.ShaderMaterial( {
       fragmentShader,
       vertexShader,
-      side: THREE.FrontSide,
-      transparent: true,
+      transparent:  true,
+      side:         THREE.FrontSide,
       vertexColors: THREE.VertexColors,
       uniforms: {
         opacity: {type: 'f', value: 0.8}
@@ -44,8 +44,8 @@ SCN.Meshes.background = function (cfg) {
 
     var 
       pointer = 0, 
-      target = geometry.attributes.colors.array,
-      color = new THREE.Color(col)
+      target  = geometry.attributes.colors.array,
+      color   = new THREE.Color()
     ;
 
     colors.forEach( (col) => {
@@ -67,8 +67,8 @@ SCN.Meshes.background = function (cfg) {
     var 
       camera = SCN.camera,
       aspect = window.innerWidth / window.innerHeight,
-      vFov   = camera.fov * Math.PI / 180,
-      height = 2 * Math.tan(vFov / 2) * camera.position.length() + 2,
+      fov    = camera.fov * Math.PI / 180,
+      height = 2 * Math.tan(fov / 2) * camera.position.length() + 2,
       width  = height * aspect,
       factor = 1 / SCN.scene.scale.x * 1.0, // 0.9
     end;
@@ -87,6 +87,5 @@ SCN.Meshes.background = function (cfg) {
   plane.updatePosition = updatePosition;
 
   return plane;
-
 
 };

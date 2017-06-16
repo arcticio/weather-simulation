@@ -10,6 +10,15 @@ Renders current weather parameters onto a 3D sphere
   * https://github.com/spite/codevember-2016
   * https://github.com/qkevinto/planetarium/blob/master/app/js/app.js
 
+
+## Inspiration
+
+  * [IBreakDownShaders](http://ibreakdownshaders.blogspot.de/2015/03/noise-loudening.html)
+  * [How We Animated Trillions of Tons of Flowing Ice](http://dwtkns.com/posts/2017-06-13-flowing-ice.html)
+  * [How We Made “Rewind the Red Planet”](https://source.opennews.org/articles/how-we-made-rewind-red-planet/)
+  * []()
+
+
 ## Data Sources (+ planned)
   
   * [Greenland and Antarctic ice sheet topography](https://doi.pangaea.de/10.1594/PANGAEA.856844)
@@ -21,10 +30,14 @@ Renders current weather parameters onto a 3D sphere
   * [Antarctica Ice Velocity Map](https://nsidc.org/data/docs/measures/nsidc0484_rignot/)
   * [Greenland Ice Sheet Velocity Map](http://nsidc.org/data/docs/measures/nsidc0478_joughin/)
 
-## Current Shot
+## Current Shots
 ![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-14-21-11-30.png)
 
-Showing jetstream at 300hpa.
+Jetstreams at 300hpa.
+
+![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-16 14-23-06.png)
+
+Antarctica's complex topology + sea ice.
 
 ## Unplanned Views
 
