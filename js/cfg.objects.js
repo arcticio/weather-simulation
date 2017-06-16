@@ -234,7 +234,7 @@ CFG.Objects = {
     cube: {
       type: 'polar',
       radius: RADIUS + 0.002, 
-      texture: 'data/seaice/2017-05-30.polar.amsr2.FACE.1024.grey.trans.png', 
+      texture: 'data/amsr2/2017-06-13.polar.amsr2.FACE.1024.grey.trans.png', 
       material: {
         transparent: true, 
         opacity:     0.99,              // removes crazy seaice effeckt

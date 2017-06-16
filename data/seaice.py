@@ -106,7 +106,7 @@ for (face, lon, lat, extra, epsg) in tasks :
 
 
 ## TODO
-echo "Add greyscale and color2alpha"
+# echo "Add greyscale and color2alpha"
 
 for cmd in cmds :
     # print cmd

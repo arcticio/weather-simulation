@@ -38,6 +38,13 @@ var CFG = {
 
   Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
+  Textures: {
+    'line.alpha.32.png':        'images/line.alpha.32.png',
+    'line.alpha.16.png':        'images/line.alpha.16.png',
+    'line.alpha.16.png':        'images/line.alpha.16.png',
+    'transparent.face.512.png': 'images/transparent.face.512.png',
+  },
+
   earth: {
     radius:        RADIUS,
     radiusOverlay: RADIUS + 0.1,
