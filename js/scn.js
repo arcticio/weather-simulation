@@ -129,15 +129,21 @@ var SCN = (function () {
         var urls = Object.keys(CFG.Textures).map( key => CFG.Textures[key] );
 
         info.innerHTML = 'Textures';
-        RES.load({type: 'texture', urls, onFinish: (err, responses) => {
+        bar.innerHTML  = counter + '/' + tasks.length;
 
-          responses.forEach(replaceTx);
-          TIM.step('SCN.loaded', 'textures');
-          callback();
+        setTimeout(() => {
+          RES.load({type: 'texture', urls, onFinish: (err, responses) => {
 
-        }});
+            responses.forEach(replaceTx);
+            TIM.step('SCN.loaded', 'textures');
+            counter += 1;
+            callback();
 
-      })
+          }});
+        }, 50);
+
+
+      });
 
       // Objects second
       H.each(CFG.Objects, (name, config) => {
@@ -190,20 +196,20 @@ var SCN = (function () {
 
       'mesh-calculate': (name, cfg, callback) => {
         self.add(name, SCN.Meshes.calculate(name, cfg));
-        callback();
+        callback && callback();
       },
 
       'mesh.textured': (name, cfg, callback) => {
         RES.load({type: 'texture', urls: [cfg.texture], onFinish: (err, responses) => {
           cfg.mesh.material.map = responses[0].data;
           self.add(name, cfg.mesh);
-          callback();
+          callback && callback();
         }});
       },
 
       'mesh': (name, cfg, callback) => {
         self.add(name, cfg.mesh);
-        callback();
+        callback && callback();
       },
 
       'geo.json': (name, cfg, callback) => {
@@ -221,7 +227,7 @@ var SCN = (function () {
           cfg.rotation && obj.rotation.fromArray(cfg.rotation);
 
           self.add(name, obj);
-          callback();
+          callback && callback();
 
         }});
 
@@ -231,20 +237,20 @@ var SCN = (function () {
         cfg.light = cfg.light(cfg);
         cfg.pos && cfg.light.position.copy( cfg.pos ); 
         self.add(name, cfg.light);
-        callback();
+        callback && callback();
       },
 
       'simulation': (name, cfg, callback) => {
         SIM.load(name, cfg, (name, obj) => {
           cfg.rotation && obj.rotation.fromArray(cfg.rotation);
           self.add(name, obj);
-          callback();
+          callback && callback();
         });
       },
       'cube.textured': (name, cfg, callback) => {
         SCN.tools.loadCube(name, cfg, (name, obj) => {
           self.add(name, obj);
-          callback();
+          callback && callback();
         });
       },
 

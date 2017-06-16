@@ -218,7 +218,7 @@ CFG.Objects = {
     cube: {
       type: 'globe',
       radius: RADIUS + 0.001, 
-      texture: 'data/sst/2017-05-30.globe.sst.FACE.1024.png', 
+      texture: 'data/sst/2017-06-13.globe.sst.FACE.1024.png', 
       material: {
         transparent: true, 
         opacity:     0.50,              // removes crazy seaice effeckt
