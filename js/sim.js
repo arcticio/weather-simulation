@@ -132,8 +132,6 @@ var SIM = (function () {
     },
     load: function (name, cfg, callback) {
 
-      TIM.step('SIM.load.in');
-
       this.loadModel(cfg, function () {
 
         if (cfg.subtype === 'multiline'){
@@ -143,9 +141,8 @@ var SIM = (function () {
         }
 
         models[name] = SIM.Model[name].create(cfg, datagramm);
+        
         callback(name, models[name].obj);
-
-        TIM.step('SIM.load.out');
 
       });
 

@@ -31,13 +31,15 @@ Renders current weather parameters onto a 3D sphere
   * [Greenland Ice Sheet Velocity Map](http://nsidc.org/data/docs/measures/nsidc0478_joughin/)
 
 ## Current Shots
-![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-14-21-11-30.png)
 
 Jetstreams at 300hpa.
 
-![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-16-14-23-06.png)
+![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-14-21-11-30.png)
 
 Antarctica's complex topology + sea ice.
+
+![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-16-14-23-06.png)
+
 
 ## Unplanned Views
 

@@ -59,9 +59,6 @@ var RES = (function () {
 
   return self = {
 
-    boot: function () {
-      return self = this;
-    },
     init: function () {
     },
     activate: function (selector) {

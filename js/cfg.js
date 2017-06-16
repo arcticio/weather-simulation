@@ -41,10 +41,20 @@ var CFG = {
   Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
   Textures: {
+    
     'line.alpha.32.png':        'images/line.alpha.32.png',
     'line.alpha.16.png':        'images/line.alpha.16.png',
     'line.alpha.16.png':        'images/line.alpha.16.png',
     'transparent.face.512.png': 'images/transparent.face.512.png',
+
+    'hud/hamburger.png':        'images/hud/hamburger.png',
+    'hud/fullscreen.png':       'images/hud/fullscreen.png',
+    'hud/movie.png':            'images/hud/movie.png',
+    'hud/graticule.png':        'images/hud/graticule.png',
+    'hud/info.png':             'images/hud/info.png',
+    'hud/performance.png':      'images/hud/performance.png',
+    'hud/performance.png':      'images/hud/performance.png',
+
   },
 
   lightsets: {

@@ -154,13 +154,13 @@
         TIM.step('WIN.load.in');
 
         RES.init();
-        IFC.init();
         ANI.init();
         SIM.init();
         SCN.init();
 
         SCN.load(function () {
 
+          IFC.init();
           IFC.activate(); 
           SCN.render();
           IFC.show();

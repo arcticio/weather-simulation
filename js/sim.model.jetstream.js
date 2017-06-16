@@ -22,7 +22,7 @@ SIM.Model.jetstream = (function () {
     },
     create: function (cfg, datagramm) {
       
-      TIM.step('Model.jets.in');
+      // TIM.step('Model.jets.in');
 
       var 
         t0         = Date.now(), 
@@ -92,7 +92,7 @@ SIM.Model.jetstream = (function () {
 
       });
 
-      TIM.step('Model.jets.out');
+      // TIM.step('Model.jets.out');
 
       return model;
 

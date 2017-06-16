@@ -14,7 +14,7 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.5,
-      image: 'images/hud/hamburger.png'
+      image: 'hud/hamburger.png'
     },
     onclick: (sprite) => {
       IFC.Hud.toggle();
@@ -35,7 +35,7 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.5,
-      image: 'images/hud/fullscreen.png'
+      image: 'hud/fullscreen.png'
     },
     onclick: (sprite) => {
       screenfull.enabled && screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
@@ -55,7 +55,7 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.5,
-      image: 'images/hud/movie.png'
+      image: 'hud/movie.png'
     },
     onclick: (sprite) => {
       console.log('sprite.click', sprite.name);
@@ -75,7 +75,7 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.5,
-      image: 'images/hud/graticule.png'
+      image: 'hud/graticule.png'
     },
     onclick: (sprite) => {
       SCN.toggle(SCN.objects.graticule);
@@ -96,7 +96,7 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.5,
-      image: 'images/hud/info.png'
+      image: 'hud/info.png'
     },
     onclick: (sprite) => {
       location.href = 'https://github.com/arcticio/weather-simulation';
@@ -116,7 +116,7 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.9,
-      image: 'images/hud/performance.png'
+      image: 'hud/performance.png'
     },
     onclick: (sprite) => {
       console.log('sprite.clicked', sprite.name);
@@ -135,7 +135,7 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.9,
-      image: 'images/hud/performance.png'
+      image: 'hud/performance.png'
     },
     onclick: (sprite) => {
       console.log('sprite.clicked', sprite.name);

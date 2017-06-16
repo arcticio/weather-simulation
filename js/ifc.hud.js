@@ -45,69 +45,61 @@ IFC.Hud = (function () {
     },
     initSprites: function () {
 
-      var w2 = SCN.canvas.width  / 2;
-      var h2 = SCN.canvas.height / 2;
+      var 
+        w2 = SCN.canvas.width  / 2,
+        h2 = SCN.canvas.height / 2;
 
       H.each(CFG.Sprites, (name, cfg) => {
 
-        // TODO: async
+        var 
+          material = new THREE.SpriteMaterial({map: CFG.Textures[cfg.material.image]}),
+          sprite   = new THREE.Sprite( material ),
+          pos      = cfg.position
+        ;
+        // debugger;
+        material.transparent = true;
+        material.opacity = cfg.material.opacity;
 
-        var material = new THREE.SpriteMaterial( {
-          map: txloader.load(cfg.material.image, function (texture) {
+        sprite.cfg = cfg;
+        sprite.name = name;
+        sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
 
-            var 
-              sprite = new THREE.Sprite( material ),
-              pos = cfg.position
-            ;
+        sprite.onmouseenter = function () {
+          ANI.insert(0, ANI.library.sprite.enter(sprite, 200));
+        };
 
-            material.transparent = true;
-            material.opacity = cfg.material.opacity;
+        sprite.onmouseleft = function () {
+          ANI.insert(0, ANI.library.sprite.leave(sprite, 200));
+        };
 
-            sprite.cfg = cfg;
-            sprite.name = name;
-            sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
+        sprite.click = cfg.onclick.bind(sprite, sprite);
 
-            sprite.onmouseenter = function () {
-              ANI.insert(0, ANI.library.sprite.enter(sprite, 200));
-            };
+        if (pos.bottom){
+          sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
 
-            sprite.onmouseleft = function () {
-              ANI.insert(0, ANI.library.sprite.leave(sprite, 200));
-            };
+        } else if (pos.center && pos.center === 'x') {
+          sprite.position.set( 0, h2 - pos.top - pos.height / 2 , 1 );
 
-            sprite.click = cfg.onclick.bind(sprite, sprite);
+        } else {
+          sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
 
-            if (pos.bottom){
-              sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
+        }
 
-            } else if (pos.center && pos.center === 'x') {
-              sprite.position.set( 0, h2 - pos.top - pos.height / 2 , 1 );
+        if (name === 'hamburger' || name === 'performance' || name === 'time') {
+          scene.add( sprite );
 
-            } else {
-              sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
+        } else {
+          menu.add( sprite );     
 
-            }
+        }
 
-            if (name === 'hamburger' || name === 'performance' || name === 'time') {
-              scene.add( sprite );
+        sprites[name] = sprite;
 
-            } else {
-              menu.add( sprite );     
-
-            }
-
-            sprites[name] = sprite;
-
-            if (IFC.Hud[name]) {
-              IFC.Hud[name].init(sprite, cfg);
-            }
-
-          })
-        });
+        if (IFC.Hud[name]) {
+          IFC.Hud[name].init(sprite, cfg);
+        }
 
       });
-
-      // self.resize();
 
     },
     resize: function () {
@@ -348,8 +340,7 @@ IFC.Hud.performance = (function () {
     cvs, ctx, img,
     texture,
     width, height,
-    now, duration, 
-
+    now, 
   end;
 
   return self = {
@@ -374,10 +365,11 @@ IFC.Hud.performance = (function () {
 
     },
     begin: function () {
-
-      var i;
-
       now = window.performance.now();
+    },
+    end:   function () {
+
+      var i, duration = window.performance.now() - now;
 
       if (ctx) {
 
@@ -399,13 +391,7 @@ IFC.Hud.performance = (function () {
 
       }
 
-    },
-    end:   function () {
-
-      duration = window.performance.now() - now;
-
       // sprite.material.map.needsUpdate = true;
-
 
     },
   };

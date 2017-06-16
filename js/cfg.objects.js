@@ -12,7 +12,7 @@ CFG.Objects = {
     visible:    true,
     type:       'light',
     color:      0xffffff,
-    intensity:  0.3,
+    intensity:  1.0,
     light: (cfg) => new THREE.AmbientLight( cfg.color, cfg.intensity )
   },
 
@@ -20,13 +20,13 @@ CFG.Objects = {
     visible:   true,
     type:      'light',
     color:     0xffffff, 
-    intensity: 0.5, 
+    intensity: 0.0, 
     distance:  0.0, 
     angle:     0.3, 
     penumbra:  0.1, 
     decay:     0.0,
-    light: (cfg) => new THREE.SpotLight(cfg.color, cfg.intensity, cfg.distance, cfg.angle, cfg.penumbra),
-    pos:   new THREE.Vector3(0, 4, 0)
+    light:     (cfg) => new THREE.SpotLight(cfg.color, cfg.intensity, cfg.distance, cfg.angle, cfg.penumbra),
+    pos:       new THREE.Vector3(0, 4, 0)
   },
 
   sun: {
@@ -34,22 +34,22 @@ CFG.Objects = {
     type:         'light',
     skycolor:     0xffddaa, // reddish
     grdcolor:     0x8989c3, // blueish
-    intensity:    0.23, 
+    intensity:    0.0, 
     light:        (cfg) => new THREE.HemisphereLight( cfg.skycolor, cfg.grdcolor, cfg.intensity ),
     pos:          new THREE.Vector3(2, 2, 2)
   },
 
   axes: {
-    visible: false,
-    type: 'mesh',
-    mesh: new THREE.AxisHelper( RADIUS * 4 ),
+    visible:     false,
+    type:        'mesh',
+    mesh:        new THREE.AxisHelper( RADIUS * 4 ),
   },
-
+ 
   // lat lon pointer of click marker
   arrowHelper: {
-    visible: false,
-    type: 'mesh',
-    mesh: new THREE.ArrowHelper( 
+    visible:     false,
+    type:       'mesh',
+    mesh:       new THREE.ArrowHelper( 
       new THREE.Vector3( 1, 1,  1), 
       new THREE.Vector3( 0,  0,  0), 
       RADIUS + 0.08, 
@@ -97,10 +97,10 @@ CFG.Objects = {
   },
 
   graticule: {
-    visible:      false,
-    type:         'mesh-calculate',
-    altitude:     0.01,
-    resolution:   10,
+    visible:        false,
+    type:           'mesh-calculate',
+    altitude:       0.01,
+    resolution:     10,
     material: {
       transparent:  true,
       opacity:      0.2,
@@ -111,20 +111,20 @@ CFG.Objects = {
   },
 
   population: {
-    visible:      false,
-    type:         'mesh-calculate',
-    altitude:     0.001,
-    opacity:      0.8,
-    radius:       1.0,
-    ucolor:       new THREE.Color(0xffffff),
+    visible:        false,
+    type:           'mesh-calculate',
+    altitude:       0.001,
+    opacity:        0.8,
+    radius:         1.0,
+    ucolor:         new THREE.Color(0xffffff),
   },
 
   sector: {
-    visible:      false,
-    type:         'mesh-calculate',
-    altitude:     0.01,
-    resolution:   1,
-    sector:       [15, -15, -15, 15],
+    visible:        false,
+    type:           'mesh-calculate',
+    altitude:       0.01,
+    resolution:     1,
+    sector:         [15, -15, -15, 15],
     material: {
       transparent:  true,
       opacity:      0.8,

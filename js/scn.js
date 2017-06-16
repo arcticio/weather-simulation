@@ -102,45 +102,96 @@ var SCN = (function () {
       self.logInfo();
 
     },
-    load: function (callback) {
+    load: function (onloaded) {
 
+      // collects resource requests from textures, meshes, and models
+      // and loads them as async series
+
+      var tasks = [];
+
+      function replaceTx (res) {
+        H.each(CFG.Textures, (key, value) => {
+          if (value === res.url) {
+            CFG.Textures[key] = res.data;
+          }
+        });
+      }
+
+      // Textures first
+      tasks.push(function (callback) {
+
+        var urls = Object.keys(CFG.Textures).map( key => CFG.Textures[key] );
+
+        RES.load({type: 'texture', urls, onFinish: (err, responses) => {
+
+          responses.forEach(replaceTx);
+          TIM.step('SCN.loaded', 'textures');
+          callback();
+
+        }});
+
+      })
+
+      // Objects second
       H.each(CFG.Objects, (name, config) => {
 
         config.name = name;
 
         if (config.visible){
-          self.loader[config.type](name, config);
+          tasks.push(function (callback) {
+            self.loader[config.type](name, config, () => {
+              // TIM.step('SCN.loaded', name);
+              callback();
+            });
+          });
+
         } else {
           objects[name] = config;
+
         }
 
       });
 
-      objects.pointer.visible = false;
+      // Execute
+      async.series(tasks, function (err, res) {
 
-      callback();
+        if (err) {throw err} else {
+
+          // late hacks
+          objects.pointer.visible = false;
+
+          // finally
+          TIM.step('SCN.loaded', 'objects');
+          onloaded();
+
+        }
+
+      });
 
     },
     loader: {
 
       // TODO: here async tasks
 
-      'mesh-calculate': (name, cfg) => {
+      'mesh-calculate': (name, cfg, callback) => {
         self.add(name, SCN.Meshes.calculate(name, cfg));
+        callback();
       },
 
-      'mesh.textured': (name, cfg) => {
+      'mesh.textured': (name, cfg, callback) => {
         RES.load({type: 'texture', urls: [cfg.texture], onFinish: (err, responses) => {
           cfg.mesh.material.map = responses[0].data;
           self.add(name, cfg.mesh);
+          callback();
         }});
       },
 
-      'mesh': (name, cfg) => {
+      'mesh': (name, cfg, callback) => {
         self.add(name, cfg.mesh);
+        callback();
       },
 
-      'geo.json': (name, cfg) => {
+      'geo.json': (name, cfg, callback) => {
 
         RES.load({type: 'text', urls: [cfg.json], onFinish: (err, responses) => {
 
@@ -155,28 +206,31 @@ var SCN = (function () {
           cfg.rotation && obj.rotation.fromArray(cfg.rotation);
 
           self.add(name, obj);
+          callback();
 
         }});
 
       },
 
-      'light': (name, cfg) => {
+      'light': (name, cfg, callback) => {
         cfg.light = cfg.light(cfg);
         cfg.pos && cfg.light.position.copy( cfg.pos ); 
         self.add(name, cfg.light);
+        callback();
       },
 
-      'simulation': (name, cfg) => {
+      'simulation': (name, cfg, callback) => {
         SIM.load(name, cfg, (name, obj) => {
           cfg.rotation && obj.rotation.fromArray(cfg.rotation);
           self.add(name, obj);
+          callback();
         });
       },
-      'cube.textured': (name, cfg) => {
-        SCN.tools.loadCube(name, cfg, self.add);
-      },
-      'camera': (name, cfg) => {
-
+      'cube.textured': (name, cfg, callback) => {
+        SCN.tools.loadCube(name, cfg, (name, obj) => {
+          self.add(name, obj);
+          callback();
+        });
       },
 
     },
@@ -315,21 +369,6 @@ var SCN = (function () {
       SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(sunVector);
 
     },
-    // updateBackground: function () {
-
-    //   // TODO: make globe scale independent from scene + vertex colors for gradient
-
-    //   var aspect = window.innerWidth / window.innerHeight;
-    //   var vFov = camera.fov * Math.PI / 180;
-    //   var height = 2 * Math.tan(vFov / 2) * camera.position.length() + 2;
-    //   var width = height * aspect;
-    //   var factor = 1/scene.scale.x * 1.0; // 0.9
-
-    //   objects.background.position.copy(SCN.camera.position.clone().negate().normalize().multiplyScalar(2));
-    //   objects.background.lookAt(camera.position);
-    //   objects.background.scale.set(width * factor, height * factor, 1);
-
-    // },
     render: function render (nTime) {
 
       var dTime = nTime - time;
