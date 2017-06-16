@@ -107,7 +107,13 @@ var SCN = (function () {
       // collects resource requests from textures, meshes, and models
       // and loads them as async series
 
-      var tasks = [];
+      var 
+        tasks   = [],
+        counter = 1,
+        info    = $$('.loader .info')[0],
+        header  = $$('.loader .header')[0],
+        bar     = $$('.loader .bar')[0]
+      ;
 
       function replaceTx (res) {
         H.each(CFG.Textures, (key, value) => {
@@ -122,6 +128,7 @@ var SCN = (function () {
 
         var urls = Object.keys(CFG.Textures).map( key => CFG.Textures[key] );
 
+        info.innerHTML = 'Textures';
         RES.load({type: 'texture', urls, onFinish: (err, responses) => {
 
           responses.forEach(replaceTx);
@@ -139,10 +146,14 @@ var SCN = (function () {
 
         if (config.visible){
           tasks.push(function (callback) {
+
+            info.innerHTML = name;
+            bar.innerHTML  = counter++ + '/' + tasks.length;
+            
             self.loader[config.type](name, config, () => {
-              // TIM.step('SCN.loaded', name);
-              callback();
+              setTimeout(callback, 100);
             });
+
           });
 
         } else {
@@ -156,6 +167,10 @@ var SCN = (function () {
       async.series(tasks, function (err, res) {
 
         if (err) {throw err} else {
+
+          header.innerHTML   = 'Have fun';
+          info.style.display = 'none';
+          bar.style.display  = 'none';
 
           // late hacks
           objects.pointer.visible = false;

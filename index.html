@@ -52,18 +52,52 @@
 
     <script src='js/aws.support.js'></script>
 
+    <style>
+        
+        .loader {
+          position: absolute;
+          width:  100%;
+          height: 100%;
+          font-family: monospace;
+          color: white;
+        }
+        .loader .cell {
+          text-align:center; 
+          vertical-align:middle;
+          font-size: 24px;
+        }
+        .loader .info {
+          font-weight: 800;
+        }
+        .loader .bar {
+          font-family: monospace;
+          font-size: 24px;
+        }
+
+    </style>
+
 </head>
 
 <body>
 
   <div class="fullscreen">
 
-    <div class="preload" style="display:none">
+    <table class="loader">
+      <tr>
+        <td class="cell">
+          <span class="header">Loading:</span>
+          <div class="info">Textures</div> ...
+          <div class="bar">hhuhu</div>
+        </td>
+      </tr>
+    </table>
+
+<!--     <div class="preload" style="display:none">
       <img class="" src="images/line.alpha.32.png">
       <img class="" src="images/line.alpha.16.png">
       <img class="" src="images/line.alpha.16.png">
       <img class="transparent-face-512" src="images/transparent.face.512.png">
-    </div>
+    </div> -->
 
     <div class="interface">
 
@@ -164,6 +198,15 @@
           IFC.activate(); 
           SCN.render();
           IFC.show();
+
+          setTimeout(function () {
+
+            document
+              .querySelectorAll('table.loader')[0]
+              .style.display = 'none'
+            ;
+
+          }, 200)
 
           TIM.step('WIN.load.out');
 
