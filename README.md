@@ -35,7 +35,7 @@ Renders current weather parameters onto a 3D sphere
 
 Jetstreams at 300hpa.
 
-![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-16 14-23-06.png)
+![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-16-14-23-06.png)
 
 Antarctica's complex topology + sea ice.
 
