@@ -45,6 +45,27 @@ var CFG = {
     'transparent.face.512.png': 'images/transparent.face.512.png',
   },
 
+  lightsets: {
+    data: {
+      sun:        {intensity: 0.4},
+      spot:       {intensity: 0.4},
+      ambient:    {intensity: 0.4},
+      background: {colors: [ 0x666666, 0x666666, 0x222222, 0x222222 ]},
+    },
+    snpp: {
+      sun:        {intensity: 0.4},
+      spot:       {intensity: 0.4},
+      ambient:    {intensity: 0.4},
+      background: {colors: [ 0x666666, 0x666666, 0x222222, 0x222222 ]},
+    },
+    neutral: {
+      sun:        {intensity: 0.0},
+      spot:       {intensity: 0.0},
+      ambient:    {intensity: 1.0},
+      background: {colors: [ 0x666666, 0x666666, 0x222222, 0x222222 ]},
+    },
+  },
+
   earth: {
     radius:        RADIUS,
     radiusOverlay: RADIUS + 0.1,

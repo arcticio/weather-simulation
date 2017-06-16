@@ -134,6 +134,7 @@ var IFC = (function () {
       raycaster.params.Points.threshold = 0.001; // threshold;
 
       controller = self.controller = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement);
+      controller.enabled = false;
 
       IFC.Hud.init();
 
@@ -314,15 +315,16 @@ var IFC = (function () {
       contextmenu: function (event) { /* console.log('contextmenu') */ },
       keydown:     function (event) { 
 
-        console.log('IFC.keydown.in', `'${event.key}'`);
-
         var keys = {
           ' ': () => SCN.toggleRender(),
         };
 
         if (keys[event.key]) {
           keys[event.key]();          
+          event.preventDefault();
+          event.stopPropagation();
           console.log('IFC.keydown.done', `'${event.key}'`);
+          return false;
         }
 
       },

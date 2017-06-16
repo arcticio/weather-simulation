@@ -6,7 +6,7 @@ SCN.Meshes = {
   calculate: function (name, cfg) {
     return SCN.Meshes[name](cfg);
   },
-  sector: function (cfg) {
+  sector: function (cfg, callback) {
 
     /*
           + - + - +
@@ -94,7 +94,7 @@ SCN.Meshes = {
     }
 
   },
-  graticule: function (cfg) {
+  graticule: function (cfg, callback) {
 
     /*
           + - + - +

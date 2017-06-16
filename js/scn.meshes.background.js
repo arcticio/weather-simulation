@@ -42,9 +42,15 @@ SCN.Meshes.background = function (cfg) {
     // 0, 1
     // 2, 3
 
-    var pointer = 0, target = geometry.attributes.colors.array;
+    var 
+      pointer = 0, 
+      target = geometry.attributes.colors.array,
+      color = new THREE.Color(col)
+    ;
 
     colors.forEach( (col) => {
+
+      color.set(col);
 
       target[pointer++] = col.r;
       target[pointer++] = col.g;
