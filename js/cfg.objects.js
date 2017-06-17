@@ -20,7 +20,7 @@ CFG.Objects = {
     visible:   true,
     type:      'light',
     color:     0xffffff, 
-    intensity: 0.01, 
+    intensity: 0.01, // no 0 here
     distance:  0.0, 
     angle:     0.3, 
     penumbra:  0.1, 
@@ -176,6 +176,14 @@ CFG.Objects = {
         opacity: 0.8,
       })
     ),
+  },
+
+  atmosphere: {
+    visible:        true,
+    type:           'mesh-calculate',
+    radius:         RADIUS + 0.002,
+    intensity:      0.5,
+    color:          0x3333ff,
   },
 
   data: {

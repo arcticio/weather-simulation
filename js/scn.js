@@ -19,7 +19,6 @@ var SCN = (function () {
     renderer      = new THREE.WebGLRenderer({
       canvas,
       antialias:    true,
-      // alpha:        true,
     }),
 
     camera        = CFG.Objects.perspective.cam,
@@ -259,7 +258,7 @@ var SCN = (function () {
     reset: {
       controller: function () {
 
-        IFC.controller.reset();
+        IFC.Controller.reset();
 
       }
     },
@@ -290,6 +289,11 @@ var SCN = (function () {
             intensity:    (value) => objects.sun.intensity = value,
             skycolor:     (value) => objects.sun.color = new THREE.Color( value ),
             grdcolor:     (value) => objects.sun.groundColor = new THREE.Color( value ),
+          },
+          Atmosphere: {
+            toggle:       (value) => self.toggle(objects.atmosphere, value),
+            intensity:    (value) => objects.atmosphere.update({intensity: value}),
+            color:        (value) => objects.atmosphere.update({color: new THREE.Color( value )}),
           },
           Layers : {
             'SNPP':       (value) => self.toggle(objects.snpp, value),
@@ -388,7 +392,7 @@ var SCN = (function () {
 
       SCN.objects.spot.visible       && SCN.objects.spot.position.copy(sunVector).multiplyScalar(10);
       SCN.objects.sun.visible        && SCN.objects.sun.position.copy(sunVector).multiplyScalar(10);
-      SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(sunVector);
+      // SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(sunVector);
 
     },
     render: function render () {

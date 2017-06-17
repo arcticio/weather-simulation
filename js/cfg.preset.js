@@ -32,6 +32,12 @@ CFG.Preset = {
     grdcolor:     CFG.Objects.sun.grdcolor,
   },
 
+  Atmosphere: { isFolder: true,
+    toggle:       CFG.Objects.atmosphere.visible,
+    intensity:    {val: CFG.Objects.atmosphere.intensity, min: 0, max: 1},
+    color:        CFG.Objects.atmosphere.color,
+  },
+
   Layers: { isFolder: true,
     'BACKGROUND': CFG.Objects.background.visible,
     'POPULATION': CFG.Objects.population.visible,

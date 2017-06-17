@@ -46,6 +46,7 @@ var SIM = (function () {
     datagramm,
     coordsPool,
     timerange,
+    sunVector,
 
     init: function () {
 

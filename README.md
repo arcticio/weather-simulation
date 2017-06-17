@@ -29,6 +29,7 @@ Renders current weather parameters onto a 3D sphere
   * [Polar Science Center, PIOMAS, SIT](http://psc.apl.uw.edu/research/projects/arctic-sea-ice-volume-anomaly/)
   * [Antarctica Ice Velocity Map](https://nsidc.org/data/docs/measures/nsidc0484_rignot/)
   * [Greenland Ice Sheet Velocity Map](http://nsidc.org/data/docs/measures/nsidc0478_joughin/)
+  * [Land Cover (GLCNMO) - Global version - Version 3](https://globalmaps.github.io/glcnmo.html)
 
 ## Current Shots
 
