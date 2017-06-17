@@ -225,7 +225,6 @@ IFC.Controller = (function () {
           deltaY = (mouse.last.y - event.pageY) * cfg.moveYimpulse * dynaImpulse;
 
           self.impulse(deltaX, deltaY, 0);
-          // console.log(deltaX, deltaY);
 
           mouse.last.x = event.pageX;
           mouse.last.y = event.pageY;
@@ -234,8 +233,6 @@ IFC.Controller = (function () {
 
       },
       wheel:        function (event) {
-
-        // https://developer.mozilla.org/en-US/docs/Web/Events/wheel
 
         var deltaX = 0, deltaY = 0, deltaZ = 0;
 
@@ -267,8 +264,6 @@ IFC.Controller = (function () {
           cfg.onwheel(deltaX, deltaY, deltaZ);
           eat(event);
 
-          // console.log(event.deltaY, self.info());
-        
         }
 
       },
@@ -336,7 +331,6 @@ IFC.Controller = (function () {
 
         if (keys[event.key]) {
           keys[event.key]();          
-          // console.log(self.info());
           return eat(event);
         
         } else if (event.key in keys) {
