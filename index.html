@@ -55,26 +55,6 @@
 
   <style>
       
-      .loader {
-        background-color: #000;
-        color: white;
-        font-family: monospace;
-        height: 100%;
-        position: absolute;
-        width:  100%;
-      }
-      .loader .cell {
-        font-size: 24px;
-        text-align:center; 
-        vertical-align:middle;
-      }
-      .loader .info {
-        font-weight: 800;
-      }
-      .loader .bar {
-        font-family: monospace;
-        font-size: 24px;
-      }
 
   </style>
 
@@ -94,13 +74,6 @@
       </tr>
     </table>
 
-<!--     <div class="preload" style="display:none">
-      <img class="" src="images/line.alpha.32.png">
-      <img class="" src="images/line.alpha.16.png">
-      <img class="" src="images/line.alpha.16.png">
-      <img class="transparent-face-512" src="images/transparent.face.512.png">
-    </div> -->
-
     <div class="interface">
 
       <img    class="loader" src="images/earth.ani.comp.gif">
@@ -116,7 +89,8 @@
 
     </div>
 
-    <canvas class="simulator" style="display:none"></canvas>
+    <!-- <canvas class="simulator" style="display:none"></canvas> -->
+    <canvas class="simulator"></canvas>
 
   </div>  
 
@@ -199,17 +173,7 @@
           SCN.render();
           IFC.show();
 
-          setTimeout(function () {
-
-            ANI.insert(0, ANI.library.intro());
-
-
-            // document
-            //   .querySelectorAll('table.loader')[0]
-            //   .style.display = 'none'
-            // ;
-
-          }, 200)
+          ANI.insert(0, ANI.library.intro());
 
           TIM.step('WIN.load.out');
 

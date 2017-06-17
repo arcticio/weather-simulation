@@ -14,39 +14,29 @@ IFC.Controller = (function () {
 
 
   var 
-    self,
-    enabled = false,
+    self, timeout, cam, ele, cfg,
+    enabled  = false,
+    EPS      = 0.0000001,
+    spcl     = new THREE.Spherical(),
+    veloX    = 0,
+    veloY    = 0,
+    veloZ    = 0,
+    mouse    = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN }},
+    touch    = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN }},
+    swipe    = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN }},
+    defaults = {
 
-    cam, ele, cfg,
-
-    EPS       = 0.0000001,
-
-    spcl      = new THREE.Spherical(),
-
-    veloX     = 0,
-    veloY     = 0,
-    veloZ     = 0,
-
-    timeout,
-
-    home,
-
-    mouse     = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN }},
-    touch     = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN }},
-    swipe     = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN }},
-
-    defaults  = {
-      mass:        1000000,
       minDistance:  1.2,
       maxDistance:  8.0,
+
       onwheel:     () => {},
       onkey:       () => {},
       keys:        ['t', 'z', 'u', 'i', 'o', 'p'],
       lookAt:      new THREE.Vector3(0, 0, 0),
 
-      dampX:       0.9,
-      dampY:       0.9,
-      dampZ:       0.9,
+      dampX:       0.94,
+      dampY:       0.94,
+      dampZ:       0.94,
 
       keyXimpulse: 0.05,
       keyYimpulse: 0.05,
@@ -57,6 +47,7 @@ IFC.Controller = (function () {
 
       moveXimpulse:  0.004,
       moveYimpulse:  0.004,
+
     },
 
   end;

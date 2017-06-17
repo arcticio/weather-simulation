@@ -108,3 +108,24 @@ canvas.panel.expi {
   top: 0px;
   width: 96px;
 }
+
+.loader {
+  background-color: #000;
+  color: white;
+  font-family: monospace;
+  height: 100%;
+  position: absolute;
+  width:  100%;
+}
+.loader .cell {
+  font-size: 24px;
+  text-align:center; 
+  vertical-align:middle;
+}
+.loader .info {
+  font-weight: 800;
+}
+.loader .bar {
+  font-family: monospace;
+  font-size: 24px;
+}

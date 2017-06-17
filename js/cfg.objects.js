@@ -20,7 +20,7 @@ CFG.Objects = {
     visible:   true,
     type:      'light',
     color:     0xffffff, 
-    intensity: 0.0, 
+    intensity: 0.01, 
     distance:  0.0, 
     angle:     0.3, 
     penumbra:  0.1, 
@@ -34,7 +34,7 @@ CFG.Objects = {
     type:         'light',
     skycolor:     0xffddaa, // reddish
     grdcolor:     0x8989c3, // blueish
-    intensity:    0.0, 
+    intensity:    0.01, 
     light:        (cfg) => new THREE.HemisphereLight( cfg.skycolor, cfg.grdcolor, cfg.intensity ),
     pos:          new THREE.Vector3(2, 2, 2)
   },
