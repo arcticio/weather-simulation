@@ -124,17 +124,18 @@ var IFC = (function () {
 
       loader.style.display = 'block';
 
-      // self.stats = stats = new Stats();
-      // stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-      // fullscreen.appendChild( stats.dom );
-
       // move gui.dat to fullscreen container
       fullscreen.appendChild($$('div.dg.ac')[0]);
 
       raycaster.params.Points.threshold = 0.001; // threshold;
 
-      controller = self.controller = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement);
-      controller.enabled = false;
+      // controller = self.controller = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement);
+      // controller.enabled = false;
+
+      controller = IFC.Controller;
+      controller.init({}, SCN.camera, SCN.renderer.domElement);
+      controller.activate();
+      controller.enable();
 
       IFC.Hud.init();
 
@@ -153,6 +154,11 @@ var IFC = (function () {
     activate: function () {
 
       controller.enabled = true;
+
+      if (controller.tag) {
+
+
+      } else {
         controller.rotateSpeed = 1.0;
         controller.zoomSpeed = 1.4;
         // controller.panSpeed = 0.3;
@@ -166,6 +172,9 @@ var IFC = (function () {
         controller.maxDistance = CFG.maxDistance;
         controller.maxAngle    = 0.04;
         controller.maxAcceleration = 0.01;
+
+      }
+
 
       H.each([
 
@@ -199,11 +208,12 @@ var IFC = (function () {
       IFC.Hud.activate();
 
     },
-    step: function step () {
+    step: function step (frame, deltatime) {
 
       TWEEN.update();
 
-      controller.update();
+      controller.update && controller.update(frame, deltatime);
+      controller.step   && controller.step(frame, deltatime);
 
       self.updateMouse();
       self.updateGlobe();

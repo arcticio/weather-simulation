@@ -2,79 +2,80 @@
 <html>
 <head>
 
-    <script type="text/javascript">
+  <title>Simulator</title>
 
-      var DEVELOP = 'False' === 'True'   ? true : false;
-      var DEBUG   = 'False'   === 'True' ? true : false;
-      // var ADMIN   = 'False'   === 'True' ? true : false;
-      var VERSION = '3.4.1';
+  <meta charset="utf-8" />
+  <meta name="description" content="Visualizes a set of cryospheric parameters provided by NOAA's Global Forecasing System (GFS)" />
 
-      var TIM = (function(){
-        
-        var fill = new Array(18).join(' '), 
-            pad  = function(s){return (s+fill).substr(0, fill.length);},
-            now  = function( ){return (window.performance.now() / 1000).toFixed(2);}
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-        return {
-          now: now,
-          step: function( /* */ ){
-            var args = [].slice.call(arguments);
-            console.log (pad(args[0]), '-', now() + 's', ...args.slice(1));
-          }
-        };
-        
-      })();
+  <meta name="mobile-web-app-capable"       content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="msapplication-tap-highlight"  content="no" />
 
-    </script>
+  <meta property="og:title" content="Weather-Simulation" />
+  <meta property="og:type" content="website" />
+  <meta property="og:description" content="Visualizes a set of cryospheric parameters provided by NOAA's Global Forecasing System (GFS)" />
+  <meta property="og:image" content="https://arcticio.github.io/weather-simulation/images/preview.lg.png" />
+  <meta property="og:url" content="https://arcticio.github.io/weather-simulation/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- more: https://gist.github.com/kevinSuttle/1997924 -->
 
 
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+  <script type="text/javascript">
 
-    <title>Simulator</title>
-    <meta name="description" content="Visualizes a set of cryospheric parameters provided by NOAA's Global Forecasing System (GFS)" />
+    var DEVELOP = 'False' === 'True'   ? true : false;
+    var DEBUG   = 'False'   === 'True' ? true : false;
+    // var ADMIN   = 'False'   === 'True' ? true : false;
+    var VERSION = '3.4.1';
 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    
-    <meta name="mobile-web-app-capable"       content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="msapplication-tap-highlight"  content="no" />
+    var TIM = (function(){
+      
+      var fill = new Array(18).join(' '), 
+          pad  = function(s){return (s+fill).substr(0, fill.length);},
+          now  = function( ){return (window.performance.now() / 1000).toFixed(2);}
 
-    <meta property="og:title" content="Weather-Simulation" />
-    <meta property="og:type" content="website" />
-    <meta property="og:description" content="Visualizes a set of cryospheric parameters provided by NOAA's Global Forecasing System (GFS)" />
-    <meta property="og:image" content="https://arcticio.github.io/weather-simulation/images/preview.lg.png" />
-    <meta property="og:url" content="https://arcticio.github.io/weather-simulation/">
-    <meta name="twitter:card" content="summary_large_image">
-
-    <!-- more: https://gist.github.com/kevinSuttle/1997924 -->
-
-    <script src='js/aws.support.js'></script>
-
-    <style>
-        
-        .loader {
-          position: absolute;
-          width:  100%;
-          height: 100%;
-          font-family: monospace;
-          color: white;
+      return {
+        now: now,
+        step: function( /* */ ){
+          var args = [].slice.call(arguments);
+          console.log (pad(args[0]), '-', now() + 's', ...args.slice(1));
         }
-        .loader .cell {
-          text-align:center; 
-          vertical-align:middle;
-          font-size: 24px;
-        }
-        .loader .info {
-          font-weight: 800;
-        }
-        .loader .bar {
-          font-family: monospace;
-          font-size: 24px;
-        }
+      };
+      
+    })();
 
-    </style>
+  </script>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+
+  <script src='js/aws.support.js'></script>
+
+  <style>
+      
+      .loader {
+        position: absolute;
+        width:  100%;
+        height: 100%;
+        font-family: monospace;
+        color: white;
+      }
+      .loader .cell {
+        text-align:center; 
+        vertical-align:middle;
+        font-size: 24px;
+      }
+      .loader .info {
+        font-weight: 800;
+      }
+      .loader .bar {
+        font-family: monospace;
+        font-size: 24px;
+      }
+
+  </style>
 
 </head>
 
@@ -176,6 +177,7 @@
     <script src="js/ifc.debug.js"></script>
     <script src="js/ifc.js"></script>
     <script src="js/ifc.hud.js"></script>
+    <script src="js/ifc.controller.js"></script>
     
 
     <script type="text/javascript">

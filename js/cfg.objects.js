@@ -222,7 +222,7 @@ CFG.Objects = {
       material: {
         transparent: true, 
         opacity:     0.50,              // removes crazy seaice effeckt
-        side:        THREE.SingleSide,
+        side:        THREE.DoubleSide,
       }
     }
   },
@@ -254,7 +254,7 @@ CFG.Objects = {
     lineWidth:  RADIUS * Math.PI / 180 * 0.2,
     section:    33 * 1/60,
     length:     60,
-    amount:    512,
+    amount:     512,
     sim: {
       data: [
         'data/gfs/tmp2m/2017-06-13-12.tmp2m.10.dods',
@@ -273,7 +273,7 @@ CFG.Objects = {
   },
 
   jetstream: {
-    visible:    true,
+    visible:    false,
     type:       'simulation',
     subtype:    'multiline',
     rotation:   [0, Math.PI, 0],

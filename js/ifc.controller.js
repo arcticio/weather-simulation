@@ -1,3 +1,360 @@
+/*
+
+Cam pointing NP, Americas down (-90 lon, 90 lat)
+SCN.camera.position.setFromSpherical(new THREE.Spherical(SCN.camera.position.length(), 0, 0))
+
+pointing 0/0  
+SCN.camera.position.setFromSpherical(new THREE.Spherical(SCN.camera.position.length(), Math.PI / 2, Math.PI / 2))
+
+Spherical( radius, phi/ud, theta/lr )
+
+*/
+
+IFC.Controller = (function () {
+
+
+  var 
+    self,
+    enabled = false,
+
+    cam, ele, cfg,
+
+    EPS       = 0.0000001,
+
+    spcl      = new THREE.Spherical(),
+
+    veloX     = 0,
+    veloY     = 0,
+    veloZ     = 0,
+
+    timeout,
+
+    home,
+
+    mouse     = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN }},
+    touch     = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN }},
+    swipe     = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN }},
+
+    defaults  = {
+      mass:        1000000,
+      minDistance:  1.2,
+      maxDistance:  8.0,
+      onwheel:     () => {},
+      onkey:       () => {},
+      keys:        ['t', 'z', 'u', 'i', 'o', 'p'],
+      lookAt:      new THREE.Vector3(0, 0, 0),
+
+      dampX:       0.9,
+      dampY:       0.9,
+      dampZ:       0.9,
+
+      keyXimpulse: 0.05,
+      keyYimpulse: 0.05,
+      keyZimpulse: 0.5,
+
+      wheelYimpulse: 0.5,
+      wheelXimpulse: 0.5,
+
+      moveXimpulse:  0.004,
+      moveYimpulse:  0.004,
+    },
+
+  end;
+
+  function sgn (num) { 
+    return (
+      ~~num === 0 ? 0 :
+        num >   0 ? 1 :
+          -1
+    );
+  }
+
+  function eat (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    return false;
+  }
+
+  function clampScale (x, xMin, xMax, min, max) {
+    var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
+    return val < min ? min : val > max ? max : val;
+  }
+
+  return self = {
+
+    tag: 'aws',
+
+    handleResize: function () {},
+    enable: function () {enabled = true;},
+    disable: function () {enabled = false;},
+    deactivate: function () {},
+    travel: function () {},
+    toggle: function () {enabled = !enabled;},
+
+    init: function (config, camera, domElement) {
+
+      cam = camera;
+      ele = domElement;
+      cfg = Object.assign({}, defaults, config);
+
+      spcl.setFromVector3(cam.position);
+
+      home = cam.position.clone();
+
+    },
+    
+    reset: function () {
+      self.stop();
+      cam.position.copy(home);
+    },
+    info: function () {
+      return {
+        veloX,
+        veloY,
+        veloZ,
+      }
+    },
+    stop: function () {
+      veloX = 0;
+      veloY = 0;
+      veloZ = 0;
+    },
+    impulse: function (x, y, z) {
+      veloX += x;
+      veloY += y;
+      veloZ += z;
+    },
+    step: function (frame, deltasecs) {
+
+      var scalar, distance = cam.position.length();
+
+      veloX = Math.abs(veloX) > EPS ? veloX : 0;  // right/left
+      veloY = Math.abs(veloY) > EPS ? veloY : 0;  // up/down
+      veloZ = Math.abs(veloZ) > EPS ? veloZ : 0;  // zoom
+
+      if (enabled) {
+
+        veloX *= cfg.dampX;
+        veloY *= cfg.dampY;
+        veloZ *= cfg.dampZ;
+
+        if (veloZ) {
+
+          if (distance < cfg.minDistance) {
+            cam.position.setLength(cfg.minDistance);
+            veloZ = 0;
+
+          } else if (distance > cfg.maxDistance) {
+            cam.position.setLength(cfg.maxDistance);
+            veloZ = 0;
+
+          } else if (distance >= cfg.minDistance && veloZ > 0  || distance <= cfg.maxDistance && veloZ < 0){
+            scalar =  1 + ( veloZ * deltasecs / distance );
+            cam.position.multiplyScalar(scalar);
+          }
+
+        }
+
+        if (veloX || veloY) {
+          spcl.radius = cam.position.length();
+          spcl.theta += veloX * deltasecs;                        // east
+          spcl.phi   += veloY * deltasecs;
+          cam.position.setFromSpherical(spcl);
+
+        }
+
+        cam.lookAt(cfg.lookAt);
+
+      }
+
+    },
+    activate: function () {
+
+      H.each([
+
+        [ele,       'mousedown'],
+        [ele,       'mouseup'],
+        [ele,       'mousemove'],
+        [ele,       'wheel'],
+        [ele,       'touchstart'],
+        [ele,       'touchmove'],
+        [ele,       'touchend'],
+        [ele,       'contextmenu'],
+        [document,  'keydown'],
+        [document,  'keydup'],
+        [window,    'orientationchange'],
+        [window,    'resize'],
+      
+      ], function (_, e) { 
+
+        e[0].addEventListener(e[1], self.events[e[1]], false) 
+
+      });
+
+    },
+
+    events: {
+      contextmenu:  function (event) {return eat(event)},
+      mousedown:    function (event) {
+
+        if (enabled) {
+          mouse.down.x = event.pageX;
+          mouse.down.y = event.pageY;
+          mouse.last.x = event.pageX;
+          mouse.last.y = event.pageY;
+        }
+
+      },
+      mouseup:      function (event) {
+
+        mouse.down.x = NaN;
+        mouse.down.y = NaN;
+
+      },
+      mousemove:    function (event) {
+
+        var 
+          deltaX, deltaY, 
+          distance    = cam.position.length(),
+          dynaImpulse = clampScale(distance, cfg.minDistance, cfg.maxDistance, 1, cfg.maxDistance - cfg.minDistance)
+        ;
+
+        if ( !isNaN(mouse.down.x) ) {
+
+          deltaX = (mouse.last.x - event.pageX) * cfg.moveXimpulse * dynaImpulse;
+          deltaY = (mouse.last.y - event.pageY) * cfg.moveYimpulse * dynaImpulse;
+
+          self.impulse(deltaX, deltaY, 0);
+          // console.log(deltaX, deltaY);
+
+          mouse.last.x = event.pageX;
+          mouse.last.y = event.pageY;
+
+        }
+
+      },
+      wheel:        function (event) {
+
+        // https://developer.mozilla.org/en-US/docs/Web/Events/wheel
+
+        var deltaX = 0, deltaY = 0, deltaZ = 0;
+
+        if (enabled) {
+
+          switch ( event.deltaMode ) {
+
+            case 2: // Zoom in pages
+              debugger;
+              deltaX = event.deltaX * 0.025;
+              deltaZ = event.deltaY * 0.025;  // y => z
+              break;
+
+            case 1: // Zoom in lines
+              debugger;
+              deltaX = event.deltaX * 0.01;
+              deltaZ = event.deltaY * 0.01;
+              break;
+
+            default: // undefined, 0, assume pixels
+              deltaX = event.deltaX * 0.01;
+              deltaZ = event.deltaY * 0.02;  
+              break;
+
+          }
+
+          self.impulse(deltaX, deltaY, deltaZ);
+
+          cfg.onwheel(deltaX, deltaY, deltaZ);
+          eat(event);
+
+          // console.log(event.deltaY, self.info());
+        
+        }
+
+      },
+      touchstart:   function (event) {
+
+        if (enabled) {
+
+          switch ( event.touches.length ) {
+
+            case 0: 
+              console.log('WTF');
+            break;
+
+            case 1: 
+              touch.down.x = event.touches[ 0 ].pageX;
+              touch.down.y = event.touches[ 0 ].pageY;
+              touch.last.x = touch.down.x;
+              touch.last.y = touch.down.y;
+            break;
+
+            case 2: 
+              swipe.down.x = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+              swipe.dwon.y = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+              swipe.last.x = swipe.down.x;
+              swipe.last.y = swipe.down.y;
+            break;
+
+            case 3: 
+            break;
+
+
+          }
+
+          return eat(event);
+
+        }
+
+      },
+      touchmove:  function (event) {},
+      touchend:   function (event) {},
+      keyup:      function (event) {
+        keys.down = false;
+        keys.key = null;
+        clearTimeout(timeout);
+      },
+      keydown:    function (event) {
+
+        var 
+          distance    = cam.position.length(),
+          dynaImpulse = clampScale(distance, cfg.minDistance, cfg.maxDistance, 1, cfg.maxDistance - cfg.minDistance)
+          xImp        = cfg.keyXimpulse * dynaImpulse,
+          yImp        = cfg.keyYimpulse * dynaImpulse,
+          zImp        = cfg.keyZimpulse * dynaImpulse,
+          keys = {
+            'y': () => self.stop(),
+            'x': () => self.reset(),
+            'w': () => self.impulse( 0, -yImp,  0),   // Y, rotate up    negative, inverted
+            's': () => self.impulse( 0,  yImp,  0),   // Y, rotate down  positive, inverted
+            'a': () => self.impulse(-xImp,  0,  0),   // X, rotate left  negative
+            'd': () => self.impulse( xImp,  0,  0),   // X, rotate right positive
+            'e': () => self.impulse( 0,  0,  zImp),   // Z, zoom   out   positive
+            'q': () => self.impulse( 0,  0, -zImp),   // Z, zoom   in    positive
+          }
+        ;
+
+        if (keys[event.key]) {
+          keys[event.key]();          
+          // console.log(self.info());
+          return eat(event);
+        
+        } else if (event.key in keys) {
+          onkey(event.key);
+          return eat(event);
+
+        }
+
+      },
+
+    }
+
+  };
+
+}());
+
+
+
 /**
  * @author Eberhard Graether / http://egraether.com/
  * @author Mark Lundin  / http://mark-lundin.com

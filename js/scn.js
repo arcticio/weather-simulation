@@ -5,7 +5,7 @@ var SCN = (function () {
   var 
     self,
     frame         = 0,
-    time          = 0,
+    lastTimestamp = NaN,
 
     $             = document.getElementById.bind(document),
     $$            = document.querySelectorAll.bind(document),
@@ -216,7 +216,7 @@ var SCN = (function () {
 
         RES.load({type: 'text', urls: [cfg.json], onFinish: (err, responses) => {
 
-          var obj = new THREE.Object3D();
+          var obj  = new THREE.Object3D();
           var json = JSON.parse(responses[0].data);
 
           drawThreeGeo(json, cfg.radius, 'sphere', {
@@ -336,12 +336,13 @@ var SCN = (function () {
       end;
 
       try {
-        if ( config[folder] && config[folder][option] ) {
-          config[folder][option](value);
-        } else {
-          console.log('SCN.actions.ignored', folder, option, value);
-        }
-      } catch (e) {console.log('SCN.actions.error', folder, option, value, e)} 
+        config[folder][option](value);
+
+      } catch (e) {
+        console.warn('SCN.actions.error', folder, option, value);
+        console.log(e);
+
+      } 
 
     },
     logInfo: function () {
@@ -390,40 +391,33 @@ var SCN = (function () {
       SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(sunVector);
 
     },
-    render: function render (nTime) {
+    render: function render () {
 
-      var dTime = nTime - time;
+      var 
+        timestamp = performance.now(),
+        deltatsecs = (timestamp - (lastTimestamp || timestamp)) / 1000; // to secs
 
       requestAnimationFrame(render);
 
-      // drop first call, need dTime
-      // if (!nTime){return;}
-
-      // IFC.stats.begin();
       IFC.Hud.performance.begin();
 
-        IFC.step();
+        IFC.step(frame, deltatsecs);
 
-        if (!(frame % 60)) {
-          // update now
+        if ( !(frame % 60) ) {
+          // update every second
           IFC.Hud.time.render();
         }
 
         objects.background.updatePosition();
-        // self.updateBackground();
 
-        if (!(frame % 1)) {
-          doSimulate && SIM.step(frame, dTime);
+        if ( !(frame % 1) ) {
+          doSimulate && SIM.step(frame, deltatsecs);
         }
 
         // always check actions
-        doAnimate  && ANI.step(frame, dTime);
+        doAnimate  && ANI.step(frame, deltatsecs);
 
-        if (!(frame % 1)) {
-          // doRender  && renderer.render(scene, camera);
-        } 
-
-        if (doRender){
+        if ( doRender && !(frame % 1) ) {
           renderer.clear();
           renderer.render( scene, camera );
           renderer.clearDepth();
@@ -431,9 +425,8 @@ var SCN = (function () {
         }
 
       IFC.Hud.performance.end();
-      // IFC.stats.end();
 
-      time   = nTime;
+      lastTimestamp = timestamp;
       frame += 1;
 
     }

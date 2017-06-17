@@ -79,14 +79,12 @@ CoordsPool.prototype = {
 
     return pool;
 
-    var out = this.pool.slice(this.pointer, this.pointer + amount);
+    // var out = this.pool.slice(this.pointer, this.pointer + amount);
     
-    this.pointer += amount;
+    // this.pointer += amount;
 
-    return out;
+    // return out;
 
   }
 
 };
-
-

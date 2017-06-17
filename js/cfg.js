@@ -79,6 +79,7 @@ var CFG = {
   },
 
   earth: {
+    factor:        6371,
     radius:        RADIUS,
     radiusOverlay: RADIUS + 0.1,
   },
