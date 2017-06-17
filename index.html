@@ -56,16 +56,17 @@
   <style>
       
       .loader {
+        background-color: #000;
+        color: white;
+        font-family: monospace;
+        height: 100%;
         position: absolute;
         width:  100%;
-        height: 100%;
-        font-family: monospace;
-        color: white;
       }
       .loader .cell {
+        font-size: 24px;
         text-align:center; 
         vertical-align:middle;
-        font-size: 24px;
       }
       .loader .info {
         font-weight: 800;
@@ -200,10 +201,13 @@
 
           setTimeout(function () {
 
-            document
-              .querySelectorAll('table.loader')[0]
-              .style.display = 'none'
-            ;
+            ANI.insert(0, ANI.library.intro());
+
+
+            // document
+            //   .querySelectorAll('table.loader')[0]
+            //   .style.display = 'none'
+            // ;
 
           }, 200)
 

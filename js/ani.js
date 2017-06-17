@@ -10,6 +10,9 @@ var ANI = (function () {
     status   = {frame: 0},
     actions = [],
     
+    $             = document.getElementById.bind(document),
+    $$            = document.querySelectorAll.bind(document),
+
     end;
 
 
@@ -96,6 +99,32 @@ var ANI = (function () {
           TIM.step('TWEEN.ignored');
 
         }
+
+      },
+
+      intro: function () {
+
+        var 
+          table = $$('table.loader')[0],
+          current = {alpha: 1.0},
+          target  = {alpha: 0.0};
+
+        return function () {
+
+          var tween = new TWEEN
+            .Tween(current)
+            .easing(TWEEN.Easing.Exponential.In)
+            .to(target, 300)
+            .onUpdate(function(d){
+              table.style.backgroundColor = 'rgba(0, 0, 0, ' + current.alpha + ')'
+            })
+            .onComplete(function(d){
+              table.style.display = 'none';
+            })
+            .start()
+          ;
+
+        };
 
       },
 
