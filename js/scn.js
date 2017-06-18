@@ -52,8 +52,8 @@ var SCN = (function () {
       objects[name].name = name;
       scene.add(obj);
     },
-    toggleRender: function () {
-      doRender = !doRender;
+    toggleRender: function (force) {
+      doRender = force !== undefined ? force : !doRender;
     },
     toggle: function (obj, force) {
 
@@ -273,6 +273,7 @@ var SCN = (function () {
           Render:   { toggle: (value) => doRender   = value },
           Animate:  { toggle: (value) => doAnimate  = value },
           Simulate: { toggle: (value) => doSimulate = value },
+          ResetCam: { toggle: (value) => doSimulate = value },
           Ambient: {
             toggle:       (value) => self.toggle(objects.ambient, value),
             intensity:    (value) => objects.ambient.intensity = value,
@@ -328,7 +329,6 @@ var SCN = (function () {
           },
           Extras: {
             Axes:         (value) => self.toggle(objects.axes, value),
-            ZoomOut:      (value) => ANI.insert(0, ANI.library.zoomout), 
             Rotate:       (value) => ANI.insert(0, ANI.library.datetime.add(1, 'days', 800)), 
           },
           Simulation: {
@@ -390,8 +390,13 @@ var SCN = (function () {
     },
     updateSun: function (sunVector) {
 
-      SCN.objects.spot.visible       && SCN.objects.spot.position.copy(sunVector).multiplyScalar(10);
-      SCN.objects.sun.visible        && SCN.objects.sun.position.copy(sunVector).multiplyScalar(10);
+      var objs = SCN.objects;
+
+      objs.spot.visible         && objs.spot.position.copy(sunVector).multiplyScalar(10);
+      objs.sun.visible          && objs.sun.position.copy(sunVector).multiplyScalar(10);
+      objs.atmosphere.visible   && objs.atmosphere.update({sunPosition: sunVector});
+
+
       // SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(sunVector);
 
     },

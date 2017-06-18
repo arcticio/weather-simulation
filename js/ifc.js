@@ -129,15 +129,24 @@ var IFC = (function () {
 
       raycaster.params.Points.threshold = 0.001; // threshold;
 
-      // controller = self.controller = new THREE.TrackballControls(SCN.camera, SCN.renderer.domElement);
-      // controller.enabled = false;
-
       controller = IFC.Controller;
-      controller.init({}, SCN.camera, SCN.renderer.domElement);
+      controller.init(SCN.camera, SCN.renderer.domElement, {
+
+        ondrag: function (deltaX, deltaY) {
+
+        },
+        onwheel: function (deltaX, deltaY, deltaZ) {
+          // console.log('wheel', deltaX, deltaY, deltaZ);
+          SIM.setSimTime( ~~(deltaX * 100), 'minutes');
+
+        },
+
+      });
       controller.activate();
       controller.enable();
 
       IFC.Hud.init();
+
 
     },
     show: function () {
@@ -155,27 +164,6 @@ var IFC = (function () {
 
       controller.enabled = true;
 
-      if (controller.tag) {
-
-
-      } else {
-        controller.rotateSpeed = 1.0;
-        controller.zoomSpeed = 1.4;
-        // controller.panSpeed = 0.3;
-        controller.noRotate = false;
-        controller.noZoom = false;
-        controller.noPan = true;                  // target = scene.position
-        controller.staticMoving = false;          // inertia
-        controller.dynamicDampingFactorRotate = 0.05;
-        controller.dynamicDampingFactorZoom = 0.1;
-        controller.minDistance = CFG.minDistance;
-        controller.maxDistance = CFG.maxDistance;
-        controller.maxAngle    = 0.04;
-        controller.maxAcceleration = 0.01;
-
-      }
-
-
       H.each([
 
         [simulator, 'mousedown'],
@@ -183,8 +171,8 @@ var IFC = (function () {
         [simulator, 'mousemove'],
         [simulator, 'mouseenter'],
         [simulator, 'mouseover'],
-        [simulator, 'mouseleave'],
-        [simulator, 'mouseout'],
+        [document,    'mouseleave'],
+        [document,    'mouseout'],
         [simulator, 'wheel'],
         [simulator, 'click'],
         [simulator, 'dblclick'],
@@ -311,15 +299,21 @@ var IFC = (function () {
         x += deltamode[event.deltaMode]();
 
         if (!mouse.overGlobe){
-          mouse.wheel.x += x;
-          console.log('wheel', mouse.wheel.x, x, event.deltaMode);
-          SIM.setSimTime(x*10, 'minutes');
+          // mouse.wheel.x += x;
+          // console.log('wheel', mouse.wheel.x, x, event.deltaMode);
+          // SIM.setSimTime(x*10, 'minutes');
         }
 
       },
-      mouseenter:  function (event) { /* console.log('mouseenter') */ },
-      mouseover:   function (event) { /* console.log('mouseover') */ },
-      mouseleave:  function (event) { /* console.log('mouseleave') */ },
+      mouseover:  function (event) { /* console.log('mouseenter') */ },
+      mouseenter:   function (event) { 
+        console.log('mouseenter');
+        SCN.toggleRender(true);
+      },
+      mouseleave:  function (event) {
+        console.log('mouseleave')
+        SCN.toggleRender(false);
+      },
       mouseout:    function (event) { /* console.log('mouseout') */ },
 
       contextmenu: function (event) { /* console.log('contextmenu') */ },

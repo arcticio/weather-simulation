@@ -232,7 +232,8 @@ var ANI = (function () {
               .easing(TWEEN.Easing.Quadratic.Out)
               .to(target, duration)
               .onUpdate(function(d){
-                SIM.updateDatetime(moment(current.now))
+                SIM.setSimTime(moment(current.now))
+                console.log(d);
               })
               .start()
             ;

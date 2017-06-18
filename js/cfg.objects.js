@@ -5,7 +5,7 @@ CFG.Objects = {
     type: 'camera',
     cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
     // pos:             new THREE.Vector3(4, 0, 0),                // Äq
-    pos:             new THREE.Vector3().add({x: 2.555, y: 1.111, z: 1.144}),
+    pos:             new THREE.Vector3().add({x: 4.0, y: 0.0, z: 0.0}),
   },
 
   ambient: {
@@ -39,6 +39,16 @@ CFG.Objects = {
     pos:          new THREE.Vector3(2, 2, 2)
   },
 
+
+  atmosphere: {
+    visible:        false,
+    type:           'mesh-calculate',
+    radius:         RADIUS + 0.002,
+    rotation:       [0, Math.PI * 0.5, 0],
+    intensity:      0.5,
+    color:          0x3333ff,
+  },
+
   axes: {
     visible:     false,
     type:        'mesh',
@@ -51,7 +61,7 @@ CFG.Objects = {
     type:       'mesh',
     mesh:       new THREE.ArrowHelper( 
       new THREE.Vector3( 1, 1,  1), 
-      new THREE.Vector3( 0,  0,  0), 
+      new THREE.Vector3( 0, 0,  0), 
       RADIUS + 0.08, 
       0xffff00
     )
@@ -176,14 +186,6 @@ CFG.Objects = {
         opacity: 0.8,
       })
     ),
-  },
-
-  atmosphere: {
-    visible:        true,
-    type:           'mesh-calculate',
-    radius:         RADIUS + 0.002,
-    intensity:      0.5,
-    color:          0x3333ff,
   },
 
   data: {

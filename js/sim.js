@@ -59,7 +59,7 @@ var SIM = (function () {
     activate: function () {
 
       IFC.controllers['DateTime']['choose'].setValue(time.pointer);
-
+      // SCN.updateSun(sunVector);
     },
     setSimTime: function (val, what) {
 
@@ -93,7 +93,7 @@ var SIM = (function () {
 
       IFC.Hud.time.setSim(time.show);
 
-      IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
+      // IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
 
       self.updateSun();
       self.updateModels();
@@ -105,7 +105,7 @@ var SIM = (function () {
 
       time.model = time.show.clone().hours(-time.show.hours()).hours(hours);
 
-      console.log(time.model.format('YYYY-MM-DD HH:mm'), hours);
+      // console.log(time.model.format('YYYY-MM-DD HH:mm'), hours);
 
     },
     updateSun: function (val) {

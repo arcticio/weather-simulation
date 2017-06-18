@@ -13,6 +13,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="msapplication-tap-highlight"  content="no" />
 
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Simulator">
+  <link rel="apple-touch-icon" href="" />
+
+  <meta name="mobile-web-app-capable" content="yes">
+
   <meta property="og:title" content="Weather-Simulation" />
   <meta property="og:type" content="website" />
   <meta property="og:description" content="Visualizes a set of cryospheric parameters provided by NOAA's Global Forecasing System (GFS)" />
@@ -90,7 +97,7 @@
     </div>
 
     <!-- <canvas class="simulator" style="display:none"></canvas> -->
-    <canvas class="simulator"></canvas>
+    <canvas class="simulator noselect"></canvas>
 
   </div>  
 
@@ -108,7 +115,8 @@
     <script src='libs/jquery.js'></script>
     <script src='libs/moment.js'></script>
     <script src="libs/screenfull.js"></script>
-    <script src='libs/Tween.js'></script>
+    <!-- <script src='libs/Tween.js'></script> -->
+    <script src='libs/tween.min.js'></script>
 
     <script src='libs/three.js'></script>
     <script src='libs/threeGeoJSON.js'></script>
@@ -170,6 +178,7 @@
 
           IFC.init();
           IFC.activate(); 
+          SIM.activate(); 
           SCN.render();
           IFC.show();
 

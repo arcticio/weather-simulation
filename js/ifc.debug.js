@@ -101,6 +101,6 @@
   window.GUIcontrollers = controllers;
   window.GUI = gui;
 
-  controllers['Loading'].setValue('please wait a second...');
+  // controllers['Loading'].setValue('please wait a second...');
 
 } ())

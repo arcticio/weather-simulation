@@ -30,13 +30,15 @@ IFC.Controller = (function () {
       maxDistance:  8.0,
 
       onwheel:     () => {},
+      ondrag:      () => {},
       onkey:       () => {},
+
       keys:        ['t', 'z', 'u', 'i', 'o', 'p'],
       lookAt:      new THREE.Vector3(0, 0, 0),
 
       dampX:       0.94,
       dampY:       0.94,
-      dampZ:       0.94,
+      dampZ:       0.90,
 
       keyXimpulse: 0.05,
       keyYimpulse: 0.05,
@@ -74,23 +76,26 @@ IFC.Controller = (function () {
   return self = {
 
     tag: 'aws',
+    config: cfg,
 
     handleResize: function () {},
     enable: function () {enabled = true;},
     disable: function () {enabled = false;},
-    deactivate: function () {},
-    travel: function () {},
+    // deactivate: function () {},
+    // travel: function () {},
     toggle: function () {enabled = !enabled;},
 
-    init: function (config, camera, domElement) {
+    init: function (camera, domElement, config) {
 
       cam = camera;
       ele = domElement;
-      cfg = Object.assign({}, defaults, config);
+      cfg = self.config = Object.assign({}, defaults, config);
 
       spcl.setFromVector3(cam.position);
 
       home = cam.position.clone();
+
+      return self;
 
     },
     
@@ -166,6 +171,7 @@ IFC.Controller = (function () {
         [ele,       'mousedown'],
         [ele,       'mouseup'],
         [ele,       'mousemove'],
+        [ele,       'mouseleave'],
         [ele,       'wheel'],
         [ele,       'touchstart'],
         [ele,       'touchmove'],
@@ -200,7 +206,12 @@ IFC.Controller = (function () {
 
         mouse.down.x = NaN;
         mouse.down.y = NaN;
+        mouse.last.x = NaN;
+        mouse.last.y = NaN;
 
+      },
+      mouseleave:      function (event) {
+        self.events.mouseup(event);
       },
       mousemove:    function (event) {
 
@@ -215,17 +226,30 @@ IFC.Controller = (function () {
           deltaX = (mouse.last.x - event.pageX) * cfg.moveXimpulse * dynaImpulse;
           deltaY = (mouse.last.y - event.pageY) * cfg.moveYimpulse * dynaImpulse;
 
-          self.impulse(deltaX, deltaY, 0);
+          if (IFC.mouse.overGlobe) {
+            self.impulse(deltaX, deltaY, 0);
+
+          } else {
+            cfg.ondrag(deltaX, deltaY);
+
+          }
 
           mouse.last.x = event.pageX;
           mouse.last.y = event.pageY;
+
+          return eat(event);
 
         }
 
       },
       wheel:        function (event) {
 
-        var deltaX = 0, deltaY = 0, deltaZ = 0;
+        var 
+          deltaX = 0, deltaY = 0, deltaZ = 0,
+          distance    = cam.position.length(),
+          dynaImpulse = clampScale(distance, cfg.minDistance, cfg.maxDistance, 0.2, cfg.maxDistance - cfg.minDistance)
+        ;
+
 
         if (enabled) {
 
@@ -245,15 +269,20 @@ IFC.Controller = (function () {
 
             default: // undefined, 0, assume pixels
               deltaX = event.deltaX * 0.01;
-              deltaZ = event.deltaY * 0.02;  
+              deltaZ = event.deltaY * 0.02 * dynaImpulse;  
               break;
 
           }
 
-          self.impulse(deltaX, deltaY, deltaZ);
+          if (IFC.mouse.overGlobe){
+            self.impulse(deltaX, deltaY, deltaZ);
 
-          cfg.onwheel(deltaX, deltaY, deltaZ);
-          eat(event);
+          } else {
+            cfg.onwheel(deltaX, deltaY, deltaZ);
+
+          }
+          
+          return eat(event);
 
         }
 

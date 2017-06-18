@@ -1,16 +1,19 @@
 
 CFG.Preset = {
 
-  Loading:        '',
-  SimTime:        '',
+  // Loading:        '',
+  // SimTime:        '',
   Render:         true,
-  Animate:        true,
-  Simulate:       true,
+  // Animate:        true,
+  // Simulate:       true,
+
   Reload:         () => location.reload(),
-  Camera: {
-    isFolder:     true,
-    reset:        () => {},
-  },
+  ResetCam:       () => SCN.reset.controller(),
+
+  // Camera: {
+  //   isFolder:     true,
+  //   reset:        () => {},
+  // },
 
   Ambient: { isFolder: true,
     toggle:       CFG.Objects.ambient.visible,
@@ -71,13 +74,12 @@ CFG.Preset = {
   Extras: { isFolder:   true,
     Axes:       CFG.Objects.axes.visible,
     Rotate:     () => {},
-    ZoomOut:    () => {},
   },
 
-  Simulation: { isFolder:   true,
-    start:      () => {},
-    stop:       () => {},
-    pause:      () => {},
-  },
+  // Simulation: { isFolder:   true,
+  //   start:      () => {},
+  //   stop:       () => {},
+  //   pause:      () => {},
+  // },
 
 };

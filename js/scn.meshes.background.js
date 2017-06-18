@@ -52,9 +52,9 @@ SCN.Meshes.background = function (cfg) {
 
       color.set(col);
 
-      target[pointer++] = col.r;
-      target[pointer++] = col.g;
-      target[pointer++] = col.b;
+      target[pointer++] = color.r;
+      target[pointer++] = color.g;
+      target[pointer++] = color.b;
 
     });
 

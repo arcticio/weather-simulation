@@ -447,18 +447,28 @@ IFC.Hud.time = (function () {
     render: function () {
 
       var 
+        metrics,
         now = moment().format('YYYY-MM-DD HH:mm:ss'),
-        sim = (simtime || moment.utc()).format('YYYY-MM-DD HH:[00 UTC]');
+        simDateTime = (simtime || moment.utc()),
+        simDate = simDateTime.format('YYYY-MM-DD'),
+        simTime = simDateTime.format('HH:[00 UTC]');
 
       if (ctx) {
 
         ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-        ctx.font = 'bold 20px monospace'
-        ctx.fillText(sim, 4, 24);
+        // ctx.fillStyle = 'rgba(200, 0, 0, 0.5)'
+        // ctx.fillRect(0, 0, cvs.width, cvs.height);
 
-        ctx.font = '16px monospace'
-        ctx.fillText(now, 4, 60);
+        ctx.fillStyle = '#ffffff'
+        ctx.font = 'bold 24px monospace'
+
+        metrics = ctx.measureText(simDate);
+        ctx.fillText(simDate, (cvs.width - metrics.width) / 2, 28);
+
+        ctx.font = 'bold 18px monospace'
+        metrics = ctx.measureText(simTime);
+        ctx.fillText(simTime, (cvs.width - metrics.width) / 2, 52);
 
         texture.needsUpdate = true;
 
