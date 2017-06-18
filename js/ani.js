@@ -233,7 +233,7 @@ var ANI = (function () {
               .to(target, duration)
               .onUpdate(function(d){
                 SIM.setSimTime(moment(current.now))
-                console.log(d);
+                // console.log(d);
               })
               .start()
             ;

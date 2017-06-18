@@ -152,7 +152,7 @@ var SCN = (function () {
         if (config.visible){
           tasks.push(function (callback) {
 
-            info.innerHTML = name;
+            info.innerHTML = config.title; //name;
             bar.innerHTML  = counter++ + '/' + tasks.length;
             
             self.loader[config.type](name, config, () => {
@@ -297,6 +297,8 @@ var SCN = (function () {
             color:        (value) => objects.atmosphere.update({color: new THREE.Color( value )}),
           },
           Layers : {
+            'RTOPO2':     (value) => self.toggle(objects.rtopo2, value),
+            'GMLC':       (value) => self.toggle(objects.gmlc, value),
             'SNPP':       (value) => self.toggle(objects.snpp, value),
             'DATA':       (value) => self.toggle(objects.data, value),
             'SST':        (value) => self.toggle(objects.sst, value),

@@ -45,6 +45,8 @@ CFG.Preset = {
     'BACKGROUND': CFG.Objects.background.visible,
     'POPULATION': CFG.Objects.population.visible,
     'SNPP':       CFG.Objects.snpp.visible,
+    'RTOPO2':     CFG.Objects.rtopo2.visible,
+    'GMLC':       CFG.Objects.gmlc.visible,
     'DATA':       CFG.Objects.data.visible,
     'SST':        CFG.Objects.sst.visible,
     'SEAICE':     CFG.Objects.seaice.visible,

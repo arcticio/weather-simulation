@@ -68,12 +68,14 @@ log("date1", date1)
 log("date2", date2)
 
 jobs = [
-    {"vari": "ugrdprs", "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": "[28:28]"},
-    {"vari": "vgrdprs", "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": "[28:28]"},
-    {"vari": "ugrd10m", "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": ""},
-    {"vari": "vgrd10m", "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": ""},
-    {"vari": "tmp2m",   "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": ""},
-    {"vari": "tcdcclm", "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": ""},
+    {"vari": "ugrdprs",  "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": "[28:28]"},
+    {"vari": "vgrdprs",  "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": "[28:28]"},
+    {"vari": "ugrd10m",  "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": ""},
+    {"vari": "vgrd10m",  "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": ""},
+    {"vari": "tmp2m",    "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": ""},
+    {"vari": "tcdcclm",  "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": ""},
+    {"vari": "snodsfc",  "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": ""},
+    {"vari": "pratesfc", "svr": GFS05DegRecent, "file": "DATE.VARI.RES.dods", "lvls": ""},
 ]
 
 ## http://nomads.ncep.noaa.gov:9090/dods/gfs_0p50/gfs20170529/gfs_0p50_18z.ascii?vgrdprs[2:2][28:28][0:4:360][0:4:719]
