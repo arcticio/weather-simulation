@@ -139,14 +139,16 @@
     <script src="js/res.js"></script>
     <script src="js/ani.js"></script>
 
-    <script src="js/sim.tools.js"></script>
     <script src="js/sim.js"></script>
     <script src="js/sim.vars.js"></script>
+    <script src="js/sim.tools.js"></script>
     <script src="js/sim.marray.js"></script>
-    <script src="js/sim.model.js"></script>
-    <script src="js/sim.model.wind.js"></script>
-    <script src="js/sim.model.clouds.js"></script>
-    <script src="js/sim.model.jetstream.js"></script>
+    <script src="js/sim.datagram.js"></script>
+    <script src="js/sim.parser.js"></script>
+    <script src="js/sim.models.wind.js"></script>
+    <script src="js/sim.models.clouds.js"></script>
+    <script src="js/sim.models.clouds.worker.js"></script>
+    <script src="js/sim.models.jetstream.js"></script>
 
     <script src="js/scn.js"></script>
     <script src="js/scn.tools.js"></script>
@@ -174,11 +176,18 @@
         SIM.init();
         SCN.init();
 
+        TIM.step('SCN.load.in');
+
         SCN.load(function () {
+
+          TIM.step('SCN.load.out');
 
           IFC.init();
           IFC.activate(); 
           SIM.activate(); 
+
+          TIM.step('SCN.render.in');
+
           SCN.render();
           IFC.show();
 

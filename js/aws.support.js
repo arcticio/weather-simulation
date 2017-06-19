@@ -9,6 +9,7 @@ try {
         var canvas = document.createElement( 'canvas' ); 
         return canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' );
       }()),
+      wrk = !!window.Worker,
       ex0 = true, // testing
       ex1 = wgl.getExtension('OES_texture_float'),
       ex2 = wgl.getExtension('OES_texture_float_linear'),
@@ -39,7 +40,7 @@ try {
     }
 
 
-    if (!( fun && cvs && wgl && ex0 && ex1 && ex2 /* && checkFloatSupport() */ )) {
+    if (!( fun && cvs && wgl && ex0 && ex1 && ex2 && wrk /* && checkFloatSupport() */ )) {
       throw('FAILURE'); 
     }
 

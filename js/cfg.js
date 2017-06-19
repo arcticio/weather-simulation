@@ -22,7 +22,7 @@ const FIX = {
 
 } 
 
-const TIMENOW = moment('2017-06-15 1500', 'YYYY-MM-DD HHmm');
+const TIMENOW = moment.utc('2017-06-15 1200', 'YYYY-MM-DD HHmm');
 
 const TIMERANGE = [
   '2017-06-13',

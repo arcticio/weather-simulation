@@ -440,18 +440,13 @@ IFC.Hud.time = (function () {
       self.render();
 
     },
-    setSim: function (momSim) {
-      simtime = momSim.clone();
-      self.render();
-    },
     render: function () {
 
       var 
         metrics,
         now = moment().format('YYYY-MM-DD HH:mm:ss'),
-        simDateTime = (simtime || moment.utc()),
-        simDate = simDateTime.format('YYYY-MM-DD'),
-        simTime = simDateTime.format('HH:[00 UTC]');
+        simDate = SIM.time.model.format('YYYY-MM-DD'),
+        simTime = SIM.time.model.format('HH:mm [UTC]');
 
       if (ctx) {
 

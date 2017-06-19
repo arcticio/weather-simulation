@@ -107,6 +107,7 @@ var SCN = (function () {
       // and loads them as async series
 
       var 
+        t0      = Date.now(),
         tasks   = [],
         counter = 1,
         info    = $$('.loader .info')[0],
@@ -139,34 +140,64 @@ var SCN = (function () {
             callback();
 
           }});
-        }, 50);
+        }, 30);
 
 
       });
 
-      // Objects second
+      // NON Sim Objects second
       H.each(CFG.Objects, (name, config) => {
 
-        config.name = name;
+        if (config.type !== 'simulation'){
+          config.name = name;
 
-        if (config.visible){
-          tasks.push(function (callback) {
+          if (config.visible){
+            tasks.push(function (callback) {
 
-            info.innerHTML = config.title; //name;
-            bar.innerHTML  = counter++ + '/' + tasks.length;
-            
-            self.loader[config.type](name, config, () => {
-              setTimeout(callback, 100);
+              info.innerHTML = config.title; //name;
+              bar.innerHTML  = counter++ + '/' + tasks.length;
+              
+              self.loader[config.type](name, config, () => {
+                setTimeout(callback, 30);
+              });
+
             });
 
-          });
+          } else {
+            objects[name] = config;
 
-        } else {
-          objects[name] = config;
-
+          }
         }
 
       });
+
+
+      // SIM Objects third
+      H.each(CFG.Objects, (name, config) => {
+
+        if (config.type === 'simulation'){
+          config.name = name;
+
+          if (config.visible){
+            tasks.push(function (callback) {
+
+              info.innerHTML = config.title; //name;
+              bar.innerHTML  = counter++ + '/' + tasks.length;
+              
+              self.loader[config.type](name, config, () => {
+                setTimeout(callback, 30);
+              });
+
+            });
+
+          } else {
+            objects[name] = config;
+
+          }
+        }
+
+      });
+
 
       // Execute
       async.series(tasks, function (err, res) {
@@ -181,7 +212,6 @@ var SCN = (function () {
           objects.pointer.visible = false;
 
           // finally
-          TIM.step('SCN.loaded', 'objects');
           onloaded();
 
         }
@@ -192,6 +222,14 @@ var SCN = (function () {
     loader: {
 
       // TODO: here async tasks
+
+      'simulation': (name, cfg, callback) => {
+        SIM.loadModel(name, cfg, (name, obj) => {
+          cfg.rotation && obj.rotation.fromArray(cfg.rotation);
+          self.add(name, obj);
+          callback && callback();
+        });
+      },
 
       'mesh-calculate': (name, cfg, callback) => {
         self.add(name, SCN.Meshes.calculate(name, cfg));
@@ -239,13 +277,6 @@ var SCN = (function () {
         callback && callback();
       },
 
-      'simulation': (name, cfg, callback) => {
-        SIM.load(name, cfg, (name, obj) => {
-          cfg.rotation && obj.rotation.fromArray(cfg.rotation);
-          self.add(name, obj);
-          callback && callback();
-        });
-      },
       'cube.textured': (name, cfg, callback) => {
         SCN.tools.loadCube(name, cfg, (name, obj) => {
           self.add(name, obj);
@@ -418,7 +449,7 @@ var SCN = (function () {
           IFC.Hud.time.render();
         }
 
-        objects.background.updatePosition();
+        objects.background.visible && objects.background.updatePosition();
 
         if ( !(frame % 1) ) {
           doSimulate && SIM.step(frame, deltatsecs);

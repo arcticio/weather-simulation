@@ -1,7 +1,9 @@
 
 'use strict';
 
-SIM.Model.wind = (function () {
+SIM.Models = SIM.Models || {};
+
+SIM.Models.wind = (function () {
 
   var 
     self,     

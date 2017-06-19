@@ -1,4 +1,27 @@
 
+SIM.Tools = {
+
+  momRestrictToInterval : function (mom, interval) {
+
+    return moment( Math.floor(mom.valueOf() / interval) * interval );
+
+    // .valueOf();
+    // new Date(Math.round(date.getTime() / coeff) * coeff)
+
+  },
+  minutesYear: function () {
+    return SIM.Tools.minutesPerYear(new Date().getUTCFullYear());
+  },
+  minutesPerYear: function (year) {
+    var 
+      start = new Date(year,  0,  0), 
+      end   = new Date(year, 11, 31), 
+      diff  = end - start, 
+      days  = diff / (1000 * 60 );
+    return days;
+  }
+
+};
 
 function CoordsPool(amount) {
 

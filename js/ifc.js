@@ -136,8 +136,8 @@ var IFC = (function () {
 
         },
         onwheel: function (deltaX, deltaY, deltaZ) {
-          // console.log('wheel', deltaX, deltaY, deltaZ);
-          SIM.setSimTime( ~~(deltaX * 100), 'minutes');
+          // console.log('wheel', ~~(deltaZ * -5), 'minutes');
+          SIM.setSimTime( ~~(deltaZ * -5), 'minutes');
 
         },
 
@@ -302,11 +302,11 @@ var IFC = (function () {
       },
       mouseover:  function (event) { /* console.log('mouseenter') */ },
       mouseenter:   function (event) { 
-        console.log('mouseenter');
+        // console.log('mouseenter');
         SCN.toggleRender(true);
       },
       mouseleave:  function (event) {
-        console.log('mouseleave')
+        // console.log('mouseleave')
         SCN.toggleRender(false);
       },
       mouseout:    function (event) { /* console.log('mouseout') */ },
@@ -383,10 +383,10 @@ var IFC = (function () {
       if (oldMouseOver !== mouse.overGlobe){
         if (mouse.overGlobe) {
           ANI.insert(0, ANI.library.scaleGLobe(1.0, 800));
-          GUI.closed = true;
+          // GUI.closed = true;
         } else {
           if (!isNaN(oldMouseOver)) {
-            GUI.closed = false;
+            // GUI.closed = false;
           }
           ANI.insert(0, ANI.library.scaleGLobe(0.94, 800));
         }

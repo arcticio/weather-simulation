@@ -1,28 +1,61 @@
 
 'use strict';
 
-SIM.Model.clouds = (function () {
+SIM.Models = SIM.Models || {};
+
+SIM.Models.clouds = (function () {
 
   var 
     self,     
+    cfg,
+    datagram,
     model = {
       obj:     new THREE.Object3D(),
       sectors: [],
       step:   function () {
         H.each(model.sectors, (_, sec) => sec.step() )
       },
-    };
+    },
+    worker= new Worker('js/sim.models.clouds.worker.js'),
+
+  end;
+
+  var payload = new Float32Array([1,2,3,4,5,6]);
+
+  worker.postMessage({topic: 'quadratic', payload, id: Date.now() }, [payload.buffer]);
+
+  worker.onmessage = function (event) {
+    console.log('answer', event.data);
+  };
+
 
   return self = {
     convLL: function (lat, lon, alt) {return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, alt); },
     convV3: function (v3, alt) { return TOOLS.vector3ToLatLong(v3, CFG.earth.radius + alt); },
-    
-    create: function (cfg, datagramm) {
 
+    calcUrls: function (mom) {
+
+      return cfg.sim.patterns.map( pattern => cfg.datahome + mom.format(pattern));
+
+    },
+
+    create: function (config, simdata) {
+
+      cfg = config;
+      datagram = simdata;
+
+      return model;
+
+    },
+    prepare: function ( mom ) {
+
+    
       TIM.step('Model.clouds.in');
 
       var
+        t0 = Date.now(),
         i, p, c, m, ibp, ibc, coord, points, material, color, 
+        doe      = H.date2doeFloat(mom.toDate()),
         size     = cfg.size,
         amount   = cfg.amount,
         radius   = cfg.radius,
@@ -40,7 +73,7 @@ SIM.Model.clouds = (function () {
       for ( i=0, c=0, p=0; i < coords.length; i+=1, p+=3, c+=1 ) {
 
         coord = coords[i];
-        color = datagramm.tcdcclm.linearXY(0, coord.lat, coord.lon) / 100;
+        color = datagram.tcdcclm.linearXY(doe, coord.lat, coord.lon) / 100;
 
         attributes.position.array[p + 0] = coord.x;
         attributes.position.array[p + 1] = coord.y;
@@ -73,7 +106,7 @@ SIM.Model.clouds = (function () {
 
       model.obj.add(points);
 
-      TIM.step('Model.clouds.out');
+      TIM.step('Model.clouds.out', Date.now() -t0, 'ms');
 
       return model;
 
@@ -94,7 +127,7 @@ SIM.Model.clouds = (function () {
 
           vec3 pos = position * radius;
 
-          vColor = vec4(color, color, color, color);
+          vColor = vec4(0.9, 0.0, 0.0, 1.0);
 
           vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
 

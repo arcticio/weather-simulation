@@ -221,7 +221,7 @@ var ANI = (function () {
         add: function (val, what, duration) {
 
           var 
-            current = {now: SIM.time.show.unix() * 1000},
+            current = {now: SIM.time.model.unix() * 1000},
             target  = {now: current.now + 24 * 60 * 60 * 1000};
 
           return function () {

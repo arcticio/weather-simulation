@@ -6,7 +6,8 @@ CFG.Objects = {
     cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
     // pos:             new THREE.Vector3(4, 0, 0),                            // Äq
     // pos:             new THREE.Vector3().add({x: 4.0, y: 0.0, z: 0.0}),
-    pos:             new THREE.Vector3().add({x: 2, y: 2.413, z: -0.0}), // Europe
+    // pos:             new THREE.Vector3().add({x: 2, y: 2.413, z: -0.0}), // Europe
+    pos:             new THREE.Vector3().add({x: 0.9228848653425755, y: 1.0474566483142982, z: -0.07338449517434145}), // cloud test
   },
 
   ambient: {
@@ -75,7 +76,7 @@ CFG.Objects = {
   },
 
   background: {
-    visible:        true,
+    visible:        false,
     title:          'dynamic background',
     type:           'mesh-calculate',
     size:           4.0,
@@ -324,7 +325,7 @@ CFG.Objects = {
   },
 
   jetstream: {
-    visible:        true,
+    visible:        false,
     title:          'GFS - jetstream at 300hpa',
     type:           'simulation',
     subtype:        'multiline',
@@ -356,14 +357,18 @@ CFG.Objects = {
   },
 
   clouds: {
-    visible:        false,
+    visible:        true,
     title:          'GFS - total cloud cover',
     type:           'simulation',
     rotation:       [0, Math.PI, 0],
     radius:         RADIUS + 0.005, 
     amount:         10000,
     size:           4.0,
+    datahome:       'data/gfs/tcdcclm/',
     sim: {
+      patterns: [
+        'YYYY-MM-DD-HH[.tcdcclm.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
+      ],
       data: [
         'data/gfs/tcdcclm/2017-06-13-12.tcdcclm.10.dods',
       ],

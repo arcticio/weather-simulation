@@ -1,7 +1,9 @@
 
 'use strict';
 
-SIM.Model.jetstream = (function () {
+SIM.Models = SIM.Models || {};
+
+SIM.Models.jetstream = (function () {
 
   var 
     self,     
@@ -35,6 +37,10 @@ SIM.Model.jetstream = (function () {
         pool      = SIM.coordsPool.slice(cfg.amount * cfg.sim.sectors.length),
 
       end;
+
+      if (SCN.renderer.capabilities.maxVertexUniforms < 4096){
+        cfg.amount = 200;
+      }
 
       H.each(cfg.sim.sectors, (_, sector)  => {
 
