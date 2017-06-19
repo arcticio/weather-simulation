@@ -58,7 +58,6 @@ CFG.Preset = {
     'GRATICULE':  CFG.Objects.graticule.visible,
     'SECTOR':     CFG.Objects.sector.visible,
     // 'TEST':       CFG.Objects.test.visible,
-    // 'RANDOM':     CFG.Objects.randomizer.visible,
   },
 
   DateTime : { isFolder:    true,

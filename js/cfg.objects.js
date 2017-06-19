@@ -6,7 +6,7 @@ CFG.Objects = {
     cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
     // pos:             new THREE.Vector3(4, 0, 0),                            // Äq
     // pos:             new THREE.Vector3().add({x: 4.0, y: 0.0, z: 0.0}),
-    pos:             new THREE.Vector3().add({x: 3.156, y: 2.413, z: -0.0}), // Europe
+    pos:             new THREE.Vector3().add({x: 2, y: 2.413, z: -0.0}), // Europe
   },
 
   ambient: {
@@ -23,7 +23,7 @@ CFG.Objects = {
     title:          'spot light',
     type:           'light',
     color:          0xffffff, 
-    intensity:      0.5, // no 0 here
+    intensity:      0.9, // no 0 here
     distance:       0.0, 
     angle:          0.3, 
     penumbra:       0.1, 
@@ -157,17 +157,6 @@ CFG.Objects = {
     }
   },
 
-  randomizer: {
-    visible:        false,
-    title:          'randomizer',
-    type:           'custom',
-    amount:         100000,
-    color:          0xeeeeee,
-    opacity:        0.1,
-    radius:         RADIUS + 0.3,
-    size:           0.01,
-  },
-
   land: {
     visible:        false,
     title:          'geojson land',
@@ -203,7 +192,7 @@ CFG.Objects = {
   },
 
   data: {
-    visible:         false,
+    visible:         true,
     title:          'simple surface layer',
     type:            'cube.textured',
     rotation:        [0, Math.PI / 2, 0],
@@ -237,7 +226,7 @@ CFG.Objects = {
   },
 
   gmlc: {
-    visible:         true,
+    visible:         false,
     title:          'GLCNMO - vegetation layer',
     type:            'cube.textured',
     rotation:        [0, Math.PI / 2, 0],
@@ -335,7 +324,7 @@ CFG.Objects = {
   },
 
   jetstream: {
-    visible:        false,
+    visible:        true,
     title:          'GFS - jetstream at 300hpa',
     type:           'simulation',
     subtype:        'multiline',

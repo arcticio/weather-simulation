@@ -147,7 +147,6 @@ var IFC = (function () {
 
       IFC.Hud.init();
 
-
     },
     show: function () {
 
@@ -156,8 +155,6 @@ var IFC = (function () {
       $$('canvas.simulator')[0].style.display = 'block';
 
       IFC.Hud.resize();
-
-      controller.handleResize();
 
     },
     activate: function () {
@@ -200,12 +197,12 @@ var IFC = (function () {
 
       TWEEN.update();
 
-      controller.update && controller.update(frame, deltatime);
-      controller.step   && controller.step(frame, deltatime);
+      controller.step(frame, deltatime);
 
       self.updateMouse();
       self.updateGlobe();
-      IFC.Hud.step();
+
+      IFC.Hud.step(frame, deltatime);
 
       // GUI infos
       // self.updatePanels();
@@ -221,8 +218,6 @@ var IFC = (function () {
         canvas.height   = SCN.renderer.domElement.height;
         canvas.aspect   = canvas.width / canvas.height;
         canvas.diagonal = Math.hypot(canvas.width, canvas.height);
-
-        controller && controller.handleResize();
 
         IFC.Hud.resize();
 
