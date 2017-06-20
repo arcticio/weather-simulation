@@ -362,10 +362,10 @@ CFG.Objects = {
     type:           'simulation',
     rotation:       [0, Math.PI, 0],
     radius:         RADIUS + 0.005, 
-    amount:         10000,
-    size:           4.0,
-    datahome:       'data/gfs/tcdcclm/',
+    amount:         20000,
+    size:           8.0,
     sim: {
+      dataroot:     'data/gfs/tcdcclm/',
       patterns: [
         'YYYY-MM-DD-HH[.tcdcclm.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
       ],
@@ -373,7 +373,7 @@ CFG.Objects = {
         'data/gfs/tcdcclm/2017-06-13-12.tcdcclm.10.dods',
       ],
       sectors: [
-        [ 89.9, -180,  -89.9,  180 ], // all
+        [ 89.99, -180.0,  -89.99,  180.0 ], // all
       ],
     }
   },

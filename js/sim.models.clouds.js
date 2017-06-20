@@ -15,6 +15,9 @@ SIM.Models.clouds = (function () {
       step:   function () {
         H.each(model.sectors, (_, sec) => sec.step() )
       },
+      calcUrls: function (mom) {
+        return cfg.sim.patterns.map( pattern => cfg.sim.dataroot + mom.format(pattern));
+      }
     },
     worker= new Worker('js/sim.models.clouds.worker.js'),
 
@@ -25,20 +28,13 @@ SIM.Models.clouds = (function () {
   worker.postMessage({topic: 'quadratic', payload, id: Date.now() }, [payload.buffer]);
 
   worker.onmessage = function (event) {
-    console.log('answer', event.data);
+    // console.log('answer', event.data);
   };
 
 
   return self = {
     convLL: function (lat, lon, alt) {return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, alt); },
     convV3: function (v3, alt) { return TOOLS.vector3ToLatLong(v3, CFG.earth.radius + alt); },
-
-    calcUrls: function (mom) {
-
-      return cfg.sim.patterns.map( pattern => cfg.datahome + mom.format(pattern));
-
-    },
-
     create: function (config, simdata) {
 
       cfg = config;
@@ -47,7 +43,7 @@ SIM.Models.clouds = (function () {
       return model;
 
     },
-    prepare: function ( mom ) {
+    prepare: function ( doe ) {
 
     
       TIM.step('Model.clouds.in');
@@ -55,12 +51,11 @@ SIM.Models.clouds = (function () {
       var
         t0 = Date.now(),
         i, p, c, m, ibp, ibc, coord, points, material, color, 
-        doe      = H.date2doeFloat(mom.toDate()),
+        // doe      = H.date2doeFloat(mom.toDate()),
         size     = cfg.size,
         amount   = cfg.amount,
         radius   = cfg.radius,
-        pool     = SIM.coordsPool.slice(amount),
-        coords   = pool.pool,
+        pool     = SIM.coordsPool.slice(amount).pool,
         geometry = new THREE.BufferGeometry(),
 
         attributes = {
@@ -70,9 +65,9 @@ SIM.Models.clouds = (function () {
 
       end;
 
-      for ( i=0, c=0, p=0; i < coords.length; i+=1, p+=3, c+=1 ) {
+      for ( i=0, c=0, p=0; i < pool.length; i+=1, p+=3, c+=1 ) {
 
-        coord = coords[i];
+        coord = pool[i];
         color = datagram.tcdcclm.linearXY(doe, coord.lat, coord.lon) / 100;
 
         attributes.position.array[p + 0] = coord.x;

@@ -41,6 +41,12 @@ const TIMERANGE = [
 
 var CFG = {
 
+  Sim: {
+    coordspool : {
+      amount:       200000,
+    }
+  },
+
   Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
   Textures: {

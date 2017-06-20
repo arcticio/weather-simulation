@@ -29,9 +29,10 @@ var SIM = (function () {
       iso:         '',
       doe:         NaN,
       start:       moment.utc('2017-01-01-00', 'YYYY-MM-DD-HH'),  // give full year, no purpose
+      end:         moment.utc('2017-12-31-18', 'YYYY-MM-DD-HH'),  // complete full year
+
       now:         moment.utc(),                                  // now, plus init show
       // show:        moment.utc('2017-06-13-12', 'YYYY-MM-DD-HH'),  // shown on screen
-      end:         moment.utc('2017-12-31-18', 'YYYY-MM-DD-HH'),  // complete full year
       model:       null,
       interval:    NaN,                                      // only calc full hours
       pointer:     NaN,                                           // coming from interface
@@ -53,19 +54,16 @@ var SIM = (function () {
 
       var t0 = Date.now();
 
-      coordsPool = self.coordsPool = new CoordsPool(100000).generate();
+      coordsPool = self.coordsPool = new CoordsPool(CFG.Sim.coordspool.amount).generate();
 
-      time.interval = 60 * 60 * 1000; //SIM.Tools.minutesYear() * 60;
+      time.interval = 6 * 60 * 60 * 1000; //SIM.Tools.minutesYear() * 60;
 
       time.now   = TIMENOW.clone();
       time.model = TIMENOW.clone();
-      time.doe   = H.date2doeFloat(time.model.toDate());
+      time.doe   = self.calcdoe(time.model);
 
-      // time.pointer = time.now.diff(time.start, 'hours');
-      // timerange.push(dataTimeRanges['3d-simulation'][0]);
-
-      console.log('time.now',  time.now.format('YYYY-MM-DD HH[:]mm'));
-      console.log('time.model', time.model.format('YYYY-MM-DD HH[:]mm'));
+      TIM.step('SIM.time', 'time.now',   time.now.format('YYYY-MM-DD HH[:]mm'));
+      TIM.step('SIM.time', 'time.model', time.model.format('YYYY-MM-DD HH[:]mm'));
 
       TIM.step('Pool.generate', Date.now() - t0);
 
@@ -74,11 +72,17 @@ var SIM = (function () {
 
       // IFC.controllers['DateTime']['choose'].setValue(time.pointer);
       // SCN.updateSun(sunVector);
+      
+      // self.setSimTime();
 
     },
     setSimTime: function (val, what) {
 
-      if (typeof val === 'number' && what === undefined) {
+      if (val === undefined && what === undefined) {
+        // init
+        time.model = TIMENOW;
+
+      } else if (typeof val === 'number' && what === undefined) {
 
         // set hours directly
         time.model = time.start.clone().add(val, 'hours');
@@ -105,29 +109,30 @@ var SIM = (function () {
 
       }
 
-      // time.show    = SIM.Tools.momRestrictToInterval(time.show, time.interval);
-      time.iso  = time.model.format('YYYY-MM-DD HH');
-      time.doe  = H.date2doeFloat(time.model.toDate());
+      // display
+      time.iso = time.model.format('YYYY-MM-DD HH');
 
-      // time.pointer = time.now.diff(time.start, 'hours');
+      // fixed at avail data
+      time.doe = self.calcdoe(time.model);
 
       IFC.Hud.time.render();
-
-      // IFC.controllers['SimTime'].setValue(time.show.format('YYYY-MM-DD HH:mm'));
 
       self.updateSun();
       self.updateModels();
 
     },
+    calcdoe: function (mom) {
+      // rstrict now at avail dods
+      var tmp = mom.clone().hours(mom.hours() - (mom.hours() % 6));
+      return H.date2doeFloat(tmp.toDate());
+    },
+    mom2doe: function (mom) {return mom.toDate() / 864e5},
+    doe2mom: function (doe) {return moment.utc(doe * 864e5)},
     updateModels: function () {
 
-      // time.model = SIM.Tools.momRestrictToInterval(time.show, time.interval * 6);
+      H.each(models, (name, model) => model.prepare(time.doe) );
 
-      // var hours = time.show.hours() % 6;
-
-      // time.model = time.show.clone().hours(-time.show.hours()).hours(hours);
-
-      console.log(time.model.format('YYYY-MM-DD HH:mm'));
+      console.log('SIM.updateModelsel', time.doe, time.model.format('YYYY-MM-DD HH:mm'));
 
     },
     updateSun: function (val) {
@@ -153,45 +158,44 @@ var SIM = (function () {
       SCN.updateSun(sunVector);
 
     },
-    adjust: function (mom) {
-      return mom.clone().hours(mom.hours() - (mom.hours() % 6));
-    },
     loadModel: function (name, cfg, callback) {
 
       var 
-        urls, 
-        model, 
-        factory = SIM.Models[name];
+        vari, 
+        factory = SIM.Models[name],
+        model   = factory.create(cfg, datagrams),
+        urls    = model.calcUrls(self.doe2mom(time.doe));
 
-      model = models[name] = factory.create(cfg, datagrams);
-      urls  = factory.calcUrls(self.adjust(SIM.time.model));
+      models[name] = model;
 
-      RES.load({ urls,
+      RES.load({ 
+        urls,
         onFinish: function (err, responses) {
 
-          responses.forEach(function (response) {
+          if (err) { throw err } else {
 
-            var vari, data;
-
-            if (response){
+            responses.forEach(function (response) {
 
               vari = response.url.split('.').slice(-3)[0];
-              // data = SIM.Parser.parseMultiDods(vari, response.data);
 
-              datagrams[vari] = new SIM.Datagram(vari).parse(time.doe, response.data);
+              if (!datagrams[vari]) {
+                datagrams[vari] = new SIM.Datagram(vari).parse(time.doe, response.data);
 
-              factory.prepare(SIM.time.model, datagrams);
+              } else {
+                datagrams[vari].parse(time.doe, response.data);
 
-            } else {
-              console.log('WTF');
-            }
+              }
 
-          });
-          
-          console.log(factory.calcUrls(SIM.time.model));
+              factory.prepare(time.doe);
 
-          // return 3D object to scene
-          callback(name, model.obj);
+            });
+            
+            TIM.step('SIM.load', vari, time.doe);
+
+            // return 3D object to scene
+            callback(name, models[name].obj);
+
+          }
 
         }
       });    

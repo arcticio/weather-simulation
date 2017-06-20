@@ -13,6 +13,12 @@ try {
       ex0 = true, // testing
       ex1 = wgl.getExtension('OES_texture_float'),
       ex2 = wgl.getExtension('OES_texture_float_linear'),
+      tro = (function () {
+        try {
+          window.postMessage('', '*', [new Float32Array(4).buffer]);
+          return true;
+        } catch (e) {return false}
+      }()),
 
     end;
 
@@ -40,7 +46,7 @@ try {
     }
 
 
-    if (!( fun && cvs && wgl && ex0 && ex1 && ex2 && wrk /* && checkFloatSupport() */ )) {
+    if (!( fun && cvs && wgl && ex0 && ex1 && ex2 && wrk && tro /* && checkFloatSupport() */ )) {
       throw('FAILURE'); 
     }
 

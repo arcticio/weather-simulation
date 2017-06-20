@@ -185,6 +185,8 @@ SIM.Parser = (function () {
                 ),
                 spend = Date.now() - t0;
 
+            console.log('parse', tims[0] / 864e5);
+
             return {name, lats, lons, tims, alts, shape, vari, date, data, spend};
 
 

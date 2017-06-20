@@ -29,7 +29,7 @@ if( typeof importScripts === 'function') {
       topic   = event.data.topic,
       payload = event.data.payload;
 
-    console.log('cloud.job', topic, id, typeof payload);
+    // console.log('cloud.job', topic, id, typeof payload);
 
     if (topics[topic]) {
 

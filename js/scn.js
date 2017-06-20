@@ -105,6 +105,7 @@ var SCN = (function () {
 
       // collects resource requests from textures, meshes, and models
       // and loads them as async series
+      // timeouts keep GUI updated
 
       var 
         t0      = Date.now(),
@@ -212,7 +213,7 @@ var SCN = (function () {
           objects.pointer.visible = false;
 
           // finally
-          onloaded();
+          setTimeout(onloaded, 30);
 
         }
 
@@ -352,8 +353,8 @@ var SCN = (function () {
             choose:       (value) => SIM.setSimTime(value),
             'hour  +1':   (value) => SIM.setSimTime(  1, 'hours'),
             'hour  -1':   (value) => SIM.setSimTime( -1, 'hours'),
-            'hour  +6':   (value) => SIM.setSimTime(  4, 'hours'),
-            'hour  -6':   (value) => SIM.setSimTime( -4, 'hours'),
+            'hour  +6':   (value) => SIM.setSimTime(  6, 'hours'),
+            'hour  -6':   (value) => SIM.setSimTime( -6, 'hours'),
             'hour +24':   (value) => SIM.setSimTime( 24, 'hours'),
             'hour -24':   (value) => SIM.setSimTime(-24, 'hours'),
             'day  +30':   (value) => SIM.setSimTime( 30, 'days'),
