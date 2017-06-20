@@ -161,6 +161,8 @@ SIM.Datagram.prototype = {
             ),
             spend = Date.now() - t0;
 
+        // console.log(tims[0] / 864e5);
+
         return {lats, lons, tims, alts, shape, vari, date, doe, data, spend};
 
     },

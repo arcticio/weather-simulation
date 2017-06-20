@@ -140,6 +140,13 @@ var IFC = (function () {
           SIM.setSimTime( ~~(deltaZ * -5), 'minutes');
 
         },
+        onkey: function (key) {
+          var actions = {
+            't': () => SIM.setSimTime( -6, 'hours'),
+            'z': () => SIM.setSimTime(  6, 'hours'),
+          };
+          actions[key]();
+        }
 
       });
       controller.activate();

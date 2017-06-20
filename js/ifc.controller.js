@@ -350,8 +350,8 @@ IFC.Controller = (function () {
             cfg.keyactions[keys.key](xImp, yImp, zImp);          
             return eat(event);
           
-          } else if (keys.key in keys) {
-            onkey(keys.key);
+          } else if (cfg.keys.indexOf(keys.key) !== -1) {
+            cfg.onkey(keys.key);
             return eat(event);
 
           }

@@ -11,15 +11,40 @@ SIM.Models.clouds = (function () {
     datagram,
     model = {
       obj:     new THREE.Object3D(),
+      objects: {},
       sectors: [],
+      mindoe:  NaN,
+      maxdoe:  NaN,
       step:   function () {
         H.each(model.sectors, (_, sec) => sec.step() )
       },
-      calcUrls: function (mom) {
-        return cfg.sim.patterns.map( pattern => cfg.sim.dataroot + mom.format(pattern));
-      }
+      url2doe: function (url) {
+
+        // "data/gfs/tcdcclm/2017-06-15-12.tcdcclm.10.dods"
+        // TODO: deal with multiple patterns
+
+        var 
+          file = url.split('/').slice(-1)[0],
+          mom  = moment.utc(file, cfg.sim.patterns[0]);
+
+        return mom.toDate() / 864e5;
+
+      },
+      calcUrls: function (moms) {
+
+        var urls = [];
+
+        moms.forEach(mom => {
+          cfg.sim.patterns.forEach(pattern => {
+            urls.push(cfg.sim.dataroot + mom.format(pattern))
+          });
+        });
+
+        return urls;
+
+      },
     },
-    worker= new Worker('js/sim.models.clouds.worker.js'),
+    worker = new Worker('js/sim.models.clouds.worker.js'),
 
   end;
 
@@ -35,23 +60,53 @@ SIM.Models.clouds = (function () {
   return self = {
     convLL: function (lat, lon, alt) {return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, alt); },
     convV3: function (v3, alt) { return TOOLS.vector3ToLatLong(v3, CFG.earth.radius + alt); },
+    updateMinMax: function () {
+      model.mindoe = Math.min.apply(Math, Object.keys(model.objects));
+      model.maxdoe = Math.max.apply(Math, Object.keys(model.objects));
+    },
     create: function (config, simdata) {
 
       cfg = config;
       datagram = simdata;
 
+      model.show    = self.show;
+      model.prepare = self.prepare;
+
       return model;
+
+    },
+    show: function (doe) {
+
+      while (model.obj.children.length) {
+        model.obj.remove(model.obj.children[0]);
+      }
+
+      if (model.objects[doe]) {
+
+        // that's a hit
+        model.obj.add(model.objects[doe]);
+
+      } else if (doe > model.mindoe && doe < model.maxdoe) {
+
+        // needs math
+        console.log('clouds.show', 'doe', doe, model.mindoe, model.maxdoe);
+
+      } else {
+        console.warn('clouds.show.error', 'doe', doe, model.mindoe, model.maxdoe);
+
+      }
 
     },
     prepare: function ( doe ) {
 
     
-      TIM.step('Model.clouds.in');
+      TIM.step('Model.clouds.in', doe);
+
+      if ( !datagram.tcdcclm.data[doe] ) {debugger;}
 
       var
         t0 = Date.now(),
-        i, p, c, m, ibp, ibc, coord, points, material, color, 
-        // doe      = H.date2doeFloat(mom.toDate()),
+        i, p, m, ibp, ibc, coord, points, material, color, 
         size     = cfg.size,
         amount   = cfg.amount,
         radius   = cfg.radius,
@@ -65,7 +120,7 @@ SIM.Models.clouds = (function () {
 
       end;
 
-      for ( i=0, c=0, p=0; i < pool.length; i+=1, p+=3, c+=1 ) {
+      for ( i=0, p=0; i < pool.length; i+=1, p+=3 ) {
 
         coord = pool[i];
         color = datagram.tcdcclm.linearXY(doe, coord.lat, coord.lon) / 100;
@@ -74,7 +129,7 @@ SIM.Models.clouds = (function () {
         attributes.position.array[p + 1] = coord.y;
         attributes.position.array[p + 2] = coord.z;
 
-        attributes.color.array[c + 0] = color;
+        attributes.color.array[i + 0] = color;
 
       }
 
@@ -99,7 +154,10 @@ SIM.Models.clouds = (function () {
         material.uniforms.distance.needsUpdate = true;
       };
 
-      model.obj.add(points);
+      // model.obj.add(points);
+
+      model.objects[doe] = points;
+      self.updateMinMax();
 
       TIM.step('Model.clouds.out', Date.now() -t0, 'ms');
 
@@ -122,7 +180,8 @@ SIM.Models.clouds = (function () {
 
           vec3 pos = position * radius;
 
-          vColor = vec4(0.9, 0.0, 0.0, 1.0);
+          // vColor = vec4(0.9, 0.0, 0.0, 1.0);
+          vColor = vec4(color, color, color, color);
 
           vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
 

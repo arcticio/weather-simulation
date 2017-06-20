@@ -362,7 +362,7 @@ CFG.Objects = {
     type:           'simulation',
     rotation:       [0, Math.PI, 0],
     radius:         RADIUS + 0.005, 
-    amount:         20000,
+    amount:         1e5,
     size:           8.0,
     sim: {
       dataroot:     'data/gfs/tcdcclm/',

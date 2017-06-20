@@ -43,7 +43,7 @@ var CFG = {
 
   Sim: {
     coordspool : {
-      amount:       200000,
+      amount:       5e5,
     }
   },
 

@@ -56,6 +56,8 @@ var SIM = (function () {
 
       coordsPool = self.coordsPool = new CoordsPool(CFG.Sim.coordspool.amount).generate();
 
+      TIM.step('Pool.generate', Date.now() - t0, 'ms', CFG.Sim.coordspool.amount);
+
       time.interval = 6 * 60 * 60 * 1000; //SIM.Tools.minutesYear() * 60;
 
       time.now   = TIMENOW.clone();
@@ -65,7 +67,6 @@ var SIM = (function () {
       TIM.step('SIM.time', 'time.now',   time.now.format('YYYY-MM-DD HH[:]mm'));
       TIM.step('SIM.time', 'time.model', time.model.format('YYYY-MM-DD HH[:]mm'));
 
-      TIM.step('Pool.generate', Date.now() - t0);
 
     },
     activate: function () {
@@ -117,8 +118,7 @@ var SIM = (function () {
 
       IFC.Hud.time.render();
 
-      self.updateSun();
-      self.updateModels();
+      self.show(time.doe);
 
     },
     calcdoe: function (mom) {
@@ -128,11 +128,14 @@ var SIM = (function () {
     },
     mom2doe: function (mom) {return mom.toDate() / 864e5},
     doe2mom: function (doe) {return moment.utc(doe * 864e5)},
-    updateModels: function () {
+    show: function (doe) {
 
-      H.each(models, (name, model) => model.prepare(time.doe) );
+      doe = doe || time.doe;
+      H.each(models, (_, model) => model.show(doe) );
 
-      console.log('SIM.updateModelsel', time.doe, time.model.format('YYYY-MM-DD HH:mm'));
+      self.updateSun();
+
+      console.log('SIM.show', time.doe, doe);
 
     },
     updateSun: function (val) {
@@ -161,49 +164,54 @@ var SIM = (function () {
     loadModel: function (name, cfg, callback) {
 
       var 
-        vari, 
+        vari, doe,
+        mom     = self.doe2mom(time.doe),
+        moms    = [
+          mom, 
+          mom.clone().add( 6, 'hours'),
+          mom.clone().add(12, 'hours'),
+          mom.clone().add(18, 'hours'),
+        ],
         factory = SIM.Models[name],
         model   = factory.create(cfg, datagrams),
-        urls    = model.calcUrls(self.doe2mom(time.doe));
+        urls    = model.calcUrls(moms);
 
       models[name] = model;
 
-      RES.load({ 
-        urls,
-        onFinish: function (err, responses) {
+      RES.load({ urls, onFinish: function (err, responses) {
 
-          if (err) { throw err } else {
+        if (err) { throw err } else {
 
-            responses.forEach(function (response) {
+          responses.forEach(function (response) {
 
-              vari = response.url.split('.').slice(-3)[0];
+            vari = response.url.split('.').slice(-3)[0];
+            doe  = model.url2doe(response.url);
 
-              if (!datagrams[vari]) {
-                datagrams[vari] = new SIM.Datagram(vari).parse(time.doe, response.data);
+            if (!datagrams[vari]) {
+              datagrams[vari] = new SIM.Datagram(vari).parse(doe, response.data);
 
-              } else {
-                datagrams[vari].parse(time.doe, response.data);
+            } else {
+              datagrams[vari].parse(doe, response.data);
 
-              }
+            }
 
-              factory.prepare(time.doe);
+            model.prepare(doe);
 
-            });
-            
-            TIM.step('SIM.load', vari, time.doe);
+          });
+          
+          TIM.step('SIM.load', vari, time.doe);
 
-            // return 3D object to scene
-            callback(name, models[name].obj);
-
-          }
+          // return 3D object to scene
+          callback(name, models[name].obj);
 
         }
-      });    
+
+      }});    
 
     },
     step: function (frame, deltatime) {
 
-      H.each(models, (name, model) => model.step(frame, deltatime) );
+      H.each(models, (_, model) => model.step(frame, deltatime) );
 
       frame += 1;
 
