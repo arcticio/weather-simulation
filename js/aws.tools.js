@@ -1,6 +1,17 @@
 
 var TOOLS = {
 
+  debounce(fn, delay) {
+    var timer = null;
+    return function () {
+      var context = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        fn.apply(context, args);
+      }, delay);
+    };
+  },
+
   createLatLonsRectFibanocci: function (samples) {
 
     // https://stackoverflow.com/questions/9600801/evenly-distributing-n-points-on-a-sphere

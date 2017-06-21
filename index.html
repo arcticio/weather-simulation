@@ -117,8 +117,8 @@
     <script src='libs/jquery.js'></script>
     <script src='libs/moment.js'></script>
     <script src="libs/screenfull.js"></script>
-    <!-- <script src='libs/Tween.js'></script> -->
     <script src='libs/tween.min.js'></script>
+    <script src='libs/native.history.js'></script>
 
     <script src='libs/three.js'></script>
     <script src='libs/threeGeoJSON.js'></script>
@@ -132,15 +132,14 @@
     <script src="js/aws.tools.js"></script>
     <script src="js/aws.time.js"></script>
     <script src="js/aws.multiline.js"></script>
+    <script src="js/aws.res.js"></script>
+    <script src="js/aws.ani.js"></script>
 
     <script src="js/cfg.js"></script>
     <script src="js/cfg.manager.js"></script>
     <script src="js/cfg.sprites.js"></script>
     <script src="js/cfg.objects.js"></script>
     <script src="js/cfg.preset.js"></script>
-
-    <script src="js/res.js"></script>
-    <script src="js/ani.js"></script>
 
     <script src="js/sim.js"></script>
     <script src="js/sim.vars.js"></script>
@@ -196,7 +195,7 @@
           SCN.render();
           IFC.show();
 
-          ANI.insert(0, ANI.library.intro());
+          ANI.insert(0, ANI.library.intro(800));
 
           TIM.step('WIN.load.out');
 

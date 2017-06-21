@@ -41,6 +41,8 @@ const TIMERANGE = [
 
 var CFG = {
 
+  Title: 'Simulator',
+
   Sim: {
     coordspool : {
       amount:       5e5,

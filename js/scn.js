@@ -205,7 +205,7 @@ var SCN = (function () {
 
         if (err) {throw err} else {
 
-          header.innerHTML   = 'Have fun';
+          header.innerHTML   = 'Uploading to GPU...';
           info.style.display = 'none';
           bar.style.display  = 'none';
 

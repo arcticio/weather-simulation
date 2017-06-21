@@ -164,9 +164,38 @@ var IFC = (function () {
       IFC.Hud.resize();
 
     },
+    updateUrl: function () {
+
+      TOOLS.debounce( function () {
+
+        var 
+          time   = SIM.time.model.format('YYYY-MM-DD-HH-mm'),
+          assets = SCN.scene.children
+            .filter( c => c.visible)
+            .map(   c => CFG.Objects[c.name].id)
+            .filter( id => !!id),
+          hash   = CFG.assets2hash(assets),
+          pos    = SCN.camera.position,
+          coords = `${pos.x};${pos.y};${pos.z}`,
+          path   = `/${hash}/${time}/${coords}`,
+        end;
+
+        console.log('url', path);
+
+        History.replaceState({}, CFG,Title, path);
+
+      }, 200);
+
+    },
     activate: function () {
 
       controller.enabled = true;
+
+      History.Adapter.bind(window, 'statechange', function () { 
+        // Note: We are using statechange instead of popstate
+        // Note: We are using History.getState() instead of event.state
+        var State = History.getState(); 
+      });
 
       H.each([
 

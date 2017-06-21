@@ -80,7 +80,7 @@ var ANI = (function () {
           var tween = new TWEEN
             .Tween(current)
             .delay(100)
-            .easing(TWEEN.Easing.Exponential.In)
+            .easing(TWEEN.Easing.Exponential.Out)
             .to(target, 2000)
             .repeat(0)
             .onStart(function(d){
@@ -102,21 +102,40 @@ var ANI = (function () {
 
       },
 
-      intro: function () {
+      intro: function (duration) {
 
         var 
-          table = $$('table.loader')[0],
-          current = {alpha: 1.0},
-          target  = {alpha: 0.0};
+          spherical, rgba,
+          table    = $$('table.loader')[0],
+          curVec   = new THREE.Vector3(8, 0, 0),
+          futVec   = SCN.camera.position.clone(),
+          curShere = new THREE.Spherical().setFromVector3(curVec),
+          futShere = new THREE.Spherical().setFromVector3(futVec),
+          current = {
+            alpha:  0.2, 
+            phi:    curShere.phi,
+            theta:  curShere.theta,
+            radius: SCN.camera.position.length(),
+          },
+          target  = {
+            alpha:  -1.0, 
+            phi:    futShere.phi,
+            theta:  futShere.theta,
+            radius: futVec.length(),
+          };
 
         return function () {
 
           var tween = new TWEEN
             .Tween(current)
-            .easing(TWEEN.Easing.Exponential.In)
-            .to(target, 300)
+            .easing(TWEEN.Easing.Exponential.Out)
+            .to(target, duration)
             .onUpdate(function(d){
-              table.style.backgroundColor = 'rgba(0, 0, 0, ' + current.alpha + ')'
+              rgba = 'rgba(0, 0, 0, ' + (current.alpha < 0 ? 0 : current.alpha) + ')';
+              table.style.backgroundColor = rgba;
+              spherical = new THREE.Spherical(current.radius, current.phi, current.theta);
+              SCN.camera.position.setFromSpherical(spherical);
+              SCN.camera.lookAt(SCN.home);
             })
             .onComplete(function(d){
               table.style.display = 'none';

@@ -391,9 +391,6 @@ CFG.Objects = {
       patterns: [
         'YYYY-MM-DD-HH[.tcdcclm.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
       ],
-      // data: [
-      //   'data/gfs/tcdcclm/2017-06-13-12.tcdcclm.10.dods',
-      // ],
       sectors: [
         [ 89.99, -180.0,  -89.99,  180.0 ], // all
       ],

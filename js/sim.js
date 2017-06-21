@@ -135,7 +135,7 @@ var SIM = (function () {
 
       self.updateSun();
 
-      console.log('SIM.show', time.doe, doe);
+      // console.log('SIM.show', time.doe, doe);
 
     },
     updateSun: function (val) {
