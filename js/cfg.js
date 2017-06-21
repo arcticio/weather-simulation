@@ -22,7 +22,7 @@ const FIX = {
 
 } 
 
-const TIMENOW = moment.utc('2017-06-15 1200', 'YYYY-MM-DD HHmm');
+var TIMENOW = moment.utc('2017-06-15 1200', 'YYYY-MM-DD HHmm');
 
 const TIMERANGE = [
   '2017-06-13',
@@ -63,6 +63,8 @@ var CFG = {
     'hud/info.png':             'images/hud/info.png',
     'hud/performance.png':      'images/hud/performance.png',
     'hud/performance.png':      'images/hud/performance.png',
+
+    'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 
   },
 

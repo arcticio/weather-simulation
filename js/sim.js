@@ -123,8 +123,8 @@ var SIM = (function () {
     },
     calcdoe: function (mom) {
       // rstrict now at avail dods
-      var tmp = mom.clone().hours(mom.hours() - (mom.hours() % 6));
-      return H.date2doeFloat(tmp.toDate());
+      // mom = mom.clone().hours(mom.hours() - (mom.hours() % 6));
+      return H.date2doeFloat(mom.toDate());
     },
     mom2doe: function (mom) {return mom.toDate() / 864e5},
     doe2mom: function (doe) {return moment.utc(doe * 864e5)},

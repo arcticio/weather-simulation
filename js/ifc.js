@@ -260,7 +260,7 @@ var IFC = (function () {
         // TODO: swap buttons, mind orbit drag
 
         if (mouse.button === 0) {
-          SCN.objects.arrowHelper.visible && SCN.objects.arrowHelper.setDirection( mouse.intersect );
+          // SCN.objects.arrowHelper.visible && SCN.objects.arrowHelper.setDirection( mouse.intersect );
           marker.copy(mouse.intersect);
         }
 

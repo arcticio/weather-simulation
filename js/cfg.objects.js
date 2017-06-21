@@ -2,6 +2,7 @@
 CFG.Objects = {
 
   perspective: {
+    // always active
     type: 'camera',
     cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
     // pos:             new THREE.Vector3(4, 0, 0),                            // Äq
@@ -11,6 +12,7 @@ CFG.Objects = {
   },
 
   ambient: {
+    id:             1,
     visible:        true,
     title:          'ambient light',
     type:           'light',
@@ -20,7 +22,8 @@ CFG.Objects = {
   },
 
   spot:    {
-    visible:   true,
+    id:             2,
+    visible:        true,
     title:          'spot light',
     type:           'light',
     color:          0xffffff, 
@@ -34,6 +37,7 @@ CFG.Objects = {
   },
 
   sun: {
+    id:             3,
     visible:        true,
     title:          'directional light',
     type:           'light',
@@ -46,9 +50,10 @@ CFG.Objects = {
 
 
   atmosphere: {
+    id:             4,
     visible:        false,
     title:          'spot light',
-    type:           'mesh-calculate',
+    type:           'mesh.calculated',
     radius:         RADIUS + 0.002,
     rotation:       [0, Math.PI * 0.5, 0],
     intensity:      0.5,
@@ -56,29 +61,31 @@ CFG.Objects = {
   },
 
   axes: {
+    id:             5,
     visible:        false,
     title:          '3D axes',
     type:           'mesh',
     mesh:           new THREE.AxisHelper( RADIUS * 4 ),
   },
  
-  // lat lon pointer of click marker
-  arrowHelper: {
-    visible:        false,
-    title:          'arrow helper',
-    type:           'mesh',
-    mesh:           new THREE.ArrowHelper( 
-                    new THREE.Vector3( 1, 1,  1), 
-                    new THREE.Vector3( 0, 0,  0), 
-                    RADIUS + 0.08, 
-                    0xffff00
-    )
-  },
+  // // lat lon pointer of click marker
+  // arrowHelper: {
+  //   visible:        false,
+  //   title:          'arrow helper',
+  //   type:           'mesh',
+  //   mesh:           new THREE.ArrowHelper( 
+  //                   new THREE.Vector3( 1, 1,  1), 
+  //                   new THREE.Vector3( 0, 0,  0), 
+  //                   RADIUS + 0.08, 
+  //                   0xffff00
+  //   )
+  // },
 
   background: {
+    id:             6,
     visible:        false,
     title:          'dynamic background',
-    type:           'mesh-calculate',
+    type:           'mesh.calculated',
     size:           4.0,
     colors: [
       0x666666,
@@ -88,21 +95,21 @@ CFG.Objects = {
     ]
   },
 
-  sunPointer: {
-    // sun dir pointer
-    visible:        false,
-    title:          'sun pointer',
-    type:           'mesh',
-    mesh:           new THREE.ArrowHelper( 
-                      new THREE.Vector3( 1, 1,  1), 
-                      new THREE.Vector3( 0,  0,  0), 
-                      RADIUS + 0.2, 
-                      0xff0000
-    )
-  },
+  // sunPointer: {
+  //   // sun dir pointer
+  //   visible:        false,
+  //   title:          'sun pointer',
+  //   type:           'mesh',
+  //   mesh:           new THREE.ArrowHelper( 
+  //                     new THREE.Vector3( 1, 1,  1), 
+  //                     new THREE.Vector3( 0,  0,  0), 
+  //                     RADIUS + 0.2, 
+  //                     0xff0000
+  //   )
+  // },
 
   pointer: {
-    // raycaster
+    // raycaster, always active
     visible:        true,
     title:          'pointer',
     type:           'mesh',
@@ -118,9 +125,10 @@ CFG.Objects = {
   },
 
   graticule: {
+    id:             7,
     visible:        false,
     title:          'graticule',
-    type:           'mesh-calculate',
+    type:           'mesh.calculated',
     altitude:       0.01,
     resolution:     10,
     material: {
@@ -133,9 +141,10 @@ CFG.Objects = {
   },
 
   population: {
+    id:             8,
     visible:        false,
     title:          '3000 cities',
-    type:           'mesh-calculate',
+    type:           'mesh.calculated',
     altitude:       0.001,
     opacity:        0.8,
     radius:         1.0,
@@ -143,9 +152,10 @@ CFG.Objects = {
   },
 
   sector: {
+    id:             9,
     visible:        false,
     title:          'sector marker',
-    type:           'mesh-calculate',
+    type:           'mesh.calculated',
     altitude:       0.01,
     resolution:     1,
     sector:         [15, -15, -15, 15],
@@ -159,6 +169,7 @@ CFG.Objects = {
   },
 
   land: {
+    id:             10,
     visible:        false,
     title:          'geojson land',
     radius:         RADIUS + 0.0008,
@@ -169,16 +180,18 @@ CFG.Objects = {
   },
 
   rivers: {
+    id:             11,
     visible:        false,
     title:          'geojson rivers',
-    radius:         RADIUS + 0.01,
     type:           'geo.json',
+    radius:         RADIUS + 0.01,
     rotation:       [0, Math.PI / 2, 0],
     json:           'data/json/rivers.geojson',
     color:          new THREE.Color('#888888'),
   },
 
   test: {
+    id:             12,
     visible:        false,
     title:          'test mesh',
     type:           'mesh.textured',
@@ -193,6 +206,7 @@ CFG.Objects = {
   },
 
   data: {
+    id:              13,
     visible:         true,
     title:          'simple surface layer',
     type:            'cube.textured',
@@ -210,6 +224,7 @@ CFG.Objects = {
   },
 
   rtopo2: {
+    id:              14,
     visible:         false,
     title:          'RTOPO2 surface layer',
     type:            'cube.textured',
@@ -227,6 +242,7 @@ CFG.Objects = {
   },
 
   gmlc: {
+    id:             15,
     visible:         false,
     title:          'GLCNMO - vegetation layer',
     type:            'cube.textured',
@@ -244,6 +260,7 @@ CFG.Objects = {
   },
 
   snpp: {
+    id:             16,
     visible:         false,
     title:           'spot light',
     type:            'SNPP - satellite surface layer',
@@ -261,6 +278,7 @@ CFG.Objects = {
   },
 
   sst: {
+    id:             17,
     visible:        false,
     title:          'sea surface temperature',
     type:           'cube.textured',
@@ -278,6 +296,7 @@ CFG.Objects = {
   },
 
   seaice: {
+    id:              18,
     visible:         false,
     title:           'AMSR2 sea ice concentration',
     type:            'cube.textured',
@@ -295,6 +314,7 @@ CFG.Objects = {
   },
 
   wind: {
+    id:             19,
     visible:        false,
     title:          'GFS - wind 10m',
     type:           'simulation',
@@ -325,6 +345,7 @@ CFG.Objects = {
   },
 
   jetstream: {
+    id:             20,
     visible:        false,
     title:          'GFS - jetstream at 300hpa',
     type:           'simulation',
@@ -357,7 +378,8 @@ CFG.Objects = {
   },
 
   clouds: {
-    visible:        true,
+    id:             21,
+    visible:        false,
     title:          'GFS - total cloud cover',
     type:           'simulation',
     rotation:       [0, Math.PI, 0],
@@ -369,14 +391,20 @@ CFG.Objects = {
       patterns: [
         'YYYY-MM-DD-HH[.tcdcclm.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
       ],
-      data: [
-        'data/gfs/tcdcclm/2017-06-13-12.tcdcclm.10.dods',
-      ],
+      // data: [
+      //   'data/gfs/tcdcclm/2017-06-13-12.tcdcclm.10.dods',
+      // ],
       sectors: [
         [ 89.99, -180.0,  -89.99,  180.0 ], // all
       ],
     }
   },
 
+  basemaps: {
+    visible:        false,
+    title:          'basemap',
+    type:           'mesh.calculated',
+    texture:        'oceanmask.4096x2048.grey.png',
+  }
 
 };

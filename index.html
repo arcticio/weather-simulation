@@ -2,6 +2,8 @@
 <html>
 <head>
 
+  <base href="/">
+
   <title>Simulator</title>
 
   <meta charset="utf-8" />
@@ -125,16 +127,17 @@
 
     <script src="data/population/places.big.js"></script>
 
+    <script src="js/aws.version.js"></script>
     <script src="js/aws.helper.js"></script>
     <script src="js/aws.tools.js"></script>
     <script src="js/aws.time.js"></script>
     <script src="js/aws.multiline.js"></script>
 
     <script src="js/cfg.js"></script>
+    <script src="js/cfg.manager.js"></script>
     <script src="js/cfg.sprites.js"></script>
     <script src="js/cfg.objects.js"></script>
     <script src="js/cfg.preset.js"></script>
-    <script src="js/cfg.manager.js"></script>
 
     <script src="js/res.js"></script>
     <script src="js/ani.js"></script>
@@ -153,6 +156,7 @@
     <script src="js/scn.tools.js"></script>
     <script src="js/scn.meshes.js"></script>
     <script src="js/scn.meshes.background.js"></script>
+    <script src="js/scn.meshes.basemaps.js"></script>
     <script src="js/scn.meshes.population.js"></script>
     
     <script src="js/ifc.debug.js"></script>
@@ -170,6 +174,7 @@
 
         TIM.step('WIN.load.in');
 
+        CFG.init();
         RES.init();
         ANI.init();
         SIM.init();

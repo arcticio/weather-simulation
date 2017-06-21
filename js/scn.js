@@ -232,7 +232,7 @@ var SCN = (function () {
         });
       },
 
-      'mesh-calculate': (name, cfg, callback) => {
+      'mesh.calculated': (name, cfg, callback) => {
         self.add(name, SCN.Meshes.calculate(name, cfg));
         callback && callback();
       },
@@ -388,18 +388,29 @@ var SCN = (function () {
 
       TIM.step('REN.info', 'maxVertexUniforms', renderer.capabilities.maxVertexUniforms);
       TIM.step('REN.info', 'devicePixelRatio', devicePixelRatio);
+      TIM.step('REN.info', 'max_texture_size', gl.getParameter(gl.MAX_TEXTURE_SIZE));
+      TIM.step('REN.info', 'max_cube_map_texture_size', gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE));
 
     },
     logFullInfo: function () {
+
+      // http://codeflow.org/entries/2013/feb/22/how-to-write-portable-webgl/
+
+      // Each uniform is aligned to 4 floats.
 
       // MAX_VERTEX_UNIFORM_VECTORS
       // MAX_FRAGMENT_UNIFORM_VECTORS
 
       var gl = renderer.context;
 
-      console.log(gl.getParameter('MAX_VERTEX_UNIFORM_VECTORS', gl.MAX_VERTEX_UNIFORM_VECTORS));
-      console.log(gl.getParameter('MAX_FRAGMENT_UNIFORM_VECTORS', gl.MAX_FRAGMENT_UNIFORM_VECTORS));
-      console.log(gl.getParameter('MAX_TEXTURE_SIZE', gl.MAX_TEXTURE_SIZE));
+      console.log('MAX_VERTEX_UNIFORM_VECTORS ',  gl.getParameter('MAX_VERTEX_UNIFORM_VECTORS', gl.MAX_VERTEX_UNIFORM_VECTORS));
+      console.log('MAX_FRAGMENT_UNIFORM_VECTORS', gl.getParameter('MAX_FRAGMENT_UNIFORM_VECTORS', gl.MAX_FRAGMENT_UNIFORM_VECTORS));
+      console.log('MAX_TEXTURE_SIZE', gl.getParameter('MAX_TEXTURE_SIZE', gl.MAX_TEXTURE_SIZE));
+      console.log('SAMPLES',          gl.getParameter(gl.SAMPLES));
+
+      console.log('MAX_TEXTURE_SIZE', gl.getParameter(gl.MAX_TEXTURE_SIZE));
+      console.log('MAX_CUBE_MAP_TEXTURE_SIZE', gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE));
+      console.log('MAX_RENDERBUFFER_SIZE', gl.getParameter(gl.MAX_RENDERBUFFER_SIZE));
 
       console.log('renderer', JSON.stringify({
 

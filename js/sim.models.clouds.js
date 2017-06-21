@@ -64,6 +64,22 @@ SIM.Models.clouds = (function () {
       model.mindoe = Math.min.apply(Math, Object.keys(model.objects));
       model.maxdoe = Math.max.apply(Math, Object.keys(model.objects));
     },
+    findDoes: function (target) {
+
+      var doe1, doe2;
+
+      Object.keys(model.objects)
+        .sort( (a, b) =>  parseFloat(a) > parseFloat(b))
+        .forEach( doe => {
+
+          doe1 = doe < target          ? doe : doe1;
+          doe2 = doe > target && !doe2 ? doe : doe2;
+
+        });
+
+        return [doe1, doe2];
+
+    },
     create: function (config, simdata) {
 
       cfg = config;
@@ -77,6 +93,9 @@ SIM.Models.clouds = (function () {
     },
     show: function (doe) {
 
+      var doe1, doe2;
+
+      // that's probaby to much
       while (model.obj.children.length) {
         model.obj.remove(model.obj.children[0]);
       }
@@ -85,13 +104,26 @@ SIM.Models.clouds = (function () {
 
         // that's a hit
         model.obj.add(model.objects[doe]);
+        model.objects[doe].material.uniforms.factor.value = 1.0;
+        model.objects[doe].material.uniforms.factor.needsUpdate = true;
 
       } else if (doe > model.mindoe && doe < model.maxdoe) {
 
-        // needs math
-        console.log('clouds.show', 'doe', doe, model.mindoe, model.maxdoe);
+        // mix them!
+        [doe1, doe2] = self.findDoes(doe);
+        model.obj.add(model.objects[doe1]);
+        model.obj.add(model.objects[doe2]);
+
+        model.objects[doe1].material.uniforms.factor.value = parseFloat(doe)  - parseFloat(doe1);
+        model.objects[doe2].material.uniforms.factor.value = parseFloat(doe2) - parseFloat(doe);
+        model.objects[doe1].material.uniforms.factor.needsUpdate = true;
+        model.objects[doe2].material.uniforms.factor.needsUpdate = true;
+
+        console.log('clouds.show.mix', doe1, doe, doe2);
 
       } else {
+
+        // bail out!
         console.warn('clouds.show.error', 'doe', doe, model.mindoe, model.maxdoe);
 
       }
@@ -106,7 +138,7 @@ SIM.Models.clouds = (function () {
 
       var
         t0 = Date.now(),
-        i, p, m, ibp, ibc, coord, points, material, color, 
+        i, p, m, ibp, ibc, coord, points, material, percentage, 
         size     = cfg.size,
         amount   = cfg.amount,
         radius   = cfg.radius,
@@ -114,7 +146,7 @@ SIM.Models.clouds = (function () {
         geometry = new THREE.BufferGeometry(),
 
         attributes = {
-          color:    new THREE.BufferAttribute( new Float32Array( amount * 1), 1 ),
+          percentage:    new THREE.BufferAttribute( new Float32Array( amount * 1), 1 ),
           position: new THREE.BufferAttribute( new Float32Array( amount * 3), 3 ),
         },
 
@@ -123,23 +155,25 @@ SIM.Models.clouds = (function () {
       for ( i=0, p=0; i < pool.length; i+=1, p+=3 ) {
 
         coord = pool[i];
-        color = datagram.tcdcclm.linearXY(doe, coord.lat, coord.lon) / 100;
+        percentage = datagram.tcdcclm.linearXY(doe, coord.lat, coord.lon) / 100;
 
         attributes.position.array[p + 0] = coord.x;
         attributes.position.array[p + 1] = coord.y;
         attributes.position.array[p + 2] = coord.z;
 
-        attributes.color.array[i + 0] = color;
+        attributes.percentage.array[i + 0] = percentage;
 
       }
 
-      geometry.addAttribute( 'position', attributes.position );
-      geometry.addAttribute( 'color',    attributes.color );
+      geometry.addAttribute( 'position',   attributes.position );
+      geometry.addAttribute( 'percentage', attributes.percentage );
       
       material = new THREE.ShaderMaterial( {
         uniforms:       {
           size:     { type: 'f', value: size },
           radius:   { type: 'f', value: radius },
+          factor:   { type: 'f', value: 1.0 },
+          seed:     { type: 'f', value: Math.random() },
           distance: { type: 'f', value: SCN.camera.position.length() - CFG.earth.radius },
         },
         vertexShader:   self.vertexShader(),
@@ -150,6 +184,8 @@ SIM.Models.clouds = (function () {
       points = new THREE.Points( geometry, material );
 
       points.onBeforeRender = function (renderer, scene, camera, geometry, material, group) {
+        material.uniforms.seed.value = Math.random();
+        material.uniforms.seed.needsUpdate = true;
         material.uniforms.distance.value = camera.position.length() - CFG.earth.radius;
         material.uniforms.distance.needsUpdate = true;
       };
@@ -168,26 +204,24 @@ SIM.Models.clouds = (function () {
       
       return `
 
-        attribute float color;
+        attribute float percentage;
 
         uniform float  size;
         uniform float  radius;
         uniform float  distance;
 
         varying vec4  vColor;
+        varying vec3  vPos;
 
         void main() {
 
-          vec3 pos = position * radius;
+          vec3 pos  = position * radius;
+          vPos = position;
 
-          // vColor = vec4(0.9, 0.0, 0.0, 1.0);
-          vColor = vec4(color, color, color, color);
+          vColor = vec4(1.0, 1.0, 1.0, percentage);
 
-          vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
-
-          gl_PointSize = size * color / (distance * 2.0);
-
-          gl_Position  = projectionMatrix * mvPosition;
+          gl_PointSize = size * percentage / (distance * 2.0);
+          gl_Position  = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );
 
          }
       
@@ -199,10 +233,23 @@ SIM.Models.clouds = (function () {
       return `
 
         varying vec4 vColor;
+        varying vec3 vPos;
+
+        uniform float  factor;
+
+        float rand(vec2 co){
+            return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+        }
 
         void main() {
 
-          gl_FragColor = vColor;
+          if (rand(vPos.xy) > 0.5){
+            gl_FragColor = vColor;
+
+          } else {
+            discard;
+
+          }
 
         }
 
