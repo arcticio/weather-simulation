@@ -205,11 +205,12 @@ CFG.Objects = {
                     ),
   },
 
-  data: {
+  basemaps: {
     id:              13,
     visible:         true,
     title:          'simple surface layer',
-    type:            'cube.textured',
+    // type:            'cube.textured',
+    type:           'mesh.basemaps',
     rotation:        [0, Math.PI / 2, 0],
     cube: {
       type:          'globe',
@@ -398,13 +399,13 @@ CFG.Objects = {
     }
   },
 
-  basemaps: {
-    id:             22,
-    visible:        false,
-    title:          'basemap',
-    type:           'mesh.calculated',
-    // texture:        'tex3.jpg',
-    texture:        'tex2.jpg',
-  }
+  // basemaps: {
+  //   id:             22,
+  //   visible:        false,
+  //   title:          'basemap',
+  //   type:           'mesh.calculated',
+  //   // texture:        'tex3.jpg',
+  //   texture:        'tex2.jpg',
+  // }
 
 };

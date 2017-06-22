@@ -239,6 +239,13 @@ var SCN = (function () {
         callback && callback();
       },
 
+      'mesh.basemaps': (name, cfg, callback) => {
+        SCN.Meshes.basemaps(name, cfg, function (name, mesh) {
+          self.add(name, mesh);
+          callback && callback();
+        });
+      },
+
       'mesh.textured': (name, cfg, callback) => {
         RES.load({type: 'texture', urls: [cfg.texture], onFinish: (err, responses) => {
           cfg.mesh.material.map = responses[0].data;
