@@ -1,8 +1,10 @@
 
 var TOOLS = {
 
-  debounce(fn, delay) {
+  debounce: function (fn, delay) {
+
     var timer = null;
+
     return function () {
       var context = this, args = arguments;
       clearTimeout(timer);
@@ -10,6 +12,7 @@ var TOOLS = {
         fn.apply(context, args);
       }, delay);
     };
+
   },
 
   createLatLonsRectFibanocci: function (samples) {

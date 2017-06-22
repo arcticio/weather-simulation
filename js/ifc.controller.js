@@ -74,11 +74,6 @@ IFC.Controller = (function () {
     }
   }
 
-  // function clampScale (x, xMin, xMax, min, max) {
-  //   var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
-  //   return val < min ? min : val > max ? max : val;
-  // }
-
   function impScale (x, min, max) {
     var val= (max-min)*(x-cfg.minDistance)/(cfg.maxDistance-cfg.minDistance)+min;
     return val < min ? min : val > max ? max : val;
@@ -162,6 +157,8 @@ IFC.Controller = (function () {
           cam.position.setFromSpherical(spcl);
 
         }
+
+        if (veloX || veloY || veloZ){IFC.updateUrl();}
 
         cam.lookAt(cfg.lookAt);
 
@@ -264,13 +261,12 @@ IFC.Controller = (function () {
               deltaZ = event.deltaY * 0.025;  // y => z
               break;
 
-            case 1: // Zoom in lines
-              debugger;
-              deltaX = event.deltaX * 0.01;
-              deltaZ = event.deltaY * 0.01;
+            case 1: // Zoom in lines, Firefox
+              deltaX = event.deltaX * 0.2;
+              deltaZ = event.deltaY * 0.4 * impFactor;
               break;
 
-            default: // undefined, 0, assume pixels
+            default: // undefined, 0, assume pixels, Chrome
               deltaX = event.deltaX * 0.01;
               deltaZ = event.deltaY * 0.02 * impFactor;  
               break;

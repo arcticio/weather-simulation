@@ -53,18 +53,22 @@ var CFG = {
 
   Textures: {
     
-    'line.alpha.32.png':        'images/line.alpha.32.png',
-    'line.alpha.16.png':        'images/line.alpha.16.png',
-    'line.alpha.16.png':        'images/line.alpha.16.png',
-    'transparent.face.512.png': 'images/transparent.face.512.png',
+    'tex2.jpg':                     'images/test/tex2.jpg',
+    'tex3.jpg':                     'images/test/tex3.jpg',
+    'tex4.jpg':                     'images/test/tex4.jpg',
 
-    'hud/hamburger.png':        'images/hud/hamburger.png',
-    'hud/fullscreen.png':       'images/hud/fullscreen.png',
-    'hud/movie.png':            'images/hud/movie.png',
-    'hud/graticule.png':        'images/hud/graticule.png',
-    'hud/info.png':             'images/hud/info.png',
-    'hud/performance.png':      'images/hud/performance.png',
-    'hud/performance.png':      'images/hud/performance.png',
+    'line.alpha.32.png':            'images/line.alpha.32.png',
+    'line.alpha.16.png':            'images/line.alpha.16.png',
+    'line.alpha.16.png':            'images/line.alpha.16.png',
+    'transparent.face.512.png':     'images/transparent.face.512.png',
+
+    'hud/hamburger.png':            'images/hud/hamburger.png',
+    'hud/fullscreen.png':           'images/hud/fullscreen.png',
+    'hud/movie.png':                'images/hud/movie.png',
+    'hud/graticule.png':            'images/hud/graticule.png',
+    'hud/info.png':                 'images/hud/info.png',
+    'hud/performance.png':          'images/hud/performance.png',
+    'hud/performance.png':          'images/hud/performance.png',
 
     'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 

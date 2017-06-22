@@ -214,7 +214,8 @@ CFG.Objects = {
     cube: {
       type:          'globe',
       radius:        RADIUS, 
-      texture:       'images/data/globe.data.FACE.4096.comp.png', 
+      // texture:       'images/data/globe.data.FACE.4096.comp.png', 
+      texture:       'images/data/globe.data.FACE.512.comp.png', 
       material: {
         transparent: true, 
         opacity:     0.99,              // removes crazy seaice effeckt
@@ -398,10 +399,12 @@ CFG.Objects = {
   },
 
   basemaps: {
+    id:             22,
     visible:        false,
     title:          'basemap',
     type:           'mesh.calculated',
-    texture:        'oceanmask.4096x2048.grey.png',
+    // texture:        'tex3.jpg',
+    texture:        'tex2.jpg',
   }
 
 };

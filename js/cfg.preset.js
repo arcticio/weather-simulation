@@ -43,6 +43,7 @@ CFG.Preset = {
 
   Layers: { isFolder: true,
     'BACKGROUND': CFG.Objects.background.visible,
+    'BASEMAPS':   CFG.Objects.basemaps.visible,
     'POPULATION': CFG.Objects.population.visible,
     'SNPP':       CFG.Objects.snpp.visible,
     'RTOPO2':     CFG.Objects.rtopo2.visible,
@@ -52,11 +53,11 @@ CFG.Preset = {
     'SEAICE':     CFG.Objects.seaice.visible,
     'WIND':       CFG.Objects.wind.visible,
     'JETSTREAM':  CFG.Objects.jetstream.visible,
-    'LAND':       CFG.Objects.land.visible,
-    'RIVERS':     CFG.Objects.rivers.visible,
+    // 'LAND':       CFG.Objects.land.visible,
+    // 'RIVERS':     CFG.Objects.rivers.visible,
     'CLOUDS':     CFG.Objects.clouds.visible,
-    'GRATICULE':  CFG.Objects.graticule.visible,
-    'SECTOR':     CFG.Objects.sector.visible,
+    // 'GRATICULE':  CFG.Objects.graticule.visible,
+    // 'SECTOR':     CFG.Objects.sector.visible,
     // 'TEST':       CFG.Objects.test.visible,
   },
 

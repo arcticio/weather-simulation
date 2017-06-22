@@ -3,6 +3,8 @@
 
 SCN.tools = {
 
+  // https://threejs.org/docs/index.html#api/materials/MeshLambertMaterial
+
   calculate: function (name, cfg) { return SCN.tools[name](cfg) },
   loadCube: function (name, cfg, callback) {
 
@@ -32,10 +34,11 @@ SCN.tools = {
 
       materials = responses.map(response => {
 
-        return new THREE.MeshPhongMaterial(Object.assign({ 
+        // return new THREE.MeshPhongMaterial(Object.assign({ 
+        return new THREE.MeshLambertMaterial(Object.assign({ 
           map:         response.data,
-          shininess:   0,
-          alphaTest: 0.5,
+          // shininess:   0,
+          alphaTest:   0.5,
         }), cfg.material);
 
       });

@@ -17,8 +17,7 @@ var IFC = (function () {
     fullscreen = $$('.fullscreen')[0],
 
     controller, 
-
-    controllers = GUIcontrollers,
+    controllers,
 
     globe = {
       scan:     NaN,   // -1 = tiny globe, 1 = big, 0 = little smaller than screen
@@ -129,8 +128,12 @@ var IFC = (function () {
 
       raycaster.params.Points.threshold = 0.001; // threshold;
 
+      controllers = self.controllers = GUIcontrollers;
+
       controller = IFC.Controller;
       controller.init(SCN.camera, SCN.renderer.domElement, {
+
+        //TODO: onchange/onrelax
 
         ondrag: function (deltaX, deltaY) {
 
@@ -164,29 +167,27 @@ var IFC = (function () {
       IFC.Hud.resize();
 
     },
-    updateUrl: function () {
+    updateUrl: TOOLS.debounce(function () {
 
-      TOOLS.debounce( function () {
+      var 
+        prec   = 6,
+        time   = SIM.time.model.format('YYYY-MM-DD-HH-mm'),
+        assets = SCN.scene.children
+          .filter(  c => c.visible)
+          .map(     c => CFG.Objects[c.name].id)
+          .filter( id => !!id),
+        hash   = CFG.assets2hash(assets),
+        pos    = SCN.camera.position,
+        coords = `${H.round(pos.x, prec)};${H.round(pos.y, prec)};${H.round(pos.z, prec)}`,
+        path   = `/${hash}/${time}/${coords}`,
+      end;
 
-        var 
-          time   = SIM.time.model.format('YYYY-MM-DD-HH-mm'),
-          assets = SCN.scene.children
-            .filter( c => c.visible)
-            .map(   c => CFG.Objects[c.name].id)
-            .filter( id => !!id),
-          hash   = CFG.assets2hash(assets),
-          pos    = SCN.camera.position,
-          coords = `${pos.x};${pos.y};${pos.z}`,
-          path   = `/${hash}/${time}/${coords}`,
-        end;
+      // console.log('url', path);
 
-        console.log('url', path);
+      History.replaceState({}, CFG.Title, path);
 
-        History.replaceState({}, CFG,Title, path);
-
-      }, 200);
-
-    },
+    }, 300),
+      
     activate: function () {
 
       controller.enabled = true;

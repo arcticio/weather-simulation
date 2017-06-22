@@ -49,37 +49,38 @@ Object.assign(CFG, {
       TIMENOW = time.clone();
     }
 
+    IFC.initGUI();
+
   },
 
-  hash2assets: function(code){
+  hash2assets: function(hash){
 
-    var i, layers = [];
+    var i, digits, assets = [];
 
-    code = H.Base62.toNumber(code);
+    digits = H.Base62.toNumber(hash);
 
     function bit (i, test) {return (i & (1 << test));}
 
     for (i = 0; i < 32; i++){
-      if (bit(code, i)){layers.push(i);}
+      if (bit(digits, i)){assets.push(i);}
     }
 
-    return layers.sort(function(a, b){return a-b;});
+    return assets.sort( (a, b) => a - b );
 
   },
 
-  assets2hash: function(layers){
+  assets2hash: function(assets){
 
     var out = 0;
 
-    if (!layers.length) {return null;}
+    if (!assets.length) {return null;}
 
-    layers.forEach(function(l){
+    assets.forEach(function(l){
       out += 1 << l;
     });
 
     return H.Base62.fromNumber(out);
 
   },
-
 
 });

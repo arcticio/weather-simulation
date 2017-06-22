@@ -117,6 +117,7 @@ var SIM = (function () {
       time.doe = self.calcdoe(time.model);
 
       IFC.Hud.time.render();
+      IFC.updateUrl();
 
       self.show(time.doe);
 

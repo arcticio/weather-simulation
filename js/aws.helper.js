@@ -124,6 +124,7 @@ var H = (function(){
     scale:      function (x,xMin,xMax,min,max){return (max-min)*(x-xMin)/(xMax-xMin)+min;},
     clamp:      function (val, min, max){return val < min ? min : val > max ? max : val;}, 
     isInteger:  function (n){return Math.floor(n) === n;},
+    round:      function  (n, p) {var fac = Math.pow(10, p); return Math.round(n * fac) / fac; },
 
     // strings
     format:     function (){

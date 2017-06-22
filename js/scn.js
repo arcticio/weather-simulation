@@ -70,6 +70,8 @@ var SCN = (function () {
         }
       }
 
+      IFC.updateUrl();
+
     },
     resize: function () {
 
@@ -329,6 +331,7 @@ var SCN = (function () {
             color:        (value) => objects.atmosphere.update({color: new THREE.Color( value )}),
           },
           Layers : {
+            'BASEMAPS':   (value) => self.toggle(objects.basemaps, value),
             'BACKGROUND': (value) => self.toggle(objects.background, value),
             'CLOUDS':     (value) => self.toggle(objects.clouds, value),
             'DATA':       (value) => self.toggle(objects.data, value),

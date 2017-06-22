@@ -4,69 +4,63 @@
 SCN.Meshes.basemaps = function (cfg) {
 
   var
-    // geometry = new THREE.PlaneBufferGeometry( 1, 1, 1, 1),
+    geometry = new THREE.PlaneBufferGeometry( 1, 1, 1, 1),
     vertexShader = `
 
-      uniform float distance;
-      uniform vec2  resolution;
+      varying vec4 vPosition;
 
-      float aspect, fov;
-      vec4  pos;
-      
-      void main(void) {
-
-        fov = 5.1;
-
-        aspect = resolution.x / resolution.y;
-        pos    = vec4(position / distance * fov, 1.0); 
-        pos.x /= aspect;
-
-        gl_Position = pos;
-
+      void main()
+      {
+        vPosition    = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = 1600.0;
+        gl_Position  = projectionMatrix * vPosition;
       }
+
     `,
     fragmentShader = `
 
-      uniform float time, distance;
-      uniform vec2 resolution;
       uniform sampler2D texture;
+      uniform vec3 lightPos;
+      varying vec4 vPosition;
 
-      vec2 p, uv;
+      float intensity;
+      float zSqr;
+      float x, y, z;
 
-      float factor, radius, aspect;
-
-      void main(void) {
-
-        aspect = resolution.x / resolution.y;
-        p = -1.0 + 2.0 * gl_FragCoord.xy / resolution.xy;
-
-        radius = dot( p, p );
-
-        radius = radius * (distance);
-
-        factor = (1.0 - sqrt(1.0 - radius)) / ( radius );
-
-        uv.x = p.x * factor * 1.5 + 0.5;
-        uv.y = p.y * factor * 1.5 + 0.5;
-
-        if (radius < 1.0) {
-          gl_FragColor = vec4(texture2D(texture, uv).xyz, 0.5);
+      void main() {  
+        
+        // map the point coordinates onto a sphere surface
+        x =    2.0 * gl_PointCoord.x - 1.0;
+        y = +( 2.0 * gl_PointCoord.y - 1.0 ); // + puts light atop
+        
+        zSqr = 1.0 - x * x - y * y;
+        
+        if (zSqr <= 0.0){
+          gl_FragColor = vec4(0); // early reject: outside the circle
 
         } else {
-          gl_FragColor = vec4(1.0, 0.5, 0.0, 0.5);
+          z = sqrt(zSqr); // (x,y,z) is the surface normal of the sphere at the current fragment
+        
+          // this can be made a lot cheaper with a directional light source instead of a point light
+          intensity = dot(normalize((viewMatrix * vec4(lightPos, 1.0) - vPosition).xyz), vec3(x, y, z));
+
+          if (intensity > 0.0) {
+            gl_FragColor = vec4(intensity, intensity, intensity, 1.0) * texture2D(texture, gl_PointCoord); // light
+
+          } else {
+            discard;
+            // gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // shadow
+
+          }
 
         }
-      
       }
+    
     `;
 
     var uniforms = {
-      // lightPos: { type: 'v3', value: new THREE.Vector3(4, 0, 0) },
-
-      time:       { type: 'f',  value: 0.5 },
-      texture:    { type: 't',  value: CFG.Textures[cfg.texture] },
-      distance:   { type: 'f',  value: SCN.camera.position.length() },
-      resolution: { type: 'v2', value: new THREE.Vector2(window.innerWidth, window.innerHeight)}
+      lightPos: { type: 'v3', value: new THREE.Vector3(4, 0, 0) },
+      texture:  { type: 't',  value: CFG.Textures[cfg.texture] }
     };
 
     var material = new THREE.ShaderMaterial( {
@@ -74,43 +68,20 @@ SCN.Meshes.basemaps = function (cfg) {
       fragmentShader,
       vertexShader,
       uniforms,
-      side:        THREE.DoubleSide,
 
       // blending:     THREE.NormalBlending,
       // depthTest:    false,
-      transparent : true,
-      opacity :     0.5,
+      // transparent : true,
+      // opacity :     0.5,
 
 
-    });
+    }),
 
-  var geometry = new THREE.PlaneGeometry( 1, 1, 1, 1 );
-  // geometry = new THREE.Geometry();
-  // geometry.vertices = [
-  //   new THREE.Vector3(  1.0,  1.0,  0.0),
-  //   new THREE.Vector3( -1.0,  1.0,  0.0),
-  //   new THREE.Vector3(  1.0, -1.0,  0.0),
-  //   new THREE.Vector3( -1.0, -1.0,  0.0)
-  // ];
+  geometry = new THREE.Geometry()
+  geometry.vertices.push(new THREE.Vector3(0,0,0));
 
-  // geometry.computeBoundingBox();
-  // geometry.computeBoundingSphere();
-  // geometry.computeFaceNormals();
-  // geometry.computeFlatVertexNormals();
-  // geometry.computeLineDistances();
-  // geometry.computeMorphNormals();
-  // geometry.computeFlatVertexNormals();
 
-  plane = new THREE.Mesh( geometry, material );
-
-  plane.onBeforeRender = function () {
-    material.uniforms.time.value += .005;
-    material.uniforms.time.needsUpdate = true;
-    material.uniforms.distance.value = SCN.camera.position.length();
-    material.uniforms.distance.needsUpdate = true;
-    material.uniforms.resolution.value.set(window.innerWidth, window.innerHeight);
-    material.uniforms.distance.resolution = true;
-  };
+  plane = new THREE.Points( geometry, material );
 
   return plane;
 
@@ -126,7 +97,6 @@ SCN.Meshes.basemaps = function (cfg) {
 //Vertex Shader
 //===================================================================================
   attribute vec3 aVertexPosition;
-
   void main(void) {
     gl_Position = vec4(aVertexPosition, 1.0);
   }

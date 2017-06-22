@@ -107,7 +107,7 @@ var ANI = (function () {
         var 
           spherical, rgba,
           table    = $$('table.loader')[0],
-          curVec   = new THREE.Vector3(8, 0, 0),
+          curVec   = new THREE.Vector3(8, 8, 8),
           futVec   = SCN.camera.position.clone(),
           curShere = new THREE.Spherical().setFromVector3(curVec),
           futShere = new THREE.Spherical().setFromVector3(futVec),
@@ -136,6 +136,9 @@ var ANI = (function () {
               spherical = new THREE.Spherical(current.radius, current.phi, current.theta);
               SCN.camera.position.setFromSpherical(spherical);
               SCN.camera.lookAt(SCN.home);
+              if (current.alpha < 0){
+                $$('.loader .header')[0].innerHTML   = 'Have fun!';
+              }
             })
             .onComplete(function(d){
               table.style.display = 'none';

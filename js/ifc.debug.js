@@ -1,5 +1,4 @@
-
-(function () {
+IFC.initGUI = function () {
 
   // dat.gui
   var 
@@ -103,4 +102,4 @@
 
   // controllers['Loading'].setValue('please wait a second...');
 
-} ())
+};
