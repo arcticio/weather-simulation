@@ -110,11 +110,14 @@ CFG.Sprites = {
     type:     'toggle',
     events:   [],
     canvas:   document.createElement('CANVAS'),
+    back:     document.createElement('CANVAS'),
     position: {
       bottom:   18,
       left:     18,
-      width:    96,
-      height:   48,
+      width:    128,
+      height:   64,
+      // width:    256,
+      // height:   128,
     },
     material: {
       opacity: 0.9,

@@ -1,8 +1,6 @@
 
 'use strict';
 
-// https://github.com/sindresorhus/screenfull.js/
-
 IFC.Hud = (function () {
 
   var 
@@ -69,7 +67,7 @@ IFC.Hud = (function () {
           ANI.insert(0, ANI.library.sprite.enter(sprite, 200));
         };
 
-        sprite.onmouseleft = function () {
+        sprite.onmouseleave = function () {
           ANI.insert(0, ANI.library.sprite.leave(sprite, 200));
         };
 
@@ -267,7 +265,7 @@ IFC.Hud = (function () {
           } else {
 
             if (sprite.hit) {
-              sprite.onmouseleft();
+              sprite.onmouseleave();
               sprite.hit = false;
             }
 
@@ -306,17 +304,22 @@ IFC.Hud = (function () {
             if (!sprite.hit) {
               sprite.onmouseenter();
               sprite.hit = true;
+
+              console.log('HIT', sprite.name);
+
             }
 
             mouse.sprite = sprite;
 
-            // console.log('HIT', sprite.name);
 
           } else {
 
             if (sprite.hit) {
-              sprite.onmouseleft();
+              sprite.onmouseleave();
               sprite.hit = false;
+
+              console.log('UNHIT', sprite.name);
+
             }
 
           }
@@ -338,10 +341,16 @@ IFC.Hud.performance = (function () {
     self,
     sprite,
     cfg,
-    cvs, ctx, img,
-    texture,
+    cvs, ctx, img, back, texture,
     width, height,
-    now, 
+    now, last, fps,
+    bufDur = H.createRingBuffer(60),
+    bufFps = H.createRingBuffer(60),
+    lineFills = {
+      '0': '#666',
+      '1': '#fff',
+      '2': '#666',
+    },
   end;
 
   return self = {
@@ -351,42 +360,73 @@ IFC.Hud.performance = (function () {
       cfg    = config;
       cvs    = cfg.canvas;
       ctx    = cvs.getContext('2d');
-      img    = sprite.material.map.image;
+      img    = sprite.material.map.image,
+      back   = cfg.back,
 
       width  = cfg.position.width;
       height = cfg.position.height;
 
-      cvs.width  = 256;
-      cvs.height = 128;
+      cvs.width  = back.width  = 256;
+      cvs.height = back.height = 128;
 
-      // CanvasTexture( canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy )
       texture = new THREE.CanvasTexture(cvs);
 
       sprite.material.map = texture;
 
     },
     begin: function () {
+
       now = window.performance.now();
+      fps = last ? 1000 / (now - last) : 60;
+
+      var 
+        off  = 1,
+        max  = 36,
+        ctx  =  back.getContext('2d'),
+        // val  = Math.sin(window.performance.now() / 100) * 36,
+        val  = H.scale(fps, 0, 60, 0, max ),
+        zero = 58 + max;
+
+      ctx.globalCompositeOperation = 'source-over';
+
+      // paint line in new column
+      ctx.fillStyle = '#00bb00';
+      ctx.fillRect(back.width - off, zero, off, -val);
+
+      ctx.globalCompositeOperation = 'copy';
+
+      // move left off pixel column
+      ctx.drawImage(back, off, 0, back.width - off, back.height, 0, 0, back.width - off, back.height);
+
+      last = now;
+
     },
     end:   function () {
 
       var i, duration = window.performance.now() - now;
 
+      bufDur.push(duration);
+      bufFps.push(fps);
+
       if (ctx) {
 
         ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-        ctx.fillStyle = 'rgba(0, 0, 0, 0)';
-        ctx.fillRect(0, 0, cvs.width, cvs.height);
+        ctx.drawImage(back, 0, 0);
 
-        ctx.fillStyle = '#ffffff';
+        // debug
+        // ctx.fillStyle = 'rgba(80, 80, 80, 0.8)';
+        // ctx.fillRect(0, 0, cvs.width, cvs.height);
+
         for (i=0; i<3; i++){
-          ctx.fillRect(0, cvs.height/4 * (i +1), cvs.width, 2);
+          ctx.fillStyle = lineFills[i];
+          ctx.fillRect(0, cvs.height/4.5 * (i +1), cvs.width, 1.5);
         }
 
-        ctx.font = '28px monospace'
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText('D: ' + duration.toFixed(1), 150, 124);
+        ctx.font = '24px monospace'
+        ctx.fillStyle = '#ddd';
+        ctx.fillText(bufDur.avg().toFixed(1) + 'd', 200, 124);
+        ctx.fillText(bufFps.avg().toFixed(1) + 'fps',   0, 124);
 
         texture.needsUpdate = true;
 

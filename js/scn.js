@@ -324,8 +324,8 @@ var SCN = (function () {
           Loading:  { update: ignore},
           SimTime:  { update: ignore},
           Render:   { toggle: (value) => doRender   = value },
-          Animate:  { toggle: (value) => doAnimate  = value },
-          Simulate: { toggle: (value) => doSimulate = value },
+          // Animate:  { toggle: (value) => doAnimate  = value },
+          // Simulate: { toggle: (value) => doSimulate = value },
           ResetCam: { toggle: (value) => doSimulate = value },
           Ambient: {
             toggle:       (value) => self.toggle(objects.ambient, value),
@@ -346,8 +346,7 @@ var SCN = (function () {
           },
           Atmosphere: {
             toggle:       (value) => self.toggle(objects.atmosphere, value),
-            intensity:    (value) => objects.atmosphere.update({intensity: value}),
-            color:        (value) => objects.atmosphere.update({color: new THREE.Color( value )}),
+            opacity:      (value) => objects.atmosphere.update({opacity: value}),
           },
           Assets: (function () {
             var asets = {};

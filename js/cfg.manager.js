@@ -63,11 +63,26 @@ Object.assign(CFG, {
 
   },
 
+  number2assets: function(digits){ 
+
+    // CFG.number2assets(0xFFFFFFFFF)
+
+    var i, assets = [];
+
+    function bit (i, test) {return (i & (1 << test));}
+
+    for (i = 0; i < 32; i++){
+      if (bit(digits, i)){assets.push(i);}
+    }
+
+    return assets.sort( (a, b) => a - b );
+
+  },
   hash2assets: function(hash){
 
     var i, digits, assets = [];
 
-    digits = H.Base62.toNumber(hash);
+    digits = H.Base62.toNumber(String(hash));
 
     function bit (i, test) {return (i & (1 << test));}
 

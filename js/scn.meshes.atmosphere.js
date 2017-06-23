@@ -87,6 +87,11 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
     uniforms.sunPosition.needsUpdate = true;
   };
 
+  mesh.update = function (cfg) {
+    uniforms.opacity.value = cfg.opacity;
+    uniforms.opacity.needsUpdate = true;
+  }
+
   cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
 
   callback(name, mesh);

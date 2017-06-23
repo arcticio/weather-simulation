@@ -181,11 +181,15 @@ var ANI = (function () {
           var 
             pos     = sprite.cfg.position,
             mat     = sprite.cfg.material,
-            current = {width: pos.width, height: pos.height, opacity: mat.opacity},
+            current = {
+              width:    pos.width, 
+              height:   pos.height, 
+              opacity:  mat.opacity
+            },
             target  = {
-              width:  current.width  * 1.1, 
-              height: current.height * 1.1,
-              opacity: 0.9,
+              width:    current.width  * 1.1, 
+              height:   current.height * 1.1,
+              opacity:  0.9,
             }
           ;
 
@@ -210,14 +214,14 @@ var ANI = (function () {
             pos = sprite.cfg.position,
             mat = sprite.cfg.material,
             current = {
-              width:   pos.width  * 1.1, 
-              height:  pos.height * 1.1, 
-              opacity: sprite.material.opacity
+              width:    pos.width  * 1.1, 
+              height:   pos.height * 1.1, 
+              opacity:  sprite.material.opacity
             },
             target  = {
-              width:   pos.width, 
-              height:  pos.heigh,
-              opacity: mat.opacity,
+              width:    pos.width, 
+              height:   pos.height,
+              opacity:  mat.opacity,
             }
           ;
 

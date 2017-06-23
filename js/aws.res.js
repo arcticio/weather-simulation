@@ -41,6 +41,8 @@ var RES = (function () {
 
     div.style.backgroundSize = ~~stats.percent + '%';
 
+    console.log(stats.requests, stats.bytesLoaded, stats.bytesTotal);
+
   }
 
   return self = {
@@ -54,9 +56,11 @@ var RES = (function () {
 
       var candidate, candidates = [];
 
+      // clean queue
       candidates = jobs.filter( j => j.failed || j.finished);
       candidates.forEach( c => H.remove(jobs, c) );
 
+      // select queueable jobs
       candidates = jobs.filter( j => !j.active && j.ready && !j.failed ).slice(0, concurrent);
       candidates.forEach( c => {
         if (c.options.type === 'texture' ){
@@ -65,6 +69,8 @@ var RES = (function () {
           c.execute()
         }
       });
+
+      // prolog
       stats.queue = jobs.length;
       update();
 
@@ -74,8 +80,8 @@ var RES = (function () {
 
       var job;
 
-      counter += 1;
-      config.id = counter;
+      counter   += 1;
+      config.id  = counter;
 
       job = new self.Job(config);
       jobs.push(job);
@@ -159,11 +165,14 @@ var RES = (function () {
 
             if (req.status === 200) {
 
-              mime     = req.getResponseHeader("Content-Type");
-              length   = req.getResponseHeader("Content-Length");
-              modified = req.getResponseHeader("Last-Modified");
+              mime     = req.getResponseHeader('Content-Type');
+              length   = req.getResponseHeader('Content-Length');
+              modified = req.getResponseHeader('Last-Modified');
 
+              // keep local
               bytesTotal = Number(length);
+
+              // update global
               update('bytesTotal', bytesTotal);
 
               this.ready = true;
@@ -179,7 +188,7 @@ var RES = (function () {
         };
 
         req.onerror = ( msg ) => {
-          // console.log("GET.onerror", req.status, req.statusText, msg);
+          // console.log('GET.onerror', req.status, req.statusText, msg);
           onError(req.status + ' ' + req.statusText);
         };
 
@@ -191,7 +200,7 @@ var RES = (function () {
 
         var loader = new THREE.TextureLoader();
 
-        this.active = true;
+        this.active     = true;
         stats.requests += 1;
 
         loader.load(
@@ -213,7 +222,7 @@ var RES = (function () {
 
         var req = new XMLHttpRequest();
 
-        this.active = true;
+        this.active     = true;
         stats.requests += 1;
 
         req.open('GET', url, true);
@@ -221,7 +230,7 @@ var RES = (function () {
 
         req.onload = function ( msg ) {
 
-          // console.log("GET.onload", req.status, req.statusText, msg);
+          // console.log('GET.onload', req.status, req.statusText, msg);
 
           if (req.readyState === 4){
             if (req.status === 200) {
@@ -243,7 +252,7 @@ var RES = (function () {
           onProgress(e.loaded - bytesLoaded);
         };
 
-        req.send();
+        req.send(null);
 
       };
 
