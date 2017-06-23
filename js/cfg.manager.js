@@ -65,7 +65,7 @@ Object.assign(CFG, {
 
   number2assets: function(digits){ 
 
-    // CFG.number2assets(0xFFFFFFFFF)
+    // CFG.number2assets(0xFFFFFFFF)
 
     var i, assets = [];
 

@@ -319,10 +319,10 @@ CFG.Objects = {
     },
 
 
-  // FEATIRES ( 25 - 27 )
+  // FEATIRES ( 23 - 25 )
 
     land: {
-      id:             25,
+      id:             23,
       visible:        false,
       title:          'geojson land',
       radius:         RADIUS + 0.0008,
@@ -333,7 +333,7 @@ CFG.Objects = {
     },
 
     rivers: {
-      id:             26,
+      id:             24,
       visible:        false,
       title:          'geojson rivers',
       type:           'geo.json',
@@ -344,7 +344,7 @@ CFG.Objects = {
     },
 
     population: {
-      id:             27,
+      id:             25,
       visible:        false,
       title:          '3000 cities',
       type:           'mesh.calculated',
@@ -355,10 +355,10 @@ CFG.Objects = {
     },
 
 
-  // OPTIONAL ( 28 - 30 )
+  // OPTIONAL ( 26 - 28 )
 
     graticule: {
-      id:             28,
+      id:             26,
       visible:        false,
       title:          'graticule',
       type:           'mesh.calculated',
@@ -374,7 +374,7 @@ CFG.Objects = {
     },
 
     sector: {
-      id:             29,
+      id:             27,
       visible:        false,
       title:          'sector marker',
       type:           'mesh.calculated',
@@ -391,12 +391,19 @@ CFG.Objects = {
     },
 
     axes: {
-      id:             30,
+      id:             28,
       visible:        false,
       title:          '3D axes',
       type:           'mesh',
       mesh:           new THREE.AxisHelper( RADIUS * 4 ),
     },
+
+    pixels: {
+      id:              30,
+      type:            'mesh.module',
+      title:           'experiment',
+      texture:         'tex7.jpg',
+    }
     
     // test: {
     //   id:             12,

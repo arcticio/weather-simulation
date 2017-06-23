@@ -307,7 +307,7 @@ IFC.Controller = (function () {
 
             case 2: 
               swipe.down.x = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-              swipe.dwon.y = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+              swipe.down.y = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
               swipe.last.x = swipe.down.x;
               swipe.last.y = swipe.down.y;
             break;
@@ -318,13 +318,71 @@ IFC.Controller = (function () {
 
           }
 
-          return eat(event);
-
         }
 
       },
-      touchmove:  function (event) {},
-      touchend:   function (event) {},
+      touchmove:  function (event) {
+
+        var 
+          deltaX, deltaY, 
+          distance  = cam.position.length(),
+          impFactor = impScale(distance, 1, cfg.maxDistance - cfg.minDistance)
+        ;
+
+        switch ( event.touches.length ) {
+
+          case 0: 
+            console.log('WTF');
+          break;
+
+          case 1: 
+            deltaX = (touch.last.x - event.touches[0].pageX) * cfg.moveXimpulse * impFactor;
+            deltaY = (touch.last.y - event.touches[0].pageY) * cfg.moveYimpulse * impFactor;
+
+            if (IFC.mouse.overGlobe || true ) {
+              self.impulse(deltaX, deltaY, 0);
+
+            } else {
+              cfg.ondrag(deltaX, deltaY);
+
+            }
+
+            touch.last.x = event.touches[0].pageX;
+            touch.last.y = event.touches[0].pageY;
+
+            return eat(event);
+
+          break;
+
+          case 2: 
+            swipe.down.x = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+            swipe.down.y = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+            swipe.last.x = swipe.down.x;
+            swipe.last.y = swipe.down.y;
+          break;
+
+          case 3: 
+          break;
+
+
+        }
+
+        // if ( !isNaN(mouse.down.x) ) {
+
+
+
+
+
+
+      },
+      touchend:   function (event) {
+
+        touch.down.x = NaN;
+        touch.down.y = NaN;
+        swipe.down.x = NaN;
+        swipe.down.y = NaN;
+
+      },
       keydown:    function (event) {
 
         var 

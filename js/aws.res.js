@@ -41,7 +41,7 @@ var RES = (function () {
 
     div.style.backgroundSize = ~~stats.percent + '%';
 
-    console.log(stats.requests, stats.bytesLoaded, stats.bytesTotal);
+    // console.log(stats.requests, stats.bytesLoaded, stats.bytesTotal);
 
   }
 

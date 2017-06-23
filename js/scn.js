@@ -458,7 +458,7 @@ var SCN = (function () {
 
       requestAnimationFrame(render);
 
-      IFC.Hud.performance.begin();
+      // IFC.Hud.performance.begin();
 
         IFC.step(frame, deltatsecs);
 
@@ -483,7 +483,7 @@ var SCN = (function () {
           renderer.render( IFC.Hud.scene, IFC.Hud.camera );
         }
 
-      IFC.Hud.performance.end();
+      // IFC.Hud.performance.end();
 
       lastTimestamp = timestamp;
       frame += 1;

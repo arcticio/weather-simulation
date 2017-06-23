@@ -21,6 +21,9 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
     `,
     fragmentShader = `
 
+      // precision highp int;
+      // precision highp float;
+
       uniform float opacity;
       uniform vec3  sunPosition;
       uniform mat4  modelMatrix;       // = object.matrixWorld

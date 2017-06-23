@@ -2,6 +2,49 @@
 'use strict'
 
 CFG.Sprites = {
+
+  performance: {
+    visible:  true,
+    type:     'toggle',
+    events:   [],
+    canvas:   document.createElement('CANVAS'),
+    back:     document.createElement('CANVAS'),
+    position: {
+      bottom:   18,
+      left:     18,
+      width:    128,
+      height:   64,
+    },
+    material: {
+      opacity: 0.9,
+      image: 'hud/performance.png'
+    },
+    onclick: (sprite) => {
+      console.log('sprite.clicked', sprite.name);
+    },
+  },
+
+  time: {
+    visible:  true,
+    events:   [],
+    canvas:   document.createElement('CANVAS'),
+    position: {
+      top:      18,
+      center:   'x',
+      width:    256,
+      height:   64,
+    },
+    material: {
+      opacity: 0.9,
+      image: 'hud/performance.png'
+    },
+    onclick: (sprite) => {
+      console.log('sprite.clicked', sprite.name);
+    },
+  },
+
+
+  // MENU
   
   hamburger: {
     visible:  true,
@@ -20,7 +63,8 @@ CFG.Sprites = {
     },
     onclick: (sprite) => {
       IFC.Hud.toggle();
-      console.log('sprite.click', sprite.name);
+      sprite.toggled = !sprite.toggled;
+      // console.log('sprite.click', sprite.name);
     },
   },
 
@@ -31,7 +75,7 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       top:     74,
-      left:    18,
+      left:    78,
       width:   48,
       height:  48,
     },
@@ -41,8 +85,9 @@ CFG.Sprites = {
     },
     onclick: (sprite) => {
       screenfull.enabled && screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
+      sprite.toggled = !sprite.toggled;
       IFC.Hud.resize();
-      console.log('sprite.clicked', sprite.name);
+      // console.log('sprite.clicked', sprite.name);
     },
   },
 
@@ -50,8 +95,8 @@ CFG.Sprites = {
     visible:  true,
     events:   ['click', 'mousemove', 'touchend'],
     position: {
-      top:     134,
-      left:     18,
+      top:     74,
+      left:     138,
       width:    48,
       height:   48,
     },
@@ -71,9 +116,9 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       top:     194,
-      left:     18,
-      width:    48,
-      height:   48,
+      left:     15,
+      width:    54,
+      height:   54,
     },
     material: {
       opacity: 0.5,
@@ -81,6 +126,7 @@ CFG.Sprites = {
     },
     onclick: (sprite) => {
       SCN.toggle(SCN.objects.graticule);
+      sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },
   },
@@ -105,44 +151,49 @@ CFG.Sprites = {
     },
   },
 
-  performance: {
+
+  // MENU, Layers
+
+  snow: {
     visible:  true,
     type:     'toggle',
-    events:   [],
-    canvas:   document.createElement('CANVAS'),
-    back:     document.createElement('CANVAS'),
+    events:   ['click', 'mousemove', 'touchend'],
+    toggled:  false,
     position: {
-      bottom:   18,
+      top:     314,
       left:     18,
-      width:    128,
-      height:   64,
-      // width:    256,
-      // height:   128,
+      width:    48,
+      height:   48,
     },
     material: {
-      opacity: 0.9,
-      image: 'hud/performance.png'
+      opacity: 0.5,
+      image: 'hud/snow.png'
     },
     onclick: (sprite) => {
+      // SCN.toggle(SCN.objects.snow);
+      sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },
   },
 
-  time: {
+  clouds: {
     visible:  true,
-    events:   [],
-    canvas:   document.createElement('CANVAS'),
+    type:     'toggle',
+    events:   ['click', 'mousemove', 'touchend'],
+    toggled:  false,
     position: {
-      top:      18,
-      center:   'x',
-      width:    240,
-      height:   120,
+      top:     374,
+      left:     18,
+      width:    48,
+      height:   48,
     },
     material: {
-      opacity: 0.9,
-      image: 'hud/performance.png'
+      opacity: 0.5,
+      image: 'hud/clouds.png'
     },
     onclick: (sprite) => {
+      SCN.toggle(SCN.objects.clouds);
+      sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },
   },

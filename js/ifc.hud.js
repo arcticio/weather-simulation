@@ -34,7 +34,7 @@ IFC.Hud = (function () {
 
       camera.position.z = 10;
 
-      menu.position.setX(-100);
+      menu.position.setX(-500);
 
       self.initSprites();
       scene.add(menu);
@@ -226,10 +226,14 @@ IFC.Hud = (function () {
       toggled = !toggled;
 
       if (toggled){
+        // sprites.hamburger.material.opacity = 0.9;
+        // sprites.hamburger.toggled = true;
         ANI.insert(0, ANI.library.menu.toggle(0, 200));
 
       } else {
-        ANI.insert(0, ANI.library.menu.toggle(-100, 200));
+        // sprites.hamburger.material.opacity = 0.5;
+        ANI.insert(0, ANI.library.menu.toggle(-500, 200));
+        // sprites.hamburger.toggled = false;
 
       }
 
@@ -366,8 +370,11 @@ IFC.Hud.performance = (function () {
       width  = cfg.position.width;
       height = cfg.position.height;
 
-      cvs.width  = back.width  = 256;
-      cvs.height = back.height = 128;
+      // cvs.width  = back.width  = 256;
+      // cvs.height = back.height = 128;
+
+      cvs.width  = back.width  = 128;
+      cvs.height = back.height = 64;
 
       texture = new THREE.CanvasTexture(cvs);
 
@@ -376,21 +383,21 @@ IFC.Hud.performance = (function () {
     },
     begin: function () {
 
+      var 
+        val,
+        off  = 1,
+        max  = 18,
+        ctx  =  back.getContext('2d'),
+        zero = 29 + max;
+
       now = window.performance.now();
       fps = last ? 1000 / (now - last) : 60;
-
-      var 
-        off  = 1,
-        max  = 36,
-        ctx  =  back.getContext('2d'),
-        // val  = Math.sin(window.performance.now() / 100) * 36,
-        val  = H.scale(fps, 0, 60, 0, max ),
-        zero = 58 + max;
+      val = H.scale(fps, 0, 60, 0, max ),
 
       ctx.globalCompositeOperation = 'source-over';
 
-      // paint line in new column
-      ctx.fillStyle = '#00bb00';
+      // paint fps line in new column
+      ctx.fillStyle = fps > 50 ? '#008800' : '#ee0000';
       ctx.fillRect(back.width - off, zero, off, -val);
 
       ctx.globalCompositeOperation = 'copy';
@@ -420,19 +427,17 @@ IFC.Hud.performance = (function () {
 
         for (i=0; i<3; i++){
           ctx.fillStyle = lineFills[i];
-          ctx.fillRect(0, cvs.height/4.5 * (i +1), cvs.width, 1.5);
+          ctx.fillRect(0, cvs.height/4.5 * (i +1), cvs.width, 1.1);
         }
 
-        ctx.font = '24px monospace'
+        ctx.font = '11px monospace'
         ctx.fillStyle = '#ddd';
-        ctx.fillText(bufDur.avg().toFixed(1) + 'd', 200, 124);
-        ctx.fillText(bufFps.avg().toFixed(1) + 'fps',   0, 124);
+        ctx.fillText(bufDur.avg().toFixed(1) + 'd',   100, 62);
+        ctx.fillText(bufFps.avg().toFixed(1) + 'fps',   0, 62);
 
         texture.needsUpdate = true;
 
       }
-
-      // sprite.material.map.needsUpdate = true;
 
     },
   };
@@ -463,17 +468,13 @@ IFC.Hud.time = (function () {
       ctx    = cvs.getContext('2d');
       img    = sprite.material.map.image;
 
-      width  = cfg.position.width;
-      height = cfg.position.height;
-
-      cvs.width  = 256;
-      cvs.height = 128;
+      width  = cvs.width  = cfg.position.width;
+      height = cvs.height = cfg.position.height;
 
       ctx.font         = '24px monospace'
-      ctx.fillStyle    = '#ffffff';
+      ctx.fillStyle    = '#eee';
       ctx.textBaseline = 'bottom';
 
-      // CanvasTexture( canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy )
       texture = new THREE.CanvasTexture(cvs);
 
       sprite.material.map = texture;
@@ -496,15 +497,15 @@ IFC.Hud.time = (function () {
         // ctx.fillStyle = 'rgba(200, 0, 0, 0.5)'
         // ctx.fillRect(0, 0, cvs.width, cvs.height);
 
-        ctx.fillStyle = '#ffffff'
-        ctx.font = 'bold 24px monospace'
+        ctx.fillStyle = '#eee'
+        ctx.font = 'bold 22px monospace'
 
         metrics = ctx.measureText(simDate);
-        ctx.fillText(simDate, (cvs.width - metrics.width) / 2, 28);
+        ctx.fillText(simDate, (cvs.width - metrics.width) / 2, 22);
 
-        ctx.font = 'bold 18px monospace'
+        ctx.font = 'bold 16px monospace'
         metrics = ctx.measureText(simTime);
-        ctx.fillText(simTime, (cvs.width - metrics.width) / 2, 52);
+        ctx.fillText(simTime, (cvs.width - metrics.width) / 2, 44);
 
         texture.needsUpdate = true;
 

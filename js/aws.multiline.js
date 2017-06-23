@@ -172,7 +172,7 @@ Multiline.prototype = {
 
     return `
 
-      precision highp float;
+      // precision highp float;
 
       attribute float side;
       attribute vec2  uv;

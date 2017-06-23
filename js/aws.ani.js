@@ -179,17 +179,22 @@ var ANI = (function () {
         enter: function (sprite, duration) {
 
           var 
+            isToggle = sprite.cfg.type === 'toggle',
+            isToggled = !!sprite.toggled,
+            tarOpacity   = isToggle && isToggled ? 0.5 : 0.9,
+            curOpacity   = isToggle && isToggled ? 0.9 : 0.5,
+
             pos     = sprite.cfg.position,
             mat     = sprite.cfg.material,
             current = {
               width:    pos.width, 
               height:   pos.height, 
-              opacity:  mat.opacity
+              opacity:  isToggle ? curOpacity : mat.opacity,
             },
             target  = {
               width:    current.width  * 1.1, 
               height:   current.height * 1.1,
-              opacity:  0.9,
+              opacity:  isToggle ? tarOpacity : mat.opacity,
             }
           ;
 
@@ -211,17 +216,21 @@ var ANI = (function () {
         leave: function (sprite, duration) {
 
           var 
+            isToggle = sprite.cfg.type === 'toggle',
+            isToggled = !!sprite.toggled,
+            curOpacity   = isToggle && isToggled ? 0.5 : 0.9,
+            tarOpacity   = isToggle && isToggled ? 0.9 : 0.5,
             pos = sprite.cfg.position,
             mat = sprite.cfg.material,
             current = {
               width:    pos.width  * 1.1, 
               height:   pos.height * 1.1, 
-              opacity:  sprite.material.opacity
+              opacity:  isToggle ? curOpacity : sprite.material.opacity
             },
             target  = {
               width:    pos.width, 
               height:   pos.height,
-              opacity:  mat.opacity,
+              opacity:  isToggle ? tarOpacity : mat.opacity,
             }
           ;
 

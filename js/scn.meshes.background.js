@@ -21,8 +21,8 @@ SCN.Meshes.background = function (cfg) {
 
       // Note that for mobiles you'll probably want to replace this by mediump since highp might be slower.
 
-      precision highp int;
-      precision highp float;
+      // precision highp int;
+      // precision highp float;
 
       varying vec3 vColor;  
 

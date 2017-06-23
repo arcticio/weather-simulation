@@ -58,6 +58,9 @@ var CFG = {
     'tex2.jpg':                     'images/test/tex2.jpg',
     'tex3.jpg':                     'images/test/tex3.jpg',
     'tex4.jpg':                     'images/test/tex4.jpg',
+    'tex5.png':                     'images/test/tex5.png',
+    'tex6.png':                     'images/test/tex6.png',
+    'tex7.jpg':                     'images/test/tex7.jpg',
 
     'line.alpha.32.png':            'images/line.alpha.32.png',
     'line.alpha.16.png':            'images/line.alpha.16.png',
@@ -67,10 +70,15 @@ var CFG = {
     'hud/hamburger.png':            'images/hud/hamburger.png',
     'hud/fullscreen.png':           'images/hud/fullscreen.png',
     'hud/movie.png':                'images/hud/movie.png',
-    'hud/graticule.png':            'images/hud/graticule.png',
+    // 'hud/graticule.png':            'images/hud/graticule.png',
     'hud/info.png':                 'images/hud/info.png',
     'hud/performance.png':          'images/hud/performance.png',
-    'hud/performance.png':          'images/hud/performance.png',
+
+    'hud/graticule.png':            'images/hud/graticule.1.png',
+    'hud/snow.png':                 'images/hud/snow.png',
+    'hud/clouds.png':               'images/hud/clouds.png',
+
+
 
     'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 
