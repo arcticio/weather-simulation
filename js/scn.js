@@ -443,14 +443,12 @@ var SCN = (function () {
     },
     updateSun: function (sunVector) {
 
+      //TODO: check light.onbeforerender
+
       var objs = SCN.objects;
 
-      objs.spot.visible         && objs.spot.position.copy(sunVector).multiplyScalar(10);
-      objs.sun.visible          && objs.sun.position.copy(sunVector).multiplyScalar(10);
-      // objs.atmosphere.visible   && objs.atmosphere.update({sunPosition: sunVector});
-
-
-      // SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(sunVector);
+      objs.spot.visible && objs.spot.position.copy(sunVector).multiplyScalar(10);
+      objs.sun.visible  && objs.sun.position.copy(sunVector).multiplyScalar(10);
 
     },
     render: function render () {

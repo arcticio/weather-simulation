@@ -93,4 +93,31 @@ Object.assign(CFG, {
 
   },
 
+  debug: function ( /* args */ ) {
+
+    var 
+      out  = {}, 
+      args = [...arguments],
+      has  = function (a, item) {
+        return a.indexOf(item) !== -1;
+      };
+
+    H.each(CFG.Objects, (name, cfg) => {
+
+      out[name] = {id: cfg.id || '-'};
+
+      H.each(cfg, (option, value) => {
+
+        if (option === 'id' || has(args, option)) {
+          out[name][option] = value;
+        }
+
+      });
+
+    });
+
+    console.log(JSON.stringify(out, null, 2));
+
+  }
+
 });

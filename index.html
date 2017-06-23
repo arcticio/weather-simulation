@@ -22,6 +22,8 @@
 
   <meta name="mobile-web-app-capable" content="yes">
 
+  <!-- update fb image https://developers.facebook.com/tools/debug/ -->
+
   <meta property="og:title" content="Weather-Simulation" />
   <meta property="og:type" content="website" />
   <meta property="og:description" content="Visualizes a set of cryospheric parameters provided by NOAA's Global Forecasing System (GFS)" />
@@ -105,8 +107,6 @@
 
   <div style="display:none">
 
-    <script src='js/version.js'></script>
-
     <script src='timeranges.js'></script>
 
     <script src="libs/orb2/orb2.js"></script>
@@ -176,7 +176,7 @@
 
       window.onload = function () {
 
-        TIM.step('WIN.load.in');
+        TIM.step('WIN.load.in', VERSION);
 
         CFG.init();
         RES.init();

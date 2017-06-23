@@ -3,6 +3,8 @@
 
 CFG.Objects = {
 
+  // TODO: contemplate about id: 0 for intro html
+
   // MANDATORY (no id)
 
     perspective: {
@@ -353,7 +355,7 @@ CFG.Objects = {
     },
 
 
-  // OPTIONAL
+  // OPTIONAL ( 28 - 30 )
 
     graticule: {
       id:             28,
