@@ -1,87 +1,113 @@
 
 CFG.Preset = {
 
-  // Loading:        '',
-  // SimTime:        '',
-  Render:         true,
-  // Animate:        true,
-  // Simulate:       true,
+  init: function () {
 
-  Reload:         () => location.reload(),
-  ResetCam:       () => SCN.reset.controller(),
+    Object.assign(CFG.Preset, {
 
-  // Camera: {
-  //   isFolder:     true,
-  //   reset:        () => {},
-  // },
+      // Loading:        '',
+      // SimTime:        '',
+      Render:         true,
+      // Animate:        true,
+      // Simulate:       true,
 
-  Ambient: { isFolder: true,
-    toggle:       CFG.Objects.ambient.visible,
-    intensity:    {val: CFG.Objects.ambient.intensity, min: 0, max: 1},
-    color:        '#ffffff'
-  },
+      Reload:         () => location.reload(),
+      ResetCam:       () => SCN.reset.controller(),
 
-  Spot: { isFolder: true,
-    toggle:       CFG.Objects.spot.visible,
-    angle:        {val: 0.26, min: 0, max: 0.5},
-    intensity:    {val: CFG.Objects.spot.intensity, min: 0, max: 1},
-    color:        '#ffffff'
-  },
+      // Camera: {
+      //   isFolder:     true,
+      //   reset:        () => {},
+      // },
 
-  Sun: { isFolder: true,
-    toggle:       CFG.Objects.sun.visible,
-    intensity:    {val: CFG.Objects.sun.intensity, min: 0, max: 1},
-    skycolor:     CFG.Objects.sun.skycolor,
-    grdcolor:     CFG.Objects.sun.grdcolor,
-  },
+      Ambient: { isFolder: true,
+        // toggle:       CFG.Objects.ambient.visible,
+        intensity:    {val: CFG.Objects.ambient.intensity, min: 0, max: 1},
+        color:        '#ffffff'
+      },
 
-  Atmosphere: { isFolder: true,
-    toggle:       CFG.Objects.atmosphere.visible,
-    intensity:    {val: CFG.Objects.atmosphere.intensity, min: 0, max: 1},
-    color:        CFG.Objects.atmosphere.color,
-  },
+      Spot: { isFolder: true,
+        // toggle:       CFG.Objects.spot.visible,
+        angle:        {val: 0.26, min: 0, max: 0.5},
+        intensity:    {val: CFG.Objects.spot.intensity, min: 0, max: 1},
+        color:        '#ffffff'
+      },
 
-  Layers: { isFolder: true,
-    'BACKGROUND': CFG.Objects.background.visible,
-    'BASEMAPS':   CFG.Objects.basemaps.visible,
-    'POPULATION': CFG.Objects.population.visible,
-    'SNPP':       CFG.Objects.snpp.visible,
-    'RTOPO2':     CFG.Objects.rtopo2.visible,
-    'GMLC':       CFG.Objects.gmlc.visible,
-    'DATA':       CFG.Objects.data.visible,
-    'SST':        CFG.Objects.sst.visible,
-    'SEAICE':     CFG.Objects.seaice.visible,
-    'WIND':       CFG.Objects.wind.visible,
-    'JETSTREAM':  CFG.Objects.jetstream.visible,
-    // 'LAND':       CFG.Objects.land.visible,
-    // 'RIVERS':     CFG.Objects.rivers.visible,
-    'CLOUDS':     CFG.Objects.clouds.visible,
-    // 'GRATICULE':  CFG.Objects.graticule.visible,
-    // 'SECTOR':     CFG.Objects.sector.visible,
-    // 'TEST':       CFG.Objects.test.visible,
-  },
+      Sun: { isFolder: true,
+        // toggle:       CFG.Objects.sun.visible,
+        intensity:    {val: CFG.Objects.sun.intensity, min: 0, max: 1},
+        skycolor:     CFG.Objects.sun.skycolor,
+        grdcolor:     CFG.Objects.sun.grdcolor,
+      },
 
-  DateTime : { isFolder:    true,
-    choose:     {val: 3, min: 0, max: 365 * 24 -1, step: 1},
-    'hour  +1': () => {},
-    'hour  -1': () => {},
-    'hour  +6': () => {},
-    'hour  -6': () => {},
-    'hour +24': () => {},
-    'hour -24': () => {},
-    'day  +30': () => {},
-    'day  -30': () => {},
-  },
+      Atmosphere: { isFolder: true,
+        // toggle:       CFG.Objects.atmosphere.visible,
+        intensity:    {val: CFG.Objects.atmosphere.intensity, min: 0, max: 1},
+        color:        CFG.Objects.atmosphere.color,
+      },
 
-  Extras: { isFolder:   true,
-    Axes:       CFG.Objects.axes.visible,
-    Rotate:     () => {},
-  },
+      // Layers: { isFolder: true,
+      //   'BACKGROUND': CFG.Objects.background.visible,
+      //   'BASEMAPS':   CFG.Objects.basemaps.visible,
+      //   'BASECOPY':   CFG.Objects.basecopy.visible,
+      //   'POPULATION': CFG.Objects.population.visible,
+      //   'SNPP':       CFG.Objects.snpp.visible,
+      //   'RTOPO2':     CFG.Objects.rtopo2.visible,
+      //   'GMLC':       CFG.Objects.gmlc.visible,
+      //   // 'DATA':       CFG.Objects.data.visible,
+      //   'SST':        CFG.Objects.sst.visible,
+      //   'SEAICE':     CFG.Objects.seaice.visible,
+      //   'WIND':       CFG.Objects.wind.visible,
+      //   'JETSTREAM':  CFG.Objects.jetstream.visible,
+      //   // 'LAND':       CFG.Objects.land.visible,
+      //   // 'RIVERS':     CFG.Objects.rivers.visible,
+      //   'CLOUDS':     CFG.Objects.clouds.visible,
+      //   // 'GRATICULE':  CFG.Objects.graticule.visible,
+      //   // 'SECTOR':     CFG.Objects.sector.visible,
+      //   // 'TEST':       CFG.Objects.test.visible,
+      // },
 
-  // Simulation: { isFolder:   true,
-  //   start:      () => {},
-  //   stop:       () => {},
-  //   pause:      () => {},
-  // },
+      Layers: (function () {
 
+        var layers = {isFolder: true};
+
+        H.each(CFG.Objects, (name, config) => {
+          if (config.id) {
+            layers[name.toUpperCase()] = CFG.Objects[name].visible;
+          }
+        });
+
+        return layers;
+
+      }()),
+
+      DateTime : { isFolder:    true,
+        choose:     {val: 3, min: 0, max: 365 * 24 -1, step: 1},
+        'hour  +1': () => {},
+        'hour  -1': () => {},
+        'hour  +6': () => {},
+        'hour  -6': () => {},
+        'hour +24': () => {},
+        'hour -24': () => {},
+        'day  +30': () => {},
+        'day  -30': () => {},
+      },
+
+      Extras: { isFolder:   true,
+        Axes:       CFG.Objects.axes.visible,
+        Rotate:     () => {},
+      },
+
+      // Simulation: { isFolder:   true,
+      //   start:      () => {},
+      //   stop:       () => {},
+      //   pause:      () => {},
+      // },
+
+
+
+
+    })
+  
+  }
 };
+

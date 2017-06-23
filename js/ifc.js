@@ -182,7 +182,7 @@ var IFC = (function () {
         path   = `/${hash}/${time}/${coords}`,
       end;
 
-      // console.log('url', path);
+      console.log('assets', assets);
 
       History.replaceState({}, CFG.Title, path);
 

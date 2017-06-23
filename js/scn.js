@@ -239,8 +239,22 @@ var SCN = (function () {
         callback && callback();
       },
 
+      'mesh.module': (name, cfg, callback) => {
+        SCN.Meshes[name](name, cfg, function (name, mesh) {
+          self.add(name, mesh);
+          callback && callback();
+        });
+      },
+
       'mesh.basemaps': (name, cfg, callback) => {
         SCN.Meshes.basemaps(name, cfg, function (name, mesh) {
+          self.add(name, mesh);
+          callback && callback();
+        });
+      },
+
+      'mesh.basecopy': (name, cfg, callback) => {
+        SCN.Meshes.basecopy(name, cfg, function (name, mesh) {
           self.add(name, mesh);
           callback && callback();
         });
@@ -337,25 +351,38 @@ var SCN = (function () {
             intensity:    (value) => objects.atmosphere.update({intensity: value}),
             color:        (value) => objects.atmosphere.update({color: new THREE.Color( value )}),
           },
-          Layers : {
-            'BASEMAPS':   (value) => self.toggle(objects.basemaps, value),
-            'BACKGROUND': (value) => self.toggle(objects.background, value),
-            'CLOUDS':     (value) => self.toggle(objects.clouds, value),
-            'DATA':       (value) => self.toggle(objects.data, value),
-            'GMLC':       (value) => self.toggle(objects.gmlc, value),
-            'GRATICULE':  (value) => self.toggle(objects.graticule, value),
-            'JETSTREAM':  (value) => self.toggle(objects.jetstream, value),
-            'LAND':       (value) => self.toggle(objects.land, value),
-            'POPULATION': (value) => self.toggle(objects.population, value),
-            'RIVERS':     (value) => self.toggle(objects.rivers, value),
-            'RTOPO2':     (value) => self.toggle(objects.rtopo2, value),
-            'SEAICE':     (value) => self.toggle(objects.seaice, value),
-            'SECTOR':     (value) => self.toggle(objects.sector, value),
-            'SNPP':       (value) => self.toggle(objects.snpp, value),
-            'SST':        (value) => self.toggle(objects.sst, value),
-            'WIND':       (value) => self.toggle(objects.wind, value),
-            // 'TEST':       (value) => self.toggle(objects.test, value),
-          },
+          // Layers : {
+          //   'BASEMAPS':   (value) => self.toggle(objects.basemaps, value),
+          //   'BASECOPY':   (value) => self.toggle(objects.basecopy, value),
+          //   'BACKGROUND': (value) => self.toggle(objects.background, value),
+          //   'CLOUDS':     (value) => self.toggle(objects.clouds, value),
+          //   // 'DATA':       (value) => self.toggle(objects.data, value),
+          //   'GMLC':       (value) => self.toggle(objects.gmlc, value),
+          //   'GRATICULE':  (value) => self.toggle(objects.graticule, value),
+          //   'JETSTREAM':  (value) => self.toggle(objects.jetstream, value),
+          //   'LAND':       (value) => self.toggle(objects.land, value),
+          //   'POPULATION': (value) => self.toggle(objects.population, value),
+          //   'RIVERS':     (value) => self.toggle(objects.rivers, value),
+          //   'RTOPO2':     (value) => self.toggle(objects.rtopo2, value),
+          //   'SEAICE':     (value) => self.toggle(objects.seaice, value),
+          //   'SECTOR':     (value) => self.toggle(objects.sector, value),
+          //   'SNPP':       (value) => self.toggle(objects.snpp, value),
+          //   'SST':        (value) => self.toggle(objects.sst, value),
+          //   'WIND':       (value) => self.toggle(objects.wind, value),
+          //   // 'TEST':       (value) => self.toggle(objects.test, value),
+          // },
+          Layers: (function () {
+            var layers = {};
+
+            H.each(CFG.Objects, (name, config) => {
+              if (config.id) {
+                layers[name.toUpperCase()] = (value) => self.toggle(objects[name], value);
+              }
+            });
+
+            return layers;
+
+          }()),
           Camera: {
             reset:        (value) => self.reset.controller(),
           },

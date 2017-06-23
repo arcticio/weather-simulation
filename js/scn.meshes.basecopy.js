@@ -1,7 +1,7 @@
 
 'use strict'
 
-SCN.Meshes.basemaps = function (name, cfg, callback) {
+SCN.Meshes.basecopy = function (name, cfg, callback) {
 
   var
     idx, vertex,  materials, mesh,
@@ -17,6 +17,38 @@ SCN.Meshes.basemaps = function (name, cfg, callback) {
       }
 
     }),
+
+    vertexShader = `
+
+      varying   vec2 vUv;  
+      varying   vec3 vNormal;  
+      varying   vec3 vPosition;  
+
+      void main() {
+        vUv         = uv;
+        vNormal     = normal;
+        vPosition   = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+      }
+    `,
+    fragmentShader = `
+
+      // Note that for mobiles you'll probably want to replace this by mediump since highp might be slower.
+
+      precision highp int;
+      precision highp float;
+
+      varying   vec2 vUv;  
+      varying   vec3 vNormal;  
+      varying   vec3 vPosition;  
+
+      uniform float opacity;
+
+      void main() {
+        gl_FragColor = vec4(vColor, opacity);
+      }
+    `,
+
   end;
 
   for (idx in geometry.vertices) {
@@ -30,7 +62,7 @@ SCN.Meshes.basemaps = function (name, cfg, callback) {
 
     materials = responses.map(response => {
 
-      return new THREE.MeshLambertMaterial(Object.assign({ 
+      return new THREE.MeshPhongMaterial(Object.assign({ 
         map:         response.data,
         alphaTest:   0.99,
       }), cfg.material);

@@ -64,9 +64,8 @@ var SIM = (function () {
       time.model = TIMENOW.clone();
       time.doe   = self.calcdoe(time.model);
 
-      TIM.step('SIM.time', 'time.now',   time.now.format('YYYY-MM-DD HH[:]mm'));
-      TIM.step('SIM.time', 'time.model', time.model.format('YYYY-MM-DD HH[:]mm'));
-
+      // TIM.step('SIM.time', 'time.now',   time.now.format('YYYY-MM-DD HH[:]mm'));
+      // TIM.step('SIM.time', 'time.model', time.model.format('YYYY-MM-DD HH[:]mm'));
 
     },
     activate: function () {

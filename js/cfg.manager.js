@@ -5,8 +5,16 @@ Object.assign(CFG, {
   init: function () {
 
     var 
-      time, coords, position, assets, 
+      time, coords, position, assets, defAssets = [],
       [locHash, locTime, locCoords] = location.pathname.slice(1).split('/');
+
+    // H.each(CFG.Objects, (name, cfg) => {
+    //   if (cfg.visible){
+    //     defAssets.push(cfg.id);
+    //   }
+    // });
+
+    // TODO: rethink invalid and default values for all
 
     if (locHash !== undefined) {
       assets = CFG.hash2assets(locHash);
@@ -49,6 +57,7 @@ Object.assign(CFG, {
       TIMENOW = time.clone();
     }
 
+    CFG.Preset.init();
     IFC.initGUI();
 
   },
