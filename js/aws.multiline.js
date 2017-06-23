@@ -6,6 +6,8 @@
 
 */
 
+'use strict'
+
 function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
   var idx = 0;

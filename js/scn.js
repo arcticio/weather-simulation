@@ -1,3 +1,4 @@
+
 'use strict';
 
 var SCN = (function () {
@@ -23,7 +24,6 @@ var SCN = (function () {
 
     camera        = CFG.Objects.perspective.cam,
     scene         = new THREE.Scene(),
-    axes,
 
     doRender      = true,
     doAnimate     = true,
@@ -312,9 +312,7 @@ var SCN = (function () {
 
     reset: {
       controller: function () {
-
         IFC.Controller.reset();
-
       }
     },
 
@@ -351,36 +349,16 @@ var SCN = (function () {
             intensity:    (value) => objects.atmosphere.update({intensity: value}),
             color:        (value) => objects.atmosphere.update({color: new THREE.Color( value )}),
           },
-          // Layers : {
-          //   'BASEMAPS':   (value) => self.toggle(objects.basemaps, value),
-          //   'BASECOPY':   (value) => self.toggle(objects.basecopy, value),
-          //   'BACKGROUND': (value) => self.toggle(objects.background, value),
-          //   'CLOUDS':     (value) => self.toggle(objects.clouds, value),
-          //   // 'DATA':       (value) => self.toggle(objects.data, value),
-          //   'GMLC':       (value) => self.toggle(objects.gmlc, value),
-          //   'GRATICULE':  (value) => self.toggle(objects.graticule, value),
-          //   'JETSTREAM':  (value) => self.toggle(objects.jetstream, value),
-          //   'LAND':       (value) => self.toggle(objects.land, value),
-          //   'POPULATION': (value) => self.toggle(objects.population, value),
-          //   'RIVERS':     (value) => self.toggle(objects.rivers, value),
-          //   'RTOPO2':     (value) => self.toggle(objects.rtopo2, value),
-          //   'SEAICE':     (value) => self.toggle(objects.seaice, value),
-          //   'SECTOR':     (value) => self.toggle(objects.sector, value),
-          //   'SNPP':       (value) => self.toggle(objects.snpp, value),
-          //   'SST':        (value) => self.toggle(objects.sst, value),
-          //   'WIND':       (value) => self.toggle(objects.wind, value),
-          //   // 'TEST':       (value) => self.toggle(objects.test, value),
-          // },
-          Layers: (function () {
-            var layers = {};
+          Assets: (function () {
+            var asets = {};
 
             H.each(CFG.Objects, (name, config) => {
               if (config.id) {
-                layers[name.toUpperCase()] = (value) => self.toggle(objects[name], value);
+                asets[name.toUpperCase()] = (value) => self.toggle(objects[name], value);
               }
             });
 
-            return layers;
+            return asets;
 
           }()),
           Camera: {
@@ -397,15 +375,9 @@ var SCN = (function () {
             'day  +30':   (value) => SIM.setSimTime( 30, 'days'),
             'day  -30':   (value) => SIM.setSimTime(-30, 'days'),
           },
-          Extras: {
-            Axes:         (value) => self.toggle(objects.axes, value),
+          Animations: {
             Rotate:       (value) => ANI.insert(0, ANI.library.datetime.add(1, 'days', 800)), 
           },
-          Simulation: {
-            start:        (value) => SIM.start(),
-            stop:         (value) => SIM.stop(),
-            pause:        (value) => SIM.pause(),
-          }
         },
       end;
 
@@ -475,7 +447,7 @@ var SCN = (function () {
 
       objs.spot.visible         && objs.spot.position.copy(sunVector).multiplyScalar(10);
       objs.sun.visible          && objs.sun.position.copy(sunVector).multiplyScalar(10);
-      objs.atmosphere.visible   && objs.atmosphere.update({sunPosition: sunVector});
+      // objs.atmosphere.visible   && objs.atmosphere.update({sunPosition: sunVector});
 
 
       // SCN.objects.sunPointer.visible && SCN.objects.sunPointer.setDirection(sunVector);

@@ -15,6 +15,9 @@
 // http://rosettacode.org/wiki/Category:JavaScript
 
 //noiv, Cologne, 2006, http://ExploreOurPla.net
+
+'use strict'
+
 function $I(){
   var el, i, a, v;
   if (!arguments[0] && arguments[1]){return document.createTextNode(arguments[1]);}

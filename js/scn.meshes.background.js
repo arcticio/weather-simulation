@@ -1,3 +1,6 @@
+
+'use strict'
+
 SCN.Meshes.background = function (cfg) {
 
   var

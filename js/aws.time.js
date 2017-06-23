@@ -6,6 +6,7 @@
 //   return !isNaN(d.getTime());
 // }
 
+'use strict'
 
 function utc(a){return new UTC(a);}
 function UTC(){

@@ -215,7 +215,7 @@ SIM.Models.clouds = (function () {
 
         void main() {
 
-          vec3 pos  = position * radius;
+          vec3 pos  = position * 2.0; // radius;
           vPos = position;
 
           vColor = vec4(1.0, 1.0, 1.0, percentage);

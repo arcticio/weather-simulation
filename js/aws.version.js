@@ -1,2 +1,2 @@
 
-var VERSION = "1.02/noiv/20-Apr-2016";
+var VERSION = '0.5/noiv/20-Apr-2016';

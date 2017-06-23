@@ -1,4 +1,6 @@
 
+'use strict'
+
 CFG.Sprites = {
   
   hamburger: {

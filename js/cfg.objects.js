@@ -1,4 +1,6 @@
 
+'use strict'
+
 CFG.Objects = {
 
   // MANDATORY (no id)
@@ -86,12 +88,11 @@ CFG.Objects = {
     atmosphere: {
       id:             6,
       visible:        false,
-      title:          'spot light',
-      type:           'mesh.calculated',
+      title:          'atmosphere',
+      type:           'mesh.module',
       radius:         RADIUS + 0.002,
       rotation:       [0, Math.PI * 0.5, 0],
-      intensity:      0.5,
-      color:          0x3333ff,
+      opacity:        0.5,
     },
 
 
@@ -177,8 +178,8 @@ CFG.Objects = {
     snpp: {
       id:             14,
       visible:         false,
-      title:           'spot light',
-      type:            'SNPP - satellite surface layer',
+      type:           'cube.textured',
+      title:            'SNPP - satellite surface layer',
       rotation:        [0, Math.PI / 2, 0],
       cube: {
         type:          'globe',

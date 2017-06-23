@@ -1,4 +1,7 @@
 
+'use strict'
+
+
 SIM.Tools = {
 
   momRestrictToInterval : function (mom, interval) {

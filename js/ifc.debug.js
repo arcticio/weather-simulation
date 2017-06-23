@@ -1,3 +1,6 @@
+
+'use strict'
+
 IFC.initGUI = function () {
 
   // dat.gui

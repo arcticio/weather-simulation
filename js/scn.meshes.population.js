@@ -1,3 +1,6 @@
+
+'use strict'
+
 SCN.Meshes.population = function (cfg) {
 
   // check shaders here:

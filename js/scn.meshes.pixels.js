@@ -1,6 +1,9 @@
 
 //  https://www.3dgep.com/texturing-and-lighting-with-opengl-and-glsl/
 
+'use strict'
+
+
 SCN.Meshes.pixels = function (cfg) {
 
   var

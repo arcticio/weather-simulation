@@ -1,19 +1,5 @@
+
 'use strict';
-
-// https://github.com/sindresorhus/screenfull.js/
-
-/*
-
-  Purpose is to show user information about ongoing requests,
-  with some interactivity (cancel)
-
-  How? : https://www.html5rocks.com/en/tutorials/file/xhr2/
-
-  got some extra activity via setTimeout.
-
-
-*/
-
 
 var RES = (function () {
 

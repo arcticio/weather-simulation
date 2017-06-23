@@ -1,4 +1,6 @@
 
+'use strict'
+
 IFC.Controller = (function () {
 
   var 

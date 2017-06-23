@@ -1,4 +1,7 @@
 
+'use strict'
+
+
 SIM.Datagram = function (vari) {
 
     this.data = {};

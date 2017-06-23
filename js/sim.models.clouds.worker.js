@@ -1,4 +1,7 @@
 
+'use strict'
+
+
 if( typeof importScripts === 'function') {
 
   var SIM = {};
