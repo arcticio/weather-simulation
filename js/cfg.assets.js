@@ -77,7 +77,7 @@ CFG.Objects = {
       id:             5,
       visible:        false,
       title:          'dynamic background',
-      type:           'mesh.calculated',
+      type:           'mesh.module',
       size:           4.0,
       colors: [
         0x666666,
@@ -104,9 +104,9 @@ CFG.Objects = {
       id:              8,
       visible:         true,
       title:          'simple surface layer',
-      // type:            'cube.textured',
       type:           'mesh.module',
       rotation:        [0, Math.PI / 2, 0],
+      lightset:       'normal',
       cube: {
         type:          'globe',
         radius:        RADIUS, 
@@ -124,8 +124,9 @@ CFG.Objects = {
       id:              9,
       visible:         false,
       title:          'simple surface layer',
-      type:           'mesh.basecopy',
+      type:           'mesh.module',
       rotation:        [0, Math.PI / 2, 0],
+      lightset:       'normal',
       cube: {
         type:          'globe',
         radius:        RADIUS + 0.01, 
@@ -144,6 +145,7 @@ CFG.Objects = {
       title:          'RTOPO2 surface layer',
       type:            'cube.textured',
       rotation:        [0, Math.PI / 2, 0],
+      lightset:       'normal',
       cube: {
         type:          'globe',
         radius:        RADIUS, 
@@ -162,6 +164,7 @@ CFG.Objects = {
       title:          'GLCNMO - vegetation layer',
       type:            'cube.textured',
       rotation:        [0, Math.PI / 2, 0],
+      lightset:       'normal',
       cube: {
         type:          'globe',
         radius:        RADIUS, 
@@ -183,10 +186,11 @@ CFG.Objects = {
       type:           'cube.textured',
       title:            'SNPP - satellite surface layer',
       rotation:        [0, Math.PI / 2, 0],
+      lightset:       'snpp',
       cube: {
         type:          'globe',
         radius:        RADIUS - 0.002,
-        texture:       'data/snpp/2017-06-13.globe.snpp.FACE.2048.jpg', 
+        texture:       'data/snpp/2017-06-15.globe.snpp.FACE.2048.jpg', 
         material: {
           transparent: true, 
           opacity:     0.99,              // removes crazy seaice effeckt
@@ -318,6 +322,21 @@ CFG.Objects = {
       }
     },
 
+    variables: {
+      id:             21,
+      visible:        false,
+      title:          'GFS - generic layer',
+      type:           'simulation',
+      rotation:       [0, Math.PI, 0],
+      radius:         RADIUS + 0.005, 
+      sim: {
+        dataroot:     'data/gfs/tmp2m/',
+        patterns: [
+          'YYYY-MM-DD-HH[.tmp2m.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
+        ],
+      }
+    },
+
 
   // FEATIRES ( 23 - 25 )
 
@@ -347,7 +366,7 @@ CFG.Objects = {
       id:             25,
       visible:        false,
       title:          '3000 cities',
-      type:           'mesh.calculated',
+      type:           'mesh.module',
       altitude:       0.001,
       opacity:        0.8,
       radius:         1.0,

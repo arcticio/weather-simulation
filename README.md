@@ -3,7 +3,7 @@ Renders current weather parameters onto a 3D sphere
 
 ## Demo
 
-  * https://arcticio.github.io/weather-simulation/
+  * http://hypatia.arctic.io/YNK/2017-06-15-12-00/2;3;0
 
 ## Credits
   

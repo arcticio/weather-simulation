@@ -4,6 +4,9 @@ runtime: python27
 api_version: 1
 threadsafe: yes
 
+# d for days, h for hours, m for minutes, and s for seconds
+default_expiration: "6h"
+
 builtins:
 - remote_api: on
 
@@ -32,45 +35,48 @@ handlers:
   static_files: data/json/\1
   upload: data/json/(.*\.json)
   mime_type: text/plain
-  expiration: "1d"
+  expiration: "30d"
 
 - url: /data/json/(.*\.geojson)
   static_files: data/json/\1
   upload: data/json/(.*\.geojson)
   mime_type: text/plain
-  expiration: "1d"
+  expiration: "30d"
 
 ## DODS
 - url: /data/gfs/(.*\.dods)
   static_files: data/gfs/\1
   upload: data/gfs/(.*\.dods)
   mime_type: text/plain
-  expiration: "1h"
 
 ## DATA
 - url: /data
   static_dir: data
-  expiration: "1d"
 
 ## IMAGES
 - url: /images
   static_dir: images
-  expiration: "1d"
+  expiration: "30d"
 
 ## JS
 - url: /js
   static_dir: js
-  expiration: "1d"
+  expiration: "30d"
 
 ## LIBS
 - url: /libs
   static_dir: libs
-  expiration: "1d"
+  expiration: "30d"
 
 ## CSS
 - url: /css
   static_dir: css
-  expiration: "1d"
+  expiration: "30d"
+
+## CATCH AL
+- url: /.*
+  static_files: index.html
+  upload: index.html
 
 
 ## IGNORE
@@ -103,6 +109,8 @@ skip_files: |
  (node_modules/.*)|
  (stuff/.*)|
  (doc/.*)|
+ (shader/.*)|
+ (compiler/.*)|
 
  (LICENSE)|
  (http-8765.sh)|

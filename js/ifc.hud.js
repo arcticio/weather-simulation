@@ -19,7 +19,10 @@ IFC.Hud = (function () {
     menu       = new THREE.Object3D(),
     sprites    = {},
 
-    toggled    = false,
+    touch      = {x: NaN, y: NaN, sprite: null},
+    mouse      = {x: NaN, y: NaN, sprite: null},
+
+    menuToggled    = false,
 
   end;
 
@@ -34,7 +37,7 @@ IFC.Hud = (function () {
 
       camera.position.z = 10;
 
-      menu.position.setX(-500);
+      menu.position.setX(menuToggled ? 0 : -500);
 
       self.initSprites();
       scene.add(menu);
@@ -44,37 +47,61 @@ IFC.Hud = (function () {
     },
     initSprites: function () {
 
-      var 
-        w2 = SCN.canvas.width  / 2,
-        h2 = SCN.canvas.height / 2;
-
       H.each(CFG.Sprites, (name, cfg) => {
 
-        var 
-          material = new THREE.SpriteMaterial({map: CFG.Textures[cfg.material.image]}),
-          sprite   = new THREE.Sprite( material ),
-          pos      = cfg.position
-        ;
-        // debugger;
-        material.transparent = true;
-        material.opacity = cfg.material.opacity;
+        var sprite = new THREE.Sprite( new THREE.SpriteMaterial({
+          map:          CFG.Textures[cfg.material.image],
+          opacity :     cfg.material.opacity,
+          transparent : true,
+        }));
 
         sprite.cfg = cfg;
         sprite.name = name;
         sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
 
-        sprite.onmouseenter = function () {
+        sprite.onmouseenter = sprite.touchstart = function () {
           ANI.insert(0, ANI.library.sprite.enter(sprite, 200));
         };
 
-        sprite.onmouseleave = function () {
+        sprite.onmouseleave = sprite.touchend = function () {
           ANI.insert(0, ANI.library.sprite.leave(sprite, 200));
         };
 
-        sprite.click = cfg.onclick.bind(sprite, sprite);
+        if (cfg.onclick) {
+          sprite.click = cfg.onclick.bind(sprite, sprite);
+        }
 
-        if (pos.bottom){
+        if (cfg.menu) {
+          menu.add( sprite );     
+
+        } else {
+          scene.add( sprite );
+
+        }
+
+        sprites[name] = sprite;
+
+        IFC.Hud[name] && IFC.Hud[name].init(sprite, cfg);
+
+      });
+
+    },
+    posSprites: function () { 
+
+      var
+        pos, 
+        w2 = SCN.canvas.width  / 2,
+        h2 = SCN.canvas.height / 2;
+
+      H.each(sprites, (name, sprite) => {
+
+        pos = sprite.cfg.position;
+
+        if (pos.bottom && pos.left){
           sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
+
+        } else if (pos.right && pos.top) {
+          sprite.position.set( + w2 - pos.right - pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
 
         } else if (pos.center && pos.center === 'x') {
           sprite.position.set( 0, h2 - pos.top - pos.height / 2 , 1 );
@@ -82,20 +109,6 @@ IFC.Hud = (function () {
         } else {
           sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
 
-        }
-
-        if (name === 'hamburger' || name === 'performance' || name === 'time') {
-          scene.add( sprite );
-
-        } else {
-          menu.add( sprite );     
-
-        }
-
-        sprites[name] = sprite;
-
-        if (IFC.Hud[name]) {
-          IFC.Hud[name].init(sprite, cfg);
         }
 
       });
@@ -112,22 +125,7 @@ IFC.Hud = (function () {
       camera.bottom = - h2;
       camera.updateProjectionMatrix();
 
-      H.each(sprites, (name, sprite) => {
-
-        var pos = sprite.cfg.position;
-
-        if (pos.bottom){
-          sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
-
-        } else if (pos.center && pos.center === 'x') {
-          sprite.position.set( 0, h2 - pos.top - pos.height / 2 , 1 );
-
-        } else {
-          sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
-
-        }
-
-      });
+      self.posSprites();
 
     },
     show: function () {
@@ -153,11 +151,7 @@ IFC.Hud = (function () {
         [simulator, 'touchcancel'],
         [window,    'orientationchange'],
       
-      ], function (_, e) { 
-
-        e[0].addEventListener(e[1], self.events[e[1]], false) 
-
-      });
+      ], (_, e) => e[0].addEventListener(e[1], self.events[e[1]], false) );
 
     },
 
@@ -168,49 +162,102 @@ IFC.Hud = (function () {
       },
       mouseup: function (event) {
 
-        if (IFC.mouse.sprite){IFC.mouse.sprite.click();}
+        mouse.sprite && mouse.sprite.click();
 
-        // console.log('HUD.mouseup')
+        mouse.sprite && console.log('HUD.mouseup', mouse.sprite.name);
+
       },
       mousemove: function (event) {
-        // console.log('HUD.mousemove')
-      },
-      touchstart: function (event) {
 
-        var x, y;
+        var x, y, sprite;
 
-        console.log('HUD.touchstart')
+        x = mouse.x = event.pageX;
+        y = mouse.y = event.pageY; 
 
-        switch ( event.touches.length ) {
+        if (( sprite = self.testHit(x, y) )) {
 
-          case 1:
-            x = event.touches[ 0 ].pageX;
-            y = event.touches[ 0 ].pageY;
+          // fast mouse
+          if (mouse.sprite && sprite !== mouse.sprite) {
+            mouse.sprite.hit = false;
+            mouse.sprite.onmouseleave();
+            mouse.sprite = null;
+          }
 
-          case 2:
-          break;
-          
-          case 3:
-          break;
+          if (!sprite.hit) {
+            sprite.hit = true;
+            sprite.onmouseenter();
+
+            console.log('HIT', sprite.name);
+
+          }
+
+          mouse.sprite = sprite;
+
+
+        } else {
+
+          if (mouse.sprite) {
+
+            console.log('UNHIT', mouse.sprite.name);
+
+            mouse.sprite.hit = false;
+            mouse.sprite.onmouseleave();
+            mouse.sprite = null;
+
+          }
 
         }
 
-        IFC.touch.x = x;
-        IFC.touch.y = y;
+      },
+      touchstart: function (event) {
 
-        self.hitTest(x, y);
+        var x, y, sprite;
 
-        console.log('touchstart', x, y)
+        if ( event.changedTouches.length === 1) {
 
+          x = event.changedTouches[ 0 ].pageX;
+          y = event.changedTouches[ 0 ].pageY;
+
+          // console.log('HUD.touchstart', x, y);
+
+          if (( sprite = self.testHit(x, y) )) {
+
+            touch.x = x;
+            touch.y = y;
+            touch.sprite = sprite;
+
+            // console.log('touchstart', x, y, sprite.name);
+
+          }
+
+        }
 
       },
-      touchmove: function (event) {console.log('HUD.touchmove')},
       touchend: function (event) {
 
-        IFC.touch.x = NaN;
-        IFC.touch.y = NaN;
+        var x, y, sprite;
 
-        console.log('HUD.touchend')
+        // console.log('HUD.touchend');
+
+        x = event.changedTouches[ 0 ].pageX;
+        y = event.changedTouches[ 0 ].pageY;
+
+        if (( sprite = self.testHit(x, y) )) {
+
+          if (sprite === touch.sprite){
+
+            sprite.click && sprite.click();
+
+            IFC.eat(event);
+            // console.log('touchend', x, y, sprite.name);
+
+          }
+
+        }
+
+        touch.x = NaN;
+        touch.y = NaN;
+        touch.sprite = null;
 
       },
 
@@ -221,11 +268,11 @@ IFC.Hud = (function () {
 
     },
 
-    toggle: function () {
+    toggleMenu: function () {
 
-      toggled = !toggled;
+      menuToggled = !menuToggled;
 
-      if (toggled){
+      if (menuToggled){
         // sprites.hamburger.material.opacity = 0.9;
         // sprites.hamburger.toggled = true;
         ANI.insert(0, ANI.library.menu.toggle(0, 200));
@@ -238,48 +285,119 @@ IFC.Hud = (function () {
       }
 
     },
-    hitTest: function (xTest, y) {
+    testHit: function (x, y) {
+
+      // works in screen space 0/0 = left/top
 
       var 
-        xOff = IFC.Hud.menu.position.x,
-        x = xOff + xTest,
-        element = null;
+        pos, isMenu, hasClick, hit = false, found = null, 
+        zone  = {left:0, top: 0, right: 0, bottom: 0},
+        menuX = IFC.Hud.menu.position.x,
+        menuY = IFC.Hud.menu.position.y,
+        w     = SCN.canvas.width,
+        h     = SCN.canvas.height,
+        w2    = SCN.canvas.width  / 2,
+        h2    = SCN.canvas.height / 2
+      ;
 
       H.each(sprites, (name, sprite) => {
 
-        // TODO: respect pos.bottom
+        pos      = sprite.cfg.position;
+        isMenu   = sprite.cfg.menu;
+        hasClick = !!sprite.cfg.onclick;
 
-        var 
-          pos = sprite.cfg.position,
-          hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
+        if (!found && hasClick) {
 
-        if ( sprite.cfg.events.length ){
+          if (pos.bottom && pos.left){
 
-          if ( hit ) {
+            zone.left   = !isMenu ?     pos.left    : menuX +     pos.left;
+            zone.bottom = !isMenu ? h - pos.bottom  : menuY + h - pos.bottom;
+            zone.top    = zone.bottom - pos.height;
+            zone.right  = zone.left   + pos.width;
 
-            if (!sprite.hit) {
-              sprite.onmouseenter();
-              sprite.hit = true;
-            }
+          } else if (pos.right && pos.top) {
 
-            IFC.touch.sprite = sprite;
+            zone.right  = !isMenu ? w - pos.right   : menuX + w - pos.right;
+            zone.top    = !isMenu ?     pos.top     : menuY +     pos.top;
+            zone.left   = zone.right - pos.width;
+            zone.bottom = zone.top   + pos.height;
 
-            console.log('HIT', sprite.name);
+          } else if (pos.left && pos.top) {
+
+            zone.left   = !isMenu ? pos.left    : menuX + pos.left;
+            zone.top    = !isMenu ? pos.top     : menuY + pos.top;
+            zone.right  = zone.left  + pos.width;
+            zone.bottom = zone.top   + pos.height;
+
+          } else if (pos.center && pos.center === 'x') {
+
+            // can't be menu
+
+            zone.top    = pos.top;
+            zone.left   = w2 - pos.width / 2;
+            zone.bottom = zone.top   + pos.height;
+            zone.right  = zone.left  + pos.width;
+
+          } else if (pos.center && pos.center === 'y') {
+            console.log('IFC.testHit', sprite.name, 'unhandled pos');
 
           } else {
-
-            if (sprite.hit) {
-              sprite.onmouseleave();
-              sprite.hit = false;
-            }
-
+            console.log('IFC.testHit', sprite.name, 'strange pos');
           }
+
+          hit = x > zone.left && y > zone.top && x < zone.right && y < zone.bottom;
+
+          found = hit ? sprite : null;
 
         }
 
       });
 
+      return found;
+
     },
+    // hitTest: function (xTest, y) {
+
+    //   var 
+    //     xOff = IFC.Hud.menu.position.x,
+    //     x = xOff + xTest,
+    //     element = null;
+
+    //   H.each(sprites, (name, sprite) => {
+
+    //     // TODO: respect pos.bottom
+
+    //     var 
+    //       pos = sprite.cfg.position,
+    //       hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
+
+    //     if ( sprite.cfg.events.length ){
+
+    //       if ( hit ) {
+
+    //         if (!sprite.hit) {
+    //           sprite.onmouseenter();
+    //           sprite.hit = true;
+    //         }
+
+    //         IFC.touch.sprite = sprite;
+
+    //         console.log('HIT', sprite.name);
+
+    //       } else {
+
+    //         if (sprite.hit) {
+    //           sprite.onmouseleave();
+    //           sprite.hit = false;
+    //         }
+
+    //       }
+
+    //     }
+
+    //   });
+
+    // },
     step: function () {
 
       // buttons hit test for mouse
@@ -288,49 +406,50 @@ IFC.Hud = (function () {
 
       mouse.sprite = null;
 
-      H.each(sprites, (name, sprite) => {
+      // H.each(sprites, (name, sprite) => {
 
-        // TODO: respect pos.bottom
+      //   // TODO: respect pos.bottom
 
-        var 
-          x = mouse.px,
-          y = mouse.py,
-          pos = sprite.cfg.position,
-          hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
-
-
-        if ( !sprite.cfg.events.length ){return;}
-
-        if (toggled || !toggled && (sprite.name === 'hamburger' || sprite.name === 'performance' )){
-
-          if ( hit ) {
-
-            if (!sprite.hit) {
-              sprite.onmouseenter();
-              sprite.hit = true;
-
-              console.log('HIT', sprite.name);
-
-            }
-
-            mouse.sprite = sprite;
+      //   var 
+      //     x = mouse.px,
+      //     y = mouse.py,
+      //     pos = sprite.cfg.position,
+      //     hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
+      //     // hit = self.hitTest(x, y);
 
 
-          } else {
+      //   if ( !sprite.cfg.events.length ){return;}
 
-            if (sprite.hit) {
-              sprite.onmouseleave();
-              sprite.hit = false;
+      //   if (toggled || !toggled && (sprite.name === 'hamburger' || sprite.name === 'performance' )){
 
-              console.log('UNHIT', sprite.name);
+      //     if ( hit ) {
 
-            }
+      //       if (!sprite.hit) {
+      //         sprite.onmouseenter();
+      //         sprite.hit = true;
 
-          }
+      //         // console.log('HIT', sprite.name);
+
+      //       }
+
+      //       mouse.sprite = sprite;
+
+
+      //     } else {
+
+      //       if (sprite.hit) {
+      //         sprite.onmouseleave();
+      //         sprite.hit = false;
+
+      //         // console.log('UNHIT', sprite.name);
+
+      //       }
+
+      //     }
           
-        }
+      //   }
 
-      });
+      // });
 
     },
 

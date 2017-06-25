@@ -163,6 +163,8 @@ var SIM = (function () {
     },
     loadModel: function (name, cfg, callback) {
 
+      !SIM.Models[name] && console.log('Model: "' + name + '" not avail, have:', Object.keys(SIM.Models));
+
       var 
         vari, doe,
         mom     = self.doe2mom(time.doe),
@@ -175,6 +177,7 @@ var SIM = (function () {
         factory = SIM.Models[name],
         model   = factory.create(cfg, datagrams),
         urls    = model.calcUrls(moms);
+
 
       models[name] = model;
 
@@ -195,9 +198,11 @@ var SIM = (function () {
 
             }
 
-            model.prepare(doe);
+            // model.prepare(doe);
 
           });
+
+          model.prepare(time.doe);
           
           TIM.step('SIM.load', vari, time.doe);
 

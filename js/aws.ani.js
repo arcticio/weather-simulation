@@ -150,6 +150,10 @@ var ANI = (function () {
 
       },
 
+      lightset: function (lightset, duration) {
+        return function () {};
+      },
+
       menu: {
         toggle: function (newx, duration) {
 
@@ -261,7 +265,7 @@ var ANI = (function () {
 
           return function () {
 
-            TWEEN.removeAll();
+            // TWEEN.removeAll();
 
             var tween = new TWEEN.Tween(current)
               .easing(TWEEN.Easing.Quadratic.Out)
@@ -288,7 +292,7 @@ var ANI = (function () {
 
         return function () {
 
-          TWEEN.removeAll();
+          // TWEEN.removeAll();
 
           var tween = new TWEEN.Tween(current)
             .easing(TWEEN.Easing.Sinusoidal.Out)
@@ -326,7 +330,7 @@ var ANI = (function () {
 
         return function () {
 
-          TWEEN.removeAll();
+          // TWEEN.removeAll();
 
           var tween = new TWEEN.Tween(current)
             .easing(TWEEN.Easing.Exponential.Out)
@@ -385,7 +389,7 @@ var ANI = (function () {
 
         return function () {
 
-          TWEEN.removeAll();
+          // TWEEN.removeAll();
 
           var tween = new TWEEN.Tween(current)
             .easing(TWEEN.Easing.Exponential.Out)

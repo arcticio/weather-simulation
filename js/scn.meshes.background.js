@@ -1,7 +1,7 @@
 
 'use strict'
 
-SCN.Meshes.background = function (cfg) {
+SCN.Meshes.background = function (name, cfg, callback) {
 
   var
     geometry = new THREE.PlaneBufferGeometry( 1, 1, 1, 1),
@@ -94,6 +94,6 @@ SCN.Meshes.background = function (cfg) {
   plane.updateColors   = updateColors;
   plane.updatePosition = updatePosition;
 
-  return plane;
+  callback(name, plane);
 
 };

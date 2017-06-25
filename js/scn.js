@@ -35,25 +35,22 @@ var SCN = (function () {
 
   return self = {
     
-    expi,
+    // expi,
     home,
     scene,
     camera,
     canvas,
-    monitor,
+    // monitor,
     objects,
     renderer,
 
-    activate: function () { 
-
+    toggleRender: function (force) {
+      doRender = force !== undefined ? force : !doRender;
     },
     add: function (name, obj) {
       objects[name] = obj;
       objects[name].name = name;
       scene.add(obj);
-    },
-    toggleRender: function (force) {
-      doRender = force !== undefined ? force : !doRender;
     },
     toggle: function (obj, force) {
 
@@ -73,9 +70,70 @@ var SCN = (function () {
       IFC.updateUrl();
 
     },
+
+    isActive: function (assetname) {
+
+      var active = false;
+
+      H.each(objects, (name, asset) => {
+
+        if (!active && name === assetname && asset instanceof THREE.Object3D ) {
+          active = true;
+        }
+
+      });
+
+      return active;
+
+    },
+
+    toggleBasemap: function (basemap) {
+
+      var mesh, basename, lightset;
+
+      // normalize param
+      if (typeof basemap === 'string'){
+        basename = basemap;
+        mesh = objects[basename];
+
+      } else  {
+        console.error('SCN.toggleBasemap', 'illegal basemap param');
+      }
+
+      // check edge case
+      if (self.isActive(basename) && basename !== CFG.defaultBasemap) {
+
+        // back to default
+        basename = CFG.defaultBasemap;
+        mesh = objects[basename];
+
+      }
+
+      // finally execute
+      H.each(objects, (name, mesh) => {
+
+        if (name === basename){
+          self.toggle(mesh, true);
+
+        } else if (CFG.BasemapIds.indexOf(CFG.Objects[name].id) !== -1 ) {
+          self.toggle(mesh, false);
+
+        }
+
+      });
+
+      lightset = CFG.Lightsets[CFG.Objects[basename].lightset];
+
+      ANI.insert(0, ANI.library.lightset(lightset, 300));
+
+      console.log('SCN.toggleBasemap', basename);
+
+    },
+
     resize: function () {
 
       renderer.setSize(window.innerWidth, window.innerHeight);
+
       renderer.domElement.style.width  = window.innerWidth  + 'px';
       renderer.domElement.style.height = window.innerHeight + 'px';
       renderer.domElement.width        = window.innerWidth;
@@ -87,11 +145,9 @@ var SCN = (function () {
     },
     init: function (callback) {
 
-      var idx, vertex, onload;
-
-      canvas = renderer.domElement;
+      // canvas = renderer.domElement;
       // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      // renderer.setSize(window.innerWidth, window.innerHeight);
       // webgl.min_capability_mode
       renderer.setClearColor(0x000000, 1.0);
       renderer.shadowMap.enabled = false;
@@ -157,7 +213,7 @@ var SCN = (function () {
           if (config.visible){
             tasks.push(function (callback) {
 
-              info.innerHTML = config.title; //name;
+              info.innerHTML = config.title;                  //name;
               bar.innerHTML  = counter++ + '/' + tasks.length;
               
               self.loader[config.type](name, config, () => {
@@ -226,12 +282,16 @@ var SCN = (function () {
 
       // TODO: here async tasks
 
-      'simulation': (name, cfg, callback) => {
-        SIM.loadModel(name, cfg, (name, obj) => {
-          cfg.rotation && obj.rotation.fromArray(cfg.rotation);
-          self.add(name, obj);
-          callback && callback();
-        });
+      'mesh': (name, cfg, callback) => {
+        self.add(name, cfg.mesh);
+        callback && callback();
+      },
+
+      'light': (name, cfg, callback) => {
+        cfg.light = cfg.light(cfg);
+        cfg.pos && cfg.light.position.copy( cfg.pos ); 
+        self.add(name, cfg.light);
+        callback && callback();
       },
 
       'mesh.calculated': (name, cfg, callback) => {
@@ -246,32 +306,35 @@ var SCN = (function () {
         });
       },
 
-      'mesh.basemaps': (name, cfg, callback) => {
-        SCN.Meshes.basemaps(name, cfg, function (name, mesh) {
-          self.add(name, mesh);
+      'simulation': (name, cfg, callback) => {
+        SIM.loadModel(name, cfg, (name, obj) => {
+          cfg.rotation && obj.rotation.fromArray(cfg.rotation);
+          self.add(name, obj);
           callback && callback();
         });
       },
 
-      'mesh.basecopy': (name, cfg, callback) => {
-        SCN.Meshes.basecopy(name, cfg, function (name, mesh) {
-          self.add(name, mesh);
-          callback && callback();
-        });
-      },
+      // 'mesh.basemaps': (name, cfg, callback) => {
+      //   SCN.Meshes.basemaps(name, cfg, function (name, mesh) {
+      //     self.add(name, mesh);
+      //     callback && callback();
+      //   });
+      // },
 
-      'mesh.textured': (name, cfg, callback) => {
-        RES.load({type: 'texture', urls: [cfg.texture], onFinish: (err, responses) => {
-          cfg.mesh.material.map = responses[0].data;
-          self.add(name, cfg.mesh);
-          callback && callback();
-        }});
-      },
+      // 'mesh.basecopy': (name, cfg, callback) => {
+      //   SCN.Meshes.basecopy(name, cfg, function (name, mesh) {
+      //     self.add(name, mesh);
+      //     callback && callback();
+      //   });
+      // },
 
-      'mesh': (name, cfg, callback) => {
-        self.add(name, cfg.mesh);
-        callback && callback();
-      },
+      // 'mesh.textured': (name, cfg, callback) => {
+      //   RES.load({type: 'texture', urls: [cfg.texture], onFinish: (err, responses) => {
+      //     cfg.mesh.material.map = responses[0].data;
+      //     self.add(name, cfg.mesh);
+      //     callback && callback();
+      //   }});
+      // },
 
       'geo.json': (name, cfg, callback) => {
 
@@ -292,13 +355,6 @@ var SCN = (function () {
 
         }});
 
-      },
-
-      'light': (name, cfg, callback) => {
-        cfg.light = cfg.light(cfg);
-        cfg.pos && cfg.light.position.copy( cfg.pos ); 
-        self.add(name, cfg.light);
-        callback && callback();
       },
 
       'cube.textured': (name, cfg, callback) => {
@@ -399,6 +455,9 @@ var SCN = (function () {
       TIM.step('REN.info', 'max_texture_size', gl.getParameter(gl.MAX_TEXTURE_SIZE));
       TIM.step('REN.info', 'max_cube_map_texture_size', gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE));
 
+      TIM.step('REN.extension', gl.getSupportedExtensions().filter( ex => ex.indexOf('float_linear') !== -1 ));
+
+
     },
     logFullInfo: function () {
 
@@ -408,6 +467,14 @@ var SCN = (function () {
 
       // MAX_VERTEX_UNIFORM_VECTORS
       // MAX_FRAGMENT_UNIFORM_VECTORS
+
+      // FLOAT relevant: 
+      // DataTexture
+      //   OES_texture_float, 
+      //   OES_texture_half_float,
+      // THREE.LinearFilter
+      //   OES_texture_float_linear,
+      //   OES_texture_half_float_linear
 
       var gl = renderer.context;
 
@@ -458,7 +525,7 @@ var SCN = (function () {
 
       requestAnimationFrame(render);
 
-      // IFC.Hud.performance.begin();
+      IFC.Hud.performance.begin();
 
         IFC.step(frame, deltatsecs);
 
@@ -483,7 +550,7 @@ var SCN = (function () {
           renderer.render( IFC.Hud.scene, IFC.Hud.camera );
         }
 
-      // IFC.Hud.performance.end();
+      IFC.Hud.performance.end();
 
       lastTimestamp = timestamp;
       frame += 1;

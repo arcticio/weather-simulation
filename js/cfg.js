@@ -1,15 +1,18 @@
 /*
 
-  fix       => values no changing at all, think earth radius, PI, TAU
-  options   => values changeable by user, some of them are also in => 
-  preset    => vales managed by gui.dat 
-  config    => all of above combined
+  This is an actively composed configuration: 
+    values get possibly overwritten (e.g. texture),
+    there are function, eval'd later,
+    or event handlers,
+    if creates globals (e.g PI, TAU)
 
 */
 
-/* GLOBAL */
 
 'use strict'
+
+
+/* GLOBALS */
 
 const 
   PI     = Math.PI,
@@ -19,10 +22,6 @@ const
   DISTANCE_OVERLAY = 0.01,
   DISTANCE_TRAILS  = 0.03
 ;
-
-const FIX = {
-
-} 
 
 var TIMENOW = moment.utc('2017-06-15 1200', 'YYYY-MM-DD HHmm');
 
@@ -51,6 +50,14 @@ var CFG = {
     }
   },
 
+  Hud: {
+    opacityLow:  0.5,
+    opacityHigh: 0.99,
+  },
+
+  BasemapIds: [8, 9, 10, 11, 12],
+  defaultBasemap: 'basemaps',     // id = 8
+
   Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
   Textures: {
@@ -77,14 +84,16 @@ var CFG = {
     'hud/graticule.png':            'images/hud/graticule.1.png',
     'hud/snow.png':                 'images/hud/snow.png',
     'hud/clouds.png':               'images/hud/clouds.png',
-
-
+    'hud/satellite.png':            'images/hud/satellite.png',
+    'hud/gear.png':                 'images/hud/gear.png',
+    'hud/space.png':                'images/hud/space.png',
+    'hud/time.png':                 'images/hud/time.png',
 
     'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 
   },
 
-  lightsets: {
+  Lightsets: {
     data: {
       sun:        {intensity: 0.4},
       spot:       {intensity: 0.4},
@@ -97,7 +106,7 @@ var CFG = {
       ambient:    {intensity: 0.4},
       background: {colors: [ 0x666666, 0x666666, 0x222222, 0x222222 ]},
     },
-    neutral: {
+    normal: {
       sun:        {intensity: 0.0},
       spot:       {intensity: 0.0},
       ambient:    {intensity: 1.0},

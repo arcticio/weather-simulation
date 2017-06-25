@@ -1,7 +1,7 @@
 
 'use strict'
 
-SCN.Meshes.population = function (cfg) {
+SCN.Meshes.population = function (name, cfg, callback) {
 
   // check shaders here:
   // http://www.neveroccurs.com/lab/three.js/gpu_particles/?particles=256
@@ -86,6 +86,6 @@ SCN.Meshes.population = function (cfg) {
 
   geometry.computeBoundingSphere();
 
-  return points;
+  callback(name, points);
 
 };

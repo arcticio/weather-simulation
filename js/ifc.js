@@ -17,8 +17,12 @@ var IFC = (function () {
     simulator  = $$('.simulator')[0],
     fullscreen = $$('.fullscreen')[0],
 
+    guiCont, guiMain,
+
     controller, 
     controllers,
+
+    modus =    'space',
 
     globe = {
       scan:     NaN,   // -1 = tiny globe, 1 = big, 0 = little smaller than screen
@@ -102,10 +106,14 @@ var IFC = (function () {
 
   }
 
+  function toggleElement (ele) {
+    ele.style.display = ele.style.display === '' ? 'none' : '';
+  }
 
   return self = {
     
     stats,
+    modus,
     mouse,
     globe,
     touch,
@@ -113,9 +121,20 @@ var IFC = (function () {
     controllers,
     controller,
 
+    eat: function (event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      }
+    },
+
     init: function () {
 
       var w2, h2;
+
+      guiCont = $$('div.dg.ac')[0];
+      guiMain = $$('div.dg.main.a')[0];
 
       self.events.resize();
 
@@ -125,12 +144,17 @@ var IFC = (function () {
       loader.style.display = 'block';
 
       // move gui.dat to fullscreen container
-      fullscreen.appendChild($$('div.dg.ac')[0]);
+      fullscreen.appendChild(guiCont);
 
-      raycaster.params.Points.threshold = 0.001; // threshold;
-
+      // center gui.dat and expose
+      guiMain.style.margin = '0 auto';
+      guiMain.style.float  = 'none';
       controllers = self.controllers = GUIcontrollers;
 
+      // check this
+      raycaster.params.Points.threshold = 0.001;
+
+      // globe controller
       controller = IFC.Controller;
       controller.init(SCN.camera, SCN.renderer.domElement, {
 
@@ -153,8 +177,8 @@ var IFC = (function () {
         }
 
       });
-      controller.activate();
-      controller.enable();
+      // controller.activate();
+      // controller.enable();
 
       IFC.Hud.init();
 
@@ -169,6 +193,8 @@ var IFC = (function () {
 
     },
     updateUrl: TOOLS.debounce(function () {
+
+      // TODO: coords vector to Lat/Lon
 
       var 
         prec   = 6,
@@ -187,17 +213,11 @@ var IFC = (function () {
 
       History.replaceState({}, CFG.Title, path);
 
-    }, 300),
+    }, 120),
       
     activate: function () {
 
-      controller.enabled = true;
-
-      History.Adapter.bind(window, 'statechange', function () { 
-        // Note: We are using statechange instead of popstate
-        // Note: We are using History.getState() instead of event.state
-        var State = History.getState(); 
-      });
+      IFC.Hud.activate();
 
       H.each([
 
@@ -206,11 +226,11 @@ var IFC = (function () {
         [simulator, 'mousemove'],
         [simulator, 'mouseenter'],
         [simulator, 'mouseover'],
-        [document,    'mouseleave'],
-        [document,    'mouseout'],
-        [simulator, 'wheel'],
+        [document,  'mouseleave'],
+        [document,  'mouseout'],
+        // [simulator, 'wheel'],
         [simulator, 'click'],
-        [simulator, 'dblclick'],
+        // [simulator, 'dblclick'],
         [simulator, 'touchstart'],
         [simulator, 'touchmove'],
         [simulator, 'touchend'],
@@ -222,13 +242,10 @@ var IFC = (function () {
         // [window,    'devicemotion'],
         [window,    'resize'],
       
-      ], function (_, e) { 
+      ], (_, e) => e[0].addEventListener(e[1], self.events[e[1]], false) );
 
-        e[0].addEventListener(e[1], self.events[e[1]], false) 
-
-      });
-
-      IFC.Hud.activate();
+      controller.activate();
+      controller.enable();
 
     },
     step: function step (frame, deltatime) {
@@ -310,50 +327,23 @@ var IFC = (function () {
       },
       mousemove:   function (event) { 
 
-        // TODO: not window
         mouse.px = event.clientX; 
         mouse.py = event.clientY;
         mouse.x  =   ( event.clientX / canvas.width )  * 2 - 1;
         mouse.y  = - ( event.clientY / canvas.height ) * 2 + 1;
 
-        // console.log(mouse.px, mouse.py);
-
       },
-      wheel:   function (event) { 
-
-        var 
-          x = 0,
-          deltamode = {
-            '0': () => -event.deltaX * 1,
-            '1': () => -event.deltaX * 10,
-            '2': () => -event.deltaX * 100,
-          };
-
-        x += deltamode[event.deltaMode]();
-
-        if (!mouse.overGlobe){
-          // mouse.wheel.x += x;
-          // console.log('wheel', mouse.wheel.x, x, event.deltaMode);
-          // SIM.setSimTime(x*10, 'minutes');
-        }
-
-      },
-      mouseover:  function (event) { /* console.log('mouseenter') */ },
       mouseenter:   function (event) { 
-        // console.log('mouseenter');
         SCN.toggleRender(true);
       },
       mouseleave:  function (event) {
-        // console.log('mouseleave')
         SCN.toggleRender(false);
       },
-      mouseout:    function (event) { /* console.log('mouseout') */ },
-
-      contextmenu: function (event) { /* console.log('contextmenu') */ },
       keydown:     function (event) { 
 
         var keys = {
           ' ': () => SCN.toggleRender(),
+          'g': () => toggleElement(guiMain),
         };
 
         if (keys[event.key]) {
@@ -378,6 +368,15 @@ var IFC = (function () {
 
     },
 
+    toggleSpaceTime: function () {
+
+      modus = modus === 'space' ? 'time' : 'space';
+
+      IFC.Hud.sprites.spacetime.material.map = CFG.Textures['hud/' + modus + '.png'];
+      IFC.Hud.sprites.spacetime.material.map.needsUpdate = true;
+
+    },
+    
     updateGlobe: function () {
 
       // https://stackoverflow.com/questions/15331358/three-js-get-object-size-with-respect-to-camera-and-object-position-on-screen

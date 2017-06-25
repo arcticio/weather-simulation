@@ -15,8 +15,8 @@ IFC.Controller = (function () {
     veloZ    = 0,
     keys     = { down: false, key: ''},
     mouse    = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } },
-    touch    = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } },
-    swipe    = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } },
+    touch    = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } }, // 1 finger
+    swipe    = { diff: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } }, // 2 fingers
     defaults = {
 
       minDistance:  1.2,
@@ -179,6 +179,7 @@ IFC.Controller = (function () {
         [ele,       'touchstart'],
         [ele,       'touchmove'],
         [ele,       'touchend'],
+        [ele,       'touchcancel'],
         [ele,       'contextmenu'],
         [document,  'keydown'],
         [document,  'keyup'],
@@ -306,10 +307,10 @@ IFC.Controller = (function () {
             break;
 
             case 2: 
-              swipe.down.x = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-              swipe.down.y = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-              swipe.last.x = swipe.down.x;
-              swipe.last.y = swipe.down.y;
+              swipe.diff.x = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+              swipe.diff.y = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+              swipe.last.x = swipe.diff.x;
+              swipe.last.y = swipe.diff.y;
             break;
 
             case 3: 
@@ -324,64 +325,70 @@ IFC.Controller = (function () {
       touchmove:  function (event) {
 
         var 
-          deltaX, deltaY, 
+          deltaX, deltaY, deltaZ,
           distance  = cam.position.length(),
           impFactor = impScale(distance, 1, cfg.maxDistance - cfg.minDistance)
         ;
 
-        switch ( event.touches.length ) {
+        if (event.changedTouches.length === 1) {
 
-          case 0: 
-            console.log('WTF');
-          break;
+          deltaX = (touch.last.x - event.changedTouches[0].pageX) * cfg.moveXimpulse * impFactor;
+          deltaY = (touch.last.y - event.changedTouches[0].pageY) * cfg.moveYimpulse * impFactor;
 
-          case 1: 
-            deltaX = (touch.last.x - event.touches[0].pageX) * cfg.moveXimpulse * impFactor;
-            deltaY = (touch.last.y - event.touches[0].pageY) * cfg.moveYimpulse * impFactor;
+          if (IFC.mouse.overGlobe || true ) {
+            self.impulse(deltaX, deltaY, 0);
 
-            if (IFC.mouse.overGlobe || true ) {
-              self.impulse(deltaX, deltaY, 0);
+          } else {
+            cfg.ondrag(deltaX, deltaY);
 
-            } else {
-              cfg.ondrag(deltaX, deltaY);
+          }
 
-            }
+          touch.last.x = event.changedTouches[0].pageX;
+          touch.last.y = event.changedTouches[0].pageY;
 
-            touch.last.x = event.touches[0].pageX;
-            touch.last.y = event.touches[0].pageY;
-
-            return eat(event);
-
-          break;
-
-          case 2: 
-            swipe.down.x = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-            swipe.down.y = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-            swipe.last.x = swipe.down.x;
-            swipe.last.y = swipe.down.y;
-          break;
-
-          case 3: 
-          break;
-
+          return eat(event);
 
         }
 
-        // if ( !isNaN(mouse.down.x) ) {
+        if ( event.changedTouches.length === 2 ) { 
 
+          swipe.diff.x = event.changedTouches[ 0 ].pageX - event.changedTouches[ 1 ].pageX;
+          swipe.diff.y = event.changedTouches[ 0 ].pageY - event.changedTouches[ 1 ].pageY;
 
+          deltaZ = Math.hypot(swipe.diff.x, swipe.diff.y) - Math.hypot(swipe.last.x, swipe.last.y);
 
+          self.impulse(0, 0, -deltaZ * impFactor * 0.01);
 
+          swipe.last.x = swipe.diff.x;
+          swipe.last.y = swipe.diff.y;
 
+          // touch.last.x = event.changedTouches[0].pageX;
+          // touch.last.y = event.changedTouches[0].pageY;
+
+          return eat(event);
+
+        }
 
       },
       touchend:   function (event) {
 
+        // console.log('touchend');
+
+        if (event.touches.length === 1) {
+          // touch.last.x = event.changedTouches[0].pageX;
+          // touch.last.y = event.changedTouches[0].pageY;
+        }
+
         touch.down.x = NaN;
         touch.down.y = NaN;
-        swipe.down.x = NaN;
-        swipe.down.y = NaN;
+        swipe.diff.x = NaN;
+        swipe.diff.y = NaN;
 
+      },
+      touchcancel:    function (event) {
+
+        self.stop();
+        
       },
       keydown:    function (event) {
 

@@ -64,22 +64,22 @@ SIM.Models.clouds = (function () {
       model.mindoe = Math.min.apply(Math, Object.keys(model.objects));
       model.maxdoe = Math.max.apply(Math, Object.keys(model.objects));
     },
-    findDoes: function (target) {
+    // findDoes: function (target) {
 
-      var doe1, doe2;
+    //   var doe1, doe2;
 
-      Object.keys(model.objects)
-        .sort( (a, b) =>  parseFloat(a) > parseFloat(b))
-        .forEach( doe => {
+    //   Object.keys(model.objects)
+    //     .sort( (a, b) =>  parseFloat(a) > parseFloat(b))
+    //     .forEach( doe => {
 
-          doe1 = doe < target          ? doe : doe1;
-          doe2 = doe > target && !doe2 ? doe : doe2;
+    //       doe1 = doe < target          ? doe : doe1;
+    //       doe2 = doe > target && !doe2 ? doe : doe2;
 
-        });
+    //     });
 
-        return [doe1, doe2];
+    //     return [doe1, doe2];
 
-    },
+    // },
     create: function (config, simdata) {
 
       cfg = config;
@@ -110,7 +110,8 @@ SIM.Models.clouds = (function () {
       } else if (doe > model.mindoe && doe < model.maxdoe) {
 
         // mix them!
-        [doe1, doe2] = self.findDoes(doe);
+        doe1 = doe  % 0.25;
+        doe2 = doe1 + 0.25;
         model.obj.add(model.objects[doe1]);
         model.obj.add(model.objects[doe2]);
 
@@ -130,7 +131,6 @@ SIM.Models.clouds = (function () {
 
     },
     prepare: function ( doe ) {
-
     
       TIM.step('Model.clouds.in', doe);
 
@@ -146,8 +146,8 @@ SIM.Models.clouds = (function () {
         geometry = new THREE.BufferGeometry(),
 
         attributes = {
-          percentage:    new THREE.BufferAttribute( new Float32Array( amount * 1), 1 ),
-          position: new THREE.BufferAttribute( new Float32Array( amount * 3), 3 ),
+          percentage: new THREE.BufferAttribute( new Float32Array( amount * 1), 1 ),
+          position:   new THREE.BufferAttribute( new Float32Array( amount * 3), 3 ),
         },
 
       end;

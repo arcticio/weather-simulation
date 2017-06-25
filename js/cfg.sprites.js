@@ -6,7 +6,7 @@ CFG.Sprites = {
   performance: {
     visible:  true,
     type:     'toggle',
-    events:   [],
+    menu:     false,
     canvas:   document.createElement('CANVAS'),
     back:     document.createElement('CANVAS'),
     position: {
@@ -26,7 +26,7 @@ CFG.Sprites = {
 
   time: {
     visible:  true,
-    events:   [],
+    menu:     false,
     canvas:   document.createElement('CANVAS'),
     position: {
       top:      18,
@@ -44,12 +44,37 @@ CFG.Sprites = {
   },
 
 
+  // SPACETIME
+
+  spacetime: {
+    visible:  true,
+    type:     'toggle',
+    menu:     false,
+    toggled:  false,
+    position: {
+      top:     14,
+      right:   18,
+      width:   48,
+      height:  48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/space.png'
+    },
+    onclick: (sprite) => {
+      IFC.toggleSpaceTime();
+      sprite.toggled = !sprite.toggled;
+      console.log('sprite.click', sprite.name);
+    },
+  },
+
+
   // MENU
   
   hamburger: {
     visible:  true,
     type:     'toggle',
-    events:   ['click', 'mousemove', 'touchend'],
+    menu:     false,
     toggled:  false,
     position: {
       top:     14,
@@ -62,16 +87,19 @@ CFG.Sprites = {
       image: 'hud/hamburger.png'
     },
     onclick: (sprite) => {
-      IFC.Hud.toggle();
+      IFC.Hud.toggleMenu();
       sprite.toggled = !sprite.toggled;
       // console.log('sprite.click', sprite.name);
     },
   },
 
+
+  // horizontal 
+
   fullscreen: {
     visible:  true,
+    menu:     true,
     type:     'toggle',
-    events:   ['click', 'mousemove', 'touchend'],
     toggled:  false,
     position: {
       top:     74,
@@ -93,7 +121,7 @@ CFG.Sprites = {
 
   movie: {
     visible:  true,
-    events:   ['click', 'mousemove', 'touchend'],
+    menu:     true,
     position: {
       top:     74,
       left:     138,
@@ -109,13 +137,56 @@ CFG.Sprites = {
     },
   },
 
-  graticule: {
+  info: {
     visible:  true,
+    menu:     true,
     type:     'toggle',
-    events:   ['click', 'mousemove', 'touchend'],
     toggled:  false,
     position: {
-      top:     194,
+      top:      74,
+      left:    198,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/info.png'
+    },
+    onclick: (sprite) => {
+      location.href = 'https://github.com/arcticio/weather-simulation';
+    },
+  },
+
+  gear: {
+    visible:  true,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      top:      74,
+      left:    258,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/gear.png'
+    },
+    onclick: (sprite) => {
+      console.log('sprite.clicked', sprite.name);
+    },
+  },
+
+
+  // MENU, Layers vertical
+
+  graticule: {
+    visible:  true,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      top:     134,
       left:     15,
       width:    54,
       height:   54,
@@ -131,36 +202,14 @@ CFG.Sprites = {
     },
   },
 
-  info: {
-    visible:  true,
-    type:     'toggle',
-    events:   ['click', 'mousemove', 'touchend'],
-    toggled:  false,
-    position: {
-      top:     254,
-      left:     18,
-      width:    48,
-      height:   48,
-    },
-    material: {
-      opacity: 0.5,
-      image: 'hud/info.png'
-    },
-    onclick: (sprite) => {
-      location.href = 'https://github.com/arcticio/weather-simulation';
-    },
-  },
-
-
-  // MENU, Layers
 
   snow: {
     visible:  true,
+    menu:     true,
     type:     'toggle',
-    events:   ['click', 'mousemove', 'touchend'],
     toggled:  false,
     position: {
-      top:     314,
+      top:     194,
       left:     18,
       width:    48,
       height:   48,
@@ -178,11 +227,11 @@ CFG.Sprites = {
 
   clouds: {
     visible:  true,
+    menu:     true,
     type:     'toggle',
-    events:   ['click', 'mousemove', 'touchend'],
     toggled:  false,
     position: {
-      top:     374,
+      top:     254,
       left:     18,
       width:    48,
       height:   48,
@@ -193,6 +242,28 @@ CFG.Sprites = {
     },
     onclick: (sprite) => {
       SCN.toggle(SCN.objects.clouds);
+      sprite.toggled = !sprite.toggled;
+      console.log('sprite.clicked', sprite.name);
+    },
+  },
+
+  snpp: {
+    visible:  true,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      top:     314,
+      left:     18,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/satellite.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggleBasemap('snpp');
       sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },

@@ -174,6 +174,21 @@ SIM.Datagram.prototype = {
 
     },
 
+    attribute: function (doe) {
+
+        var 
+            row,
+            source = this.data[doe].data,
+            len    = source.length,
+            target = new Float32Array(len);
+
+        for (row = 0; row < 180; row++) {
+            target.set( source.subarray(row * 360, (row +1) * 360), (179 - row) * 360)
+        }
+
+        return target;
+
+    },
     linearXY: function (doe, lat, lonin) {
 
         /*

@@ -1,0 +1,10 @@
+blacklist:
+# https://cloud.google.com/appengine/docs/standard/python/config/dosref
+# - subnet: 192.0.2.1
+#   description: a single IP address
+# - subnet: 192.0.2.0/24
+#   description: an IPv4 subnet
+# - subnet: 2001:DB8::1
+#   description: an IPv6 address
+# - subnet: 2001:DB8::/32
+#   description: an IPv6 subnet

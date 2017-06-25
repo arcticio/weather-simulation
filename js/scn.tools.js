@@ -3,7 +3,7 @@
 
 SCN.tools = {
 
-  calculate: function (name, cfg) { return SCN.tools[name](cfg) },
+  // calculate: function (name, cfg) { return SCN.tools[name](cfg) },
   loadCube: function (name, cfg, callback) {
 
     var
@@ -29,6 +29,8 @@ SCN.tools = {
     geometry.computeVertexNormals();
 
     RES.load({urls, type: 'texture', onFinish: function (err, responses) {
+
+      if (err) {console.log(err);}
 
       materials = responses.map(response => {
 
