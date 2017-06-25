@@ -6,26 +6,25 @@ IFC.Hud = (function () {
   var 
     self,
 
-    txloader = new THREE.TextureLoader(),
-
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
-    loader     = $$('.interface img.loader')[0],
-    simulator  = $$('.simulator')[0],
+    loader      = $$('.interface img.loader')[0],
+    simulator   = $$('.simulator')[0],
 
-    camera     = new THREE.OrthographicCamera (0, 0, 100, 100, 1, 10 ),
-    scene      = new THREE.Scene(),
-    menu       = new THREE.Object3D(),
-    sprites    = {},
+                         // OrthographicCamera ( left, right, top, bottom, near, far )
+    camera      = new THREE.OrthographicCamera (0, 0, 100, 100, 1, 10 ),
+    scene       = new THREE.Scene(),
+    menu        = new THREE.Object3D(),
+    sprites     = {},
 
-    touch      = {x: NaN, y: NaN, sprite: null},
-    mouse      = {x: NaN, y: NaN, sprite: null},
+    touch       = {x: NaN, y: NaN, sprite: null},
+    mouse       = {x: NaN, y: NaN, sprite: null},
 
-    menuToggled    = false,
+    menuToggled = false,
 
-    vecUp  = new THREE.Vector3(1, 1, 0).normalize(),
-    vecRot = new THREE.Vector3(0, 0, 0),
+    vecUp       = new THREE.Vector3(0, 1, 0),
+    vecRot      = new THREE.Vector3(0, 0, 0),
 
   end;
 
@@ -127,20 +126,20 @@ IFC.Hud = (function () {
         pos = sprite.cfg.position;
 
         if (pos.width === '100%') {
-          sprite.position.set( 0, h2 - pos.top - pos.height / 2 , 1 );
+          sprite.position.set( 0, h2 - pos.top - pos.height / 2 , pos.zIndex );
           sprite.scale.setX(w);
 
         } else if (pos.bottom && pos.left){
-          sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
+          sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , pos.zIndex );
 
         } else if (pos.right && pos.top) {
-          sprite.position.set( + w2 - pos.right - pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
+          sprite.position.set( + w2 - pos.right - pos.width / 2, h2 - pos.top - pos.height / 2 , pos.zIndex );
 
         } else if (pos.center && pos.center === 'x') {
-          sprite.position.set( 0, h2 - pos.top - pos.height / 2 , 1 );
+          sprite.position.set( 0, h2 - pos.top - pos.height / 2 , pos.zIndex );
 
         } else {
-          sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , 1 );
+          sprite.position.set( - w2 + pos.left + pos.width / 2, h2 - pos.top - pos.height / 2 , pos.zIndex );
 
         }
 
@@ -200,7 +199,7 @@ IFC.Hud = (function () {
 
           vecRot.setX(veloX);
           vecRot.setY(-veloY);
-          vecRot.normalize();
+          // vecRot.normalize();
 
           angle = vecRot.angleTo(vecUp);
           
@@ -580,7 +579,7 @@ IFC.Hud.time = (function () {
         // ctx.fillStyle = 'rgba(200, 0, 0, 0.5)'
         // ctx.fillRect(0, 0, cvs.width, cvs.height);
 
-        ctx.fillStyle = '#eee'
+        ctx.fillStyle = '#fff'
         ctx.font = 'bold 22px monospace'
 
         metrics = ctx.measureText(simDate);

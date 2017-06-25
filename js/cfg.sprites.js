@@ -9,9 +9,10 @@ CFG.Sprites = {
     hover:    false,
     menu:     false,
     position: {
-      top:      0,
-      width:    '100%',
-      height:   72,
+      zIndex:       1,
+      top:          0,
+      width:        '100%',
+      height:       72,
     },
     material: {
       color:  new THREE.Color(0x000000),
@@ -26,6 +27,7 @@ CFG.Sprites = {
     canvas:   document.createElement('CANVAS'),
     back:     document.createElement('CANVAS'),
     position: {
+      zIndex:    5,
       bottom:   18,
       left:     18,
       width:    128,
@@ -46,13 +48,14 @@ CFG.Sprites = {
     menu:     false,
     canvas:   document.createElement('CANVAS'),
     position: {
+      zIndex:    5,
       top:      18,
       center:   'x',
       width:    256,
       height:   64,
     },
     material: {
-      opacity: 0.9,
+      opacity: 0.99,
       image: 'hud/performance.png'
     },
     onclick: (sprite) => {
@@ -69,6 +72,7 @@ CFG.Sprites = {
     menu:     false,
     toggled:  false,
     position: {
+      zIndex:    5,
       top:     14,
       right:   18,
       width:   48,
@@ -94,6 +98,7 @@ CFG.Sprites = {
     menu:     false,
     toggled:  false,
     position: {
+      zIndex:    5,
       top:     14,
       left:    18,
       width:   48,
@@ -119,6 +124,7 @@ CFG.Sprites = {
     type:     'toggle',
     toggled:  false,
     position: {
+      zIndex:    5,
       top:     80,
       left:    78,
       width:   48,
@@ -140,6 +146,7 @@ CFG.Sprites = {
     visible:  true,
     menu:     true,
     position: {
+      zIndex:    5,
       top:     80,
       left:     138,
       width:    48,
@@ -160,6 +167,7 @@ CFG.Sprites = {
     type:     'toggle',
     toggled:  false,
     position: {
+      zIndex:    5,
       top:      80,
       left:    198,
       width:    48,
@@ -180,6 +188,7 @@ CFG.Sprites = {
     type:     'toggle',
     toggled:  false,
     position: {
+      zIndex:    5,
       top:      80,
       left:    258,
       width:    48,
@@ -203,6 +212,7 @@ CFG.Sprites = {
     type:     'toggle',
     toggled:  false,
     position: {
+      zIndex:    5,
       top:     134,
       left:     15,
       width:    54,
@@ -226,6 +236,7 @@ CFG.Sprites = {
     type:     'toggle',
     toggled:  false,
     position: {
+      zIndex:    5,
       top:     194,
       left:     18,
       width:    48,
@@ -248,6 +259,7 @@ CFG.Sprites = {
     type:     'toggle',
     toggled:  false,
     position: {
+      zIndex:    5,
       top:     254,
       left:     18,
       width:    48,
@@ -270,6 +282,7 @@ CFG.Sprites = {
     type:     'toggle',
     toggled:  false,
     position: {
+      zIndex:    5,
       top:     314,
       left:     18,
       width:    48,
