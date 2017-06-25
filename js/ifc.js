@@ -155,7 +155,7 @@ var IFC = (function () {
       raycaster.params.Points.threshold = 0.001;
 
       // globe controller
-      controller = IFC.Controller;
+      controller = self.controller = IFC.Controller;
       controller.init(SCN.camera, SCN.renderer.domElement, {
 
         //TODO: onchange/onrelax

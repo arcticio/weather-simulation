@@ -3,6 +3,22 @@
 
 CFG.Sprites = {
 
+  topbackdrop: {
+    visible:  true,
+    type:     'backdrop',
+    hover:    false,
+    menu:     false,
+    position: {
+      top:      0,
+      width:    '100%',
+      height:   72,
+    },
+    material: {
+      color:  new THREE.Color(0x000000),
+      opacity: 0.2,
+    },
+  },
+
   performance: {
     visible:  true,
     type:     'toggle',
@@ -26,6 +42,7 @@ CFG.Sprites = {
 
   time: {
     visible:  true,
+    hover:    false,
     menu:     false,
     canvas:   document.createElement('CANVAS'),
     position: {
@@ -102,7 +119,7 @@ CFG.Sprites = {
     type:     'toggle',
     toggled:  false,
     position: {
-      top:     74,
+      top:     80,
       left:    78,
       width:   48,
       height:  48,
@@ -123,7 +140,7 @@ CFG.Sprites = {
     visible:  true,
     menu:     true,
     position: {
-      top:     74,
+      top:     80,
       left:     138,
       width:    48,
       height:   48,
@@ -143,7 +160,7 @@ CFG.Sprites = {
     type:     'toggle',
     toggled:  false,
     position: {
-      top:      74,
+      top:      80,
       left:    198,
       width:    48,
       height:   48,
@@ -163,7 +180,7 @@ CFG.Sprites = {
     type:     'toggle',
     toggled:  false,
     position: {
-      top:      74,
+      top:      80,
       left:    258,
       width:    48,
       height:   48,

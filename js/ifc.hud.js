@@ -24,6 +24,9 @@ IFC.Hud = (function () {
 
     menuToggled    = false,
 
+    vecUp  = new THREE.Vector3(1, 1, 0).normalize(),
+    vecRot = new THREE.Vector3(0, 0, 0),
+
   end;
 
   return self = {
@@ -37,7 +40,7 @@ IFC.Hud = (function () {
 
       camera.position.z = 10;
 
-      menu.position.setX(menuToggled ? 0 : -500);
+      menu.position.setX(menuToggled ? 0 : -400);
 
       self.initSprites();
       scene.add(menu);
@@ -50,22 +53,47 @@ IFC.Hud = (function () {
       H.each(CFG.Sprites, (name, cfg) => {
 
         var sprite = new THREE.Sprite( new THREE.SpriteMaterial({
-          map:          CFG.Textures[cfg.material.image],
+          // map:          CFG.Textures[cfg.material.image],
           opacity :     cfg.material.opacity,
           transparent : true,
         }));
 
+        if (cfg.material.image) {
+          sprite.material.map = CFG.Textures[cfg.material.image];
+
+        } else if (cfg.material.color) {
+          sprite.material.color = cfg.material.color;
+
+        }
+
+        // https://threejs.org/examples/webgl_sprites.html
+        // material.map.offset.set( -0.5, -0.5 );
+        // material.map.repeat.set( 2, 2 );
+
         sprite.cfg = cfg;
         sprite.name = name;
-        sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
 
-        sprite.onmouseenter = sprite.touchstart = function () {
-          ANI.insert(0, ANI.library.sprite.enter(sprite, 200));
-        };
+        if (cfg.position.width === '100%') {
+          sprite.scale.set( SCN.canvas.width, cfg.position.height, 1 );
 
-        sprite.onmouseleave = sprite.touchend = function () {
-          ANI.insert(0, ANI.library.sprite.leave(sprite, 200));
-        };
+        } else {
+          sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
+
+        }
+
+        if (cfg.hover !== false) {
+
+          sprite.onmouseenter = sprite.touchstart = function () {
+            ANI.insert(0, ANI.library.sprite.enter(sprite, 200));
+          };
+
+          sprite.onmouseleave = sprite.touchend = function () {
+            ANI.insert(0, ANI.library.sprite.leave(sprite, 200));
+          };
+
+        } else {
+          sprite.onmouseleave = sprite.onmouseenter = () => {};
+        }
 
         if (cfg.onclick) {
           sprite.click = cfg.onclick.bind(sprite, sprite);
@@ -90,6 +118,7 @@ IFC.Hud = (function () {
 
       var
         pos, 
+        w  = SCN.canvas.width,
         w2 = SCN.canvas.width  / 2,
         h2 = SCN.canvas.height / 2;
 
@@ -97,7 +126,11 @@ IFC.Hud = (function () {
 
         pos = sprite.cfg.position;
 
-        if (pos.bottom && pos.left){
+        if (pos.width === '100%') {
+          sprite.position.set( 0, h2 - pos.top - pos.height / 2 , 1 );
+          sprite.scale.setX(w);
+
+        } else if (pos.bottom && pos.left){
           sprite.position.set( - w2 + pos.left + pos.width / 2, -h2 + pos.bottom + pos.height / 2 , 1 );
 
         } else if (pos.right && pos.top) {
@@ -152,6 +185,32 @@ IFC.Hud = (function () {
         [window,    'orientationchange'],
       
       ], (_, e) => e[0].addEventListener(e[1], self.events[e[1]], false) );
+
+    },
+
+    step: function () {
+
+      var veloX, veloY, angle;
+
+      if (IFC.controller) {
+
+        ({veloX, veloY} = IFC.controller.info());
+
+        if (veloX || veloY) {
+
+          vecRot.setX(veloX);
+          vecRot.setY(-veloY);
+          vecRot.normalize();
+
+          angle = vecRot.angleTo(vecUp);
+          
+          sprites.spacetime.material.rotation = angle;
+
+          // console.log(angle);
+
+        }
+
+      }
 
     },
 
@@ -279,7 +338,7 @@ IFC.Hud = (function () {
 
       } else {
         // sprites.hamburger.material.opacity = 0.5;
-        ANI.insert(0, ANI.library.menu.toggle(-500, 200));
+        ANI.insert(0, ANI.library.menu.toggle(-400, 200));
         // sprites.hamburger.toggled = false;
 
       }
@@ -356,102 +415,7 @@ IFC.Hud = (function () {
       return found;
 
     },
-    // hitTest: function (xTest, y) {
 
-    //   var 
-    //     xOff = IFC.Hud.menu.position.x,
-    //     x = xOff + xTest,
-    //     element = null;
-
-    //   H.each(sprites, (name, sprite) => {
-
-    //     // TODO: respect pos.bottom
-
-    //     var 
-    //       pos = sprite.cfg.position,
-    //       hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
-
-    //     if ( sprite.cfg.events.length ){
-
-    //       if ( hit ) {
-
-    //         if (!sprite.hit) {
-    //           sprite.onmouseenter();
-    //           sprite.hit = true;
-    //         }
-
-    //         IFC.touch.sprite = sprite;
-
-    //         console.log('HIT', sprite.name);
-
-    //       } else {
-
-    //         if (sprite.hit) {
-    //           sprite.onmouseleave();
-    //           sprite.hit = false;
-    //         }
-
-    //       }
-
-    //     }
-
-    //   });
-
-    // },
-    step: function () {
-
-      // buttons hit test for mouse
-
-      var mouse = IFC.mouse;
-
-      mouse.sprite = null;
-
-      // H.each(sprites, (name, sprite) => {
-
-      //   // TODO: respect pos.bottom
-
-      //   var 
-      //     x = mouse.px,
-      //     y = mouse.py,
-      //     pos = sprite.cfg.position,
-      //     hit = x > pos.left && x < pos.left + pos.width && y > pos.top && y < pos.top + pos.height;
-      //     // hit = self.hitTest(x, y);
-
-
-      //   if ( !sprite.cfg.events.length ){return;}
-
-      //   if (toggled || !toggled && (sprite.name === 'hamburger' || sprite.name === 'performance' )){
-
-      //     if ( hit ) {
-
-      //       if (!sprite.hit) {
-      //         sprite.onmouseenter();
-      //         sprite.hit = true;
-
-      //         // console.log('HIT', sprite.name);
-
-      //       }
-
-      //       mouse.sprite = sprite;
-
-
-      //     } else {
-
-      //       if (sprite.hit) {
-      //         sprite.onmouseleave();
-      //         sprite.hit = false;
-
-      //         // console.log('UNHIT', sprite.name);
-
-      //       }
-
-      //     }
-          
-      //   }
-
-      // });
-
-    },
 
   };
 
