@@ -87,7 +87,7 @@
 
     <div class="interface">
 
-      <img    class="loader" src="images/earth.ani.comp.gif">
+      <!-- <img    class="loader" src="images/earth.ani.comp.gif"> -->
       <img    class="panel image" src="" height="180" width="360"></img>
       <dir    class="panel latlon"></dir>
       <div    class="panel info" ondblclick="this.innerHTML = '' "></div>
@@ -142,27 +142,28 @@
     <script src="js/cfg.sprites.js"></script>
     <script src="js/cfg.assets.js"></script>
     <script src="js/cfg.preset.js"></script>
+    <script src="//freegeoip.net/json/?callback=CFG.location"></script>
 
     <script src="js/sim.js"></script>
     <script src="js/sim.vars.js"></script>
     <script src="js/sim.tools.js"></script>
     <script src="js/sim.marray.js"></script>
     <script src="js/sim.datagram.js"></script>
-    <script src="js/sim.models.wind.js"></script>
     <script src="js/sim.models.clouds.js"></script>
     <script src="js/sim.models.clouds.worker.js"></script>
     <script src="js/sim.models.jetstream.js"></script>
     <script src="js/sim.models.variables.js"></script>
+    <script src="js/sim.models.wind.js"></script>
 
     <script src="js/scn.js"></script>
     <script src="js/scn.tools.js"></script>
     <script src="js/scn.meshes.js"></script>
+    <script src="js/scn.meshes.atmosphere.js"></script>
     <script src="js/scn.meshes.background.js"></script>
     <script src="js/scn.meshes.basemaps.js"></script>
     <script src="js/scn.meshes.basecopy.js"></script>
-    <script src="js/scn.meshes.population.js"></script>
     <script src="js/scn.meshes.pixels.js"></script>
-    <script src="js/scn.meshes.atmosphere.js"></script>
+    <script src="js/scn.meshes.population.js"></script>
     
     <script src="js/ifc.js"></script>
     <script src="js/ifc.debug.js"></script>
@@ -179,11 +180,7 @@
 
         TIM.step('WIN.load.in', VERSION);
 
-        CFG.init();
-        RES.init();
-        ANI.init();
-        SIM.init();
-        SCN.init();
+        [CFG, RES, ANI, SIM, SCN].forEach( m => m.init() );
 
         TIM.step('SCN.load.in');
 
@@ -199,7 +196,9 @@
           TIM.step('SCN.render.in');
 
           SCN.render();
+          
           IFC.show();
+          IFC.updateUrl();
 
           ANI.insert(0, ANI.library.intro(800));
 

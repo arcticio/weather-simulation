@@ -1,3 +1,11 @@
+/*
+
+// https://threejs.org/docs/index.html#api/renderers/webgl/WebGLProgram
+
+vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+gl_Position = projectionMatrix * mvPosition;
+
+*/
 
 'use strict'
 

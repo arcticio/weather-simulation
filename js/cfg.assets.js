@@ -3,7 +3,9 @@
 
 CFG.Objects = {
 
-  // TODO: contemplate about id: 0 for intro html
+  // TODO: contemplate about id: 0 for intro html or spacetime
+  // CFG.assets2hash([0])   = '1'
+  // CFG.assets2hash([0,1]) = '3'
 
   // MANDATORY (no id)
 

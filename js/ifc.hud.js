@@ -118,8 +118,9 @@ IFC.Hud = (function () {
       var
         pos, 
         w  = SCN.canvas.width,
-        w2 = SCN.canvas.width  / 2,
-        h2 = SCN.canvas.height / 2;
+        h  = SCN.canvas.height,
+        w2 = w / 2,
+        h2 = h / 2;
 
       H.each(sprites, (name, sprite) => {
 

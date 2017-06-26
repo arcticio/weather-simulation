@@ -44,6 +44,28 @@ var CFG = {
 
   Title: 'Simulator',
 
+  User: {
+    ip:           '',
+    country_code: '',
+    country_name: 'Unknown',
+    region_code:  '',
+    region_name:  '',
+    city:         '',
+    zip_code:     '',
+    time_zone:    '',
+    latitude:     0.0,
+    longitude:    0.0,
+    metro_code:   0,
+    loc_detected: false,
+  },
+
+  location: function (response) {
+    var user = CFG.User;
+    Object.assign(user, response);
+    user.loc_detected = (user.latitude || user.longitude);
+    TIM.step('user', 'lat:', user.latitude, 'lon:', user.longitude, user.country_code, user.country_name);
+  },
+
   Sim: {
     coordspool : {
       amount:       5e5,
@@ -77,7 +99,6 @@ var CFG = {
     'hud/hamburger.png':            'images/hud/hamburger.png',
     'hud/fullscreen.png':           'images/hud/fullscreen.png',
     'hud/movie.png':                'images/hud/movie.png',
-    // 'hud/graticule.png':            'images/hud/graticule.png',
     'hud/info.png':                 'images/hud/info.png',
     'hud/performance.png':          'images/hud/performance.png',
 

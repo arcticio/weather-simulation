@@ -6,59 +6,77 @@ Object.assign(CFG, {
   init: function () {
 
     var 
-      time, coords, position, assets, defAssets = [],
+      position, defAssets = [],
+      assets = [], time, coords, 
       [locHash, locTime, locCoords] = location.pathname.slice(1).split('/');
 
-    // H.each(CFG.Objects, (name, cfg) => {
-    //   if (cfg.visible){
-    //     defAssets.push(cfg.id);
-    //   }
-    // });
-
-    // TODO: rethink invalid and default values for all
-
-    if (locHash !== undefined) {
-      assets = CFG.hash2assets(locHash);
+    // Assets from URL
+    if (locHash) {
+      assets = CFG.hash2assets(String(locHash));
     }
 
-    if (locTime !== undefined) {
+    // Assets failsafe
+    if (!assets.length){
+      assets = [
+        CFG.Objects.background.id,
+        CFG.Objects.ambient.id,
+        CFG.Objects.spot.id,
+        CFG.Objects.sun.id,
+        CFG.Objects.basemaps.id,
+      ];
+    }
+
+    // DateTime from URL
+    // TODO: ensure within range
+    if (locTime) {
       time = moment.utc(locTime, 'YYYY-MM-DD-HH-mm');
       if (!time.isValid()) {
         time = undefined;
       }
     }
 
-    if (locCoords !== undefined) {
-      coords = locCoords.split(';').map(Number);
-      position = new THREE.Vector3().add({
-        x: coords[0] !== undefined ? coords[0] : 2.0,
-        y: coords[1] !== undefined ? coords[1] : 2.0,
-        z: coords[2] !== undefined ? coords[2] : 2.0,
-      });
+    // DateTime failsafe
+    if (!time) {
+      time = TIMENOW ? TIMENOW : moment.utc();
     }
 
-    // console.log('assets', assets);
-    // console.log('time',   time ? time.format('YYYY-MM-DD-HH-mm') : undefined);
-    // console.log('coords', coords);
+    // Coords from URL
+    if (locCoords) {
+      coords = locCoords.split(';').map(Number);
+      if (coords.length === 3){
+        position = new THREE.Vector3().add({
+          x: coords[0] !== undefined ? coords[0] : 2.0,
+          y: coords[1] !== undefined ? coords[1] : 2.0,
+          z: coords[2] !== undefined ? coords[2] : 2.0,
+        });
 
-    // enable objects
+      }
+    }
+
+    // Coords failsafe
+    if (!position) {
+      position = TOOLS.latLongToVector3(
+        CFG.User.latitude,
+        CFG.User.longitude,
+        CFG.earth.radius,
+        3
+      )
+    }
+
+    // rewrite CFG.Objects visibility to enable objects
     H.each(CFG.Objects, (name, cfg) => {
-      if (cfg.id){
+      if (cfg.id !== undefined){
         cfg.visible = assets.indexOf(cfg.id) !== -1;
       }
     });
 
-    // set cam
-    if (position) {
-      CFG.Objects.perspective.pos = position;
-    }
+    // update cam
+    CFG.Objects.perspective.pos = position;
 
-    // current model time
-    if (time) {
-      TIMENOW = time.clone();
-    }
-
+    // TODO: Is this the right place for preset handling
     CFG.Preset.init();
+
+    // init gui.dat
     IFC.initGUI();
 
   },

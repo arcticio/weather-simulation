@@ -13,7 +13,6 @@ var IFC = (function () {
     $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
-    loader     = $$('.interface img.loader')[0],
     simulator  = $$('.simulator')[0],
     fullscreen = $$('.fullscreen')[0],
 
@@ -141,8 +140,6 @@ var IFC = (function () {
       w2 = canvas.width  / 2;
       h2 = canvas.height / 2;
 
-      loader.style.display = 'block';
-
       // move gui.dat to fullscreen container
       fullscreen.appendChild(guiCont);
 
@@ -185,8 +182,6 @@ var IFC = (function () {
     },
     show: function () {
 
-      loader.style.display = 'none';
-      
       $$('canvas.simulator')[0].style.display = 'block';
 
       IFC.Hud.resize();
