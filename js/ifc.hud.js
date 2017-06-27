@@ -324,7 +324,7 @@ IFC.Hud = (function () {
       }
 
     },
-    testHit: function (x, y) {
+    testHit: function testHit (x, y) {
 
       // works in screen space 0/0 = left/top
 
@@ -550,7 +550,7 @@ IFC.Hud.performance = (function () {
     self,
     sprite,
     cfg,
-    cvs, ctx, img, back, texture,
+    cvs, ctx, img, back, texture, ctxBack,
     width, height,
     now, last, fps,
     bufDur = H.createRingBuffer(60),
@@ -565,18 +565,16 @@ IFC.Hud.performance = (function () {
   return self = {
     init:  function (mesh, config) {
 
-      sprite = mesh;
-      cfg    = config;
-      cvs    = cfg.canvas;
-      ctx    = cvs.getContext('2d');
-      img    = sprite.material.map.image,
-      back   = cfg.back,
+      sprite  = mesh;
+      cfg     = config;
+      cvs     = cfg.canvas;
+      ctx     = cvs.getContext('2d');
+      img     = sprite.material.map.image,
+      back    = cfg.back,
+      ctxBack = back.getContext('2d'),
 
       width  = cfg.position.width;
       height = cfg.position.height;
-
-      // cvs.width  = back.width  = 256;
-      // cvs.height = back.height = 128;
 
       cvs.width  = back.width  = 128;
       cvs.height = back.height = 64;
@@ -592,7 +590,7 @@ IFC.Hud.performance = (function () {
         val,
         off  = 1,
         max  = 18,
-        ctx  =  back.getContext('2d'),
+        ctx  =  ctxBack,
         zero = 29 + max;
 
       now = window.performance.now();
@@ -657,7 +655,7 @@ IFC.Hud.time = (function () {
     self,
     sprite,
     cfg,
-    cvs, ctx, img,
+    cvs, ctx, // img,
     texture,
     width, height,
     simtime, 
@@ -671,7 +669,7 @@ IFC.Hud.time = (function () {
       cfg    = config;
       cvs    = cfg.canvas;
       ctx    = cvs.getContext('2d');
-      img    = sprite.material.map.image;
+      // img    = sprite.material.map.image;
 
       width  = cvs.width  = cfg.position.width;
       height = cvs.height = cfg.position.height;
@@ -706,11 +704,11 @@ IFC.Hud.time = (function () {
         ctx.font = 'bold 22px monospace'
 
         metrics = ctx.measureText(simDate);
-        ctx.fillText(simDate, (cvs.width - metrics.width) / 2, 22);
+        ctx.fillText(simDate, (cvs.width - metrics.width) / 2, 34);
 
         ctx.font = 'bold 16px monospace'
         metrics = ctx.measureText(simTime);
-        ctx.fillText(simTime, (cvs.width - metrics.width) / 2, 44);
+        ctx.fillText(simTime, (cvs.width - metrics.width) / 2, 54);
 
         texture.needsUpdate = true;
 

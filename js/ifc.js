@@ -43,9 +43,6 @@ var IFC = (function () {
       py:         NaN, 
       down:       false, 
       button:     NaN,
-      intersect:  new THREE.Vector3(0, 0, 0),
-      overGlobe:  NaN,
-      sprite:     null,
       wheel:      {x: 0, y:0},
     },
 
@@ -55,8 +52,11 @@ var IFC = (function () {
       px:         NaN, 
       py:         NaN, 
       down:       false, 
-      buttons:    NaN,
-      sprite:     null,
+    },
+
+    pointer = {
+      overGlobe: false,
+      intersect:  new THREE.Vector3(0, 0, 0),
     },
 
     levels  = {
@@ -111,12 +111,8 @@ var IFC = (function () {
 
   return self = {
     
-    stats,
     modus,
-    mouse,
-    globe,
-    touch,
-    raycaster,
+    pointer,
     controller,
 
     init: function () {
@@ -133,7 +129,6 @@ var IFC = (function () {
 
       // move gui.dat to fullscreen container and hide
       fullscreen.appendChild(guiCont);
-      // guiCont.style.display = 'none'
 
       // center gui.dat
       guiMain.style.margin = '0 auto';
@@ -149,7 +144,7 @@ var IFC = (function () {
 
         ondrag: function (callback, deltaX, deltaY, deltaZ) {
 
-          if (IFC.mouse.overGlobe) {
+          if (pointer.overGlobe) {
             IFC.Hud.spacetime.updateModus('space');
             callback(deltaX, deltaY, deltaZ);
 
@@ -162,7 +157,6 @@ var IFC = (function () {
 
         },
         onwheel: function (deltaX, deltaY, deltaZ) {
-          // console.log('wheel', ~~(deltaZ * -5), 'minutes');
           SIM.setSimTime( ~~(deltaZ * -5), 'minutes');
 
         },
@@ -234,7 +228,7 @@ var IFC = (function () {
 
       controller.step(frame, deltatime);
 
-      self.updateMouse();
+      self.updatePointer();
       self.updateGlobe();
 
     },
@@ -255,18 +249,18 @@ var IFC = (function () {
       },
       click:   function (event) { 
 
-        // if (!mouse.overGlobe) {GUI.closed = !GUI.closed;}
+        // if (!pointer.overGlobe) {GUI.closed = !GUI.closed;}
 
       },      
       dblclick:   function (event) { 
 
-        // if (!mouse.overGlobe) {
+        // if (!pointer.overGlobe) {
         //   if (screenfull.enabled) {
         //     screenfull.toggle(fullscreen);
         //   }        
 
         // } else {
-        //   ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2))
+        //   ANI.insert(0, ANI.library.cam2vector(pointer.intersect, 2))
 
         // }
         
@@ -282,12 +276,12 @@ var IFC = (function () {
         // TODO: swap buttons, mind orbit drag
 
         if (mouse.button === 0) {
-          // SCN.objects.arrowHelper.visible && SCN.objects.arrowHelper.setDirection( mouse.intersect );
-          marker.copy(mouse.intersect);
+          // SCN.objects.arrowHelper.visible && SCN.objects.arrowHelper.setDirection( pointer.intersect );
+          marker.copy(pointer.intersect);
         }
 
         if (mouse.button === 2) {
-          // ANI.insert(0, ANI.library.cam2vector(mouse.intersect, 2));
+          // ANI.insert(0, ANI.library.cam2vector(pointer.intersect, 2));
         }
 
       },
@@ -295,8 +289,6 @@ var IFC = (function () {
 
         mouse.down = false;
         mouse.button = NaN;
-
-        // if (mouse.sprite){mouse.sprite.click();}
 
       },
       mousemove:   function (event) { 
@@ -330,10 +322,28 @@ var IFC = (function () {
 
       },
 
-      touchstart:  function (event) { /* console.log('touchstart') */ },
-      touchmove:   function (event) { /* console.log('touchmove') */ },
-      touchend:    function (event) { /* console.log('touchend') */ },
-      touchcancel: function (event) { /* console.log('touchcancel') */ },
+      touchstart:  function (event) { 
+      
+        console.log('touchstart');
+
+        touch.down = event.touches.length > 0;
+        touch.px = event.touches[ 0 ].pageX;
+        touch.py = event.touches[ 0 ].pageY;
+        touch.x  =   ( touch.px / canvas.width )  * 2 - 1;
+        touch.y  = - ( touch.py / canvas.height ) * 2 + 1;
+
+      },
+      touchmove:   function (event) { 
+        console.log('touchmove');
+      },
+      touchend:    function (event) { 
+        console.log('touchend');
+        touch.down = event.touches.length === 0;
+      },
+      touchcancel: function (event) { 
+        console.log('touchcancel');
+        touch.down = event.touches.length === 0;
+      },
 
       devicemotion:      function (event) { /* console.log('devicemotion', event)      */ },
       deviceorientation: function (event) { /* console.log('deviceorientation', event) */ },
@@ -370,34 +380,33 @@ var IFC = (function () {
       );
 
     },
-    updateMouse: function () {
+    updatePointer: function () {
 
       var 
         intersection, 
-        oldMouseOver = mouse.overGlobe,
-        intersections = [];
+        oldPointerOver = pointer.overGlobe,
+        intersections  = [],
+        finger         = mouse.down ? mouse : touch,
+      end;
 
-      raycaster.setFromCamera( mouse, SCN.camera );
+      raycaster.setFromCamera( finger, SCN.camera );
 
       SCN.objects.pointer.raycast(raycaster, intersections)
 
       if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
-        mouse.intersect.copy(intersection.point).normalize();
-        mouse.overGlobe = true;
+        pointer.intersect.copy(intersection.point).normalize();
+        pointer.overGlobe = true;
 
       } else {
-        mouse.overGlobe = false;
+        pointer.overGlobe = false;
 
       }
 
-      if (oldMouseOver !== mouse.overGlobe){
-        if (mouse.overGlobe) {
+      if (oldPointerOver !== pointer.overGlobe){
+        if (pointer.overGlobe) {
           ANI.insert(0, ANI.library.scaleGLobe(1.0, 800));
-          // GUI.closed = true;
+
         } else {
-          if (!isNaN(oldMouseOver)) {
-            // GUI.closed = false;
-          }
           ANI.insert(0, ANI.library.scaleGLobe(0.94, 800));
         }
       }

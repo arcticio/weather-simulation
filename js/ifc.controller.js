@@ -276,7 +276,7 @@ IFC.Controller = (function () {
 
           }
 
-          if (IFC.mouse.overGlobe){
+          if (IFC.pointer.overGlobe){
             self.impulse(deltaX, deltaY, deltaZ);
 
           } else {
@@ -335,8 +335,8 @@ IFC.Controller = (function () {
           deltaX = (touch.last.x - event.changedTouches[0].pageX) * cfg.moveXimpulse * impFactor;
           deltaY = (touch.last.y - event.changedTouches[0].pageY) * cfg.moveYimpulse * impFactor;
 
-          if (ondrag) {
-            ondrag(self.impulse, deltaX, deltaY, 0)
+          if (cfg.ondrag) {
+            cfg.ondrag(self.impulse, deltaX, deltaY, 0)
 
           } else {
             self.impulse(deltaX, deltaY, 0);

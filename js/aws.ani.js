@@ -341,7 +341,7 @@ var ANI = (function () {
               SCN.camera.lookAt(SCN.home);
             })
             .onComplete(function(d){
-              IFC.updateMouse();
+              IFC.updatePointer();
             })
             .start()
           ;

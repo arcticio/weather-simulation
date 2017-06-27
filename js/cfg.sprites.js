@@ -12,7 +12,7 @@ CFG.Sprites = {
     position: {
       zIndex:    5,
       bottom:   18,
-      right:    18,
+      right:     4,
       width:    48,
       height:   48,
     },
@@ -72,14 +72,14 @@ CFG.Sprites = {
     canvas:   document.createElement('CANVAS'),
     position: {
       zIndex:    5,
-      top:      18,
+      top:       4,
       center:   'x',
       width:    256,
       height:   64,
     },
     material: {
-      opacity: 0.99,
-      image: 'hud/performance.png'
+      opacity: 0.9,
+      // image: 'hud/performance.png'
     },
     onclick: (sprite) => {
       console.log('sprite.clicked', sprite.name);
