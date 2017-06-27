@@ -12,6 +12,11 @@ html, body {
   background-color: black;
 }
 
+/* hide dat.gui at load */ 
+.dg.ac {
+  display: none;
+}
+
 .interface, .panels, .labels, .preload {
   position: absolute;
   top: 0;
@@ -109,27 +114,92 @@ canvas.panel.expi {
   width: 96px;
 }
 
-.loader {
+h1 {
+  color: #eee;
+  font-family: monospace;
+  font-weight: 800;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+h3 {
+  color: #eee;
+  font-family: monospace;
+  font-weight: 800;
+  font-size: 16px
+}
+
+table.loader {
   background-color: #000;
   color: white;
   font-family: monospace;
   height: 100%;
   position: absolute;
   width:  100%;
+
+/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#666666+0,222222+100;Grey+3D+%231 */
+background: #666666; /* Old browsers */
+background: -moz-linear-gradient(top, #666666 0%, #222222 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, #666666 0%,#222222 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, #666666 0%,#222222 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666666', endColorstr='#222222',GradientType=0 ); /* IE6-9 */
+
 }
-.loader .cell {
+
+table.loader .title {
   font-size: 24px;
   text-align:center; 
   vertical-align:middle;
+  height: 40%;
 }
-.loader .info {
+table.loader .progress {
+  font-size: 20px;
+  text-align:center; 
+  vertical-align:top;
+  height: 30%;
+}
+table.loader .progress .header {
+  font-size: 18px;
+  text-align:center; 
+  vertical-align:middle;
+}
+table.loader .progress .info {
   font-weight: 800;
 }
-.loader .bar {
+table.loader .progress .bar {
   font-family: monospace;
   font-size: 24px;
 }
 
+table.loader .error {
+  font-size: 24px;
+  text-align:center; 
+  vertical-align:top;
+  height: 30%;
+}
+
+table.loader .error .header  {
+  color: #a70a0a; 
+  font-weight: 800;
+}
+table.loader .error .message {
+  color: #fd5959; 
+  font-size: 16px;
+}
+
+a, 
+a:visited, 
+a:link,
+a:visited,
+a:focus,
+a:active {
+  color: #eee;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff;
+}
 
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */

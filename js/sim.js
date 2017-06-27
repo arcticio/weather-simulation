@@ -7,21 +7,19 @@ var SIM = (function () {
     renderer,
     camera,
 
-    frame          = 0,
-    sim,
-
     $$             = document.querySelectorAll.bind(document),
 
-    image          = $$('.panel.image')[0],
+    image          = $$('.panel.image')[0],  // debug sun
 
-    datagrams      = {}, // all models share GFS data
-    models         = {},
-    
     coordsPool     = null, 
 
-    sunVector      = new THREE.Vector3(),
-    sunSphererical = new THREE.Spherical(4, 0, -Math.PI / 2),
+    models         = {},
+    datagrams      = {}, // all models share GFS data
+
     sun            = Orb.SolarSystem().Sun(),
+    sunVector      = new THREE.Vector3(),
+    sunDirection   = new THREE.Vector3(),
+    sunSphererical = new THREE.Spherical(4, 0, -Math.PI / 2),
 
     timerange      = new TimeRange(),
 
@@ -44,11 +42,19 @@ var SIM = (function () {
   return self = {
 
     time,
-    models,
-    datagrams,
+    // models,
+    // datagrams,
     coordsPool,
-    timerange,
+    // timerange,
     sunVector,
+    sunDirection,
+
+    calcdoe: function (mom) {
+      // mom = mom.clone().hours(mom.hours() - (mom.hours() % 6));  // rstrict now at avail dods
+      return H.date2doeFloat(mom.toDate());
+    },
+    mom2doe: function (mom) {return mom.toDate() / 864e5},
+    doe2mom: function (doe) {return moment.utc(doe * 864e5)},
 
     init: function () {
 
@@ -66,14 +72,6 @@ var SIM = (function () {
 
       // TIM.step('SIM.time', 'time.now',   time.now.format('YYYY-MM-DD HH[:]mm'));
       // TIM.step('SIM.time', 'time.model', time.model.format('YYYY-MM-DD HH[:]mm'));
-
-    },
-    activate: function () {
-
-      // IFC.controllers['DateTime']['choose'].setValue(time.pointer);
-      // SCN.updateSun(sunVector);
-      
-      // self.setSimTime();
 
     },
     setSimTime: function (val, what) {
@@ -116,49 +114,37 @@ var SIM = (function () {
       time.doe = self.calcdoe(time.model);
 
       IFC.Hud.time.render();
-      IFC.updateUrl();
+      IFC.Tools.updateUrl();
 
-      self.show(time.doe);
-
-    },
-    calcdoe: function (mom) {
-      // rstrict now at avail dods
-      // mom = mom.clone().hours(mom.hours() - (mom.hours() % 6));
-      return H.date2doeFloat(mom.toDate());
-    },
-    mom2doe: function (mom) {return mom.toDate() / 864e5},
-    doe2mom: function (doe) {return moment.utc(doe * 864e5)},
-    show: function (doe) {
-
-      doe = doe || time.doe;
-      H.each(models, (_, model) => model.show(doe) );
-
+      // H.each(models, (_, model) => model.show(doe) );
       self.updateSun();
 
-      // console.log('SIM.show', time.doe, doe);
-
     },
-    updateSun: function (val) {
+
+    updateSun: function () {
 
       // TODO: adjust for ra
       // https://www.timeanddate.com/scripts/sunmap.php?iso=20170527T1200
       // image && (image.src = '//www.timeanddate.com/scripts/sunmap.php?iso=' + time.show.format('YYYYMMDD[T]HHmm'));
 
-      var orbTime, orbSun;
+      var orbTime, orbSun, theta, phi;
 
       // query sun by time
       orbTime = new Orb.Time(time.model.toDate());
       orbSun  = sun.position.equatorial(orbTime);
+      theta   = (time.model.hour() + time.model.minutes() / 60) * (Math.PI / 12);
+      phi     = orbSun.dec * Math.PI / 180 - Math.PI / 2;
 
       //  Spherical( radius, phi, theta )
       sunSphererical.set(4, 0, -Math.PI / 2);
-      sunSphererical.phi    -= orbSun.dec * Math.PI / 180;             // raise sun
-      sunSphererical.phi    += Math.PI / 2;                            // change coord system
-      sunSphererical.theta  -= ( time.model.hour() * (Math.PI / 12) ) ; // rot by planet
+      sunSphererical.theta -= theta;
+      sunSphererical.phi   -= phi;
 
       // updates
-      sunVector.setFromSpherical(sunSphererical).normalize();
-      SCN.updateSun(sunVector);
+      sunVector.setFromSpherical(sunSphererical);
+      sunDirection.copy(sunVector).normalize();
+
+      SCN.updateSun(sunDirection);
 
     },
     loadModel: function (name, cfg, callback) {
@@ -217,8 +203,6 @@ var SIM = (function () {
     step: function (frame, deltatime) {
 
       H.each(models, (_, model) => model.step(frame, deltatime) );
-
-      frame += 1;
 
     },
 

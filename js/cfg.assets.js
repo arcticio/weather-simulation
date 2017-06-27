@@ -41,7 +41,7 @@ CFG.Objects = {
       title:          'ambient light',
       type:           'light',
       color:          0xffffff,
-      intensity:      0.3,
+      intensity:      0.1,
       light:          (cfg) => new THREE.AmbientLight( cfg.color, cfg.intensity )
     },
 
@@ -57,7 +57,7 @@ CFG.Objects = {
       penumbra:       0.1, 
       decay:          0.0,
       light:          (cfg) => new THREE.SpotLight(cfg.color, cfg.intensity, cfg.distance, cfg.angle, cfg.penumbra),
-      pos:            new THREE.Vector3(0, 4, 0)
+      pos:            new THREE.Vector3(0, 4, 0),
     },
 
     sun: {
@@ -69,7 +69,7 @@ CFG.Objects = {
       grdcolor:       0x8989c3, // blueish
       intensity:      0.4, 
       light:          (cfg) => new THREE.HemisphereLight( cfg.skycolor, cfg.grdcolor, cfg.intensity ),
-      pos:            new THREE.Vector3(2, 2, 2)
+      pos:            new THREE.Vector3(2, 2, 2),
     },
 
 

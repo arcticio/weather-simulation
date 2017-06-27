@@ -20,6 +20,7 @@ var SCN = (function () {
     renderer      = new THREE.WebGLRenderer({
       canvas,
       antialias:    true,
+      preserveDrawingBuffer:    true,   // screenshots
     }),
 
     camera        = CFG.Objects.perspective.cam,
@@ -35,12 +36,10 @@ var SCN = (function () {
 
   return self = {
     
-    // expi,
     home,
     scene,
     camera,
     canvas,
-    // monitor,
     objects,
     renderer,
 
@@ -67,7 +66,7 @@ var SCN = (function () {
         }
       }
 
-      IFC.updateUrl();
+      IFC.Tools.updateUrl();
 
     },
 
@@ -145,13 +144,12 @@ var SCN = (function () {
     },
     init: function (callback) {
 
-      // canvas = renderer.domElement;
       // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
-      // renderer.setSize(window.innerWidth, window.innerHeight);
       // webgl.min_capability_mode
+
       renderer.setClearColor(0x000000, 1.0);
       renderer.shadowMap.enabled = false;
-      renderer.autoClear = false; // cause HUD
+      renderer.autoClear = false;             // cause HUD
 
       camera.position.copy(CFG.Objects.perspective.pos);
 
@@ -446,6 +444,53 @@ var SCN = (function () {
       } 
 
     },
+    updateSun: function (sunDirection) {
+
+      //TODO: check light.onbeforerender
+
+      var objs = SCN.objects;
+
+      objs.spot.visible && objs.spot.position.copy(sunDirection).multiplyScalar(10);
+      objs.sun.visible  && objs.sun.position.copy(sunDirection).multiplyScalar(10);
+
+    },
+    render: function render () {
+
+      var 
+        timestamp = performance.now(),
+        deltasecs = (timestamp - (lastTimestamp || timestamp)) / 1000; // to secs
+
+      requestAnimationFrame(render);
+
+      IFC.Hud.performance.begin();
+
+        objects.background.visible && objects.background.updatePosition();
+
+        TWEEN.update();
+
+        IFC.step(frame, deltasecs);
+        IFC.Hud.step(frame, deltasecs);
+
+        if ( !(frame % 1) ) {
+          doSimulate && SIM.step(frame, deltasecs);
+        }
+
+        // always check actions
+        doAnimate  && ANI.step(frame, deltasecs);
+
+        if ( doRender && !(frame % 1) ) {
+          renderer.clear();
+          renderer.render( scene, camera );
+          renderer.clearDepth();
+          IFC.Hud.doRender && renderer.render( IFC.Hud.scene, IFC.Hud.camera );
+        }
+
+      IFC.Hud.performance.end();
+
+      lastTimestamp = timestamp;
+      frame += 1;
+
+    },
     logInfo: function () {
 
       var gl = renderer.context;
@@ -456,7 +501,6 @@ var SCN = (function () {
       TIM.step('REN.info', 'max_cube_map_texture_size', gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE));
 
       TIM.step('REN.extension', gl.getSupportedExtensions().filter( ex => ex.indexOf('float_linear') !== -1 ));
-
 
     },
     logFullInfo: function () {
@@ -507,55 +551,7 @@ var SCN = (function () {
       }, null, 2));
 
     },
-    updateSun: function (sunVector) {
 
-      //TODO: check light.onbeforerender
-
-      var objs = SCN.objects;
-
-      objs.spot.visible && objs.spot.position.copy(sunVector).multiplyScalar(10);
-      objs.sun.visible  && objs.sun.position.copy(sunVector).multiplyScalar(10);
-
-    },
-    render: function render () {
-
-      var 
-        timestamp = performance.now(),
-        deltatsecs = (timestamp - (lastTimestamp || timestamp)) / 1000; // to secs
-
-      requestAnimationFrame(render);
-
-      IFC.Hud.performance.begin();
-
-        IFC.step(frame, deltatsecs);
-
-        if ( !(frame % 60) ) {
-          // update every second
-          IFC.Hud.time.render();
-        }
-
-        objects.background.visible && objects.background.updatePosition();
-
-        if ( !(frame % 1) ) {
-          doSimulate && SIM.step(frame, deltatsecs);
-        }
-
-        // always check actions
-        doAnimate  && ANI.step(frame, deltatsecs);
-
-        if ( doRender && !(frame % 1) ) {
-          renderer.clear();
-          renderer.render( scene, camera );
-          renderer.clearDepth();
-          renderer.render( IFC.Hud.scene, IFC.Hud.camera );
-        }
-
-      IFC.Hud.performance.end();
-
-      lastTimestamp = timestamp;
-      frame += 1;
-
-    }
   };
 
 }());

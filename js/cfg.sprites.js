@@ -3,6 +3,29 @@
 
 CFG.Sprites = {
 
+  // SPACETIME
+
+  logo: {
+    visible:  true,
+    type:     'link',
+    menu:     false,
+    position: {
+      zIndex:    5,
+      bottom:   18,
+      right:    18,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.9,
+      image: 'arcticio.logo.512.png'
+    },
+    onclick: (sprite) => {
+      $('#arcticio')[0].click();
+      console.log('sprite.click', sprite.name);
+    },
+  },
+
   topbackdrop: {
     visible:  true,
     type:     'backdrop',
@@ -71,12 +94,13 @@ CFG.Sprites = {
     type:     'toggle',
     menu:     false,
     toggled:  false,
+    canvas:   document.createElement('CANVAS'),
     position: {
       zIndex:    5,
-      top:     14,
-      right:   18,
-      width:   48,
-      height:  48,
+      top:      14,
+      left:     18,
+      width:    48,
+      height:   48,
     },
     material: {
       opacity: 0.5,
@@ -99,10 +123,10 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     14,
-      left:    18,
-      width:   48,
-      height:  48,
+      top:      14,
+      right:    18,
+      width:    48,
+      height:   48,
     },
     material: {
       opacity: 0.5,
@@ -145,18 +169,21 @@ CFG.Sprites = {
   movie: {
     visible:  true,
     menu:     true,
+    type:     'toggle',
+    toggled:  false,
     position: {
-      zIndex:    5,
-      top:     80,
+      zIndex:     5,
+      top:       80,
       left:     138,
-      width:    48,
-      height:   48,
+      width:     48,
+      height:    48,
     },
     material: {
       opacity: 0.5,
       image: 'hud/movie.png'
     },
     onclick: (sprite) => {
+      IFC.Tools.takeScreenShot();
       console.log('sprite.click', sprite.name);
     },
   },
@@ -178,7 +205,8 @@ CFG.Sprites = {
       image: 'hud/info.png'
     },
     onclick: (sprite) => {
-      location.href = 'https://github.com/arcticio/weather-simulation';
+      // document.getElementById('#homelink').click();
+      $('#homelink')[0].click();
     },
   },
 
@@ -199,6 +227,7 @@ CFG.Sprites = {
       image: 'hud/gear.png'
     },
     onclick: (sprite) => {
+      IFC.toggleGUI();
       console.log('sprite.clicked', sprite.name);
     },
   },
@@ -206,48 +235,47 @@ CFG.Sprites = {
 
   // MENU, Layers vertical
 
-  graticule: {
+  snpp: {
     visible:  true,
     menu:     true,
     type:     'toggle',
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     134,
-      left:     15,
-      width:    54,
-      height:   54,
-    },
-    material: {
-      opacity: 0.5,
-      image: 'hud/graticule.png'
-    },
-    onclick: (sprite) => {
-      SCN.toggle(SCN.objects.graticule);
-      sprite.toggled = !sprite.toggled;
-      console.log('sprite.clicked', sprite.name);
-    },
-  },
-
-
-  snow: {
-    visible:  true,
-    menu:     true,
-    type:     'toggle',
-    toggled:  false,
-    position: {
-      zIndex:    5,
-      top:     194,
+      top:     140,
       left:     18,
       width:    48,
       height:   48,
     },
     material: {
       opacity: 0.5,
-      image: 'hud/snow.png'
+      image: 'hud/satellite.png'
     },
     onclick: (sprite) => {
-      // SCN.toggle(SCN.objects.snow);
+      SCN.toggleBasemap('snpp');
+      sprite.toggled = !sprite.toggled;
+      console.log('sprite.clicked', sprite.name);
+    },
+  },
+
+  temperature: {
+    visible:  true,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:    5,
+      top:     200,
+      left:     18,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/temperature.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggle(SCN.objects.variables);
       sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },
@@ -260,7 +288,7 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     254,
+      top:     260,
       left:     18,
       width:    48,
       height:   48,
@@ -276,27 +304,74 @@ CFG.Sprites = {
     },
   },
 
-  snpp: {
+  snow: {
     visible:  true,
     menu:     true,
     type:     'toggle',
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     314,
+      top:     320,
       left:     18,
       width:    48,
       height:   48,
     },
     material: {
       opacity: 0.5,
-      image: 'hud/satellite.png'
+      image: 'hud/snow.png'
     },
     onclick: (sprite) => {
-      SCN.toggleBasemap('snpp');
+      // SCN.toggle(SCN.objects.snow);
       sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },
   },
+
+  seaice: {
+    visible:  true,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:    5,
+      top:     380,
+      left:     18,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/seaice.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggle(SCN.objects.seaice);
+      sprite.toggled = !sprite.toggled;
+      console.log('sprite.clicked', sprite.name);
+    },
+  },
+
+  graticule: {
+    visible:  true,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:    5,
+      top:     440,
+      left:     15,
+      width:    54,
+      height:   54,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/graticule.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggle(SCN.objects.graticule);
+      sprite.toggled = !sprite.toggled;
+      console.log('sprite.clicked', sprite.name);
+    },
+  },
+
 
 };

@@ -77,10 +77,23 @@
 
     <table class="loader">
       <tr>
-        <td class="cell">
+        <td class="title">
+          <h1>Hypatia - Weather Simulation</h1>
+          <h3><a id="homelink" target="_blank" href="https://github.com/arcticio/weather-simulation">Help &amp; Info</a></h3>
+          <h3><a id="arcticio" target="_blank" href="http://www.arctic.io">arctic.io</a></h3>
+        </td>
+      </tr>
+      <tr>
+        <td class="progress">
           <span class="header">Loading:</span>
           <div class="info">Assets</div>
           <div class="bar"></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="error">
+          <div class="header"></div>
+          <div class="message"></div>
         </td>
       </tr>
     </table>
@@ -142,7 +155,7 @@
     <script src="js/cfg.sprites.js"></script>
     <script src="js/cfg.assets.js"></script>
     <script src="js/cfg.preset.js"></script>
-    <script src="//freegeoip.net/json/?callback=CFG.location"></script>
+    <script src="//freegeoip.net/json/?callback=CFG.location" onerror="console.log(this)"></script>
 
     <script src="js/sim.js"></script>
     <script src="js/sim.vars.js"></script>
@@ -167,6 +180,7 @@
     
     <script src="js/ifc.js"></script>
     <script src="js/ifc.debug.js"></script>
+    <script src="js/ifc.tools.js"></script>
     <script src="js/ifc.hud.js"></script>
     <script src="js/ifc.controller.js"></script>
     
@@ -186,23 +200,48 @@
 
         SCN.load(function () {
 
-          TIM.step('SCN.load.out');
+          var DEBUG = true;
 
-          IFC.init();
-          IFC.activate(); 
-          SIM.activate(); 
-          SIM.show(); 
+          function initialize () {
 
-          TIM.step('SCN.render.in');
+            TIM.step('SCN.load.out');
 
-          SCN.render();
+            IFC.init();
+            IFC.activate(); 
+            // SIM.activate(); 
+            // SIM.show(); 
+            SIM.setSimTime(); 
+
+            TIM.step('SCN.render.in');
+
+            // console.log( huhuu ); // provoke error undefined
+
+            SCN.render();
+
+            IFC.show();
+
+            // switches view, commment to check loading HTML/CSS
+            ANI.insert(0, ANI.library.intro(800));
+
+            TIM.step('WIN.load.out');
+
+          }
+
+          if (DEBUG) {
+            initialize();
           
-          IFC.show();
-          IFC.updateUrl();
+          } else {
 
-          ANI.insert(0, ANI.library.intro(800));
+            try {
+              initialize();
 
-          TIM.step('WIN.load.out');
+            } catch (e) {
+              // debugger;
+              $('.error .header')[0].innerHTML  = 'Error while loading';
+              $('.error .message')[0].innerHTML = e;
+            }
+
+          }
 
         });
 

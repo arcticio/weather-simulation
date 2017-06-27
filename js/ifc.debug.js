@@ -6,6 +6,9 @@ IFC.initGUI = function () {
   // dat.gui
   var 
     gui = new dat.GUI({
+      closeOnTop: true,
+      // autoPlace: false,
+      // width: GUI.DEFAULT_WIDTH
       // parent: document.querySelectorAll('div.fullscreen')[0]
     }),
 

@@ -10,7 +10,8 @@ try {
       cvs = window.CanvasRenderingContext2D,
       wgl = (function () {
         var canvas = document.createElement( 'canvas' ); 
-        return canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' );
+        var context = canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' );
+        return context;
       }()),
       wrk = !!window.Worker,
       ex0 = true, // testing
@@ -22,6 +23,10 @@ try {
           return true;
         } catch (e) {return false}
       }()),
+
+      cleanup = (function () {
+        wgl.getExtension('WEBGL_lose_context').loseContext();
+      } ()),
 
     end;
 
@@ -43,6 +48,7 @@ try {
       renderer.render(scene, camera, target);
       gl = renderer.context;
       status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+      gl.getExtension('WEBGL_lose_context').loseContext();
 
       return status === gl.FRAMEBUFFER_COMPLETE
 

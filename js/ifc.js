@@ -16,7 +16,7 @@ var IFC = (function () {
     simulator  = $$('.simulator')[0],
     fullscreen = $$('.fullscreen')[0],
 
-    guiCont, guiMain,
+    guiCont, guiMain, guiOpen = false,
 
     controller, 
     controllers,
@@ -117,33 +117,25 @@ var IFC = (function () {
     globe,
     touch,
     raycaster,
-    controllers,
     controller,
-
-    eat: function (event) {
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        return false;
-      }
-    },
 
     init: function () {
 
       var w2, h2;
-
-      guiCont = $$('div.dg.ac')[0];
-      guiMain = $$('div.dg.main.a')[0];
 
       self.events.resize();
 
       w2 = canvas.width  / 2;
       h2 = canvas.height / 2;
 
-      // move gui.dat to fullscreen container
-      fullscreen.appendChild(guiCont);
+      guiCont = $$('div.dg.ac')[0];
+      guiMain = $$('div.dg.main.a')[0];
 
-      // center gui.dat and expose
+      // move gui.dat to fullscreen container and hide
+      fullscreen.appendChild(guiCont);
+      // guiCont.style.display = 'none'
+
+      // center gui.dat
       guiMain.style.margin = '0 auto';
       guiMain.style.float  = 'none';
       controllers = self.controllers = GUIcontrollers;
@@ -155,9 +147,18 @@ var IFC = (function () {
       controller = self.controller = IFC.Controller;
       controller.init(SCN.camera, SCN.renderer.domElement, {
 
-        //TODO: onchange/onrelax
+        ondrag: function (callback, deltaX, deltaY, deltaZ) {
 
-        ondrag: function (deltaX, deltaY) {
+          if (IFC.mouse.overGlobe) {
+            IFC.Hud.spacetime.updateModus('space');
+            callback(deltaX, deltaY, deltaZ);
+
+          } else {
+            IFC.Hud.spacetime.updateModus('time');
+            SIM.setSimTime(deltaX, 'hours')
+            callback(0, 0, 0);
+
+          }
 
         },
         onwheel: function (deltaX, deltaY, deltaZ) {
@@ -174,41 +175,27 @@ var IFC = (function () {
         }
 
       });
-      // controller.activate();
-      // controller.enable();
 
       IFC.Hud.init();
 
     },
+    toggleGUI: function () {
+
+      guiOpen = !guiOpen;
+
+      guiCont.style.display = guiOpen ? 'block' : 'none'
+      window.GUI.closed = !guiOpen;
+
+    },
+
     show: function () {
 
       $$('canvas.simulator')[0].style.display = 'block';
 
       IFC.Hud.resize();
+      IFC.Tools.updateUrl();
 
     },
-    updateUrl: TOOLS.debounce(function () {
-
-      // TODO: coords vector to Lat/Lon
-
-      var 
-        prec   = 6,
-        time   = SIM.time.model.format('YYYY-MM-DD-HH-mm'),
-        assets = SCN.scene.children
-          .filter(  c => c.visible)
-          .map(     c => CFG.Objects[c.name].id)
-          .filter( id => !!id),
-        hash   = CFG.assets2hash(assets),
-        pos    = SCN.camera.position,
-        coords = `${H.round(pos.x, prec)};${H.round(pos.y, prec)};${H.round(pos.z, prec)}`,
-        path   = `/${hash}/${time}/${coords}`,
-      end;
-
-      console.log('assets', assets);
-
-      History.replaceState({}, CFG.Title, path);
-
-    }, 120),
       
     activate: function () {
 
@@ -245,18 +232,10 @@ var IFC = (function () {
     },
     step: function step (frame, deltatime) {
 
-      TWEEN.update();
-
       controller.step(frame, deltatime);
 
       self.updateMouse();
       self.updateGlobe();
-
-      IFC.Hud.step(frame, deltatime);
-
-      // GUI infos
-      // self.updatePanels();
-      // self.updateLabels();
 
     },
     events: {
@@ -338,7 +317,7 @@ var IFC = (function () {
 
         var keys = {
           ' ': () => SCN.toggleRender(),
-          'g': () => toggleElement(guiMain),
+          'g': () => self.toggleGUI(),
         };
 
         if (keys[event.key]) {
@@ -365,10 +344,9 @@ var IFC = (function () {
 
     toggleSpaceTime: function () {
 
-      modus = modus === 'space' ? 'time' : 'space';
+      modus = self.modus = modus === 'space' ? 'time' : 'space';
 
-      IFC.Hud.sprites.spacetime.material.map = CFG.Textures['hud/' + modus + '.png'];
-      IFC.Hud.sprites.spacetime.material.map.needsUpdate = true;
+      IFC.Hud.spacetime.updateModus();
 
     },
     
@@ -460,30 +438,6 @@ var IFC = (function () {
         formatLatLon('C', vector3ToLatLong(cam)) + '<br>' + 
         formatLatLon('M', vector3ToLatLong(marker))
       );
-
-    },
-
-    takeScreenShot: function(){
-      // https://developer.mozilla.org/en/DOM/window.open
-      var f = self.getFrame('image/png');
-      var opts = 'menubar=no,scrollbars=no,location=no,status=no,resizable=yes,innerHeight=' + (f.height/2) + ',innerWidth=' + (f.width/2);
-      var win = window.open(f.url, 'screenshot', opts); 
-      win.focus();
-      console.log('win.open', win, opts);
-    },   
-    getFrame :  function(mimetype){ 
-
-      var 
-        cvs    = SCN.renderer.domElement,
-        width  = cvs.width,
-        height = cvs.height;
-
-      return {
-        width, 
-        height,
-        url: cvs.toDataURL(mimetype),
-        num: SCN.frames, 
-      }; 
 
     },
 

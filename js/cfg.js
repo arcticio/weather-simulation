@@ -63,7 +63,7 @@ var CFG = {
     var user = CFG.User;
     Object.assign(user, response);
     user.loc_detected = (user.latitude || user.longitude);
-    TIM.step('user', 'lat:', user.latitude, 'lon:', user.longitude, user.country_code, user.country_name);
+    TIM.step('CFG.User', 'lat:', user.latitude, 'lon:', user.longitude, user.country_code, user.country_name);
   },
 
   Sim: {
@@ -84,6 +84,8 @@ var CFG = {
 
   Textures: {
     
+    'arcticio.logo.512.png':        'images/arcticio.logo.512.png',
+
     'tex2.jpg':                     'images/test/tex2.jpg',
     'tex3.jpg':                     'images/test/tex3.jpg',
     'tex4.jpg':                     'images/test/tex4.jpg',
@@ -91,24 +93,28 @@ var CFG = {
     'tex6.png':                     'images/test/tex6.png',
     'tex7.jpg':                     'images/test/tex7.jpg',
 
-    'line.alpha.32.png':            'images/line.alpha.32.png',
-    'line.alpha.16.png':            'images/line.alpha.16.png',
-    'line.alpha.16.png':            'images/line.alpha.16.png',
     'transparent.face.512.png':     'images/transparent.face.512.png',
 
     'hud/hamburger.png':            'images/hud/hamburger.png',
     'hud/fullscreen.png':           'images/hud/fullscreen.png',
-    'hud/movie.png':                'images/hud/movie.png',
+    // 'hud/movie.png':                'images/hud/movie.png',
+    'hud/movie.png':                'images/hud/movie.1.png',
     'hud/info.png':                 'images/hud/info.png',
     'hud/performance.png':          'images/hud/performance.png',
+    // 'hud/gear.png':                 'images/hud/gear.png',
+    'hud/gear.png':                 'images/hud/gear.1.png',
 
-    'hud/graticule.png':            'images/hud/graticule.1.png',
     'hud/snow.png':                 'images/hud/snow.png',
     'hud/clouds.png':               'images/hud/clouds.png',
-    'hud/satellite.png':            'images/hud/satellite.png',
-    'hud/gear.png':                 'images/hud/gear.png',
+    // 'hud/satellite.png':            'images/hud/satellite.png',
+    'hud/satellite.png':            'images/hud/satellite.1.png',
     'hud/space.png':                'images/hud/space.png',
     'hud/time.png':                 'images/hud/time.png',
+    'hud/temperature.png':          'images/hud/temperature.png',
+    'hud/seaice.png':               'images/hud/seaice.png',
+
+    // 'hud/graticule.png':            'images/hud/graticule.1.png',
+    'hud/graticule.png':            'images/hud/graticule.2.png',
 
     'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 

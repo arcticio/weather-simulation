@@ -19,23 +19,23 @@ IFC.Controller = (function () {
     swipe    = { diff: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } }, // 2 fingers
     defaults = {
 
-      minDistance:  1.2,
-      maxDistance:  8.0,
+      minDistance:   1.2,
+      maxDistance:   8.0,
 
-      onwheel:     () => {},
-      ondrag:      () => {},
-      onkey:       () => {},
+      onwheel:       () => {},
+      ondrag:        null,
+      onkey:         () => {},
 
-      keys:        ['t', 'z', 'u', 'i', 'o', 'p'],
-      lookAt:      new THREE.Vector3(0, 0, 0),
+      keys:          ['t', 'z', 'u', 'i', 'o', 'p'],
+      lookAt:        new THREE.Vector3(0, 0, 0),
 
-      dampX:       0.94,
-      dampY:       0.94,
-      dampZ:       0.90,
+      dampX:         0.94,
+      dampY:         0.94,
+      dampZ:         0.90,
 
-      keyXimpulse: 0.05,
-      keyYimpulse: 0.05,
-      keyZimpulse: 0.5,
+      keyXimpulse:   0.05,
+      keyYimpulse:   0.05,
+      keyZimpulse:   0.5,
 
       wheelYimpulse: 0.5,
       wheelXimpulse: 0.5,
@@ -43,7 +43,7 @@ IFC.Controller = (function () {
       moveXimpulse:  0.004,
       moveYimpulse:  0.004,
 
-      keyInterval: 100,
+      keyInterval:   100,
 
       keyactions: {
         'y': () => self.stop(),
@@ -160,7 +160,7 @@ IFC.Controller = (function () {
 
         }
 
-        if (veloX || veloY || veloZ){IFC.updateUrl();}
+        if (veloX || veloY || veloZ){IFC.Tools.updateUrl();}
 
         cam.lookAt(cfg.lookAt);
 
@@ -230,11 +230,11 @@ IFC.Controller = (function () {
           deltaX = (mouse.last.x - event.pageX) * cfg.moveXimpulse * impFactor;
           deltaY = (mouse.last.y - event.pageY) * cfg.moveYimpulse * impFactor;
 
-          if (IFC.mouse.overGlobe) {
-            self.impulse(deltaX, deltaY, 0);
+          if (cfg.ondrag) {
+            cfg.ondrag(self.impulse, deltaX, deltaY, 0)
 
           } else {
-            cfg.ondrag(deltaX, deltaY);
+            self.impulse(deltaX, deltaY, 0);
 
           }
 
@@ -335,11 +335,11 @@ IFC.Controller = (function () {
           deltaX = (touch.last.x - event.changedTouches[0].pageX) * cfg.moveXimpulse * impFactor;
           deltaY = (touch.last.y - event.changedTouches[0].pageY) * cfg.moveYimpulse * impFactor;
 
-          if (IFC.mouse.overGlobe || true ) {
-            self.impulse(deltaX, deltaY, 0);
+          if (ondrag) {
+            ondrag(self.impulse, deltaX, deltaY, 0)
 
           } else {
-            cfg.ondrag(deltaX, deltaY);
+            self.impulse(deltaX, deltaY, 0);
 
           }
 
