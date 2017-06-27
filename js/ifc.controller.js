@@ -3,28 +3,43 @@
 
 IFC.Controller = (function () {
 
+  const
+    PI  = Math.PI,
+    TAU = PI * 2,
+    EPS = 0.0000001
+  ;
+
   var 
-    self, 
-    interval, cam, ele, home, 
-    cfg      = {},
-    enabled  = false,
-    EPS      = 0.0000001,
-    spcl     = new THREE.Spherical(),
-    veloX    = 0,
-    veloY    = 0,
-    veloZ    = 0,
-    keys     = { down: false, key: ''},
-    mouse    = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } },
-    touch    = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } }, // 1 finger
-    swipe    = { diff: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } }, // 2 fingers
-    defaults = {
+    self, interval, cam, element, home, dispatcher,
+
+    cfg        = {},
+    spcl       = new THREE.Spherical(),
+
+    enabled    = false,
+
+    veloX      = 0,
+    veloY      = 0,
+    veloZ      = 0,
+
+    keys       = { down: false, key: ''},
+    mouse      = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } },
+    touch      = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } }, // 1 finger
+    swipe      = { diff: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } }, // 2 fingers
+
+    isMoving   =  false,
+    wasMoving  =  false,
+
+    defaults   = {
 
       minDistance:   1.2,
       maxDistance:   8.0,
 
-      onwheel:       () => {},
+      onwheel:       null,
       ondrag:        null,
       onkey:         () => {},
+
+      onRelax:       () => {},
+      onAwake:       () => {},
 
       keys:          ['t', 'z', 'u', 'i', 'o', 'p'],
       lookAt:        new THREE.Vector3(0, 0, 0),
@@ -83,37 +98,52 @@ IFC.Controller = (function () {
 
   return self = {
 
-    config: cfg,
+    spherical: spcl,
 
-    init: function (camera, domElement, config) {
+    init: function (camera, element, config) {
 
-      cam = camera;
-      ele = domElement;
+      cam     = camera;
+      home    = cam.position.clone();
+
+      dispatcher = [
+        [element,   'mousedown'],
+        [element,   'mouseup'],
+        [element,   'mousemove'],
+        [element,   'mouseleave'],
+        [element,   'wheel'],
+        [element,   'touchstart'],
+        [element,   'touchmove'],
+        [element,   'touchend'],
+        [element,   'touchcancel'],
+        [document,  'keydown'],
+        [document,  'keyup'],
+      ];
       
-      Object.assign(cfg, defaults, config);
-
       spcl.setFromVector3(cam.position);
 
-      home = cam.position.clone();
-
-      return self;
+      Object.assign(cfg, defaults, config);
 
     },
     
-    enable: function  () {enabled = true;},
-    disable: function () {enabled = false;},
-    toggle: function  () {enabled = !enabled;},
-
-    reset: function () {
-      self.stop();
-      cam.position.copy(home);
+    activate: function () {
+      enabled = true;
+      H.each(dispatcher, (_, e) => e[0].addEventListener(e[1], self.events[e[1]], false) );
     },
+    deactivate: function () {
+      enabled = false;
+      H.each(dispatcher, (_, e) => e[0].removeEventListener(e[1], self.events[e[1]], false) );
+    },
+
     info: function () {
       return {
         veloX,
         veloY,
         veloZ,
       }
+    },
+    reset: function () {
+      self.stop();
+      cam.position.copy(home);
     },
     stop: function () {
       veloX = 0;
@@ -127,95 +157,75 @@ IFC.Controller = (function () {
     },
     step: function (frame, deltatime) {
 
-      var scalar, distance = cam.position.length();
+      var scalar, distance = cam.position.length(), abs = Math.abs;
 
       if (enabled) {
 
-        veloX = Math.abs(veloX) > EPS ? veloX * cfg.dampX : 0;  // right/left
-        veloY = Math.abs(veloY) > EPS ? veloY * cfg.dampY : 0;  // up/down
-        veloZ = Math.abs(veloZ) > EPS ? veloZ * cfg.dampZ : 0;  // zoom
+        veloX = abs(veloX) > EPS ? veloX * cfg.dampX : 0;  // right/left
+        veloY = abs(veloY) > EPS ? veloY * cfg.dampY : 0;  // up/down
+        veloZ = abs(veloZ) > EPS ? veloZ * cfg.dampZ : 0;  // zoom
+
+        isMoving = !!(abs(veloX) + abs(veloY) + abs(veloZ));
+
+        (  isMoving && !wasMoving) && cfg.onAwake();
+        ( !isMoving &&  wasMoving) && cfg.onRelax();
+
+        if (veloX || veloY) {
+
+          spcl.radius = distance;
+          spcl.theta += veloX * deltatime;           // E/W
+          spcl.phi   += veloY * deltatime;           // N/S
+
+          // keep between zero and TAU
+          spcl.theta = spcl.theta > TAU ? spcl.theta - TAU : spcl.theta;
+
+          // mind the poles
+          spcl.phi = Math.max(EPS, spcl.phi);
+          spcl.phi = Math.min(PI - EPS, spcl.phi);
+
+          cam.position.setFromSpherical(spcl);
+
+          // TODO: now calc lat/lon
+
+        }
 
         if (veloZ) {
 
-          if (distance < cfg.minDistance) {
-            cam.position.setLength(cfg.minDistance);
-            veloZ = 0;
+          distance *= 1 + ( veloZ * deltatime / distance );
 
-          } else if (distance > cfg.maxDistance) {
-            cam.position.setLength(cfg.maxDistance);
-            veloZ = 0;
+          distance  = (
+            distance < cfg.minDistance ? cfg.minDistance :
+            distance > cfg.maxDistance ? cfg.maxDistance :
+              distance
+          );
 
-          } else if (distance >= cfg.minDistance && veloZ > 0  || distance <= cfg.maxDistance && veloZ < 0){
-            scalar =  1 + ( veloZ * deltatime / distance );
-            cam.position.multiplyScalar(scalar);
-          }
+          cam.position.setLength(distance);
 
         }
 
-        if (veloX || veloY) {
-          spcl.radius = cam.position.length();
-          spcl.theta += veloX * deltatime;          
-          spcl.phi   += veloY * deltatime;
-          cam.position.setFromSpherical(spcl);
-
-        }
-
-        if (veloX || veloY || veloZ){IFC.Tools.updateUrl();}
+        wasMoving = isMoving;
 
         cam.lookAt(cfg.lookAt);
 
       }
 
     },
-    activate: function () {
-
-      H.each([
-
-        [ele,       'mousedown'],
-        [ele,       'mouseup'],
-        [ele,       'mousemove'],
-        [ele,       'mouseleave'],
-        [ele,       'wheel'],
-        [ele,       'touchstart'],
-        [ele,       'touchmove'],
-        [ele,       'touchend'],
-        [ele,       'touchcancel'],
-        [ele,       'contextmenu'],
-        [document,  'keydown'],
-        [document,  'keyup'],
-        [window,    'orientationchange'],
-        [window,    'resize'],
-      
-      ], function (_, e) { 
-
-        e[0].addEventListener(e[1], self.events[e[1]], false) 
-
-      });
-
-    },
 
     events: {
-      contextmenu:  function (event) {return eat(event)},
+      mouseleave:      function (event) {
+        self.events.mouseup(event);
+      },
       mousedown:    function (event) {
-
-        if (enabled) {
-          mouse.down.x = event.pageX;
-          mouse.down.y = event.pageY;
-          mouse.last.x = event.pageX;
-          mouse.last.y = event.pageY;
-        }
-
+        mouse.down.x = event.pageX;
+        mouse.down.y = event.pageY;
+        mouse.last.x = event.pageX;
+        mouse.last.y = event.pageY;
       },
       mouseup:      function (event) {
-
         mouse.down.x = NaN;
         mouse.down.y = NaN;
         mouse.last.x = NaN;
         mouse.last.y = NaN;
-
-      },
-      mouseleave:      function (event) {
-        self.events.mouseup(event);
       },
       mousemove:    function (event) {
 
@@ -254,70 +264,61 @@ IFC.Controller = (function () {
           impFactor = impScale(distance, 0.2, cfg.maxDistance - cfg.minDistance)
         ;
 
-        if (enabled) {
+        switch ( event.deltaMode ) {
 
-          switch ( event.deltaMode ) {
+          case 2: // Zoom in pages
+            debugger;
+            deltaX = event.deltaX * 0.025;
+            deltaZ = event.deltaY * 0.025;  // y => z
+            break;
 
-            case 2: // Zoom in pages
-              debugger;
-              deltaX = event.deltaX * 0.025;
-              deltaZ = event.deltaY * 0.025;  // y => z
-              break;
+          case 1: // Zoom in lines, Firefox
+            deltaX = event.deltaX * 0.2;
+            deltaZ = event.deltaY * 0.4 * impFactor;
+            break;
 
-            case 1: // Zoom in lines, Firefox
-              deltaX = event.deltaX * 0.2;
-              deltaZ = event.deltaY * 0.4 * impFactor;
-              break;
-
-            default: // undefined, 0, assume pixels, Chrome
-              deltaX = event.deltaX * 0.01;
-              deltaZ = event.deltaY * 0.02 * impFactor;  
-              break;
-
-          }
-
-          if (IFC.pointer.overGlobe){
-            self.impulse(deltaX, deltaY, deltaZ);
-
-          } else {
-            cfg.onwheel(deltaX, deltaY, deltaZ);
-
-          }
-          
-          return eat(event);
+          default: // undefined, 0, assume pixels, Chrome
+            deltaX = event.deltaX * 0.01;
+            deltaZ = event.deltaY * 0.02 * impFactor;  
+            break;
 
         }
 
+        if (cfg.onwheel) {
+          cfg.onwheel(self.impulse, deltaX, deltaY, deltaZ)
+
+        } else {
+          self.impulse(deltaX, deltaY, deltaZ);
+
+        }
+        
+        return eat(event);
+
+      },
+      touchcancel:    function (event) {
+        self.stop();
       },
       touchstart:   function (event) {
 
-        if (enabled) {
+        switch ( event.touches.length ) {
 
-          switch ( event.touches.length ) {
+          case 1: 
+            touch.down.x = event.touches[ 0 ].pageX;
+            touch.down.y = event.touches[ 0 ].pageY;
+            touch.last.x = touch.down.x;
+            touch.last.y = touch.down.y;
+          break;
 
-            case 0: 
-              console.log('WTF');
-            break;
+          case 2: 
+            swipe.diff.x = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+            swipe.diff.y = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+            swipe.last.x = swipe.diff.x;
+            swipe.last.y = swipe.diff.y;
+          break;
 
-            case 1: 
-              touch.down.x = event.touches[ 0 ].pageX;
-              touch.down.y = event.touches[ 0 ].pageY;
-              touch.last.x = touch.down.x;
-              touch.last.y = touch.down.y;
-            break;
-
-            case 2: 
-              swipe.diff.x = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-              swipe.diff.y = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-              swipe.last.x = swipe.diff.x;
-              swipe.last.y = swipe.diff.y;
-            break;
-
-            case 3: 
-            break;
-
-
-          }
+          case 3: 
+            // not implemented yet
+          break;
 
         }
 
@@ -384,11 +385,6 @@ IFC.Controller = (function () {
         swipe.diff.x = NaN;
         swipe.diff.y = NaN;
 
-      },
-      touchcancel:    function (event) {
-
-        self.stop();
-        
       },
       keydown:    function (event) {
 

@@ -152,6 +152,7 @@ var SCN = (function () {
       renderer.autoClear = false;             // cause HUD
 
       camera.position.copy(CFG.Objects.perspective.pos);
+      // camera.lookAt(scene); // why not sufficient
 
       self.resize();
       self.logInfo();

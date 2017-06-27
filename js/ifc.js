@@ -55,6 +55,7 @@ var IFC = (function () {
     },
 
     pointer = {
+      device:    mouse,             // assumption
       overGlobe: false,
       intersect:  new THREE.Vector3(0, 0, 0),
     },
@@ -144,28 +145,57 @@ var IFC = (function () {
 
         ondrag: function (callback, deltaX, deltaY, deltaZ) {
 
-          if (pointer.overGlobe) {
-            IFC.Hud.spacetime.updateModus('space');
-            callback(deltaX, deltaY, deltaZ);
+          var timescale = H.scale(pointer.device.py, 0, canvas.height, 0.5, 10) ;
 
-          } else {
+          if (modus === 'space') {
+
+            if (pointer.overGlobe) {
+              IFC.Hud.spacetime.updateModus('space');
+              callback(deltaX, deltaY, deltaZ);
+
+            } else {
+              // overides space modus
+              IFC.Hud.spacetime.updateModus('time');
+              SIM.setSimTime(deltaX, 'hours')
+              callback(0, 0, 0);
+
+            }
+
+          } else  {
             IFC.Hud.spacetime.updateModus('time');
             SIM.setSimTime(deltaX, 'hours')
             callback(0, 0, 0);
 
           }
 
+
         },
-        onwheel: function (deltaX, deltaY, deltaZ) {
-          SIM.setSimTime( ~~(deltaZ * -5), 'minutes');
+        onwheel: function (callback, deltaX, deltaY, deltaZ) {
+
+          var timescale = H.scale(pointer.device.py, 0, canvas.height, 0.5, 20) ;
+
+          if (pointer.overGlobe) {
+            IFC.Hud.spacetime.updateModus('space');
+            callback(deltaX, deltaY, deltaZ);
+
+          } else {
+            IFC.Hud.spacetime.updateModus('time');
+            SIM.setSimTime( ~~(deltaX * -5) * timescale, 'minutes');
+            callback(0, 0, 0);
+
+          }
 
         },
         onkey: function (key) {
           var actions = {
-            't': () => SIM.setSimTime( -6, 'hours'),
-            'z': () => SIM.setSimTime(  6, 'hours'),
+            't': () => SIM.setSimTime( -1, 'hours'),
+            'z': () => SIM.setSimTime(  1, 'hours'),
           };
           actions[key]();
+        },
+
+        onRelax: function () {
+          IFC.Tools.updateUrl();
         }
 
       });
@@ -221,7 +251,7 @@ var IFC = (function () {
       ], (_, e) => e[0].addEventListener(e[1], self.events[e[1]], false) );
 
       controller.activate();
-      controller.enable();
+      // controller.enable();
 
     },
     step: function step (frame, deltatime) {
@@ -248,11 +278,12 @@ var IFC = (function () {
 
       },
       click:   function (event) { 
-
+        pointer.device = mouse;
         // if (!pointer.overGlobe) {GUI.closed = !GUI.closed;}
 
       },      
       dblclick:   function (event) { 
+        pointer.device = mouse;
 
         // if (!pointer.overGlobe) {
         //   if (screenfull.enabled) {
@@ -271,6 +302,8 @@ var IFC = (function () {
 
         mouse.down = true;
         mouse.button = event.button;
+        pointer.device = mouse;
+
         // console.log('mousedown', event.button, event);
 
         // TODO: swap buttons, mind orbit drag
@@ -281,14 +314,15 @@ var IFC = (function () {
         }
 
         if (mouse.button === 2) {
-          // ANI.insert(0, ANI.library.cam2vector(pointer.intersect, 2));
+          ANI.insert(0, ANI.library.cam2vector(pointer.intersect, 2));
         }
 
       },
       mouseup:     function (event) { 
 
-        mouse.down = false;
+        mouse.down   = false;
         mouse.button = NaN;
+        pointer.device = mouse;
 
       },
       mousemove:   function (event) { 
@@ -297,12 +331,15 @@ var IFC = (function () {
         mouse.py = event.clientY;
         mouse.x  =   ( event.clientX / canvas.width )  * 2 - 1;
         mouse.y  = - ( event.clientY / canvas.height ) * 2 + 1;
+        pointer.device = mouse;
 
       },
       mouseenter:   function (event) { 
+        pointer.device = mouse;
         SCN.toggleRender(true);
       },
       mouseleave:  function (event) {
+        pointer.device = mouse;
         SCN.toggleRender(false);
       },
       keydown:     function (event) { 
@@ -332,16 +369,21 @@ var IFC = (function () {
         touch.x  =   ( touch.px / canvas.width )  * 2 - 1;
         touch.y  = - ( touch.py / canvas.height ) * 2 + 1;
 
+        pointer.device = touch;
+
       },
       touchmove:   function (event) { 
-        console.log('touchmove');
+        pointer.device = touch;
+        // console.log('touchmove');
       },
       touchend:    function (event) { 
-        console.log('touchend');
+        pointer.device = touch;
+        // console.log('touchend');
         touch.down = event.touches.length === 0;
       },
       touchcancel: function (event) { 
-        console.log('touchcancel');
+        pointer.device = touch;
+        // console.log('touchcancel');
         touch.down = event.touches.length === 0;
       },
 
@@ -386,10 +428,9 @@ var IFC = (function () {
         intersection, 
         oldPointerOver = pointer.overGlobe,
         intersections  = [],
-        finger         = mouse.down ? mouse : touch,
       end;
 
-      raycaster.setFromCamera( finger, SCN.camera );
+      raycaster.setFromCamera( pointer.device, SCN.camera );
 
       SCN.objects.pointer.raycast(raycaster, intersections)
 
