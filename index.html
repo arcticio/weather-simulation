@@ -85,8 +85,8 @@
       </tr>
       <tr>
         <td class="progress">
-          <span class="header">Loading:</span>
-          <div class="info">Assets</div>
+          <span class="header">Preparing...</span>
+          <div class="info"></div>
           <div class="bar"></div>
         </td>
       </tr>
@@ -195,40 +195,32 @@
 
         TIM.step('WIN.load.in', VERSION);
 
-        [CFG, RES, ANI, SIM, SCN].forEach( m => m.init() );
+        [
+          [CFG, 'init', undefined, 'configuration'],
+          [RES, 'init', undefined, 'resources'],
+          [ANI, 'init', undefined, 'animations'],
+          [SIM, 'init', undefined, 'simulation'],
+          [SCN, 'init', undefined, 'scene'],
+          [SCN, 'load', afterLoad, 'scene'],
 
-        TIM.step('SCN.load.in');
+        ].forEach(function (task, index) {
 
-        SCN.load(function () {
+          var 
+            mod   = task[0],
+            func  = task[1],
+            param = task[2],
+            msg   = task[3];
+
+          mod[func](param);
+          $('.progress .info')[0].innerHTML = msg;
+
+        });
+
+        function afterLoad () {
 
           var DEBUG = true;
 
-          function initialize () {
-
-            TIM.step('SCN.load.out');
-
-            IFC.init();
-            IFC.activate(); 
-            // SIM.activate(); 
-            // SIM.show(); 
-            SIM.setSimTime(); 
-
-            TIM.step('SCN.render.in');
-
-            // console.log( huhuu ); // provoke error undefined
-
-            SCN.render();
-
-            IFC.show();
-
-            // switches view, commment to check loading HTML/CSS
-            ANI.insert(0, ANI.library.intro(800));
-
-            TIM.step('WIN.load.out');
-
-          }
-
-          if (DEBUG) {
+          if (location.port === '8765') {
             initialize();
           
           } else {
@@ -244,7 +236,26 @@
 
           }
 
-        });
+        }
+
+        function initialize () {
+
+          TIM.step('SCN.load.out');
+
+          IFC.init();
+          IFC.activate(); 
+          SIM.setSimTime(); 
+
+          TIM.step('SCN.render.in');
+
+          SCN.render();
+          IFC.show();
+          ANI.insert(0, ANI.library.intro(800));
+
+          TIM.step('WIN.load.out');
+
+        }
+
 
       }
 

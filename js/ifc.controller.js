@@ -102,8 +102,8 @@ IFC.Controller = (function () {
 
     init: function (camera, element, config) {
 
-      cam     = camera;
-      home    = cam.position.clone();
+      cam  = camera;
+      home = cam.position.clone();
 
       dispatcher = [
         [element,   'mousedown'],
@@ -157,18 +157,22 @@ IFC.Controller = (function () {
     },
     step: function (frame, deltatime) {
 
-      var scalar, distance = cam.position.length(), abs = Math.abs;
+      var distance, abs = Math.abs;
 
       if (enabled) {
+
+        distance = cam.position.length();
 
         veloX = abs(veloX) > EPS ? veloX * cfg.dampX : 0;  // right/left
         veloY = abs(veloY) > EPS ? veloY * cfg.dampY : 0;  // up/down
         veloZ = abs(veloZ) > EPS ? veloZ * cfg.dampZ : 0;  // zoom
 
-        isMoving = !!(abs(veloX) + abs(veloY) + abs(veloZ));
+        isMoving = veloX || veloY || veloZ;
 
         (  isMoving && !wasMoving) && cfg.onAwake();
         ( !isMoving &&  wasMoving) && cfg.onRelax();
+
+        wasMoving = isMoving;
 
         if (veloX || veloY) {
 
@@ -202,8 +206,6 @@ IFC.Controller = (function () {
           cam.position.setLength(distance);
 
         }
-
-        wasMoving = isMoving;
 
         cam.lookAt(cfg.lookAt);
 
@@ -241,7 +243,7 @@ IFC.Controller = (function () {
           deltaY = (mouse.last.y - event.pageY) * cfg.moveYimpulse * impFactor;
 
           if (cfg.ondrag) {
-            cfg.ondrag(self.impulse, deltaX, deltaY, 0)
+            cfg.ondrag(self.impulse, deltaX, deltaY, 0);
 
           } else {
             self.impulse(deltaX, deltaY, 0);
@@ -297,6 +299,21 @@ IFC.Controller = (function () {
       },
       touchcancel:    function (event) {
         self.stop();
+      },
+      touchend:   function (event) {
+
+        // console.log('touchend');
+
+        if (event.touches.length === 1) {
+          // touch.last.x = event.changedTouches[0].pageX;
+          // touch.last.y = event.changedTouches[0].pageY;
+        }
+
+        touch.down.x = NaN;
+        touch.down.y = NaN;
+        swipe.diff.x = NaN;
+        swipe.diff.y = NaN;
+
       },
       touchstart:   function (event) {
 
@@ -369,21 +386,6 @@ IFC.Controller = (function () {
           return eat(event);
 
         }
-
-      },
-      touchend:   function (event) {
-
-        // console.log('touchend');
-
-        if (event.touches.length === 1) {
-          // touch.last.x = event.changedTouches[0].pageX;
-          // touch.last.y = event.changedTouches[0].pageY;
-        }
-
-        touch.down.x = NaN;
-        touch.down.y = NaN;
-        swipe.diff.x = NaN;
-        swipe.diff.y = NaN;
 
       },
       keydown:    function (event) {

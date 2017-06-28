@@ -278,12 +278,12 @@ var IFC = (function () {
 
       },
       click:   function (event) { 
-        pointer.device = mouse;
+        // pointer.device = mouse;
         // if (!pointer.overGlobe) {GUI.closed = !GUI.closed;}
 
       },      
       dblclick:   function (event) { 
-        pointer.device = mouse;
+        // pointer.device = mouse;
 
         // if (!pointer.overGlobe) {
         //   if (screenfull.enabled) {

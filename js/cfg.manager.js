@@ -97,6 +97,11 @@ CFG.Manager = (function () {
         )
       }
 
+      // overwrite position outside earth from defaults
+      if (position.length() < CFG.earth.radius + 0.01){
+        position = CFG.Objects.perspective.pos.clone();
+      }
+
       // rewrite CFG.Objects visibility to enable objects
       H.each(CFG.Objects, (name, cfg) => {
         if (cfg.id !== undefined){
