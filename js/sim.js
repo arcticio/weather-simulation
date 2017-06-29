@@ -103,6 +103,7 @@ var SIM = (function () {
         time.model = val.clone();
 
       } else {
+        debugger;
         console.log('WTF');
 
       }
@@ -144,7 +145,7 @@ var SIM = (function () {
       sunVector.setFromSpherical(sunSphererical);
       sunDirection.copy(sunVector).normalize();
 
-      SCN.updateSun(sunDirection);
+      // SCN.updateSun(sunDirection);
 
     },
     loadModel: function (name, cfg, callback) {

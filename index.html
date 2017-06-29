@@ -33,13 +33,12 @@
 
   <!-- more: https://gist.github.com/kevinSuttle/1997924 -->
 
-
+  <script src="js/aws.version.js"></script>
   <script type="text/javascript">
 
     var DEVELOP = 'False' === 'True'   ? true : false;
     var DEBUG   = 'False'   === 'True' ? true : false;
     // var ADMIN   = 'False'   === 'True' ? true : false;
-    var VERSION = '3.4.1';
 
     var TIM = (function(){
       
@@ -56,6 +55,8 @@
       };
       
     })();
+
+    TIM.step('Hypatia', VERSION);
 
   </script>
 
@@ -85,9 +86,12 @@
       </tr>
       <tr>
         <td class="progress">
-          <span class="header">Preparing...</span>
+          <div class="header">10, 9, 8, 7, ...</div>
           <div class="info"></div>
-          <div class="bar"></div>
+          <div>
+            <div class="bar"></div>
+            <div class="meter"></div>
+          </div>
         </td>
       </tr>
       <tr>
@@ -113,10 +117,9 @@
 
     </div>
 
-    <!-- <canvas class="simulator" style="display:none"></canvas> -->
     <canvas class="simulator noselect"></canvas>
 
-  </div>  
+  </div>  mana
 
   <div style="display:none">
 
@@ -143,7 +146,6 @@
 
     <script src="data/population/places.big.js"></script>
 
-    <script src="js/aws.version.js"></script>
     <script src="js/aws.helper.js"></script>
     <script src="js/aws.tools.js"></script>
     <script src="js/aws.time.js"></script>
@@ -184,7 +186,9 @@
     <script src="js/ifc.tools.js"></script>
     <script src="js/ifc.hud.js"></script>
     <script src="js/ifc.controller.js"></script>
-    
+  
+    <!-- last, cause dependencies   -->
+    <script src="js/aws.loader.js"></script>
 
     <script type="text/javascript">
       
@@ -193,71 +197,16 @@
 
       window.onload = function () {
 
-        TIM.step('WIN.load.in', VERSION);
+        TIM.step('WIN.load.in', 'threads:', navigator.hardwareConcurrency || 'unknown');
 
-        [
-          [CFG, 'init', undefined, 'configuration'],
-          [RES, 'init', undefined, 'resources'],
-          [ANI, 'init', undefined, 'animations'],
-          [SIM, 'init', undefined, 'simulation'],
-          [SCN, 'init', undefined, 'scene'],
-          [SCN, 'load', afterLoad, 'scene'],
+        CFG.Manager.init();
 
-        ].forEach(function (task, index) {
-
-          var 
-            mod   = task[0],
-            func  = task[1],
-            param = task[2],
-            msg   = task[3];
-
-          mod[func](param);
-          $('.progress .info')[0].innerHTML = msg;
-
+        LDR.prepare(LDR.sequence());
+        LDR.execute(function () {
+          ANI.insert(0, ANI.library.intro(800));
         });
 
-        function afterLoad () {
-
-          var DEBUG = true;
-
-          if (location.port === '8765') {
-            initialize();
-          
-          } else {
-
-            try {
-              initialize();
-
-            } catch (e) {
-              // debugger;
-              $('.error .header')[0].innerHTML  = 'Error while loading';
-              $('.error .message')[0].innerHTML = e;
-            }
-
-          }
-
-        }
-
-        function initialize () {
-
-          TIM.step('SCN.load.out');
-
-          IFC.init();
-          IFC.activate(); 
-          SIM.setSimTime(); 
-
-          TIM.step('SCN.render.in');
-
-          SCN.render();
-          IFC.show();
-          ANI.insert(0, ANI.library.intro(800));
-
-          TIM.step('WIN.load.out');
-
-        }
-
-
-      }
+      };
 
     </script>
 

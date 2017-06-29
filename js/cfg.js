@@ -59,13 +59,6 @@ var CFG = {
     loc_detected: false,
   },
 
-  location: function (response) {
-    var user = CFG.User;
-    Object.assign(user, response);
-    user.loc_detected = (user.latitude || user.longitude);
-    TIM.step('CFG.User', 'lat:', user.latitude, 'lon:', user.longitude, user.country_code, user.country_name);
-  },
-
   Sim: {
     coordspool : {
       amount:       5e5,
@@ -139,6 +132,10 @@ var CFG = {
       ambient:    {intensity: 1.0},
       background: {colors: [ 0x666666, 0x666666, 0x222222, 0x222222 ]},
     },
+  },
+
+  Sun: {
+    radius: 10,
   },
 
   earth: {

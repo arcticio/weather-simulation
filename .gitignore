@@ -5,7 +5,7 @@ google_appengine/
 /stuff.txt
 /http-8765.sh
 /npm-debug.log
-.eslintrc
+/.eslintrc
 /deploy.sh
 
 compiler/

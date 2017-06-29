@@ -4,21 +4,19 @@
 CFG.Objects = {
 
   // TODO: contemplate about id: 0 for intro html or spacetime
-  // CFG.assets2hash([0])   = '1'
-  // CFG.assets2hash([0,1]) = '3'
+  // CFG.Manager.assets2hash([0])   = '1'
+  // CFG.Manager.assets2hash([0,1]) = '3'
 
-  // MANDATORY (no id)
+  // MANDATORY => (no id)
 
     perspective: {
       // always active
-      type: 'camera',
+      type:            'camera',
       cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
       pos:             new THREE.Vector3(4, 0, 0),                            // Äq
     },
 
     pointer: {
-      // raycaster, always active, not in gui
-      visible:        true,
       title:          'pointer',
       type:           'mesh',
       mesh:           new THREE.Mesh(
@@ -36,8 +34,6 @@ CFG.Objects = {
   // LIGHTS ( 1 - 3 )
 
     ambient: {
-      id:             1,
-      visible:        true,
       title:          'ambient light',
       type:           'light',
       color:          0xffffff,
@@ -46,8 +42,6 @@ CFG.Objects = {
     },
 
     spot:    {
-      id:             2,
-      visible:        true,
       title:          'spot light',
       type:           'light',
       color:          0xffffff, 
@@ -61,8 +55,6 @@ CFG.Objects = {
     },
 
     sun: {
-      id:             3,
-      visible:        true,
       title:          'directional light',
       type:           'light',
       skycolor:       0xffddaa, // reddish
@@ -76,8 +68,6 @@ CFG.Objects = {
   // VISUALS ( 5 - 6 )
 
     background: {
-      id:             5,
-      visible:        false,
       title:          'dynamic background',
       type:           'mesh.module',
       size:           4.0,
@@ -103,8 +93,6 @@ CFG.Objects = {
   // BASEMAPS ( 8 - 11 )
 
     basemaps: {
-      id:              8,
-      visible:         true,
       title:          'simple surface layer',
       type:           'mesh.module',
       rotation:        [0, Math.PI / 2, 0],
@@ -421,35 +409,12 @@ CFG.Objects = {
 
     pixels: {
       id:              30,
+      visible:        false,
       type:            'mesh.module',
       title:           'experiment',
       texture:         'tex7.jpg',
     }
     
-    // test: {
-    //   id:             12,
-    //   visible:        false,
-    //   title:          'test mesh',
-    //   type:           'mesh.textured',
-    //   texture:        'images/spheres/world.oceanmask.4096x2048.png',
-    //   mesh:           new THREE.Mesh(
-    //     new THREE.SphereGeometry(RADIUS - 0.005, 64, 64),                  
-    //     new THREE.MeshLambertMaterial({
-    //       transparent: true,
-    //       opacity: 0.8,
-    //     })
-    //   ),
-    // },
-
-    // basemaps: {
-    //   id:             22,
-    //   visible:        false,
-    //   title:          'basemap',
-    //   type:           'mesh.calculated',
-    //   // texture:        'tex3.jpg',
-    //   texture:        'tex2.jpg',
-    // }
-
     // // lat lon pointer of click marker
     // arrowHelper: {
     //   visible:        false,
@@ -475,7 +440,5 @@ CFG.Objects = {
     //                     0xff0000
     //   )
     // },
-
-
 
 };

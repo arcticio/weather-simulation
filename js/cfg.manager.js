@@ -1,24 +1,73 @@
 
 'use strict';
 
-
 CFG.Manager = (function () {
 
-  var self;
+  var 
+    self, 
+    assets = [],
+    position
+  ;
 
   return self = {
     boot: function () {
+
+      Object.assign(CFG, {
+        debug:       self.debug,
+        location:    self.location,
+      });
+
+      return self;
+
+    },
+
+    location: function (response) {
+
+      Object.assign(CFG.User, response);
+      CFG.User.loc_detected = (CFG.User.latitude || CFG.User.longitude);
+
+    },
+
+    init: function () {
+
+      var user = CFG.User;
+
+      self.initStore();
+      self.sanitizeUrl();
+
+      if (user.loc_detected) {
+        TIM.step('CFG.User', 'lat:', user.latitude, 'lon:', user.longitude, user.country_code, user.country_name);
+      } else {
+        TIM.step('CFG.User', 'location unknown');
+      }
+
+      // rewrite CFG.Objects visibility to enable objects from url
+      // and enable always on assets without id (cam, etc.)
+      H.each(CFG.Objects, (name, cfg) => {
+        if (cfg.id !== undefined){
+          cfg.visible = assets.indexOf(cfg.id) !== -1;
+        } else {
+          cfg.visible = true;
+        }
+      });
+
+      // update cam config
+      CFG.Objects.perspective.pos = position;
+
+      // TODO: Is this the right place for preset handling?
+      CFG.Preset.init();
+
+      // init gui.dat
+      IFC.initGUI();
+
+    },
+
+    initStore: function () {
 
       var 
         now = moment(), 
         timestamp = store.get('timestamp'), 
         duration;
-
-      Object.assign(CFG, {
-        init:        self.init,
-        debug:       self.debug,
-        assets2hash: self.assets2hash,
-      });
 
       window.onunload = function () {
         store.set('timestamp', moment().valueOf());
@@ -37,18 +86,20 @@ CFG.Manager = (function () {
 
     },
 
-    init: function () {
+    sanitizeUrl: function () {
 
       var 
-        position, defAssets = [],
-        assets = [], time, coords, 
+        defAssets = [],
+        time, coords, 
         [locHash, locTime, locCoords] = location.pathname.slice(1).split('/');
 
       // Assets from URL
       if (locHash) {
-        assets = self.hash2assets(String(locHash));
+        // 0 => default value
+        assets = locHash === '0' ? [] : self.hash2assets(String(locHash));
       }
 
+      // TODO: ensure at least some visibility
       // Assets failsafe
       if (!assets.length){
         assets = [
@@ -101,22 +152,6 @@ CFG.Manager = (function () {
       if (position.length() < CFG.earth.radius + 0.01){
         position = CFG.Objects.perspective.pos.clone();
       }
-
-      // rewrite CFG.Objects visibility to enable objects
-      H.each(CFG.Objects, (name, cfg) => {
-        if (cfg.id !== undefined){
-          cfg.visible = assets.indexOf(cfg.id) !== -1;
-        }
-      });
-
-      // update cam
-      CFG.Objects.perspective.pos = position;
-
-      // TODO: Is this the right place for preset handling
-      CFG.Preset.init();
-
-      // init gui.dat
-      IFC.initGUI();
 
     },
 

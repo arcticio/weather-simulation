@@ -25,7 +25,7 @@ var IFC = (function () {
 
     globe = {
       scan:     NaN,   // -1 = tiny globe, 1 = big, 0 = little smaller than screen
-      pixels:   NaN,   // 2 * radius
+      height:   NaN,   // 2 * radius
       sector:   []
     },
 
@@ -55,9 +55,9 @@ var IFC = (function () {
     },
 
     pointer = {
-      device:    mouse,             // assumption
-      overGlobe: false,
-      intersect:  new THREE.Vector3(0, 0, 0),
+      device:       mouse,             // assumption
+      overGlobe:    false,
+      intersect:    new THREE.Vector3(0, 0, 0),
     },
 
     levels  = {
@@ -68,18 +68,8 @@ var IFC = (function () {
       '4':  4.2,
     },
 
-    labels = {
-      sun:       $$('.label.sun')[0],
-    },
-
-    panels = {
-      latlon:    $$('.panel.latlon')[0],
-    },
-
     raycaster = new THREE.Raycaster(),
     marker    = new THREE.Vector3(),
-
-    stats,
 
     end;
 
@@ -132,8 +122,12 @@ var IFC = (function () {
       fullscreen.appendChild(guiCont);
 
       // center gui.dat
-      guiMain.style.margin = '0 auto';
-      guiMain.style.float  = 'none';
+      guiMain.style.margin   = '0';
+      guiMain.style.top      = '72px';
+      guiMain.style.right    = '0';
+      guiMain.style.width    = '';
+      guiMain.style.position = 'absolute';
+
       controllers = self.controllers = GUIcontrollers;
 
       // check this
@@ -413,11 +407,11 @@ var IFC = (function () {
         fraction = CFG.earth.radius * 2 / height
       ;
 
-      globe.pixels = canvas.height * fraction;
+      globe.height = canvas.height * fraction;
 
       globe.scan = (
-        globe.pixels > canvas.diagonal                              ? 1 : // big
-        globe.pixels > canvas.width || globe.pixels > canvas.height ? 0 : // fits
+        globe.height > canvas.diagonal                              ? 1 : // big
+        globe.height > canvas.width || globe.height > canvas.height ? 0 : // fits
           -1                                                              // tiny
       );
 
@@ -451,43 +445,6 @@ var IFC = (function () {
           ANI.insert(0, ANI.library.scaleGLobe(0.94, 800));
         }
       }
-
-    },
-    updateLabels: function () {
-
-      var 
-        cam = SCN.camera,
-        convert = TOOLS.vector3toScreenXY,
-        camDistance = cam.position.distanceTo(SCN.home),
-        sunDistance = cam.position.distanceTo(SIM.vectorSun)
-      ;
-
-      if (camDistance < sunDistance) {
-        SIM.vectorSun && self.updateLabel(labels.sun, {x: -1000, y: -1000});
-
-      } else {
-        SIM.vectorSun && self.updateLabel(labels.sun, convert(SIM.vectorSun, width, height));
-
-      }
-
-    },
-    updateLabel: function (el, pos) {
-
-      el.style.left = pos.x + 'px';
-      el.style.top  = pos.y + 'px';
-
-    },
-    updatePanels: function () {
-
-      var 
-        cam    = SCN.camera.position,
-        marker = SCN.objects.arrowHelper.cone.position
-      ;
-
-      panels.latlon.innerHTML = (
-        formatLatLon('C', vector3ToLatLong(cam)) + '<br>' + 
-        formatLatLon('M', vector3ToLatLong(marker))
-      );
 
     },
 

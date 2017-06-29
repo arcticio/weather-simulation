@@ -23,7 +23,7 @@ var SCN = (function () {
       preserveDrawingBuffer:    true,   // screenshots
     }),
 
-    camera        = CFG.Objects.perspective.cam,
+    camera, //        = CFG.Objects.perspective.cam,
     scene         = new THREE.Scene(),
 
     doRender      = true,
@@ -50,8 +50,13 @@ var SCN = (function () {
       objects[name] = obj;
       objects[name].name = name;
       scene.add(obj);
+
+      // console.log('SCN.add', name);
+
     },
     toggle: function (obj, force) {
+
+      // TODO: make use of callback
 
       if (scene.getObjectByName(obj.name) || force === false) {
         scene.remove(obj);
@@ -61,7 +66,7 @@ var SCN = (function () {
           scene.add(obj);
 
         } else {
-          self.loader[obj.type](obj.name, obj);
+          self.loader[obj.type](obj.name, obj, () => {});
 
         }
       }
@@ -138,8 +143,10 @@ var SCN = (function () {
       renderer.domElement.width        = window.innerWidth;
       renderer.domElement.height       = window.innerHeight;
 
-      camera.aspect                    = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
+      if (camera) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      }
       
     },
     init: function (callback) {
@@ -151,157 +158,40 @@ var SCN = (function () {
       renderer.shadowMap.enabled = false;
       renderer.autoClear = false;             // cause HUD
 
-      camera.position.copy(CFG.Objects.perspective.pos);
-      // camera.lookAt(scene); // why not sufficient
-
       self.resize();
-      self.logInfo();
-
-    },
-    load: function (onloaded) {
-
-      // collects resource requests from textures, meshes, and models
-      // and loads them as async series
-      // timeouts keep GUI updated
-
-      var 
-        t0      = Date.now(),
-        tasks   = [],
-        counter = 1,
-        info    = $$('.loader .info')[0],
-        header  = $$('.loader .header')[0],
-        bar     = $$('.loader .bar')[0]
-      ;
-
-      function replaceTx (res) {
-        H.each(CFG.Textures, (key, value) => {
-          if (value === res.url) {
-            CFG.Textures[key] = res.data;
-          }
-        });
-      }
-
-      // Textures first
-      tasks.push(function (callback) {
-
-        var urls = Object.keys(CFG.Textures).map( key => CFG.Textures[key] );
-
-        info.innerHTML = 'Textures';
-        bar.innerHTML  = counter + '/' + tasks.length;
-
-        setTimeout(() => {
-          RES.load({type: 'texture', urls, onFinish: (err, responses) => {
-
-            responses.forEach(replaceTx);
-            TIM.step('SCN.loaded', 'textures');
-            counter += 1;
-            callback();
-
-          }});
-        }, 30);
-
-
-      });
-
-      // NON Sim Objects second
-      H.each(CFG.Objects, (name, config) => {
-
-        if (config.type !== 'simulation'){
-          config.name = name;
-
-          if (config.visible){
-            tasks.push(function (callback) {
-
-              info.innerHTML = config.title;                  //name;
-              bar.innerHTML  = counter++ + '/' + tasks.length;
-              
-              self.loader[config.type](name, config, () => {
-                setTimeout(callback, 30);
-              });
-
-            });
-
-          } else {
-            objects[name] = config;
-
-          }
-        }
-
-      });
-
-
-      // SIM Objects third
-      H.each(CFG.Objects, (name, config) => {
-
-        if (config.type === 'simulation'){
-          config.name = name;
-
-          if (config.visible){
-            tasks.push(function (callback) {
-
-              info.innerHTML = config.title; //name;
-              bar.innerHTML  = counter++ + '/' + tasks.length;
-              
-              self.loader[config.type](name, config, () => {
-                setTimeout(callback, 30);
-              });
-
-            });
-
-          } else {
-            objects[name] = config;
-
-          }
-        }
-
-      });
-
-
-      // Execute
-      async.series(tasks, function (err, res) {
-
-        if (err) {throw err} else {
-
-          header.innerHTML   = 'Uploading to GPU...';
-          info.style.display = 'none';
-          bar.style.display  = 'none';
-
-          // late hacks
-          objects.pointer.visible = false;
-
-          // finally
-          setTimeout(onloaded, 30);
-
-        }
-
-      });
+      // self.logInfo();
 
     },
     loader: {
 
-      // TODO: here async tasks
+      'camera': (name, cfg, callback) => {
+        camera = self.camera = cfg.cam;
+        camera.position.copy(CFG.Objects.perspective.pos);
+        self.add(name, cfg.cam);
+        callback();
+      },
 
       'mesh': (name, cfg, callback) => {
         self.add(name, cfg.mesh);
-        callback && callback();
+        callback();
       },
 
       'light': (name, cfg, callback) => {
         cfg.light = cfg.light(cfg);
         cfg.pos && cfg.light.position.copy( cfg.pos ); 
         self.add(name, cfg.light);
-        callback && callback();
+        callback();
       },
 
       'mesh.calculated': (name, cfg, callback) => {
         self.add(name, SCN.Meshes.calculate(name, cfg));
-        callback && callback();
+        callback();
       },
 
       'mesh.module': (name, cfg, callback) => {
         SCN.Meshes[name](name, cfg, function (name, mesh) {
           self.add(name, mesh);
-          callback && callback();
+          callback();
         });
       },
 
@@ -309,31 +199,9 @@ var SCN = (function () {
         SIM.loadModel(name, cfg, (name, obj) => {
           cfg.rotation && obj.rotation.fromArray(cfg.rotation);
           self.add(name, obj);
-          callback && callback();
+          callback();
         });
       },
-
-      // 'mesh.basemaps': (name, cfg, callback) => {
-      //   SCN.Meshes.basemaps(name, cfg, function (name, mesh) {
-      //     self.add(name, mesh);
-      //     callback && callback();
-      //   });
-      // },
-
-      // 'mesh.basecopy': (name, cfg, callback) => {
-      //   SCN.Meshes.basecopy(name, cfg, function (name, mesh) {
-      //     self.add(name, mesh);
-      //     callback && callback();
-      //   });
-      // },
-
-      // 'mesh.textured': (name, cfg, callback) => {
-      //   RES.load({type: 'texture', urls: [cfg.texture], onFinish: (err, responses) => {
-      //     cfg.mesh.material.map = responses[0].data;
-      //     self.add(name, cfg.mesh);
-      //     callback && callback();
-      //   }});
-      // },
 
       'geo.json': (name, cfg, callback) => {
 
@@ -350,7 +218,7 @@ var SCN = (function () {
           cfg.rotation && obj.rotation.fromArray(cfg.rotation);
 
           self.add(name, obj);
-          callback && callback();
+          callback();
 
         }});
 
@@ -359,7 +227,7 @@ var SCN = (function () {
       'cube.textured': (name, cfg, callback) => {
         SCN.tools.loadCube(name, cfg, (name, obj) => {
           self.add(name, obj);
-          callback && callback();
+          callback();
         });
       },
 
@@ -379,8 +247,6 @@ var SCN = (function () {
           Loading:  { update: ignore},
           SimTime:  { update: ignore},
           Render:   { toggle: (value) => doRender   = value },
-          // Animate:  { toggle: (value) => doAnimate  = value },
-          // Simulate: { toggle: (value) => doSimulate = value },
           ResetCam: { toggle: (value) => doSimulate = value },
           Ambient: {
             toggle:       (value) => self.toggle(objects.ambient, value),
@@ -445,16 +311,14 @@ var SCN = (function () {
       } 
 
     },
-    updateSun: function (sunDirection) {
 
-      //TODO: check light.onbeforerender
-
-      var objs = SCN.objects;
-
-      objs.spot.visible && objs.spot.position.copy(sunDirection).multiplyScalar(10);
-      objs.sun.visible  && objs.sun.position.copy(sunDirection).multiplyScalar(10);
-
+    prerender: function () {
+      renderer.clear();
+      renderer.render( scene, camera );
+      renderer.clearDepth();
+      renderer.render( IFC.Hud.scene, IFC.Hud.camera );
     },
+
     render: function render () {
 
       var 
@@ -466,6 +330,9 @@ var SCN = (function () {
       IFC.Hud.performance.begin();
 
         objects.background.visible && objects.background.updatePosition();
+
+        objects.spot.visible && objects.spot.position.copy(SIM.sunDirection).multiplyScalar(CFG.Sun.radius);
+        objects.sun.visible  && objects.sun.position.copy(SIM.sunDirection).multiplyScalar(CFG.Sun.radius);
 
         TWEEN.update();
 
@@ -492,7 +359,7 @@ var SCN = (function () {
       frame += 1;
 
     },
-    logInfo: function () {
+    info: function () {
 
       var gl = renderer.context;
 
