@@ -6,32 +6,19 @@ var ANI = (function () {
 
   var 
     self,
-
     status   = {frame: 0},
-    actions = [],
-    
-    $             = document.getElementById.bind(document),
-    $$            = document.querySelectorAll.bind(document),
-
-    end;
+    actions  = [],
+    $        = document.getElementById.bind(document),
+    $$       = document.querySelectorAll.bind(document),
+  end;
 
 
   return self = {
 
     status,
 
-    boot: function () {
-      return self = this;
-    },
-    init: function () {
-
-
-    },
-    activate: function () {
-
-      // self.insert(400, self.library.example);
-
-    },
+    init: function () {},
+    activate: function () {},
 
     step: function (frame, dt) {
 
@@ -62,7 +49,17 @@ var ANI = (function () {
 
       }
 
+    },
 
+    tween: function (current, target, duration, update, easing) {
+      return function () {
+        var tween = new TWEEN.Tween(current)
+          .easing(easing)
+          .to(target, duration)
+          .onUpdate(update)
+          .start()
+        ;
+      };
     },
 
     library: {
@@ -159,21 +156,10 @@ var ANI = (function () {
 
           var 
             current = {x: IFC.Hud.menu.position.x},
-            target  = {x: newx}
-          ;
+            target  = {x: newx},
+            update  = () => IFC.Hud.menu.position.setX(current.x);
 
-          return function () {
-
-            var tween = new TWEEN.Tween(current)
-              .easing(TWEEN.Easing.Sinusoidal.Out)
-              .to(target, duration)
-              .onUpdate(function(d){
-                IFC.Hud.menu.position.setX(current.x);
-              })
-              .start()
-            ;
-
-          };
+          return self.tween(current, target, duration, update, TWEEN.Easing.Sinusoidal.Out)
 
         }
       },

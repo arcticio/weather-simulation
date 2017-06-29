@@ -350,7 +350,7 @@ CFG.Sprites = {
     },
   },
 
-  graticule: {
+  sst: {
     visible:  true,
     menu:     true,
     type:     'toggle',
@@ -358,6 +358,29 @@ CFG.Sprites = {
     position: {
       zIndex:    5,
       top:     440,
+      left:     18,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/sst.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggle(SCN.objects.sst);
+      sprite.toggled = !sprite.toggled;
+      console.log('sprite.clicked', sprite.name);
+    },
+  },
+
+  graticule: {
+    visible:  true,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:    5,
+      top:     500,
       left:     15,
       width:    54,
       height:   54,

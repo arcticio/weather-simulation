@@ -3,19 +3,15 @@
 
 CFG.Objects = {
 
-  // TODO: contemplate about id: 0 for intro html or spacetime
-  // CFG.Manager.assets2hash([0])   = '1'
-  // CFG.Manager.assets2hash([0,1]) = '3'
-
-  // MANDATORY => (no id)
+// MANDATORY => (no id)
 
     perspective: {
-      // always active
       type:            'camera',
       cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
       pos:             new THREE.Vector3(4, 0, 0),                            // Äq
     },
 
+    // click mesh for raycaster
     pointer: {
       title:          'pointer',
       type:           'mesh',
@@ -30,6 +26,17 @@ CFG.Objects = {
       ),
     },
 
+    background: {
+      title:          'dynamic background',
+      type:           'mesh.module',
+      size:           4.0,
+      colors: [
+        0x666666,
+        0x666666,
+        0x222222,
+        0x222222,
+      ]
+    },
 
   // LIGHTS ( 1 - 3 )
 
@@ -64,19 +71,42 @@ CFG.Objects = {
       pos:            new THREE.Vector3(2, 2, 2),
     },
 
+    basemaps: {
+      title:          'basic surface mask',
+      type:           'mesh.module',
+      rotation:        [0, Math.PI / 2, 0],
+      lightset:       'normal',
+      cube: {
+        type:          'globe',
+        radius:        RADIUS, 
+        texture:       'images/data/globe.data.FACE.4096.comp.png', 
+        // texture:       'images/data/globe.data.FACE.512.comp.png', 
+        material: {
+          transparent: true, 
+          opacity:     0.99,              // removes crazy seaice effeckt
+          side:        THREE.DoubleSide,
+        }
+      }
+    },
+
+// OPTIONALS
 
   // VISUALS ( 5 - 6 )
 
-    background: {
-      title:          'dynamic background',
-      type:           'mesh.module',
-      size:           4.0,
-      colors: [
-        0x666666,
-        0x666666,
-        0x222222,
-        0x222222,
-      ]
+    graticule: {
+      id:             5,
+      visible:        false,
+      title:          'graticule',
+      type:           'mesh.calculated',
+      altitude:       0.01,
+      resolution:     10,
+      material: {
+        transparent:  true,
+        opacity:      0.2,
+        color:        0x000000,
+        linewidth:    1.1,
+        vertexColors: THREE.NoColors,
+      }
     },
 
     atmosphere: {
@@ -90,25 +120,7 @@ CFG.Objects = {
     },
 
 
-  // BASEMAPS ( 8 - 11 )
-
-    basemaps: {
-      title:          'simple surface layer',
-      type:           'mesh.module',
-      rotation:        [0, Math.PI / 2, 0],
-      lightset:       'normal',
-      cube: {
-        type:          'globe',
-        radius:        RADIUS, 
-        // texture:       'images/data/globe.data.FACE.4096.comp.png', 
-        texture:       'images/data/globe.data.FACE.512.comp.png', 
-        material: {
-          transparent: true, 
-          opacity:     0.99,              // removes crazy seaice effeckt
-          side:        THREE.DoubleSide,
-        }
-      }
-    },
+  // BASEMAPS ( 9 - 11 )
 
     basecopy: {
       id:              9,
@@ -138,7 +150,7 @@ CFG.Objects = {
       lightset:       'normal',
       cube: {
         type:          'globe',
-        radius:        RADIUS, 
+        radius:        RADIUS + 0.01, 
         texture:       'images/rtopo2/globe.rtopo2.FACE.4096.png', 
         material: {
           transparent: true, 
@@ -157,7 +169,7 @@ CFG.Objects = {
       lightset:       'normal',
       cube: {
         type:          'globe',
-        radius:        RADIUS, 
+        radius:        RADIUS + 0.01, 
         texture:       'images/gmlc/globe.gmlc.FACE.4096.png', 
         material: {
           transparent: true, 
@@ -168,7 +180,7 @@ CFG.Objects = {
     },
 
 
-  // BASE + DATA ( 14 )
+  // OBSERVATIONS ( 14 - 20 )
 
     snpp: {
       id:             14,
@@ -179,7 +191,7 @@ CFG.Objects = {
       lightset:       'snpp',
       cube: {
         type:          'globe',
-        radius:        RADIUS - 0.002,
+        radius:        RADIUS + 0.01, 
         texture:       'data/snpp/2017-06-15.globe.snpp.FACE.2048.jpg', 
         material: {
           transparent: true, 
@@ -190,10 +202,8 @@ CFG.Objects = {
     },
 
 
-  // DATA ( 16 - 20 )
-
     sst: {
-      id:             16,
+      id:             15,
       visible:        false,
       title:          'sea surface temperature',
       type:           'cube.textured',
@@ -211,7 +221,7 @@ CFG.Objects = {
     },
 
     seaice: {
-      id:              17,
+      id:              16,
       visible:         false,
       title:           'AMSR2 sea ice concentration',
       type:            'cube.textured',
@@ -229,7 +239,7 @@ CFG.Objects = {
     },
 
     wind: {
-      id:             18,
+      id:             17,
       visible:        false,
       title:          'GFS - wind 10m',
       type:           'simulation',
@@ -260,7 +270,7 @@ CFG.Objects = {
     },
 
     jetstream: {
-      id:             19,
+      id:             18,
       visible:        false,
       title:          'GFS - jetstream at 300hpa',
       type:           'simulation',
@@ -293,7 +303,7 @@ CFG.Objects = {
     },
 
     clouds: {
-      id:             20,
+      id:             19,
       visible:        false,
       title:          'GFS - total cloud cover',
       type:           'simulation',
@@ -313,7 +323,7 @@ CFG.Objects = {
     },
 
     variables: {
-      id:             21,
+      id:             20,
       visible:        false,
       title:          'GFS - generic layer',
       type:           'simulation',
@@ -328,7 +338,7 @@ CFG.Objects = {
     },
 
 
-  // FEATIRES ( 23 - 25 )
+  // FEATURES ( 23 - 25 )
 
     land: {
       id:             23,
@@ -364,23 +374,7 @@ CFG.Objects = {
     },
 
 
-  // OPTIONAL ( 26 - 28 )
-
-    graticule: {
-      id:             26,
-      visible:        false,
-      title:          'graticule',
-      type:           'mesh.calculated',
-      altitude:       0.01,
-      resolution:     10,
-      material: {
-        transparent:  true,
-        opacity:      0.2,
-        color:        0x000000,
-        linewidth:    1.1,
-        vertexColors: THREE.NoColors,
-      }
-    },
+  // OPTIONAL / DEV ( 26 - 28 )
 
     sector: {
       id:             27,

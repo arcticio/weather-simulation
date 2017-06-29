@@ -2,7 +2,7 @@ var LDR = (function () {
   
   var
     self,
-    delay    = 100,
+    delay    = 1,
     pretasks = [],
     $header  = $('.progress .header'),
     $info    = $('.progress .info'),
@@ -125,15 +125,13 @@ var LDR = (function () {
 
     execute: function (callback) {
 
-      // debugger;
-
-      // add timout to tasks
       var 
         t0 = Date.now(),
         tasks = pretasks.map( (fn, idx) => {
+
           return function (callback) {
             
-            // now user has all infos
+            // setup gui for next tasks
             $bar.text( `${ idx + 1 }/${ tasks.length }` );
             $meter.css({width: ~~((idx + 1) / tasks.length * 100) + '%' });
 
@@ -141,6 +139,7 @@ var LDR = (function () {
             setTimeout(() => fn(callback), delay);
 
           };
+
         }),
         finalize = function (err, results) {
           if (err) {throw err} else {
@@ -173,10 +172,8 @@ var LDR = (function () {
           self.message(null, url.split('/').slice(-1)[0]);
 
           RES.load({type: 'texture', urls: [url], onFinish: (err, responses) => {
-
             responses.forEach(replaceTx);
             callback();
-
           }});
 
         }; 
@@ -253,6 +250,8 @@ var LDR = (function () {
         }
 
       });
+
+      return sequence;
 
     },
 

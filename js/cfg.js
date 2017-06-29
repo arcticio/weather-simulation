@@ -105,6 +105,7 @@ var CFG = {
     'hud/time.png':                 'images/hud/time.png',
     'hud/temperature.png':          'images/hud/temperature.png',
     'hud/seaice.png':               'images/hud/seaice.png',
+    'hud/sst.png':                  'images/hud/sst.png',
 
     // 'hud/graticule.png':            'images/hud/graticule.1.png',
     'hud/graticule.png':            'images/hud/graticule.2.png',
