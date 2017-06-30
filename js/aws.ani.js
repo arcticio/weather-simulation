@@ -99,26 +99,24 @@ var ANI = (function () {
 
       },
 
-      intro: function (duration) {
+      intro: function (duration, callback) {
 
         var 
-          spherical, rgba,
+          rgba,
           table    = $$('table.loader')[0],
-          curVec   = new THREE.Vector3(8, 8, 8),
-          futVec   = SCN.camera.position.clone(),
-          curShere = new THREE.Spherical().setFromVector3(curVec),
-          futShere = new THREE.Spherical().setFromVector3(futVec),
-          current = {
-            alpha:  0.2, 
-            phi:    curShere.phi,
-            theta:  curShere.theta,
-            radius: SCN.camera.position.length(),
+          curSpcl  = new THREE.Spherical().setFromVector3(new THREE.Vector3(8, 8, 8)),
+          futSpcl  = new THREE.Spherical().setFromVector3(SCN.camera.position),
+          current  = {
+            alpha:   0.2, 
+            phi:     curSpcl.phi,
+            theta:   curSpcl.theta,
+            radius:  curSpcl.radius,
           },
-          target  = {
-            alpha:  -1.0, 
-            phi:    futShere.phi,
-            theta:  futShere.theta,
-            radius: futVec.length(),
+          target   = {
+            alpha:   -1.0, 
+            phi:     futSpcl.phi,
+            theta:   futSpcl.theta,
+            radius:  futSpcl.radius,
           };
 
         return function () {
@@ -127,19 +125,21 @@ var ANI = (function () {
             .Tween(current)
             .easing(TWEEN.Easing.Exponential.Out)
             .to(target, duration)
-            .onUpdate(function(d){
+            .onUpdate(function(stage){
+
               rgba = 'rgba(0, 0, 0, ' + (current.alpha < 0 ? 0 : current.alpha) + ')';
               table.style.backgroundColor = rgba;
-              spherical = new THREE.Spherical(current.radius, current.phi, current.theta);
-              SCN.camera.position.setFromSpherical(spherical);
+
+              curSpcl.set(current.radius, current.phi, current.theta);
+              SCN.camera.position.setFromSpherical(curSpcl);
               SCN.camera.lookAt(SCN.home);
-              if (current.alpha < 0){
-                $$('.loader .header')[0].innerHTML   = 'Have fun!';
+
+              if (stage > 0.5){
+                table.style.display = 'none';
               }
+
             })
-            .onComplete(function(d){
-              table.style.display = 'none';
-            })
+            .onComplete(callback)
             .start()
           ;
 

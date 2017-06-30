@@ -48,26 +48,46 @@ const TIMERANGE = [
 
 var CFG = {
 
-  Title: 'Simulator',
+  isLoaded:         false,
+
+  Title:            'Simulator',
+
+  Camera: {
+    cam:            new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
+    pos:            new THREE.Vector3(4, 0, 0),         
+    minDistance:    RADIUS + 0.2,
+    maxDistance:    8,                 
+  },
 
   User: {
-    ip:           '',
-    country_code: '',
-    country_name: 'Unknown',
-    region_code:  '',
-    region_name:  '',
-    city:         '',
-    zip_code:     '',
-    time_zone:    '',
-    latitude:     0.0,
-    longitude:    0.0,
-    metro_code:   0,
-    loc_detected: false,
+    ip:             '',
+    country_code:   '',
+    country_name:   'Unknown',
+    region_code:    '',
+    region_name:    '',
+    city:           '',
+    zip_code:       '',
+    time_zone:      '',
+    latitude:       0.0,
+    longitude:      0.0,
+    metro_code:     0,
+    loc_detected:   false,
   },
 
   Device: {
+
+    platform:       navigator.platform,
+
     canMotion:      false,
     canOrientation: false,
+    devicePixelRatio:          NaN,
+
+    maxVertexUniforms:         NaN,
+    max_texture_size:          NaN,
+    max_cube_map_texture_size: NaN,
+
+    OES_texture_float:         false,
+    OES_texture_float_linear:  false,
   },
 
   Sim: {
@@ -92,21 +112,23 @@ var CFG = {
 
     'arcticio.logo.512.png':        'images/arcticio.logo.white.512.png',
 
-    'tex2.jpg':                     'images/test/tex2.jpg',
-    'tex3.jpg':                     'images/test/tex3.jpg',
-    'tex4.jpg':                     'images/test/tex4.jpg',
-    'tex5.png':                     'images/test/tex5.png',
-    'tex6.png':                     'images/test/tex6.png',
-    'tex7.jpg':                     'images/test/tex7.jpg',
+    // 'tex2.jpg':                     'images/test/tex2.jpg',
+    // 'tex3.jpg':                     'images/test/tex3.jpg',
+    // 'tex4.jpg':                     'images/test/tex4.jpg',
+    // 'tex5.png':                     'images/test/tex5.png',
+    // 'tex6.png':                     'images/test/tex6.png',
+    // 'tex7.jpg':                     'images/test/tex7.jpg',
 
-    'hud/reload.png':               'images/hud/reload.png',
+    // Tools
     'hud/fullscreen.png':           'images/hud/fullscreen.png',
     'hud/gear.png':                 'images/hud/gear.1.png',
+    'hud/graticule.png':            'images/hud/graticule.2.png',
     'hud/hamburger.png':            'images/hud/hamburger.png',
     'hud/info.png':                 'images/hud/info.png',
     'hud/movie.png':                'images/hud/movie.1.png',
-    'hud/performance.png':          'images/hud/performance.png',
+    'hud/reload.png':               'images/hud/reload.png',
 
+    // Assets
     'hud/clouds.png':               'images/hud/clouds.png',
     'hud/satellite.png':            'images/hud/satellite.1.png',
     'hud/seaice.png':               'images/hud/seaice.png',
@@ -114,11 +136,9 @@ var CFG = {
     'hud/space.png':                'images/hud/space.png',
     'hud/sst.png':                  'images/hud/sst.png',
     'hud/temperature.png':          'images/hud/temperature.png',
-    'hud/time.png':                 'images/hud/time.png',
 
-    'hud/graticule.png':            'images/hud/graticule.2.png',
 
-    'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
+    // 'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 
   },
 
@@ -152,8 +172,5 @@ var CFG = {
     radius:        RADIUS,
     // radiusOverlay: RADIUS + 0.1,
   },
-
-  minDistance:     RADIUS + 0.2,
-  maxDistance:     8,
 
 };

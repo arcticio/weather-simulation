@@ -110,7 +110,8 @@ IFC.Controller = (function () {
   // }
 
   function distanceScale (x, min, max) {
-    var val= (max-min)*(x-cfg.minDistance)/(cfg.maxDistance-cfg.minDistance)+min;
+    // var val= (max-min)*(x-cfg.minDistance)/(cfg.maxDistance-cfg.minDistance)+min;
+    return (max-min)*(x-cfg.minDistance)/(cfg.maxDistance-cfg.minDistance)+min;
     // return val < min ? min : val > max ? max : val;
   }
 
@@ -292,14 +293,14 @@ IFC.Controller = (function () {
 
         var 
           deltaX, deltaY, 
-          distance  = cam.position.length(),
-          impFactor = distanceScale(distance, 1, cfg.maxDistance - cfg.minDistance)
+          distance = cam.position.length(),
+          factor   = distanceScale(distance, 1, cfg.maxDistance - cfg.minDistance)
         ;
 
         if ( !isNaN(mouse.down.x) ) {
 
-          deltaX = (mouse.last.x - event.pageX) * cfg.moveXimpulse * impFactor;
-          deltaY = (mouse.last.y - event.pageY) * cfg.moveYimpulse * impFactor;
+          deltaX = (mouse.last.x - event.pageX) * cfg.moveXimpulse * factor;
+          deltaY = (mouse.last.y - event.pageY) * cfg.moveYimpulse * factor;
 
           if (cfg.ondrag) {
             cfg.ondrag(self.impulse, deltaX, deltaY, 0);

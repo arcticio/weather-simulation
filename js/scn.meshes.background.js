@@ -39,7 +39,7 @@ SCN.Meshes.background = function (name, cfg, callback) {
       side:         THREE.FrontSide,
       vertexColors: THREE.VertexColors,
       uniforms: {
-        opacity: {type: 'f', value: 0.8}
+        opacity: {type: 'f', value: 0.999}
       }
     }),
     plane = new THREE.Mesh( geometry, material )

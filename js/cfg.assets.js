@@ -5,12 +5,6 @@ CFG.Objects = {
 
 // MANDATORY => (no id)
 
-    perspective: {
-      type:            'camera',
-      cam:             new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
-      pos:             new THREE.Vector3(4, 0, 0),                            // Äq
-    },
-
     // click mesh for raycaster
     pointer: {
       title:          'pointer',

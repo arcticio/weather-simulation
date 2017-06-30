@@ -124,6 +124,9 @@ var IFC = (function () {
       controller = self.controller = IFC.Controller;
       controller.init(SCN.camera, SCN.renderer.domElement, {
 
+        minDistance: CFG.Camera.minDistance,
+        maxDistance: CFG.Camera.maxDistance,
+
         ondrag: function (callback, deltaX, deltaY, deltaZ) {
 
           var timescale = H.scale(pointer.device.py, 0, canvas.height, 0.5, 10) ;

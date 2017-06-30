@@ -6,7 +6,8 @@ CFG.Manager = (function () {
   var 
     self, 
     assets = [],
-    position
+    position,
+    time
   ;
 
   return self = {
@@ -64,8 +65,10 @@ CFG.Manager = (function () {
         TIM.step('CFG.User', 'location unknown');
       }
 
+
       // rewrite CFG.Objects visibility to enable objects from url
       // and enable always on assets without id (cam, etc.)
+
       H.each(CFG.Objects, (name, cfg) => {
         if (cfg.id !== undefined){
           cfg.visible = assets.indexOf(cfg.id) !== -1;
@@ -75,7 +78,7 @@ CFG.Manager = (function () {
       });
 
       // update cam config
-      CFG.Objects.perspective.pos = position;
+      CFG.Camera.pos = position;
 
       // TODO: Is this the right place for preset handling?
       CFG.Preset.init();
@@ -112,7 +115,6 @@ CFG.Manager = (function () {
     sanitizeUrl: function () {
 
       var 
-        defAssets = [],
         time, coords, 
         [locHash, locTime, locCoords] = location.pathname.slice(1).split('/');
 
@@ -157,7 +159,6 @@ CFG.Manager = (function () {
             y: coords[1] !== undefined ? coords[1] : 2.0,
             z: coords[2] !== undefined ? coords[2] : 2.0,
           });
-
         }
       }
 
@@ -173,7 +174,7 @@ CFG.Manager = (function () {
 
       // overwrite position outside earth from defaults
       if (position.length() < CFG.earth.radius + 0.01){
-        position = CFG.Objects.perspective.pos.clone();
+        position = CFG.Camera.pos.clone();
       }
 
     },

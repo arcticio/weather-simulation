@@ -209,7 +209,11 @@
 
         LDR.parse(LDR.sequence());
         LDR.execute(function () {
-          ANI.insert(0, ANI.library.intro(800));
+          ANI.insert(0, ANI.library.intro(800, function () {
+            CFG.isLoaded = true;
+            IFC.Tools.updateUrl();
+            console.log('CFG.Device', JSON.stringify(CFG.Device, null, 2));
+          }));
         });
 
       };

@@ -21,13 +21,14 @@ CFG.Sprites = {
       image: 'arcticio.logo.512.png'
     },
     onclick: (sprite) => {
-      $('#arcticio')[0].click();
+      location.reload();
+      // $('#arcticio')[0].click();
       console.log('sprite.click', sprite.name);
     },
   },
 
   reload: {
-    visible:  true,
+    visible:  false,
     type:     'toggle',
     menu:     false,
     position: {
@@ -102,7 +103,6 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.9,
-      // image: 'hud/performance.png'
     },
     onclick: (sprite) => {
       console.log('sprite.clicked', sprite.name);

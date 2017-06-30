@@ -8,12 +8,12 @@ var SCN = (function () {
     frame         = 0,
     lastTimestamp = NaN,
 
-    $             = document.getElementById.bind(document),
+    // $             = document.getElementById.bind(document),
     $$            = document.querySelectorAll.bind(document),
 
     canvas        = $$('.simulator')[0],
-    monitor       = $$('canvas.panel.test')[0].getContext('2d'),
-    expi          = $$('canvas.panel.expi')[0].getContext('2d'),
+    // monitor       = $$('canvas.panel.test')[0].getContext('2d'),
+    // expi          = $$('canvas.panel.expi')[0].getContext('2d'),
 
     home          = new THREE.Vector3(0, 0, 0),
 
@@ -91,24 +91,23 @@ var SCN = (function () {
 
     toggleBasemap: function (basemap) {
 
-      var mesh, basename, lightset;
+      var basename, lightset;
 
       // normalize param
       if (typeof basemap === 'string'){
         basename = basemap;
-        mesh = objects[basename];
 
       } else  {
         console.error('SCN.toggleBasemap', 'illegal basemap param');
       }
 
-      H.each(objects, (name, mesh) => {
+      H.each(objects, (name, obj) => {
 
         if (name === basename){
-          self.toggle(mesh, true);
+          self.toggle(obj, true);
 
         } else if (CFG.BasemapIds.indexOf(CFG.Objects[name].id) !== -1 ) {
-          self.toggle(mesh, false);
+          self.toggle(obj, false);
 
         }
 
@@ -137,87 +136,21 @@ var SCN = (function () {
       }
       
     },
-    init: function (callback) {
+    init: function () {
 
       // https://www.quirksmode.org/blog/archives/2012/07/more_about_devi.html
       // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
       // webgl.min_capability_mode
 
-      renderer.setClearColor(0x000000, 1.0);
+      renderer.setClearColor(0x883300, 1.0);  // red for danger
       renderer.shadowMap.enabled = false;
       renderer.autoClear = false;             // cause HUD
 
+      camera = self.camera = CFG.Camera.cam;
+      camera.position.copy(CFG.Camera.pos);
+      self.add('camera', camera);
+
       self.resize();
-
-    },
-    loader: {
-
-      'camera': (name, cfg, callback) => {
-        camera = self.camera = cfg.cam;
-        camera.position.copy(CFG.Objects.perspective.pos);
-        self.add(name, cfg.cam);
-        callback();
-      },
-
-      'mesh': (name, cfg, callback) => {
-        self.add(name, cfg.mesh);
-        callback();
-      },
-
-      'light': (name, cfg, callback) => {
-        cfg.light = cfg.light(cfg);
-        cfg.pos && cfg.light.position.copy( cfg.pos ); 
-        self.add(name, cfg.light);
-        callback();
-      },
-
-      'mesh.calculated': (name, cfg, callback) => {
-        self.add(name, SCN.Meshes.calculate(name, cfg));
-        callback();
-      },
-
-      'mesh.module': (name, cfg, callback) => {
-        SCN.Meshes[name](name, cfg, function (name, mesh) {
-          self.add(name, mesh);
-          callback();
-        });
-      },
-
-      'simulation': (name, cfg, callback) => {
-        SIM.loadModel(name, cfg, (name, obj) => {
-          cfg.rotation && obj.rotation.fromArray(cfg.rotation);
-          self.add(name, obj);
-          callback();
-        });
-      },
-
-      'geo.json': (name, cfg, callback) => {
-
-        RES.load({type: 'text', urls: [cfg.json], onFinish: (err, responses) => {
-
-          var obj  = new THREE.Object3D();
-          var json = JSON.parse(responses[0].data);
-
-          drawThreeGeo(json, cfg.radius, 'sphere', {
-            color: cfg.color, 
-            lights: true, // grrrr
-          }, obj); 
-
-          cfg.rotation && obj.rotation.fromArray(cfg.rotation);
-
-          self.add(name, obj);
-          callback();
-
-        }});
-
-      },
-
-      'cube.textured': (name, cfg, callback) => {
-        SCN.tools.loadCube(name, cfg, (name, obj) => {
-          self.add(name, obj);
-          callback();
-        });
-      },
 
     },
 
@@ -317,6 +250,8 @@ var SCN = (function () {
 
       IFC.Hud.performance.begin();
 
+        camera.distance = camera.position.length() - CFG.earth.radius;
+
         objects.background.visible && objects.background.updatePosition();
 
         objects.spot.visible && objects.spot.position.copy(SIM.sunDirection).multiplyScalar(CFG.Sun.radius);
@@ -348,22 +283,31 @@ var SCN = (function () {
       frame += 1;
 
     },
-    info: function () {
+    info: function () { },
+    probeDevice: function () {
 
       var gl = renderer.context;
 
       renderer.context.getSupportedExtensions().forEach(ex => extensions[ex] = ex);
 
-      TIM.step('REN.info', 'maxVertexUniforms', renderer.capabilities.maxVertexUniforms);
-      TIM.step('REN.info', 'devicePixelRatio', devicePixelRatio);
-      TIM.step('REN.info', 'max_texture_size', gl.getParameter(gl.MAX_TEXTURE_SIZE));
-      TIM.step('REN.info', 'max_cube_map_texture_size', gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE));
+      CFG.Device.devicePixelRatio  = devicePixelRatio;
+      CFG.Device.maxVertexUniforms = renderer.capabilities.maxVertexUniforms;
+      CFG.Device.max_texture_size  = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+      CFG.Device.max_cube_map_texture_size  = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+      
+      CFG.Device.OES_texture_float         = !!extensions.OES_texture_float;
+      CFG.Device.OES_texture_float_linear  = !!extensions.OES_texture_float_linear;
 
-      if (extensions.OES_texture_float && extensions.OES_texture_float_linear) {
-        TIM.step('REN.extensions', 'float textures supported');        
-      } else {
-        TIM.step('REN.extensions', 'float textures not supported');        
-      }
+      // TIM.step('REN.info', 'maxVertexUniforms', renderer.capabilities.maxVertexUniforms);
+      // TIM.step('REN.info', 'devicePixelRatio', devicePixelRatio);
+      // TIM.step('REN.info', 'max_texture_size', gl.getParameter(gl.MAX_TEXTURE_SIZE));
+      // TIM.step('REN.info', 'max_cube_map_texture_size', gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE));
+
+      // if (extensions.OES_texture_float && extensions.OES_texture_float_linear) {
+      //   TIM.step('REN.extensions', 'float textures supported');        
+      // } else {
+      //   TIM.step('REN.extensions', 'float textures not supported');        
+      // }
 
     },
     logFullInfo: function () {

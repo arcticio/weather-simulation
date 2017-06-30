@@ -1,11 +1,10 @@
-'use strict';
 
 var LDR = (function () {
   
   var
     self,
     delay    = 1,
-    queue = [],
+    queue    = [],
     $header  = $('.progress .header'),
     $info    = $('.progress .info'),
     $bar     = $('.progress .bar'),
@@ -17,6 +16,7 @@ var LDR = (function () {
 
         [ TIM.step, ['LDR.sequence', 'started'] ],   
         [ CFG.Manager.probeDevice ],
+        [ SCN.probeDevice ],
 
       'lift off!',
         [ SCN.info ],   
@@ -49,11 +49,14 @@ var LDR = (function () {
       'get ready',
         [ IFC.activate ],
         [ IFC.show ],
-        [ self.clear ],
+        [ self.clearInfo ],
+        // [ navigator.vibrate.bind(navigator), [200] ], needs https;
+
+      'have fun',
 
     ];},
 
-    clear: function () {
+    clearInfo: function () {
       $info.text('');
       $bar.text('');
       $meter.css({width: '0.1%'});
@@ -143,13 +146,13 @@ var LDR = (function () {
           };
 
         }),
-        finalize = function (err, results) {
+        finalize = function (err /* , results */ ) {
+          // console.log(results);
           if (err) {throw err} else {
             TIM.step('LDR.executed', tasks.length, 'tasks', ((Date.now() - t0) / 1000).toFixed(1), 'secs');
             callback();
           }
-        },
-      end;
+        };
 
       async.series(tasks, finalize);
 
@@ -204,7 +207,7 @@ var LDR = (function () {
             fn = function (callback) {
               self.message('', name);
               setTimeout(function () {
-                SCN.loader[config.type](name, config, callback);
+                SCN.Tools.loader[config.type](name, config, callback);
               }, 1);
             };
 
@@ -239,7 +242,7 @@ var LDR = (function () {
             fn = function (callback) {
               self.message('', name);
               setTimeout(function () {
-                SCN.loader[config.type](name, config, callback);
+                SCN.Tools.loader[config.type](name, config, callback);
               }, 1);
             };
 

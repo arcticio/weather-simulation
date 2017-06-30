@@ -1,9 +1,8 @@
 
 'use strict'
 
-SCN.tools = {
+SCN.Tools = {
 
-  // calculate: function (name, cfg) { return SCN.tools[name](cfg) },
   loadCube: function (name, cfg, callback) {
 
     var
@@ -52,4 +51,74 @@ SCN.tools = {
 
   },
 
+  loader: {
+
+    // 'camera': (name, cfg, callback) => {
+    //   SCN.camera = self.camera = cfg.cam;
+    //   camera.position.copy(CFG.Objects.perspective.pos);
+    //   self.add(name, cfg.cam);
+    //   callback();
+    // },
+
+    'mesh': (name, cfg, callback) => {
+      SCN.add(name, cfg.mesh);
+      callback();
+    },
+
+    'light': (name, cfg, callback) => {
+      cfg.light = cfg.light(cfg);
+      cfg.pos && cfg.light.position.copy( cfg.pos ); 
+      SCN.add(name, cfg.light);
+      callback();
+    },
+
+    'mesh.calculated': (name, cfg, callback) => {
+      SCN.add(name, SCN.Meshes.calculate(name, cfg));
+      callback();
+    },
+
+    'mesh.module': (name, cfg, callback) => {
+      SCN.Meshes[name](name, cfg, function (name, mesh) {
+        SCN.add(name, mesh);
+        callback();
+      });
+    },
+
+    'simulation': (name, cfg, callback) => {
+      SIM.loadModel(name, cfg, (name, obj) => {
+        cfg.rotation && obj.rotation.fromArray(cfg.rotation);
+        SCN.add(name, obj);
+        callback();
+      });
+    },
+
+    'geo.json': (name, cfg, callback) => {
+
+      RES.load({type: 'text', urls: [cfg.json], onFinish: (err, responses) => {
+
+        var obj  = new THREE.Object3D();
+        var json = JSON.parse(responses[0].data);
+
+        drawThreeGeo(json, cfg.radius, 'sphere', {
+          color: cfg.color, 
+          lights: true, // grrrr
+        }, obj); 
+
+        cfg.rotation && obj.rotation.fromArray(cfg.rotation);
+
+        SCN.add(name, obj);
+        callback();
+
+      }});
+
+    },
+
+    'cube.textured': (name, cfg, callback) => {
+      SCN.Tools.loadCube(name, cfg, (name, obj) => {
+        SCN.add(name, obj);
+        callback();
+      });
+    },
+
+  },
 };

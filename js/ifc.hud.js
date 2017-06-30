@@ -65,6 +65,8 @@ IFC.Hud = (function () {
         // material.map.offset.set( -0.5, -0.5 );
         // material.map.repeat.set( 2, 2 );
 
+        if (cfg.visible === false) {return;}
+
         sprite.cfg    = cfg;
         sprite.name   = name;
         sprites[name] = sprite;
