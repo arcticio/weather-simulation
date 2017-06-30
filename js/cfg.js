@@ -15,12 +15,18 @@
 /* GLOBALS */
 
 const 
-  PI     = Math.PI,
-  TAU    = 2 * PI,
-  PI2    = PI / 2,
-  RADIUS = 1.0,
-  DISTANCE_OVERLAY = 0.01,
-  DISTANCE_TRAILS  = 0.03
+  PI      =   Math.PI,
+  TAU     =   2 * PI,
+  PI2     =   PI / 2,
+  RADIUS  =   1.0,    // surface, population
+  LEVEL_0 =   0.000,  // population
+  LEVEL_1 =   0.001,  // basemaps, snpp, rtopo2
+  LEVEL_2 =   0.002,  // sst
+  LEVEL_3 =   0.003,  // seaice
+  LEVEL_4 =   0.004,  // wind10, tmp2m
+  LEVEL_5 =   0.005,  // clouds
+  LEVEL_6 =   0.006,  // jetstream
+  LEVEL_7 =   0.007   // atmosphere
 ;
 
 var TIMENOW = moment.utc('2017-06-15 1200', 'YYYY-MM-DD HHmm');
@@ -59,6 +65,11 @@ var CFG = {
     loc_detected: false,
   },
 
+  Device: {
+    canMotion:      false,
+    canOrientation: false,
+  },
+
   Sim: {
     coordspool : {
       amount:       5e5,
@@ -70,14 +81,16 @@ var CFG = {
     opacityHigh: 0.99,
   },
 
-  BasemapIds: [8, 9, 10, 11, 12],
+  BasemapIds: [9, 10, 11, 14],
   defaultBasemap: 'basemaps',     // id = 8
 
   Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
   Textures: {
     
-    'arcticio.logo.512.png':        'images/arcticio.logo.512.png',
+    'transparent.face.512.png':     'images/transparent.face.512.png',
+
+    'arcticio.logo.512.png':        'images/arcticio.logo.white.512.png',
 
     'tex2.jpg':                     'images/test/tex2.jpg',
     'tex3.jpg':                     'images/test/tex3.jpg',
@@ -86,28 +99,23 @@ var CFG = {
     'tex6.png':                     'images/test/tex6.png',
     'tex7.jpg':                     'images/test/tex7.jpg',
 
-    'transparent.face.512.png':     'images/transparent.face.512.png',
-
-    'hud/hamburger.png':            'images/hud/hamburger.png',
+    'hud/reload.png':               'images/hud/reload.png',
     'hud/fullscreen.png':           'images/hud/fullscreen.png',
-    // 'hud/movie.png':                'images/hud/movie.png',
-    'hud/movie.png':                'images/hud/movie.1.png',
-    'hud/info.png':                 'images/hud/info.png',
-    'hud/performance.png':          'images/hud/performance.png',
-    // 'hud/gear.png':                 'images/hud/gear.png',
     'hud/gear.png':                 'images/hud/gear.1.png',
+    'hud/hamburger.png':            'images/hud/hamburger.png',
+    'hud/info.png':                 'images/hud/info.png',
+    'hud/movie.png':                'images/hud/movie.1.png',
+    'hud/performance.png':          'images/hud/performance.png',
 
-    'hud/snow.png':                 'images/hud/snow.png',
     'hud/clouds.png':               'images/hud/clouds.png',
-    // 'hud/satellite.png':            'images/hud/satellite.png',
     'hud/satellite.png':            'images/hud/satellite.1.png',
-    'hud/space.png':                'images/hud/space.png',
-    'hud/time.png':                 'images/hud/time.png',
-    'hud/temperature.png':          'images/hud/temperature.png',
     'hud/seaice.png':               'images/hud/seaice.png',
+    'hud/snow.png':                 'images/hud/snow.png',
+    'hud/space.png':                'images/hud/space.png',
     'hud/sst.png':                  'images/hud/sst.png',
+    'hud/temperature.png':          'images/hud/temperature.png',
+    'hud/time.png':                 'images/hud/time.png',
 
-    // 'hud/graticule.png':            'images/hud/graticule.1.png',
     'hud/graticule.png':            'images/hud/graticule.2.png',
 
     'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
@@ -142,7 +150,7 @@ var CFG = {
   earth: {
     factor:        6371,
     radius:        RADIUS,
-    radiusOverlay: RADIUS + 0.1,
+    // radiusOverlay: RADIUS + 0.1,
   },
 
   minDistance:     RADIUS + 0.2,

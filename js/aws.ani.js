@@ -161,6 +161,16 @@ var ANI = (function () {
 
           return self.tween(current, target, duration, update, TWEEN.Easing.Sinusoidal.Out)
 
+        },
+        scale: function (scale, duration) {
+
+          var 
+            current = {scale: IFC.Hud.menu.scale.x},
+            target  = {scale},
+            update  = () => IFC.Hud.menu.scale.set(current.scale, current.scale, 1);
+
+          return self.tween(current, target, duration, update, TWEEN.Easing.Sinusoidal.Out)
+
         }
       },
 
@@ -340,15 +350,11 @@ var ANI = (function () {
       cam2vector: function (vector, distance){
 
         // https://stackoverflow.com/questions/14614252/how-to-fit-camera-to-object
-        var aspect = window.innnerWidth / window.innerHeight;
-        var width = RADIUS + RADIUS;
-        var fov = SCN.camera.fov * ( Math.PI / 180 ); 
 
-        // distance = Math.abs( width / Math.sin( fov / 2 ) ) - RADIUS;      // 50 % height
-        // distance = Math.abs( width / Math.sin( fov / 2 ) ) ;              // ~~ 30% height
-        // distance = Math.abs( width / 2 / Math.sin( fov / 2 ) ) ;          // 100% height
-        // distance = Math.abs( width / 2 / Math.sin( fov / 2 ) ) - RADIUS;  // 45% height
-        distance = Math.abs( width / 2 / Math.sin( fov / 2 ) );  // 45% height
+        var aspect = window.innnerWidth / window.innerHeight;
+        var fov    = SCN.camera.fov * ( Math.PI / 180 ); 
+
+        distance = Math.abs( RADIUS + RADIUS / 2 / Math.sin( fov / 2 ) );  // 45% height
 
         var 
           spherical,
@@ -357,7 +363,7 @@ var ANI = (function () {
 
           current = {
             phi:    curShere.phi,
-            theta:  curShere.theta,
+            theta:  curShere.theta, 
             radius: SCN.camera.position.length(),
           },
           target  = {

@@ -28,6 +28,29 @@ CFG.Manager = (function () {
 
     },
 
+    probeDevice: function () {
+
+      function onMotion (event) {
+        if (event.accelerationIncludingGravity.x !== null) {
+          CFG.Device.canOrientation = true;
+          TIM.step('CFG.device', 'devicemotion detected')
+        }
+        window.removeEventListener('devicemotion', onMotion, false);
+      }
+
+      function onOrientation (event) {
+        if (event.alpha !== null) {
+          CFG.Device.canOrientation = true;
+        TIM.step('CFG.device', 'deviceorientation detected');
+        }
+        window.removeEventListener('deviceorientation', onOrientation, false);
+      }
+
+      window.addEventListener('devicemotion', onMotion, false);
+      window.addEventListener('deviceorientation', onOrientation, false);
+
+    },
+
     init: function () {
 
       var user = CFG.User;

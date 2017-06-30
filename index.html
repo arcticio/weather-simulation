@@ -186,12 +186,17 @@
     <script src="js/ifc.tools.js"></script>
     <script src="js/ifc.hud.js"></script>
     <script src="js/ifc.hud.widgets.js"></script>
+    <script src="js/ifc.hud.performance.js"></script>
     <script src="js/ifc.controller.js"></script>
   
     <!-- last, cause dependencies   -->
     <script src="js/aws.loader.js"></script>
 
     <script type="text/javascript">
+
+      'use strict';
+
+      // TIM.step('HTML.read')
       
       Orb.Time = Orb.Core.Time;
       Orb.Tool = Orb.Core.Tool;
@@ -202,7 +207,7 @@
 
         CFG.Manager.init();
 
-        LDR.prepare(LDR.sequence());
+        LDR.parse(LDR.sequence());
         LDR.execute(function () {
           ANI.insert(0, ANI.library.intro(800));
         });

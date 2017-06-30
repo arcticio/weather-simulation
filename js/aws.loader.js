@@ -1,57 +1,57 @@
+'use strict';
+
 var LDR = (function () {
   
   var
     self,
     delay    = 1,
-    pretasks = [],
+    queue = [],
     $header  = $('.progress .header'),
     $info    = $('.progress .info'),
     $bar     = $('.progress .bar'),
-    $meter   = $('.progress .meter'),
-  end;
+    $meter   = $('.progress .meter');
 
   return self = {
   
-    sequence: function () {
+    sequence: function () { return [
 
-      return [
+        [ TIM.step, ['LDR.sequence', 'started'] ],   
+        [ CFG.Manager.probeDevice ],
 
-        'lift off!',
-          [ SCN.info ],   
-          [ RES.init ],   
-          [ ANI.init ], 
-          [ SIM.init ], 
-          [ SCN.init ], 
+      'lift off!',
+        [ SCN.info ],   
+        [ RES.init ],   
+        [ ANI.init ], 
+        [ SIM.init ], 
+        [ SCN.init ], 
 
-        'stage 1',
-          self.loadImages,
+      'stage 1',
+        self.loadImages,
 
-        'stage 2',
-          self.loadAssets,
+      'stage 2',
+        self.loadAssets,
 
-        'stage 3',
-          self.loadObservations,
+      'stage 3',
+        self.loadObservations,
 
-        'reaching orbit',
-          [ IFC.init ], 
-          [ IFC.activate ],
+      'reaching orbit',
+        [ IFC.init ], 
 
-        'adjusting space time',
-          [ SIM.setSimTime ], 
+      'adjusting space time',
+        [ SIM.setSimTime ], 
 
-        'uploading to GPU',
-          [ SCN.prerender, null, 'takes a while...' ], 
+      'uploading to GPU',
+        [ SCN.prerender, null, 'may take a while ...' ], 
 
-        'testing GPU',
-          [ SCN.render ], 
+      'recalibrating',
+        [ SCN.render ], 
 
-        'get ready',
-          [ IFC.show ],
-          [ self.clear ],
+      'get ready',
+        [ IFC.activate ],
+        [ IFC.show ],
+        [ self.clear ],
 
-      ];
-
-    },
+    ];},
 
     clear: function () {
       $info.text('');
@@ -64,19 +64,19 @@ var LDR = (function () {
       info   && $info.text(info);
     },
 
-    prepare: function (sequence) {
+    parse: function (sequence) {
 
-      var push = pretasks.push.bind(pretasks);
+      // var push = queue.push.bind(queue);
 
       // generate tasks
       H.each(sequence, (_, item) => {
 
-        var subsequence;
+        var subsequence, func, params, info;
 
         // update header task
         if (typeof item === 'string') {
 
-          pretasks.push(function (callback){
+          queue.push(function (callback){
             self.message(item, '');
             callback();
           });
@@ -87,26 +87,28 @@ var LDR = (function () {
 
           // functions return a sequence
           subsequence = item();
-          self.prepare(subsequence);
+          self.parse(subsequence);
 
 
         // single function call
         } else if (Array.isArray(item)){
 
-          pretasks.push(function (callback) {
+          func    = item[0];                   // function
+          params  = item[1] || [];             // array to apply, 'callback' for async, 
+          info    = item[2] || 'processing';   // update info
 
-            var 
-              func    = item[0],                  // function
-              params  = item[1] || undefined,     // array to apply, 'callback' for async, 
-              info    = item[2] || 'processing';  // update info
-
+          queue.push(function (callback) {
             self.message('', info);
+            callback();
+          });
+
+          queue.push(function (callback) {
 
             if (params === 'callback') {
               func.apply(null, [callback]);
 
             } else {
-              func.apply(null, [params]);
+              func.apply(null, params);
               callback();
 
             }
@@ -127,7 +129,7 @@ var LDR = (function () {
 
       var 
         t0 = Date.now(),
-        tasks = pretasks.map( (fn, idx) => {
+        tasks = queue.map( (fn, idx) => {
 
           return function (callback) {
             

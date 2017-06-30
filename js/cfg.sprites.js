@@ -11,8 +11,8 @@ CFG.Sprites = {
     menu:     false,
     position: {
       zIndex:    5,
-      bottom:   18,
-      right:     4,
+      top:      14,
+      left:     18,
       width:    48,
       height:   48,
     },
@@ -22,6 +22,27 @@ CFG.Sprites = {
     },
     onclick: (sprite) => {
       $('#arcticio')[0].click();
+      console.log('sprite.click', sprite.name);
+    },
+  },
+
+  reload: {
+    visible:  true,
+    type:     'toggle',
+    menu:     false,
+    position: {
+      zIndex:    5,
+      bottom:   18,
+      right:    18,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.7,
+      image: 'hud/reload.png'
+    },
+    onclick: (sprite) => {
+      location.reload();
       console.log('sprite.click', sprite.name);
     },
   },
@@ -38,8 +59,8 @@ CFG.Sprites = {
       height:       72,
     },
     material: {
-      color:  new THREE.Color(0x000000),
-      opacity: 0.2,
+      color:  new THREE.Color(0x000022),
+      opacity: 0.5,
     },
   },
 
@@ -58,9 +79,11 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.9,
-      image: 'hud/performance.png'
+      // image: 'hud/performance.png'
     },
     onclick: (sprite) => {
+      sprite.widget.selectModus();
+      // IFC.Hud.sprites.performance.selectModus();
       console.log('sprite.clicked', sprite.name);
     },
   },
@@ -97,8 +120,8 @@ CFG.Sprites = {
     canvas:   document.createElement('CANVAS'),
     position: {
       zIndex:    5,
-      top:      14,
-      left:     18,
+      top:      80,
+      right:    18,
       width:    48,
       height:   48,
     },
@@ -149,8 +172,8 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     80,
-      left:    78,
+      top:    180,
+      right:   18,
       width:   48,
       height:  48,
     },
@@ -173,8 +196,8 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:     5,
-      top:       80,
-      left:     138,
+      top:       240,
+      right:     18,
       width:     48,
       height:    48,
     },
@@ -195,8 +218,8 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:      80,
-      left:    198,
+      top:     300,
+      right:    18,
       width:    48,
       height:   48,
     },
@@ -217,10 +240,10 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:      80,
-      left:    258,
-      width:    48,
-      height:   48,
+      top:    360,
+      right:   18,
+      width:   48,
+      height:  48,
     },
     material: {
       opacity: 0.5,
@@ -242,7 +265,7 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     140,
+      top:     180,
       left:     18,
       width:    48,
       height:   48,
@@ -265,7 +288,7 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     200,
+      top:     240,
       left:     18,
       width:    48,
       height:   48,
@@ -288,7 +311,7 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     260,
+      top:     300,
       left:     18,
       width:    48,
       height:   48,
@@ -311,7 +334,7 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     320,
+      top:     360,
       left:     18,
       width:    48,
       height:   48,
@@ -334,8 +357,8 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     380,
-      left:     18,
+      top:     360,
+      left:     80,
       width:    48,
       height:   48,
     },
@@ -357,8 +380,8 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     440,
-      left:     18,
+      top:     240,
+      left:     80,
       width:    48,
       height:   48,
     },
@@ -380,7 +403,7 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     500,
+      top:     420,
       left:     15,
       width:    54,
       height:   54,

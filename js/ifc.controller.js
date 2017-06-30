@@ -4,18 +4,27 @@
 IFC.Controller = (function () {
 
   const
-    PI  = Math.PI,
-    TAU = PI * 2,
-    EPS = 0.0000001
+    PI    = Math.PI,
+    TAU   = PI * 2,
+    EPS   = 0.000001,
+    max   = Math.max,
+    min   = Math.min,
+    abs   = Math.abs,
+    hypot = Math.hypot
   ;
 
   var 
-    self, interval, cam, element, home, dispatcher,
+    self, interval, cam, home, dispatcher,
 
     cfg        = {},
     spcl       = new THREE.Spherical(),
 
     enabled    = false,
+
+    frameCounter = 0,
+
+    bufOrientX = H.createRingBuffer(10),
+    bufOrientY = H.createRingBuffer(10),
 
     veloX      = 0,
     veloY      = 0,
@@ -28,6 +37,8 @@ IFC.Controller = (function () {
 
     isMoving   =  false,
     wasMoving  =  false,
+
+    status     = {},
 
     defaults   = {
 
@@ -63,25 +74,23 @@ IFC.Controller = (function () {
       keyactions: {
         'y': () => self.stop(),
         'x': () => self.reset(),
-        'a': (ix, iy, iz) => self.impulse( -ix,   0,   0),   // X, rotate left  negative
-        'd': (ix, iy, iz) => self.impulse(  ix,   0,   0),   // X, rotate right positive
-        'w': (ix, iy, iz) => self.impulse(   0, -iy,   0),   // Y, rotate up    negative, inverted
-        's': (ix, iy, iz) => self.impulse(   0,  iy,   0),   // Y, rotate down  positive, inverted
+        'a': (ix        ) => self.impulse( -ix,   0,   0),   // X, rotate left  negative
+        'd': (ix        ) => self.impulse(  ix,   0,   0),   // X, rotate right positive
+        'w': (ix, iy    ) => self.impulse(   0, -iy,   0),   // Y, rotate up    negative, inverted
+        's': (ix, iy    ) => self.impulse(   0,  iy,   0),   // Y, rotate down  positive, inverted
         'e': (ix, iy, iz) => self.impulse(   0,   0,  iz),   // Z, zoom   out   positive
         'q': (ix, iy, iz) => self.impulse(   0,   0, -iz),   // Z, zoom   in    positive
       }
 
-    },
+    };
 
-  end;
-
-  function sgn (num) { 
-    return (
-      ~~num === 0 ? 0 :
-        num >   0 ? 1 :
-          -1
-    );
-  }
+  // function sgn (num) { 
+  //   return (
+  //     ~~num === 0 ? 0 :
+  //       num >   0 ? 1 :
+  //         -1
+  //   );
+  // }
 
   function eat (event) {
     if (event) {
@@ -91,14 +100,36 @@ IFC.Controller = (function () {
     }
   }
 
-  function impScale (x, min, max) {
+  function scale (x, xMin, xMax, min, max) {
+    return (max - min) * (x - xMin) / (xMax - xMin) + min;
+  }
+
+  // function clampScale (x, xMin, xMax, min, max) {
+  //     var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
+  //     return val < min ? min : val > max ? max : val;
+  // }
+
+  function distanceScale (x, min, max) {
     var val= (max-min)*(x-cfg.minDistance)/(cfg.maxDistance-cfg.minDistance)+min;
-    return val < min ? min : val > max ? max : val;
+    // return val < min ? min : val > max ? max : val;
   }
 
   return self = {
 
     spherical: spcl,
+
+    status: function () {
+
+      status.veloX = veloX;
+      status.veloY = veloY;
+      status.veloZ = veloZ;
+
+      status.bufOrientX = bufOrientX;
+      status.bufOrientY = bufOrientY;
+
+      return status;
+
+    },
 
     init: function (camera, element, config) {
 
@@ -117,6 +148,8 @@ IFC.Controller = (function () {
         [element,   'touchcancel'],
         [document,  'keydown'],
         [document,  'keyup'],
+        // [window,    'devicemotion'],
+        [window,    'deviceorientation'],   // against fixed frame
       ];
       
       spcl.setFromVector3(cam.position);
@@ -161,6 +194,8 @@ IFC.Controller = (function () {
 
       if (enabled) {
 
+        frameCounter += 1;
+
         distance = cam.position.length();
 
         veloX = abs(veloX) > EPS ? veloX * cfg.dampX : 0;  // right/left
@@ -184,8 +219,8 @@ IFC.Controller = (function () {
           spcl.theta = spcl.theta > TAU ? spcl.theta - TAU : spcl.theta;
 
           // mind the poles
-          spcl.phi = Math.max(EPS, spcl.phi);
-          spcl.phi = Math.min(PI - EPS, spcl.phi);
+          spcl.phi = max(EPS, spcl.phi);
+          spcl.phi = min(PI - EPS, spcl.phi);
 
           cam.position.setFromSpherical(spcl);
 
@@ -214,6 +249,30 @@ IFC.Controller = (function () {
     },
 
     events: {
+      deviceorientation: function (event) {
+
+        // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Orientation_and_motion_data_explained
+        // https://www.html5rocks.com/en/tutorials/device/orientation/
+        
+        !(frameCounter % 10) && bufOrientX.push(event.gamma);  // [-90,90]    tilted right-to-left
+        !(frameCounter % 10) && bufOrientY.push(event.beta);   // [-180,180]  tilted front-to-back
+
+        var 
+          deltaX = event.gamma  - bufOrientX.avg(),
+          deltaY = event.beta   - bufOrientY.avg();
+
+        if (abs(deltaX) > 0.1 || abs(deltaX) > 0.1) {
+
+          deltaX = scale (deltaX, -30, +30, -0.1, +0.1 );
+          deltaY = scale (deltaY, -30, +30, -0.1, +0.1 );
+
+          self.impulse(deltaX, deltaY, 0);
+
+        }
+
+
+        // console.log(event.acceleration.x + ' m/s2');
+      },
       mouseleave:      function (event) {
         self.events.mouseup(event);
       },
@@ -234,7 +293,7 @@ IFC.Controller = (function () {
         var 
           deltaX, deltaY, 
           distance  = cam.position.length(),
-          impFactor = impScale(distance, 1, cfg.maxDistance - cfg.minDistance)
+          impFactor = distanceScale(distance, 1, cfg.maxDistance - cfg.minDistance)
         ;
 
         if ( !isNaN(mouse.down.x) ) {
@@ -263,7 +322,7 @@ IFC.Controller = (function () {
         var 
           deltaX = 0, deltaY = 0, deltaZ = 0,
           distance  = cam.position.length(),
-          impFactor = impScale(distance, 0.2, cfg.maxDistance - cfg.minDistance)
+          impFactor = distanceScale(distance, 0.2, cfg.maxDistance - cfg.minDistance)
         ;
 
         switch ( event.deltaMode ) {
@@ -345,7 +404,7 @@ IFC.Controller = (function () {
         var 
           deltaX, deltaY, deltaZ,
           distance  = cam.position.length(),
-          impFactor = impScale(distance, 1, cfg.maxDistance - cfg.minDistance)
+          impFactor = distanceScale(distance, 1, cfg.maxDistance - cfg.minDistance)
         ;
 
         if (event.changedTouches.length === 1) {
@@ -373,7 +432,7 @@ IFC.Controller = (function () {
           swipe.diff.x = event.changedTouches[ 0 ].pageX - event.changedTouches[ 1 ].pageX;
           swipe.diff.y = event.changedTouches[ 0 ].pageY - event.changedTouches[ 1 ].pageY;
 
-          deltaZ = Math.hypot(swipe.diff.x, swipe.diff.y) - Math.hypot(swipe.last.x, swipe.last.y);
+          deltaZ = hypot(swipe.diff.x, swipe.diff.y) - hypot(swipe.last.x, swipe.last.y);
 
           self.impulse(0, 0, -deltaZ * impFactor * 0.01);
 
@@ -392,7 +451,7 @@ IFC.Controller = (function () {
 
         var 
           distance  = cam.position.length(),
-          impFactor = impScale(distance, 1, cfg.maxDistance - cfg.minDistance),
+          impFactor = distanceScale(distance, 1, cfg.maxDistance - cfg.minDistance),
           xImp      = cfg.keyXimpulse * impFactor,
           yImp      = cfg.keyYimpulse * impFactor,
           zImp      = cfg.keyZimpulse * impFactor

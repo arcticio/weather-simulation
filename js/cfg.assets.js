@@ -79,8 +79,8 @@ CFG.Objects = {
       cube: {
         type:          'globe',
         radius:        RADIUS, 
-        texture:       'images/data/globe.data.FACE.4096.comp.png', 
-        // texture:       'images/data/globe.data.FACE.512.comp.png', 
+        // texture:       'images/data/globe.data.FACE.4096.comp.png', 
+        texture:       'images/data/globe.data.FACE.512.comp.png', 
         material: {
           transparent: true, 
           opacity:     0.99,              // removes crazy seaice effeckt
@@ -114,7 +114,7 @@ CFG.Objects = {
       visible:        false,
       title:          'atmosphere',
       type:           'mesh.module',
-      radius:         RADIUS + 0.002,
+      radius:         RADIUS + LEVEL_7,
       rotation:       [0, Math.PI * 0.5, 0],
       opacity:        0.5,
     },
@@ -191,7 +191,7 @@ CFG.Objects = {
       lightset:       'snpp',
       cube: {
         type:          'globe',
-        radius:        RADIUS + 0.01, 
+        radius:        RADIUS + LEVEL_1, 
         texture:       'data/snpp/2017-06-15.globe.snpp.FACE.2048.jpg', 
         material: {
           transparent: true, 
@@ -210,7 +210,7 @@ CFG.Objects = {
       rotation:       [0, Math.PI / 2, 0],
       cube: {
         type:         'globe',
-        radius:       RADIUS + 0.001, 
+        radius:       RADIUS + LEVEL_2, 
         texture:      'data/sst/2017-06-13.globe.sst.FACE.1024.png', 
         material: {
           transparent: true, 
@@ -228,7 +228,7 @@ CFG.Objects = {
       rotation:        [0, Math.PI * 0.5, 0],
       cube: {
         type:          'polar',
-        radius:        RADIUS + 0.002, 
+        radius:        RADIUS + LEVEL_3, 
         texture:       'data/amsr2/2017-06-13.polar.amsr2.FACE.1024.grey.trans.png', 
         material: {
           transparent: true, 
@@ -245,7 +245,7 @@ CFG.Objects = {
       type:           'simulation',
       subtype:        'multiline',
       rotation:       [0, Math.PI, 0],
-      radius:         RADIUS + 0.001, 
+      radius:         RADIUS + LEVEL_4, 
       color:          new THREE.Color('#ff0000'),
       opacity:        0.5,
       lineWidth:      RADIUS * Math.PI / 180 * 0.2,
@@ -276,7 +276,7 @@ CFG.Objects = {
       type:           'simulation',
       subtype:        'multiline',
       rotation:       [0, Math.PI, 0],
-      radius:         RADIUS + 0.005, 
+      radius:         RADIUS + LEVEL_6, 
       color:          new THREE.Color('#ff0000'),
       opacity:        0.8,
       lineWidth:      RADIUS * Math.PI / 180 * 0.1,
@@ -308,7 +308,7 @@ CFG.Objects = {
       title:          'GFS - total cloud cover',
       type:           'simulation',
       rotation:       [0, Math.PI, 0],
-      radius:         RADIUS + 0.005, 
+      radius:         RADIUS + LEVEL_5, 
       amount:         1e5,
       size:           8.0,
       sim: {
@@ -328,7 +328,7 @@ CFG.Objects = {
       title:          'GFS - generic layer',
       type:           'simulation',
       rotation:       [0, Math.PI, 0],
-      radius:         RADIUS + 0.005, 
+      radius:         RADIUS + LEVEL_4, 
       sim: {
         dataroot:     'data/gfs/tmp2m/',
         patterns: [
@@ -344,7 +344,7 @@ CFG.Objects = {
       id:             23,
       visible:        false,
       title:          'geojson land',
-      radius:         RADIUS + 0.0008,
+      radius:         RADIUS + LEVEL_3,
       type:           'geo.json',
       rotation:       [0, Math.PI / 2, 0],
       json:           'data/json/countries_states.geojson',
@@ -356,7 +356,7 @@ CFG.Objects = {
       visible:        false,
       title:          'geojson rivers',
       type:           'geo.json',
-      radius:         RADIUS + 0.01,
+      radius:         RADIUS + LEVEL_3,
       rotation:       [0, Math.PI / 2, 0],
       json:           'data/json/rivers.geojson',
       color:          new THREE.Color('#888888'),
@@ -367,9 +367,9 @@ CFG.Objects = {
       visible:        false,
       title:          '3000 cities',
       type:           'mesh.module',
-      altitude:       0.001,
+      altitude:       LEVEL_0,
       opacity:        0.8,
-      radius:         1.0,
+      radius:         RADIUS,
       ucolor:         new THREE.Color(0xffffff),
     },
 
@@ -381,7 +381,7 @@ CFG.Objects = {
       visible:        false,
       title:          'sector marker',
       type:           'mesh.calculated',
-      altitude:       0.01,
+      altitude:       LEVEL_6,
       resolution:     1,
       sector:         [15, -15, -15, 15],
       material: {

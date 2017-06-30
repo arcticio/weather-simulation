@@ -8,9 +8,9 @@ var IFC = (function () {
   var 
     self,
 
-    txloader = new THREE.TextureLoader(),
+    // txloader = new THREE.TextureLoader(),
 
-    $  = document.getElementById.bind(document),
+    // $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
     simulator  = $$('.simulator')[0],
@@ -73,32 +73,24 @@ var IFC = (function () {
 
     end;
 
-  function vector3ToLatLong (v3) {
+  // function vector3ToLatLong (v3) {
 
-    var v = v3.clone().normalize();
-    var lon = ((270 + (Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360);
+  //   var v = v3.clone().normalize();
+  //   var lon = ((270 + (Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360);
 
-    lon = lon > 180 ? -(360 - lon) : lon;
+  //   lon = lon > 180 ? -(360 - lon) : lon;
 
-    return {
-      lat: 90 - (Math.acos(v.y))  * 180 / Math.PI,
-      lon: lon,
-    };
+  //   return {
+  //     lat: 90 - (Math.acos(v.y))  * 180 / Math.PI,
+  //     lon: lon,
+  //   };
 
-  }
+  // }
 
-  function formatLatLon (prefix, ll) {
-    
-    ll.lat = ll.lat < 0 ? 'S ' + Math.abs(ll.lat).toFixed(0) : 'N ' + Math.abs(ll.lat).toFixed(0);
-    ll.lon = ll.lon < 0 ? 'E ' + Math.abs(ll.lon).toFixed(0) : 'W ' + Math.abs(ll.lon).toFixed(0);
 
-    return `<strong>${prefix}</strong> ${ ll.lat }, ${ ll.lon }`;
-
-  }
-
-  function toggleElement (ele) {
-    ele.style.display = ele.style.display === '' ? 'none' : '';
-  }
+  // function toggleElement (ele) {
+  //   ele.style.display = ele.style.display === '' ? 'none' : '';
+  // }
 
   return self = {
     
@@ -108,12 +100,7 @@ var IFC = (function () {
 
     init: function () {
 
-      var w2, h2;
-
       self.events.resize();
-
-      w2 = canvas.width  / 2;
-      h2 = canvas.height / 2;
 
       guiCont = $$('div.dg.ac')[0];
       guiMain = $$('div.dg.main.a')[0];
@@ -235,7 +222,7 @@ var IFC = (function () {
         [simulator, 'touchmove'],
         [simulator, 'touchend'],
         [simulator, 'touchcancel'],
-        // [document,  'contextmenu'],
+        [document,  'contextmenu'],
         [document,  'keydown'],
         [window,    'orientationchange'],
         // [window,    'deviceorientation'], // needs https
@@ -276,6 +263,9 @@ var IFC = (function () {
         // if (!pointer.overGlobe) {GUI.closed = !GUI.closed;}
 
       },      
+      contextmenu:   function (event) { 
+        IFC.Tools.eat(event);
+      },      
       dblclick:   function (event) { 
         // pointer.device = mouse;
 
@@ -308,14 +298,16 @@ var IFC = (function () {
         }
 
         if (mouse.button === 2) {
-          ANI.insert(0, ANI.library.cam2vector(pointer.intersect, 2));
+          if (pointer.overGlobe){
+            ANI.insert(0, ANI.library.cam2vector(pointer.intersect, 2));
+          }
         }
 
       },
       mouseup:     function (event) { 
 
-        mouse.down   = false;
-        mouse.button = NaN;
+        mouse.down     = false;
+        mouse.button   = NaN;
         pointer.device = mouse;
 
       },
@@ -333,7 +325,6 @@ var IFC = (function () {
         SCN.toggleRender(true);
       },
       mouseleave:  function (event) {
-        pointer.device = mouse;
         SCN.toggleRender(false);
       },
       keydown:     function (event) { 
@@ -341,14 +332,13 @@ var IFC = (function () {
         var keys = {
           ' ': () => SCN.toggleRender(),
           'g': () => self.toggleGUI(),
+          'h': () => IFC.Hud.toggleMenu(),
         };
 
         if (keys[event.key]) {
           keys[event.key]();          
-          event.preventDefault();
-          event.stopPropagation();
           console.log('IFC.keydown.done', `'${event.key}'`);
-          return false;
+          return IFC.Tools.eat(event);
         }
 
       },

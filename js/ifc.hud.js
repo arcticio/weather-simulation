@@ -24,6 +24,7 @@ IFC.Hud = (function () {
     mouse       = {x: NaN, y: NaN, sprite: null},
 
     menuToggled = false,
+    menuScale   = ( window.innerWidth + 64 ) / window.innerWidth * 3,
 
   end;
 
@@ -39,7 +40,7 @@ IFC.Hud = (function () {
 
       camera.position.z = 10;
 
-      menu.position.setX(menuToggled ? 0 : -400);
+      menu.scale.set(menuScale, menuScale, 1)
 
       self.initSprites();
       scene.add(menu);
@@ -49,10 +50,13 @@ IFC.Hud = (function () {
     },
     initSprites: function () {
 
+      // TODO: read sprite status from SCN.objects.XXX.visible
+
       H.each(CFG.Sprites, (name, cfg) => {
 
-        var sprite = new THREE.Sprite( new THREE.SpriteMaterial({
-          // map:          CFG.Textures[cfg.material.image],
+        var 
+          widget = IFC.Hud[name],
+          sprite = new THREE.Sprite( new THREE.SpriteMaterial({
           opacity :     cfg.material.opacity,
           transparent : true,
         }));
@@ -61,17 +65,22 @@ IFC.Hud = (function () {
         // material.map.offset.set( -0.5, -0.5 );
         // material.map.repeat.set( 2, 2 );
 
-        sprite.cfg = cfg;
-        sprite.name = name;
+        sprite.cfg    = cfg;
+        sprite.name   = name;
+        sprites[name] = sprite;
 
+        cfg.menu ? menu.add( sprite ) : scene.add( sprite );
+
+        // setup material
         if (cfg.material.image) {
           sprite.material.map = CFG.Textures[cfg.material.image];
+        } 
 
-        } else if (cfg.material.color) {
+        if (cfg.material.color) {
           sprite.material.color = cfg.material.color;
-
         }
 
+        // setup size
         if (cfg.position.width === '100%') {
           sprite.scale.set( SCN.canvas.width, cfg.position.height, 1 );
 
@@ -80,6 +89,7 @@ IFC.Hud = (function () {
 
         }
 
+        // setup event handler
         if (cfg.hover !== false) {  // is explicit
 
           sprite.onmouseenter = sprite.touchstart = function () {
@@ -99,12 +109,11 @@ IFC.Hud = (function () {
           sprite.click = cfg.onclick.bind(sprite, sprite);
         }
 
-        cfg.menu ? menu.add( sprite ) : scene.add( sprite );
-
-        sprites[name] = sprite;
-
-        // complex HUD elements
-        IFC.Hud[name] && IFC.Hud[name].init(sprite, cfg);
+        // init widget
+        if (widget) {
+          widget.init(sprite, cfg);
+          sprite.widget = widget;
+        }
 
       });
 
@@ -157,11 +166,14 @@ IFC.Hud = (function () {
       camera.bottom = - h2;
       camera.updateProjectionMatrix();
 
+      menuScale   = ( window.innerWidth + 64 ) / window.innerWidth * 3,
+
       self.posSprites();
 
     },
     toggle: function () {
 
+      // need for screen shots
       doRender = self.doRender = !doRender;
       
     },
@@ -296,21 +308,21 @@ IFC.Hud = (function () {
       },
 
       orientationchange: function (event) {
+
         self.resize();
         console.log('HUD.orientationchange')
+
       },
 
     },
 
     toggleMenu: function () {
 
-      var left;
-
       menuToggled = !menuToggled;
 
-      left = menuToggled ? 0 : -400;
+      menuToggled && menu.scale.set(0.01, 0.01, 1);
 
-      ANI.insert(0, ANI.library.menu.toggle(left, 200));
+      ANI.insert(0, ANI.library.menu.scale(menuToggled ? 1 : menuScale, 200));
 
     },
     testHit: function testHit (x, y) {
@@ -318,7 +330,7 @@ IFC.Hud = (function () {
       // works in screen space 0/0 = left/top
 
       var 
-        pos, isMenu, hasClick, hit = false, found = null, 
+        pos, isMenu, hasClick, hit = false, found = null, isActive,
         zone  = {left:0, top: 0, right: 0, bottom: 0},
         menuX = IFC.Hud.menu.position.x,
         menuY = IFC.Hud.menu.position.y,
@@ -331,9 +343,10 @@ IFC.Hud = (function () {
       H.each(sprites, (name, sprite) => {
 
         pos      = sprite.cfg.position;
-        isMenu   = sprite.cfg.menu;
+        isMenu   = sprite.cfg.menu; 
+        isActive = !(isMenu && !menuToggled);
 
-        if (!found && !!sprite.cfg.onclick) {
+        if (!found && isActive && !!sprite.cfg.onclick) {
 
           if (pos.bottom && pos.left){
 

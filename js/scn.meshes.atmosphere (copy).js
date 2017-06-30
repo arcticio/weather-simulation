@@ -1,3 +1,11 @@
+/*
+
+// https://threejs.org/docs/index.html#api/renderers/webgl/WebGLProgram
+
+vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+gl_Position = projectionMatrix * mvPosition;
+
+*/
 
 'use strict'
 
@@ -20,6 +28,9 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
       }
     `,
     fragmentShader = `
+
+      // precision highp int;
+      // precision highp float;
 
       uniform float opacity;
       uniform vec3  sunPosition;
@@ -86,6 +97,11 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
     uniforms.sunPosition.value = SIM.sunVector;
     uniforms.sunPosition.needsUpdate = true;
   };
+
+  mesh.update = function (cfg) {
+    uniforms.opacity.value = cfg.opacity;
+    uniforms.opacity.needsUpdate = true;
+  }
 
   cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
 

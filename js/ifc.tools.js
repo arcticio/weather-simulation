@@ -9,6 +9,15 @@ IFC.Tools = {
     }
   },
 
+  formatLatLon: function (prefix, ll) {
+    
+    ll.lat = ll.lat < 0 ? 'S ' + Math.abs(ll.lat).toFixed(0) : 'N ' + Math.abs(ll.lat).toFixed(0);
+    ll.lon = ll.lon < 0 ? 'E ' + Math.abs(ll.lon).toFixed(0) : 'W ' + Math.abs(ll.lon).toFixed(0);
+
+    return `<strong>${prefix}</strong> ${ ll.lat }, ${ ll.lon }`;
+
+  },
+
   updateUrl: TOOLS.debounce(function () {
 
     // TODO: coords vector to Lat/Lon
@@ -23,8 +32,7 @@ IFC.Tools = {
       hash   = CFG.Manager.assets2hash(assets) || 0,
       pos    = SCN.camera.position,
       coords = `${H.round(pos.x, prec)};${H.round(pos.y, prec)};${H.round(pos.z, prec)}`,
-      path   = `/${hash}/${time}/${coords}`,
-    end;
+      path   = `/${hash}/${time}/${coords}`;
 
     // console.log('assets', assets);
 

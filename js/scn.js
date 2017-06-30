@@ -23,13 +23,14 @@ var SCN = (function () {
       preserveDrawingBuffer:    true,   // screenshots
     }),
 
-    camera, //        = CFG.Objects.perspective.cam,
+    camera,
     scene         = new THREE.Scene(),
 
     doRender      = true,
     doAnimate     = true,
     doSimulate    = true,
 
+    extensions    = {},
     objects       = {},
 
   end;
@@ -50,9 +51,6 @@ var SCN = (function () {
       objects[name] = obj;
       objects[name].name = name;
       scene.add(obj);
-
-      // console.log('SCN.add', name);
-
     },
     toggle: function (obj, force) {
 
@@ -104,16 +102,6 @@ var SCN = (function () {
         console.error('SCN.toggleBasemap', 'illegal basemap param');
       }
 
-      // check edge case
-      if (self.isActive(basename) && basename !== CFG.defaultBasemap) {
-
-        // back to default
-        basename = CFG.defaultBasemap;
-        mesh = objects[basename];
-
-      }
-
-      // finally execute
       H.each(objects, (name, mesh) => {
 
         if (name === basename){
@@ -151,6 +139,7 @@ var SCN = (function () {
     },
     init: function (callback) {
 
+      // https://www.quirksmode.org/blog/archives/2012/07/more_about_devi.html
       // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
       // webgl.min_capability_mode
 
@@ -159,7 +148,6 @@ var SCN = (function () {
       renderer.autoClear = false;             // cause HUD
 
       self.resize();
-      // self.logInfo();
 
     },
     loader: {
@@ -354,6 +342,7 @@ var SCN = (function () {
         }
 
       IFC.Hud.performance.end();
+      IFC.Hud.performance.render();
 
       lastTimestamp = timestamp;
       frame += 1;
@@ -363,12 +352,18 @@ var SCN = (function () {
 
       var gl = renderer.context;
 
+      renderer.context.getSupportedExtensions().forEach(ex => extensions[ex] = ex);
+
       TIM.step('REN.info', 'maxVertexUniforms', renderer.capabilities.maxVertexUniforms);
       TIM.step('REN.info', 'devicePixelRatio', devicePixelRatio);
       TIM.step('REN.info', 'max_texture_size', gl.getParameter(gl.MAX_TEXTURE_SIZE));
       TIM.step('REN.info', 'max_cube_map_texture_size', gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE));
 
-      TIM.step('REN.extension', gl.getSupportedExtensions().filter( ex => ex.indexOf('float_linear') !== -1 ));
+      if (extensions.OES_texture_float && extensions.OES_texture_float_linear) {
+        TIM.step('REN.extensions', 'float textures supported');        
+      } else {
+        TIM.step('REN.extensions', 'float textures not supported');        
+      }
 
     },
     logFullInfo: function () {
