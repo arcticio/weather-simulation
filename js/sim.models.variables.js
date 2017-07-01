@@ -108,7 +108,7 @@ SIM.Models.variables = (function () {
 
             // out of range condition
             uniforms.doe.value = 0.0;
-            // console.log('updated', 0);
+            console.log('updated', 0);
 
           }
 
@@ -191,7 +191,7 @@ SIM.Models.variables = (function () {
                 vec3(0.8000000, 0.2509803, 0.250980)                 // dark red
             );
 
-              gl_FragColor = vec4(color, 0.4);
+              gl_FragColor = vec4(color, 0.3);
 
           }
           

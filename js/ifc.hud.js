@@ -6,12 +6,12 @@ IFC.Hud = (function () {
   var 
     self,
 
-    $  = document.getElementById.bind(document),
+    // $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
     doRender    = true,
 
-    loader      = $$('.interface img.loader')[0],
+    // loader      = $$('.interface img.loader')[0],
     simulator   = $$('.simulator')[0],
 
                          // OrthographicCamera ( left, right, top, bottom, near, far )
@@ -24,9 +24,8 @@ IFC.Hud = (function () {
     mouse       = {x: NaN, y: NaN, sprite: null},
 
     menuToggled = false,
-    menuScale   = ( window.innerWidth + 64 ) / window.innerWidth * 3,
-
-  end;
+    menuScale   = ( window.innerWidth + 64 ) / window.innerWidth * 3
+  ;
 
   return self = {
 
@@ -198,10 +197,7 @@ IFC.Hud = (function () {
 
     step: function (frame, deltatime) {
 
-      // update every second
-      if ( !(frame % 60) ) {
-        IFC.Hud.time.render();
-      }
+      !(frame % 4) && IFC.Hud.time.render();
 
       IFC.Hud.spacetime.render();
 
