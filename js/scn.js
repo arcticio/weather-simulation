@@ -69,7 +69,8 @@ var SCN = (function () {
         }
       }
 
-      IFC.Tools.updateUrl();
+      IFC.urlDirty = true;
+      // IFC.Tools.updateUrl();
 
     },
 
@@ -262,12 +263,10 @@ var SCN = (function () {
         IFC.step(frame, deltasecs);
         IFC.Hud.step(frame, deltasecs);
 
-        if ( !(frame % 1) ) {
-          doSimulate && SIM.step(frame, deltasecs);
-        }
+        // doSimulate && SIM.step(frame, deltasecs);
 
         // always check actions
-        doAnimate  && ANI.step(frame, deltasecs);
+        doAnimate && ANI.step(frame, deltasecs);
 
         if ( doRender && !(frame % 1) ) {
           renderer.clear();
@@ -288,7 +287,7 @@ var SCN = (function () {
 
       var gl = renderer.context;
 
-      renderer.context.getSupportedExtensions().forEach(ex => extensions[ex] = ex);
+      gl.getSupportedExtensions().forEach(ex => extensions[ex] = ex);
 
       CFG.Device.devicePixelRatio  = devicePixelRatio;
       CFG.Device.maxVertexUniforms = renderer.capabilities.maxVertexUniforms;
@@ -298,45 +297,18 @@ var SCN = (function () {
       CFG.Device.OES_texture_float         = !!extensions.OES_texture_float;
       CFG.Device.OES_texture_float_linear  = !!extensions.OES_texture_float_linear;
 
-      // TIM.step('REN.info', 'maxVertexUniforms', renderer.capabilities.maxVertexUniforms);
-      // TIM.step('REN.info', 'devicePixelRatio', devicePixelRatio);
-      // TIM.step('REN.info', 'max_texture_size', gl.getParameter(gl.MAX_TEXTURE_SIZE));
-      // TIM.step('REN.info', 'max_cube_map_texture_size', gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE));
-
-      // if (extensions.OES_texture_float && extensions.OES_texture_float_linear) {
-      //   TIM.step('REN.extensions', 'float textures supported');        
-      // } else {
-      //   TIM.step('REN.extensions', 'float textures not supported');        
-      // }
-
     },
     logFullInfo: function () {
 
       // http://codeflow.org/entries/2013/feb/22/how-to-write-portable-webgl/
-
       // Each uniform is aligned to 4 floats.
-
-      // MAX_VERTEX_UNIFORM_VECTORS
-      // MAX_FRAGMENT_UNIFORM_VECTORS
-
-      // FLOAT relevant: 
-      // DataTexture
-      //   OES_texture_float, 
-      //   OES_texture_half_float,
-      // THREE.LinearFilter
-      //   OES_texture_float_linear,
-      //   OES_texture_half_float_linear
 
       var gl = renderer.context;
 
+      console.log('SAMPLES',                      gl.getParameter(gl.SAMPLES));
+      console.log('MAX_RENDERBUFFER_SIZE',        gl.getParameter(gl.MAX_RENDERBUFFER_SIZE));
       console.log('MAX_VERTEX_UNIFORM_VECTORS ',  gl.getParameter('MAX_VERTEX_UNIFORM_VECTORS', gl.MAX_VERTEX_UNIFORM_VECTORS));
       console.log('MAX_FRAGMENT_UNIFORM_VECTORS', gl.getParameter('MAX_FRAGMENT_UNIFORM_VECTORS', gl.MAX_FRAGMENT_UNIFORM_VECTORS));
-      console.log('MAX_TEXTURE_SIZE', gl.getParameter('MAX_TEXTURE_SIZE', gl.MAX_TEXTURE_SIZE));
-      console.log('SAMPLES',          gl.getParameter(gl.SAMPLES));
-
-      console.log('MAX_TEXTURE_SIZE', gl.getParameter(gl.MAX_TEXTURE_SIZE));
-      console.log('MAX_CUBE_MAP_TEXTURE_SIZE', gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE));
-      console.log('MAX_RENDERBUFFER_SIZE', gl.getParameter(gl.MAX_RENDERBUFFER_SIZE));
 
       console.log('renderer', JSON.stringify({
 

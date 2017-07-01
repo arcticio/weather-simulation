@@ -2,27 +2,36 @@
 'use strict'
 
 
-SIM.Datagram = function (vari) {
+SIM.Datagram = function (dods) {
 
-    this.data = {};
-    this.vari  = vari;
+    this.data       = { /* doe: data */ };
+    this.attributes = { /* doe: data */ };
+
+    this.vari = '';
+    this.parse(dods);
+
 };
 
 SIM.Datagram.prototype = {
 
     constructor: SIM.Datagram,
 
-    parse: function (doe, dods) {
+    parse: function (dods) {
 
-        var data = this.parseMultiDods(dods);
+        var result = this.parseMultiDods(dods);
 
-        this.data[doe] = data;
+        this.info = this.analyze(result);
 
-        this.info = this.analyze(data);
+        this.vari = result.vari;
+        this.doe  = result.doe;
 
-        return this;
+        this.data[result.doe] = result.data;
+
     },
 
+    append: function (datagramm) {
+        Object.assign(this.data, datagramm.data);
+    },
     addCyclic: function () {
         // for full globe
     },
@@ -141,7 +150,7 @@ SIM.Datagram.prototype = {
             trenner = ', ',
             snan  = '9.999E20',
             lines = dods.split('\n').filter( l => l.trim().length ),
-            head  = lines[0], //.slice(0, 1)[0],
+            head  = lines[0],
             vari  = head.split(trenner)[0],
             shape = head.match( /(\[\d+)/g ).join(' ').match(/(\d+)/g).map(Number),
 
@@ -176,17 +185,33 @@ SIM.Datagram.prototype = {
 
     attribute: function (doe) {
 
-        var 
-            row,
-            source = this.data[doe].data,
-            len    = source.length,
+        var row, source, len, target;
+
+        // debug overlay w/ mask
+        doe = this.vari === 'landsfc' ? H.firstAttr(this.data) : doe;
+
+        if (this.attributes[doe]) {
+            return this.attributes[doe];
+
+        } else if (( source = this.data[doe] )) {
+
+            len    = source.length;
             target = new Float32Array(len);
 
-        for (row = 0; row < 180; row++) {
-            target.set( source.subarray(row * 360, (row +1) * 360), (179 - row) * 360)
+            // upside down data, doing again !
+
+            for (row = 0; row < 181; row++) {
+                target.set( source.subarray(row * 360, (row +1) * 360), (180 - row) * 360)
+            }
+
+            return this.attributes[doe] = target;
+
+        } else {
+            console.warn('OOR', doe, 'have:', Object.keys(this.data));
+            return null;
         }
 
-        return target;
+
 
     },
     linearXY: function (doe, lat, lonin) {

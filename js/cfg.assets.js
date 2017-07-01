@@ -321,12 +321,15 @@ CFG.Objects = {
       visible:        false,
       title:          'GFS - generic layer',
       type:           'simulation',
-      rotation:       [0, Math.PI, 0],
+      rotation:       [0, PI - PI/360, 0],
       radius:         RADIUS + LEVEL_4, 
       sim: {
+        variable:     'tmp2m',
         dataroot:     'data/gfs/tmp2m/',
         patterns: [
+          // '[landsfc.1.00.dods]', // '2017-06-13-12.tcdcclm.10.dods',
           'YYYY-MM-DD-HH[.tmp2m.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
+
         ],
       }
     },

@@ -1,11 +1,8 @@
-'use strict';
 
 var SIM = (function () {
 
   var 
     self,
-    renderer,
-    camera,
 
     $$             = document.querySelectorAll.bind(document),
 
@@ -28,9 +25,7 @@ var SIM = (function () {
       doe:         NaN,
       start:       moment.utc('2017-01-01-00', 'YYYY-MM-DD-HH'),  // give full year, no purpose
       end:         moment.utc('2017-12-31-18', 'YYYY-MM-DD-HH'),  // complete full year
-
       now:         moment.utc(),                                  // now, plus init show
-      // show:        moment.utc('2017-06-13-12', 'YYYY-MM-DD-HH'),  // shown on screen
       model:       null,
       interval:    NaN,                                      // only calc full hours
       pointer:     NaN,                                           // coming from interface
@@ -42,10 +37,9 @@ var SIM = (function () {
   return self = {
 
     time,
-    // models,
-    // datagrams,
+    models,
+    datagrams,
     coordsPool,
-    // timerange,
     sunVector,
     sunDirection,
 
@@ -76,9 +70,13 @@ var SIM = (function () {
     },
     setSimTime: function (val, what) {
 
+      var mom;
+
       if (val === undefined && what === undefined) {
         // init
-        time.model = TIMENOW;
+        // rstrict now at avail dods
+        mom = TIMENOW;
+        time.model = mom.clone().hours(mom.hours() - (mom.hours() % 6));  
 
       } else if (typeof val === 'number' && what === undefined) {
 
@@ -111,14 +109,12 @@ var SIM = (function () {
       // display
       time.iso = time.model.format('YYYY-MM-DD HH');
 
-      // fixed at avail data
-      time.doe = self.calcdoe(time.model);
+      // gfs data
+      time.doe = self.mom2doe(time.model);
 
-      IFC.Hud.time.render();
-      IFC.Tools.updateUrl();
-
-      // H.each(models, (_, model) => model.show(doe) );
       self.updateSun();
+
+      IFC.urlDirty = true;
 
     },
 
@@ -137,7 +133,7 @@ var SIM = (function () {
       phi     = orbSun.dec * Math.PI / 180 - Math.PI / 2;
 
       //  Spherical( radius, phi, theta )
-      sunSphererical.set(4, 0, -Math.PI / 2);
+      sunSphererical.set(4, 0, -PI / 2);
       sunSphererical.theta -= theta;
       sunSphererical.phi   -= phi;
 
@@ -145,26 +141,19 @@ var SIM = (function () {
       sunVector.setFromSpherical(sunSphererical);
       sunDirection.copy(sunVector).normalize();
 
-      // SCN.updateSun(sunDirection);
-
     },
     loadModel: function (name, cfg, callback) {
 
       !SIM.Models[name] && console.log('Model: "' + name + '" not avail, have:', Object.keys(SIM.Models));
 
       var 
-        vari, doe,
+        vari, datagramm,
+        model   = SIM.Models[name].create(cfg, datagrams),
         mom     = self.doe2mom(time.doe),
-        moms    = [
-          mom, 
-          mom.clone().add( 6, 'hours'),
-          mom.clone().add(12, 'hours'),
-          mom.clone().add(18, 'hours'),
-        ],
-        factory = SIM.Models[name],
-        model   = factory.create(cfg, datagrams),
-        urls    = model.calcUrls(moms);
-
+        hours   = [-12, -6, 0, 6, 12, 18, 24, 30, 36, 42],
+        moms    = hours.map( h => mom.clone().add( h, 'hours') ),
+        urls    = model.calcUrls(moms)
+      ;
 
       models[name] = model;
 
@@ -174,18 +163,16 @@ var SIM = (function () {
 
           responses.forEach(function (response) {
 
-            vari = response.url.split('.').slice(-3)[0];
-            doe  = model.url2doe(response.url);
+            datagramm = new SIM.Datagram(response.data);
+            vari = datagramm.vari;
 
             if (!datagrams[vari]) {
-              datagrams[vari] = new SIM.Datagram(vari).parse(doe, response.data);
+              datagrams[vari] = datagramm;
 
             } else {
-              datagrams[vari].parse(doe, response.data);
+              datagrams[vari].append(datagramm);
 
             }
-
-            // model.prepare(doe);
 
           });
 
@@ -201,24 +188,12 @@ var SIM = (function () {
       }});    
 
     },
-    step: function (frame, deltatime) {
-
-      H.each(models, (_, model) => model.step(frame, deltatime) );
-
-    },
 
   };
 
 }());
 
-
-
-
-
-
 /*
-
-
 
 // https://stackoverflow.com/questions/44098678/how-to-rotate-a-vector3-using-vector2
 
@@ -227,15 +202,5 @@ var SIM = (function () {
 // A negative u wind is from the east. 
 // The v wind runs parallel to the y axis. 
 // A positive v wind is from the south, and a negative v wind is from the north.
-
-
-
-
-
-
-
-
-
-
 
 */

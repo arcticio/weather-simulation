@@ -175,9 +175,10 @@ IFC.Hud.time = (function () {
 
       var 
         metrics,
-        // now = moment().format('YYYY-MM-DD HH:mm:ss'),
         simDate = SIM.time.model.format('YYYY-MM-DD'),
-        simTime = SIM.time.model.format('HH:mm [UTC]');
+        simTime = SIM.time.model.format('HH:mm [UTC]'),
+        simDoe  = SIM.time.doe.toFixed(2)
+      ;
 
       if (ctx) {
 
@@ -187,14 +188,18 @@ IFC.Hud.time = (function () {
         // ctx.fillRect(0, 0, cvs.width, cvs.height);
 
         ctx.fillStyle = '#fff'
-        ctx.font = 'bold 22px monospace'
 
+        ctx.font = 'bold 22px monospace'
         metrics = ctx.measureText(simDate);
         ctx.fillText(simDate, (cvs.width - metrics.width) / 2, 34);
 
         ctx.font = 'bold 16px monospace'
         metrics = ctx.measureText(simTime);
         ctx.fillText(simTime, (cvs.width - metrics.width) / 2, 54);
+
+        ctx.font = 'bold 11px monospace'
+        metrics = ctx.measureText(simDoe);
+        ctx.fillText(simDoe, (cvs.width - metrics.width) / 2, 66);
 
         texture.needsUpdate = true;
 

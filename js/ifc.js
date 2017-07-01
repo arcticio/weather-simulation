@@ -1,6 +1,4 @@
 
-'use strict';
-
 // https://github.com/sindresorhus/screenfull.js/
 
 var IFC = (function () {
@@ -14,6 +12,8 @@ var IFC = (function () {
     fullscreen = $$('.fullscreen')[0],
 
     guiCont, guiMain, guiOpen = false,
+
+    urlDirty   = false,
 
     controller, 
     // controllers,
@@ -66,9 +66,9 @@ var IFC = (function () {
     },
 
     raycaster = new THREE.Raycaster(),
-    marker    = new THREE.Vector3(),
+    marker    = new THREE.Vector3()
 
-    end;
+  ;
 
   return self = {
     
@@ -76,9 +76,13 @@ var IFC = (function () {
     pointer,
     controller,
 
+    urlDirty,
+
     init: function () {
 
       self.events.resize();
+
+      self.urlDirty = urlDirty;
 
       guiCont = $$('div.dg.ac')[0];
       guiMain = $$('div.dg.main.a')[0];
@@ -141,6 +145,11 @@ var IFC = (function () {
         },
         onwheel: function (callback, deltaX, deltaY, deltaZ) {
 
+          /* TODO: wheel, drag
+              timescale: on bottom 1/3 screen.width = 1 day
+              timescale: on top    1/3 screen.width = 1 hour
+          */
+
           var timescale = H.scale(pointer.device.py, 0, canvas.height, 0.5, 20) ;
 
           if (pointer.overGlobe) {
@@ -149,7 +158,7 @@ var IFC = (function () {
 
           } else {
             IFC.Hud.spacetime.updateModus('time');
-            SIM.setSimTime( ~~(deltaX * -5) * timescale, 'minutes');
+            SIM.setSimTime( ~~(deltaX * -5 * timescale), 'minutes');
             callback(0, 0, 0);
 
           }
@@ -160,11 +169,12 @@ var IFC = (function () {
             't': () => SIM.setSimTime( -1, 'hours'),
             'z': () => SIM.setSimTime(  1, 'hours'),
           };
-          actions[key]();
+          actions[key] && actions[key]();
         },
 
         onRelax: function () {
-          IFC.Tools.updateUrl();
+          self.urlDirty = true;
+          // IFC.Tools.updateUrl();
         }
 
       });
@@ -186,7 +196,9 @@ var IFC = (function () {
       $$('canvas.simulator')[0].style.display = 'block';
 
       IFC.Hud.resize();
+      IFC.Hud.time.render();
       IFC.Tools.updateUrl();
+      self.urlDirty = false;
 
     },
       
@@ -228,6 +240,11 @@ var IFC = (function () {
 
       self.updatePointer();
       self.updateGlobe();
+
+      if (self.urlDirty)  {
+        IFC.Tools.updateUrl();
+        self.urlDirty = false;
+      }
 
     },
     events: {

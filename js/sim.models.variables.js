@@ -8,25 +8,9 @@ SIM.Models.variables = (function () {
   var 
     self,     
     cfg,
-    basedoe,
     datagram,
     model = {
-      obj:     new THREE.Object3D(),
-      step:   function () {
-        // H.each(model.sectors, (_, sec) => sec.step() )
-      },
-      url2doe: function (url) {
-
-        // "data/gfs/tcdcclm/2017-06-15-12.tcdcclm.10.dods"
-        // TODO: deal with multiple patterns
-
-        var 
-          file = url.split('/').slice(-1)[0],
-          mom  = moment.utc(file, cfg.sim.patterns[0]);
-
-        return mom.toDate() / 864e5;
-
-      },
+      obj: new THREE.Object3D(),
       calcUrls: function (moms) {
 
         var urls = [];
@@ -44,56 +28,15 @@ SIM.Models.variables = (function () {
 
   end;
 
-
   return self = {
-    convLL: function (lat, lon, alt) {return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, alt); },
-    convV3: function (v3, alt) { return TOOLS.vector3ToLatLong(v3, CFG.earth.radius + alt); },
-    findDoes: function (target) {
-
-      var doe1, doe2;
-
-      Object.keys(model.objects)
-        .sort( (a, b) =>  parseFloat(a) > parseFloat(b))
-        .forEach( doe => {
-
-          doe1 = doe < target          ? doe : doe1;
-          doe2 = doe > target && !doe2 ? doe : doe2;
-
-        });
-
-        return [doe1, doe2];
-
-    },
     create: function (config, simdata) {
 
       cfg = config;
       datagram = simdata;
 
-      model.show    = self.show;
       model.prepare = self.prepare;
 
       return model;
-
-    },
-    show: function (doe) {
-
-      var 
-        mesh = model.obj.children[0],
-        doe1 = doe - (doe % 0.25),
-        doe2 = doe1 + 0.25;
-
-      if (doe1 !== basedoe){
-
-        mesh.geometry.attributes.doe1.array = datagram['tmp2m'].attribute(doe1);
-        mesh.geometry.attributes.doe2.array = datagram['tmp2m'].attribute(doe2);
-
-        mesh.geometry.attributes.doe1.needsUpdate = true;
-        mesh.geometry.attributes.doe2.needsUpdate = true;
-
-      }
-
-      mesh.material.uniforms.doe.value = doe;
-      mesh.material.uniforms.doe.needsUpdate = true;
 
     },
     prepare: function ( doe ) {
@@ -101,23 +44,22 @@ SIM.Models.variables = (function () {
       TIM.step('Model.variables.in', doe);
 
       var
-        t0 = Date.now(),
-        i, material, 
-        doe1     = doe - (doe % 0.25),
-        doe2     = doe1 + 0.25,
-        amount   = 180 * 360,
-        radius   = cfg.radius,
+        t0 = Date.now(), 
+        
+        doe1       = doe - (doe % 0.25),
+        doe2       = doe1 + 0.25,
+        
         geometry = new THREE.SphereBufferGeometry(cfg.radius, 359, 180),
- 
+
         attributes = {
-          doe1:    new THREE.BufferAttribute( datagram['tmp2m'].attribute(doe1), 1 ),
-          doe2:    new THREE.BufferAttribute( datagram['tmp2m'].attribute(doe2), 1 ),
+          doe1:    new THREE.BufferAttribute( datagram[cfg.sim.variable].attribute(doe1), 1 ),
+          doe2:    new THREE.BufferAttribute( datagram[cfg.sim.variable].attribute(doe2), 1 ),
         },
 
         uniforms = {
-          sunPosition: {'type': 'v3', 'value': SIM.sunVector},
-          opacity:     {'type': 'f',  'value': cfg.opacity},
-          doe:         {'type': 'f',  'value': cfg.doe},
+          doe:         { type: 'f',   value: doe },
+          opacity:     { type: 'f',   value: cfg.opacity },
+          sunPosition: { type: 'v3',  value: SIM.sunVector },
         },
         
         material = new THREE.ShaderMaterial( {
@@ -136,12 +78,50 @@ SIM.Models.variables = (function () {
       geometry.addAttribute( 'doe1', attributes.doe1 );
       geometry.addAttribute( 'doe2', attributes.doe2 );
 
-      basedoe = doe1;
       model.obj.add(mesh);
 
-      mesh.onBeforeRender = function () {
+      function updateDoe (doe) {
+
+        var attrDoe1, attrDoe2, datagramm = datagram[cfg.sim.variable];
+
+        uniforms.doe.value = doe;
+
+        if (doe < doe1 || doe > doe2) {
+
+          doe1 = doe  - (doe % 0.25);
+          doe2 = doe1 + 0.25;
+
+          attrDoe1 = datagramm.attribute(doe1);
+          attrDoe2 = datagramm.attribute(doe2);
+
+          if ( attrDoe1 && attrDoe2 ) {
+
+            // console.log('updated', doe1, doe2, doe);
+
+            geometry.attributes.doe1.array = attrDoe1;
+            geometry.attributes.doe2.array = attrDoe2;
+
+            geometry.attributes.doe1.needsUpdate = true;
+            geometry.attributes.doe2.needsUpdate = true;
+
+          } else {
+
+            // out of range condition
+            uniforms.doe.value = 0.0;
+            // console.log('updated', 0);
+
+          }
+
+        }
+
+      }
+
+      mesh.onAfterRender = function () {
+        updateDoe(SIM.time.doe);
+        uniforms.doe.needsUpdate = true;
         uniforms.sunPosition.value = SIM.sunVector;
         uniforms.sunPosition.needsUpdate = true;
+
       };
 
       TIM.step('Model.variables.out', Date.now() -t0, 'ms');
@@ -156,17 +136,13 @@ SIM.Models.variables = (function () {
         attribute float doe1;
         attribute float doe2;
 
-        uniform float doe;
+        varying float vData1;
+        varying float vData2;
 
-        varying float vValue;
-        varying vec3 vNormal, vPosition;
-        
         void main() {
 
-          vNormal   = normal;
-          vPosition = (modelMatrix * vec4(position, 1.0)).xyz;
-
-          vValue = doe1;
+          vData1 = doe1;
+          vData2 = doe2;
 
           gl_Position  = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 
@@ -182,48 +158,43 @@ SIM.Models.variables = (function () {
         // precision highp int;
         // precision highp float;
 
-        uniform float opacity, doe;
-        uniform vec3  sunPosition;
-        uniform mat4  modelMatrix;       // = object.matrixWorld
-        uniform mat3  normalMatrix;      // = inverse transpose of modelViewMatrix
+        uniform float doe;
 
-        varying float vValue;
-        varying vec3  vNormal, vPosition;
+        varying float vData1;
+        varying float vData2;
 
-        float value, fresnel, atmoFactor, reflecting, dotLight;
+        float frac, fac1, fac2, value;
 
-        vec3 worldNormal, worldView;
-        vec3 color, colorDay, colorDark, colorSunset, colorNight;
-
-        float scale (float x, float xMin, float xMax, float min, float max) {
-
-          return (max - min) * (x - xMin) / (xMax - xMin) + min;
-
-        }
+        vec3 color;
 
         void main() {
+
+          if (doe < 1.0) {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 0.4); // error
+
+          } else {
+
+            frac = fract(doe);
+            fac2 = mod(frac, 0.25) * 4.0;
+            fac1 = 1.0 - fac2;
+
+            value = -273.15 + (vData1 * fac1 + vData2 * fac2) ;
+
+            color = (
+              value < -30.0 ? vec3(0.6666666, 0.4000000, 0.666666) : // dark violett
+              value < -20.0 ? vec3(0.8078431, 0.6078431, 0.898039) :
+              value < -10.0 ? vec3(0.4235294, 0.8078431, 0.886274) :
+              value <  +0.0 ? vec3(0.4235294, 0.9372549, 0.423529) :
+              value < +10.0 ? vec3(0.9294117, 0.9764705, 0.423529) :
+              value < +20.0 ? vec3(0.9843137, 0.7921568, 0.384313) :
+              value < +30.0 ? vec3(0.9843137, 0.3960784, 0.305882) :
+                vec3(0.8000000, 0.2509803, 0.250980)                 // dark red
+            );
+
+              gl_FragColor = vec4(color, 0.4);
+
+          }
           
-          worldNormal = normalize ( normalMatrix * vNormal );                            
-          worldView   = normalize ( cameraPosition -  (modelMatrix * vec4(vPosition, 1.0)).xyz );
-
-          // dot world space normal with world space sun vector
-          dotLight    = dot(worldNormal, sunPosition);
-
-          value = -273.15 + vValue;
-
-          color = (
-            value < -30.0 ? vec3(0.6666666, 0.4000000, 0.666666) : // dark violett :
-            value < -20.0 ? vec3(0.8078431, 0.6078431, 0.898039) :
-            value < -10.0 ? vec3(0.4235294, 0.8078431, 0.886274) :
-            value <  +0.0 ? vec3(0.4235294, 0.9372549, 0.423529) :
-            value < +10.0 ? vec3(0.9294117, 0.9764705, 0.423529) :
-            value < +20.0 ? vec3(0.9843137, 0.7921568, 0.384313) :
-            value < +30.0 ? vec3(0.9843137, 0.3960784, 0.305882) :
-              vec3(0.8000000, 0.2509803, 0.250980)               // dark red
-          );
-
-
-          gl_FragColor = vec4(color * -dotLight * 0.2, 0.4);
 
         }
 
