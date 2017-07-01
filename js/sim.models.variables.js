@@ -209,24 +209,21 @@ SIM.Models.variables = (function () {
           // dot world space normal with world space sun vector
           dotLight    = dot(worldNormal, sunPosition);
 
-          value = scale(-273.15 + vValue, -40.0, +40.0, 0.0, 1.0);
+          value = -273.15 + vValue;
 
-          value = (
-            value < 0.1 ? 0.1 :
-            value < 0.2 ? 0.2 :
-            value < 0.3 ? 0.3 :
-            value < 0.4 ? 0.4 :
-            value < 0.5 ? 0.5 :
-            value < 0.6 ? 0.6 :
-            value < 0.7 ? 0.7 :
-            value < 0.8 ? 0.8 :
-            value < 0.9 ? 0.9 :
-            1.0
+          color = (
+            value < -30.0 ? vec3(0.6666666, 0.4000000, 0.666666) : // dark violett :
+            value < -20.0 ? vec3(0.8078431, 0.6078431, 0.898039) :
+            value < -10.0 ? vec3(0.4235294, 0.8078431, 0.886274) :
+            value <  +0.0 ? vec3(0.4235294, 0.9372549, 0.423529) :
+            value < +10.0 ? vec3(0.9294117, 0.9764705, 0.423529) :
+            value < +20.0 ? vec3(0.9843137, 0.7921568, 0.384313) :
+            value < +30.0 ? vec3(0.9843137, 0.3960784, 0.305882) :
+              vec3(0.8000000, 0.2509803, 0.250980)               // dark red
           );
 
-          // value = (vValue) * 1.0; //(vValue + 1.0 ) / 2.0;
 
-          gl_FragColor = vec4(value, value * 0.5, 0.0, 0.8);
+          gl_FragColor = vec4(color * -dotLight * 0.2, 0.4);
 
         }
 

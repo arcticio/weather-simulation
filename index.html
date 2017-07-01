@@ -80,8 +80,8 @@
       <tr>
         <td class="title">
           <h1>Hypatia - Weather Simulation</h1>
-          <h3><a id="homelink" target="_blank" href="https://github.com/arcticio/weather-simulation">Help &amp; Info</a></h3>
-          <h3><a id="arcticio" target="_blank" href="http://www.arctic.io">arctic.io</a></h3>
+          <h3><a id="homelink" rel="noreferrer noopener" href="https://github.com/arcticio/weather-simulation">Help &amp; Info</a></h3>
+          <h3><a id="arcticio" rel="noreferrer noopener" target="_blank" href="http://www.arctic.io">arctic.io</a></h3>
         </td>
       </tr>
       <tr>
@@ -200,6 +200,8 @@
       
       Orb.Time = Orb.Core.Time;
       Orb.Tool = Orb.Core.Tool;
+
+      document.querySelectorAll('.progress .header')[0].innerHTML = 'main engine started';
 
       window.onload = function () {
 

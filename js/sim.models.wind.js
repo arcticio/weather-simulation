@@ -1,6 +1,4 @@
 
-'use strict';
-
 SIM.Models = SIM.Models || {};
 
 SIM.Models.wind = (function () {

@@ -8,9 +8,6 @@ var IFC = (function () {
   var 
     self,
 
-    // txloader = new THREE.TextureLoader(),
-
-    // $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
     simulator  = $$('.simulator')[0],
@@ -19,7 +16,7 @@ var IFC = (function () {
     guiCont, guiMain, guiOpen = false,
 
     controller, 
-    controllers,
+    // controllers,
 
     modus =    'space',
 
@@ -73,25 +70,6 @@ var IFC = (function () {
 
     end;
 
-  // function vector3ToLatLong (v3) {
-
-  //   var v = v3.clone().normalize();
-  //   var lon = ((270 + (Math.atan2(v.x , v.z)) * 180 / Math.PI) % 360);
-
-  //   lon = lon > 180 ? -(360 - lon) : lon;
-
-  //   return {
-  //     lat: 90 - (Math.acos(v.y))  * 180 / Math.PI,
-  //     lon: lon,
-  //   };
-
-  // }
-
-
-  // function toggleElement (ele) {
-  //   ele.style.display = ele.style.display === '' ? 'none' : '';
-  // }
-
   return self = {
     
     modus,
@@ -105,17 +83,17 @@ var IFC = (function () {
       guiCont = $$('div.dg.ac')[0];
       guiMain = $$('div.dg.main.a')[0];
 
-      // move gui.dat to fullscreen container and hide
+      // move gui.dat to fullscreen container
       fullscreen.appendChild(guiCont);
 
-      // center gui.dat
+      // pos gui.dat
       guiMain.style.margin   = '0';
       guiMain.style.top      = '72px';
       guiMain.style.right    = '0';
       guiMain.style.width    = '';
       guiMain.style.position = 'absolute';
 
-      controllers = self.controllers = GUIcontrollers;
+      // controllers = self.controllers = GUIcontrollers;
 
       // check this
       raycaster.params.Points.threshold = 0.001;
@@ -126,6 +104,13 @@ var IFC = (function () {
 
         minDistance: CFG.Camera.minDistance,
         maxDistance: CFG.Camera.maxDistance,
+
+        onorient: function (callback, deltaX, deltaY, deltaZ) {
+
+          // eat for now
+          callback(0, 0, 0);
+
+        },
 
         ondrag: function (callback, deltaX, deltaY, deltaZ) {
 
@@ -140,14 +125,14 @@ var IFC = (function () {
             } else {
               // overides space modus
               IFC.Hud.spacetime.updateModus('time');
-              SIM.setSimTime(deltaX, 'hours')
+              SIM.setSimTime(deltaX, 'hours');
               callback(0, 0, 0);
 
             }
 
           } else  {
             IFC.Hud.spacetime.updateModus('time');
-            SIM.setSimTime(deltaX, 'hours')
+            SIM.setSimTime(deltaX, 'hours');
             callback(0, 0, 0);
 
           }
@@ -235,7 +220,6 @@ var IFC = (function () {
       ], (_, e) => e[0].addEventListener(e[1], self.events[e[1]], false) );
 
       controller.activate();
-      // controller.enable();
 
     },
     step: function step (frame, deltatime) {
@@ -249,7 +233,11 @@ var IFC = (function () {
     events: {
       resize: function () {
 
+        // console.log('1', innerHeight);
+
         SCN.resize();
+
+        // console.log('2', innerHeight);
 
         canvas.width    = SCN.renderer.domElement.width;
         canvas.height   = SCN.renderer.domElement.height;
@@ -258,7 +246,7 @@ var IFC = (function () {
 
         IFC.Hud.resize();
 
-        // console.log('IFC.resize', 'w', canvas.width, 'h', canvas.height);
+        // console.log('3', innerHeight);
 
       },
       click:   function (event) { 
@@ -394,9 +382,9 @@ var IFC = (function () {
       // https://stackoverflow.com/questions/15331358/three-js-get-object-size-with-respect-to-camera-and-object-position-on-screen
 
       var 
-        cam = SCN.camera,
-        fov = cam.fov * Math.PI / 180,
-        height = 2 * Math.tan( fov / 2 ) * cam.position.length(),
+        cam      = SCN.camera,
+        fov      = cam.fov * Math.PI / 180,
+        height   = 2 * Math.tan( fov / 2 ) * cam.position.length(),
         fraction = CFG.earth.radius * 2 / height
       ;
 
@@ -414,8 +402,8 @@ var IFC = (function () {
       var 
         intersection, 
         oldPointerOver = pointer.overGlobe,
-        intersections  = [],
-      end;
+        intersections  = []
+      ;
 
       raycaster.setFromCamera( pointer.device, SCN.camera );
 

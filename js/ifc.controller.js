@@ -30,6 +30,10 @@ IFC.Controller = (function () {
     veloY      = 0,
     veloZ      = 0,
 
+    alpha      = NaN,
+    beta       = NaN,
+    gamma      = NaN,
+
     keys       = { down: false, key: ''},
     mouse      = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } },
     touch      = { down: {x: NaN, y:NaN }, last: {x: NaN, y:NaN } }, // 1 finger
@@ -47,6 +51,8 @@ IFC.Controller = (function () {
 
       onwheel:       null,
       ondrag:        null,
+      onorient:      null,
+      
       onkey:         () => {},
 
       onRelax:       () => {},
@@ -120,6 +126,10 @@ IFC.Controller = (function () {
     spherical: spcl,
 
     status: function () {
+
+      status.alpha = alpha;
+      status.beta  = beta;
+      status.gamma = gamma;
 
       status.veloX = veloX;
       status.veloY = veloY;
@@ -259,20 +269,28 @@ IFC.Controller = (function () {
         !(frameCounter % 10) && bufOrientY.push(event.beta);   // [-180,180]  tilted front-to-back
 
         var 
-          deltaX = event.gamma  - bufOrientX.avg(),
-          deltaY = event.beta   - bufOrientY.avg();
+          deltaX = event.gamma - bufOrientX.avg(),
+          deltaY = event.beta  - bufOrientY.avg();
+
+        alpha = event.alpha;   // ~0 pointing north, [0,360]
+        beta  = event.beta;    // ~0 on flat surface, +90  top titlted up
+        gamma = event.gamma;   // ~0 on flat surface, -90, tilted left
 
         if (abs(deltaX) > 0.1 || abs(deltaX) > 0.1) {
 
-          deltaX = scale (deltaX, -30, +30, -0.1, +0.1 );
-          deltaY = scale (deltaY, -30, +30, -0.1, +0.1 );
+          deltaX = scale (deltaX, -20, +20, -0.1, +0.1 );
+          deltaY = scale (deltaY, -20, +20, -0.1, +0.1 );
 
-          self.impulse(deltaX, deltaY, 0);
+          if (cfg.onorient) {
+            cfg.onorient(self.impulse, deltaX, deltaY, 0);
+
+          } else {
+            self.impulse(deltaX, deltaY, 0);
+
+          }
 
         }
 
-
-        // console.log(event.acceleration.x + ' m/s2');
       },
       mouseleave:      function (event) {
         self.events.mouseup(event);

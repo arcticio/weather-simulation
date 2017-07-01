@@ -15,7 +15,12 @@ var LDR = (function () {
     sequence: function () { return [
 
         [ TIM.step, ['LDR.sequence', 'started'] ],   
+
+        [ CFG.Preset.init ],
+        [ IFC.initGUI ],
+
         [ CFG.Manager.probeDevice ],
+        [ CFG.Manager.lockOrientation, [ 'portrait-primary' ] ],
         [ SCN.probeDevice ],
 
       'lift off!',

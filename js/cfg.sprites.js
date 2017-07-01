@@ -72,19 +72,17 @@ CFG.Sprites = {
     canvas:   document.createElement('CANVAS'),
     back:     document.createElement('CANVAS'),
     position: {
-      zIndex:    5,
-      bottom:   18,
-      left:     18,
+      zIndex:     5,
+      bottom:    18,
+      right:     18,
       width:    128,
-      height:   64,
+      height:    64,
     },
     material: {
       opacity: 0.9,
-      // image: 'hud/performance.png'
     },
     onclick: (sprite) => {
       sprite.widget.selectModus();
-      // IFC.Hud.sprites.performance.selectModus();
       console.log('sprite.clicked', sprite.name);
     },
   },
@@ -126,7 +124,7 @@ CFG.Sprites = {
       height:   48,
     },
     material: {
-      opacity: 0.5,
+      opacity: 0.6,
       image: 'hud/space.png'
     },
     onclick: (sprite) => {
@@ -184,7 +182,7 @@ CFG.Sprites = {
     onclick: (sprite) => {
       screenfull.enabled && screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
       sprite.toggled = !sprite.toggled;
-      IFC.Hud.resize();
+      // IFC.Hud.resize();
       // console.log('sprite.clicked', sprite.name);
     },
   },
@@ -240,8 +238,8 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:    360,
-      right:   18,
+      top:     80,
+      left:    18,
       width:   48,
       height:  48,
     },

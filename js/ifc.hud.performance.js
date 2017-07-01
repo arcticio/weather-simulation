@@ -74,13 +74,17 @@ IFC.Hud.performance = (function () {
     },
     renderDebug:     function () {
 
+      var 
+        line = 1,
+        state = IFC.controller.status()
+
       ctx.font = '11px monospace'
       ctx.fillStyle = '#ddd';
+      ctx.textBaseline = 'bottom';
 
-      ctx.fillText(bufDur.avg().toFixed(1) + 'd',   100, 62);
-      ctx.fillText(bufFps.avg().toFixed(1) + 'fps',   0, 62);
-
-      ctx.fillText('debug', 4, cvs.height / 2);
+      ctx.fillText('alpha: ' + state.alpha, 4, line++ * 14);
+      ctx.fillText('beta:  ' + state.beta,  4, line++ * 14);
+      ctx.fillText('gamma: ' + state.gamma, 4, line++ * 14);
 
     },
     renderScene:     function () {

@@ -76,11 +76,14 @@ var CFG = {
 
   Device: {
 
-    platform:       navigator.platform,
-
-    canMotion:      false,
-    canOrientation: false,
+    browser:                   'unknown',
+    platform:                  navigator.platform,
     devicePixelRatio:          NaN,
+
+    canMotion:                 false,
+    canOrientation:            false,
+    canUserProximitry:         false,
+    canDeviceProximitry:       false,
 
     maxVertexUniforms:         NaN,
     max_texture_size:          NaN,
@@ -88,6 +91,7 @@ var CFG = {
 
     OES_texture_float:         false,
     OES_texture_float_linear:  false,
+
   },
 
   Sim: {

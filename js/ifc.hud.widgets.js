@@ -86,8 +86,7 @@ IFC.Hud.spacetime = (function () {
         time = SIM.time.model,
         sec  = time.seconds(),
         min  = time.minutes(),
-        hr   = time.hours() % 12,
-      end;
+        hr   = time.hours() % 12;
 
       sprite.material.rotation = 0;
 
@@ -107,7 +106,7 @@ IFC.Hud.spacetime = (function () {
       ctx.lineWidth = 14;
       ctx.beginPath();
       ctx.moveTo(-10, 0);
-      ctx.lineTo(44, 0);
+      ctx.lineTo(40, 0);
       ctx.stroke();
       ctx.restore();
 
@@ -117,14 +116,14 @@ IFC.Hud.spacetime = (function () {
       ctx.lineWidth = 10;
       ctx.beginPath();
       ctx.moveTo(-16, 0);
-      ctx.lineTo(60, 0);
+      ctx.lineTo(56, 0);
       ctx.stroke();
       ctx.restore();
 
       // Circle
       ctx.beginPath();
-      ctx.lineWidth = 8;
-      ctx.strokeStyle = '#999';
+      ctx.lineWidth = 12;
+      ctx.strokeStyle = '#ddd';
       ctx.arc(0, 0, 72, 0, Math.PI * 2, true);
       ctx.stroke();
 

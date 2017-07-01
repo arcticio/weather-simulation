@@ -103,17 +103,29 @@ SCN.Meshes = {
     */
 
     var 
-      mesh,
-      lats     = H.linspace(-180, 180, 37),
-      lons     = H.linspace( -90,  90, 19),
-      geometry = new THREE.Geometry(),
-      material = new THREE.LineBasicMaterial(Object.assign({}, cfg.material, {
+      lats      = H.linspace(-180, 180, 37),
+      lons      = H.linspace( -90,  90, 19),
+
+      container = new THREE.Object3D(),
+
+      gratGeo   = new THREE.Geometry(),
+      gratMat   = new THREE.LineBasicMaterial(Object.assign({}, cfg.material, {
         // uniforms: {type: 'f', value: SCN.camera.position.length()}
       })),
+      graticule =  new THREE.LineSegments(gratGeo, gratMat),
+
+      axisMat   = new THREE.LineBasicMaterial({color: 0xffffff}),
+      axisGeo   = new THREE.Geometry(),
+      axis      = new THREE.Line( axisGeo, axisMat ),
+
       toVec3   = function (lat, lon) {
         return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, cfg.altitude);
-      },
-    end;
+      };
+
+    axisGeo.vertices.push(
+      new THREE.Vector3( 0,  1.5, 0 ),
+      new THREE.Vector3( 0, -1.5, 0 )
+    );
 
     H.each(lats.slice(0, -1), (iLat, lat) => {
       H.each(lons.slice(0, -1), (iLon, lon) => {
@@ -126,21 +138,21 @@ SCN.Meshes = {
           v1   = toVec3(lat0, lon0),
           v2   = toVec3(lat0, lon1),
           v3   = toVec3(lat0, lon0),
-          v4   = toVec3(lat1, lon0),
-        end;
+          v4   = toVec3(lat1, lon0);
 
-      geometry.vertices.push(v1, v2, v3, v4);
+      gratGeo.vertices.push(v1, v2, v3, v4);
 
       });
     });
 
-    mesh =  new THREE.LineSegments(geometry, material);
-    mesh.onBeforeRender = function () {
+    container.add(axis, graticule);
+
+    container.onBeforeRender = function () {
       // material.uniforms.distance.value = SCN.camera.position.length();
       // material.uniforms.distance.needsUpdate = true;
     };
 
-    return mesh;
+    return container;
 
   },
 

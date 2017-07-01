@@ -64,7 +64,7 @@ var SCN = (function () {
           scene.add(obj);
 
         } else {
-          self.loader[obj.type](obj.name, obj, () => {});
+          SCN.Tools.loader[obj.type](obj.name, obj, () => {});
 
         }
       }
