@@ -130,6 +130,7 @@ SIM.Models.tmp2m = (function () {
 
     // https://stackoverflow.com/questions/37342114/three-js-shadermaterial-lighting-not-working
     // https://jsfiddle.net/2pha/h83py9gu/ fog + shadermaterial
+    // https://github.com/borismus/webvr-boilerplate/blob/master/node_modules/three/src/renderers/shaders/ShaderChunk/lights_lambert_vertex.glsl
 
     vertexShader: function () {
       

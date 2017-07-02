@@ -242,7 +242,9 @@ var SCN = (function () {
       var t0 = Date.now();
       renderer.clear();
       renderer.render( scene, camera );
+      renderer.render( scene, camera ); // cause onAfterRender
       renderer.clearDepth();
+      renderer.render( IFC.Hud.scene, IFC.Hud.camera );
       renderer.render( IFC.Hud.scene, IFC.Hud.camera );
       TIM.step('SCN.prerender', Date.now() - t0, 'ms');
     },
@@ -269,15 +271,13 @@ var SCN = (function () {
         IFC.step(frame, deltasecs);
         IFC.Hud.step(frame, deltasecs);
 
-        // doSimulate && SIM.step(frame, deltasecs);
-
         // always check actions
         doAnimate && ANI.step(frame, deltasecs);
 
         if ( doRender && !(frame % 1) ) {
           renderer.clear();
           renderer.render( scene, camera );
-          renderer.clearDepth();
+          // renderer.clearDepth();
           IFC.Hud.doRender && renderer.render( IFC.Hud.scene, IFC.Hud.camera );
         }
 

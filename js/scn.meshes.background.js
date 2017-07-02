@@ -35,9 +35,9 @@ SCN.Meshes.background = function (name, cfg, callback) {
     material = new THREE.ShaderMaterial( {
       fragmentShader,
       vertexShader,
-      transparent:  true,
-      side:         THREE.FrontSide,
-      vertexColors: THREE.VertexColors,
+      // transparent:  true,
+      // side:         THREE.FrontSide,
+      // vertexColors: THREE.VertexColors,
       uniforms: {
         opacity: {type: 'f', value: 0.999}
       }
@@ -78,8 +78,8 @@ SCN.Meshes.background = function (name, cfg, callback) {
       fov    = camera.fov * Math.PI / 180,
       height = 2 * Math.tan(fov / 2) * camera.position.length() + 2,
       width  = height * aspect,
-      factor = 1 / SCN.scene.scale.x * 1.0, // 0.9
-    end;
+      factor = 1 / SCN.scene.scale.x * 1.0 // 0.9
+    ;
 
     plane.position.copy(camera.position.clone().negate().normalize().multiplyScalar(2));
     plane.lookAt(camera.position);

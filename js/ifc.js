@@ -16,7 +16,6 @@ var IFC = (function () {
     urlDirty   = false,
 
     controller, 
-    // controllers,
 
     modus =    'space',
 
@@ -97,8 +96,6 @@ var IFC = (function () {
       guiMain.style.width    = '';
       guiMain.style.position = 'absolute';
 
-      // controllers = self.controllers = GUIcontrollers;
-
       // check this
       raycaster.params.Points.threshold = 0.001;
 
@@ -123,19 +120,19 @@ var IFC = (function () {
           if (modus === 'space') {
 
             if (pointer.overGlobe) {
-              IFC.Hud.spacetime.updateModus('space');
+              // IFC.Hud.spacetime.updateModus('space');
               callback(deltaX, deltaY, deltaZ);
 
             } else {
               // overides space modus
-              IFC.Hud.spacetime.updateModus('time');
+              // IFC.Hud.spacetime.updateModus('time');
               SIM.setSimTime(deltaX, 'hours');
               callback(0, 0, 0);
 
             }
 
           } else  {
-            IFC.Hud.spacetime.updateModus('time');
+            // IFC.Hud.spacetime.updateModus('time');
             SIM.setSimTime(deltaX, 'hours');
             callback(0, 0, 0);
 
@@ -153,28 +150,27 @@ var IFC = (function () {
           var timescale = H.scale(pointer.device.py, 0, canvas.height, 0.5, 20) ;
 
           if (pointer.overGlobe) {
-            IFC.Hud.spacetime.updateModus('space');
+            // IFC.Hud.spacetime.updateModus('space');
             callback(deltaX, deltaY, deltaZ);
 
           } else {
-            IFC.Hud.spacetime.updateModus('time');
+            // IFC.Hud.spacetime.updateModus('time');
             SIM.setSimTime( ~~(deltaX * -5 * timescale), 'minutes');
             callback(0, 0, 0);
 
           }
 
         },
-        onkey: function (key) {
-          var actions = {
-            't': () => SIM.setSimTime( -1, 'hours'),
-            'z': () => SIM.setSimTime(  1, 'hours'),
-          };
-          actions[key] && actions[key]();
-        },
+        // onkey: function (key) {
+        //   var actions = {
+        //     // 't': () => SIM.setSimTime( -1, 'hours'),
+        //     // 'z': () => SIM.setSimTime(  1, 'hours'),
+        //   };
+        //   actions[key] && actions[key]();
+        // },
 
         onRelax: function () {
           self.urlDirty = true;
-          // IFC.Tools.updateUrl();
         }
 
       });
@@ -250,11 +246,9 @@ var IFC = (function () {
     events: {
       resize: function () {
 
-        // console.log('1', innerHeight);
+        // TODO: Chrome on Android drops last event on leave fullscreen
 
         SCN.resize();
-
-        // console.log('2', innerHeight);
 
         canvas.width    = SCN.renderer.domElement.width;
         canvas.height   = SCN.renderer.domElement.height;
@@ -262,8 +256,6 @@ var IFC = (function () {
         canvas.diagonal = Math.hypot(canvas.width, canvas.height);
 
         IFC.Hud.resize();
-
-        // console.log('3', innerHeight);
 
       },
       click:   function (event) { 
@@ -292,9 +284,9 @@ var IFC = (function () {
       },
       mousedown:   function (event) { 
 
+        pointer.device = mouse;
         mouse.down = true;
         mouse.button = event.button;
-        pointer.device = mouse;
 
         // console.log('mousedown', event.button, event);
 
@@ -313,20 +305,16 @@ var IFC = (function () {
 
       },
       mouseup:     function (event) { 
-
+        pointer.device = mouse;
         mouse.down     = false;
         mouse.button   = NaN;
-        pointer.device = mouse;
-
       },
       mousemove:   function (event) { 
-
+        pointer.device = mouse;
         mouse.px = event.clientX; 
         mouse.py = event.clientY;
         mouse.x  =   ( event.clientX / canvas.width )  * 2 - 1;
         mouse.y  = - ( event.clientY / canvas.height ) * 2 + 1;
-        pointer.device = mouse;
-
       },
       mouseenter:   function (event) { 
         pointer.device = mouse;
@@ -340,7 +328,9 @@ var IFC = (function () {
         var keys = {
           ' ': () => SCN.toggleRender(),
           'g': () => self.toggleGUI(),
-          'h': () => IFC.Hud.toggleMenu(),
+          'm': () => IFC.Hud.toggleMenu(),
+          't': () => SIM.setSimTime( -1, 'hours'),
+          'z': () => SIM.setSimTime(  1, 'hours'),
         };
 
         if (keys[event.key]) {
@@ -414,11 +404,21 @@ var IFC = (function () {
       );
 
     },
+    onglobeenter: function () {
+      ANI.insert(0, ANI.library.scaleGLobe( 1.0,  800))
+      // console.log('onglobeenter');
+      IFC.Hud.spacetime.updateModus('space');
+    },
+    onglobeleave: function () {
+      ANI.insert(0, ANI.library.scaleGLobe( 0.94, 800));
+      IFC.Hud.spacetime.updateModus('time');
+      // console.log('onglobeleave');
+    },
     updatePointer: function () {
 
       var 
         intersection, 
-        oldPointerOver = pointer.overGlobe,
+        isOver, wasOver = pointer.overGlobe,
         intersections  = []
       ;
 
@@ -428,21 +428,17 @@ var IFC = (function () {
 
       if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
         pointer.intersect.copy(intersection.point).normalize();
-        pointer.overGlobe = true;
+        isOver = true;
 
       } else {
-        pointer.overGlobe = false;
+        isOver = false;
 
       }
 
-      if (oldPointerOver !== pointer.overGlobe){
-        if (pointer.overGlobe) {
-          ANI.insert(0, ANI.library.scaleGLobe(1.0, 800));
+      (  isOver && !wasOver ) && self.onglobeenter();
+      ( !isOver &&  wasOver ) && self.onglobeleave();
 
-        } else {
-          ANI.insert(0, ANI.library.scaleGLobe(0.94, 800));
-        }
-      }
+      pointer.overGlobe = isOver;
 
     },
 
