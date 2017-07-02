@@ -2,13 +2,13 @@
 SIM.Models.jetstream = (function () {
 
   var 
-    self,     
+    self, cfg, datagram,
     model = {
-      obj:     new THREE.Object3D(),
-      sectors: [],
-      step:   function jetstep () {
-        H.each(model.sectors, (_, sec) => sec.step() )
-      },
+      obj:      new THREE.Object3D(),
+      sectors:  [],
+      urls:     [],
+      minDoe:   NaN,
+      maxDoe:   NaN,
     };
 
   return self = {
@@ -18,13 +18,40 @@ SIM.Models.jetstream = (function () {
         var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
         return val < min ? min : val > max ? max : val;
     },
-    create: function (cfg, datagramm) {
+    calcMinMax: function (moms) {
+      // assumes sorted moms
+      model.minDoe = SIM.mom2doe(moms[0]);
+      model.maxDoe = SIM.mom2doe(moms.slice(-1)[0]);
+    },
+    calcUrls: function (moms) {
+
+      moms.forEach(mom => {
+        cfg.sim.patterns.forEach(pattern => {
+          model.urls.push(cfg.sim.dataroot + mom.format(pattern));
+        });
+      });
+
+    },   
+    create: function (config, moms, simdata) {
+
+      cfg = config;
+      datagram = simdata;
+      model.prepare = self.prepare;
+
+      self.calcUrls(moms);
+      self.calcMinMax(moms);
+
+      return model;
+
+    },
+
+    prepare: function (doe) {
       
       // TIM.step('Model.jets.in');
 
       var 
         t0         = Date.now(), 
-        i, j, u, v, speed, width, lat, lon, color, vec3, latlon, tmp2m, multiline, positions, widths, colors, seeds, hsl,
+        i, j, u, v, speed, width, lat, lon, color, vec3, latlon, multiline, positions, widths, colors, seeds, hsl,
         spcl      = new THREE.Spherical(),
         length    = cfg.length,
         amount    = NaN,
@@ -34,7 +61,7 @@ SIM.Models.jetstream = (function () {
 
       end;
 
-      if (SCN.renderer.capabilities.maxVertexUniforms < 4096){
+      if (CFG.Device.maxVertexUniforms < 4096){
         cfg.amount = 200;
       }
 
@@ -55,8 +82,8 @@ SIM.Models.jetstream = (function () {
 
           for (j=0; j<length; j++) {
 
-            u = datagramm.ugrdprs.linearXY(0, lat, lon);
-            v = datagramm.vgrdprs.linearXY(0, lat, lon);
+            u = datagram.ugrdprs.linearXY(doe, lat, lon);
+            v = datagram.vgrdprs.linearXY(doe, lat, lon);
 
             speed = Math.hypot(u, v);
 

@@ -6,8 +6,6 @@
 
 */
 
-'use strict'
-
 function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
   var idx = 0;
@@ -87,7 +85,7 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
   this.mesh = new THREE.Mesh( this.geometry, this.material );
 
-  this.mesh.onBeforeRender = this.onBeforeRender;
+  this.mesh.onBeforeRender = this.onBeforeRender.bind(this);
 
   this.bytes = Object
     .keys(this.attributes)
@@ -100,7 +98,9 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 Multiline.prototype = {
   constructor: Multiline,
 
-  onBeforeRender: function (renderer, scene, camera, geometry, material, group) {
+  onBeforeRender: function (renderer, scene, camera, geometry, material) {
+
+    this.step();
 
     material.uniforms.distance.value = camera.position.length() - CFG.earth.radius;
     material.uniforms.distance.needsUpdate = true;
@@ -111,7 +111,7 @@ Multiline.prototype = {
 
     // TODO: dTime math
 
-    var i, pointer, head, offset = 1 / this.length;
+    var i, pointers, offset = 1 / this.length;
 
     this.frame += 1;
 
@@ -133,9 +133,9 @@ Multiline.prototype = {
   createMaterial: function (options) {
 
     var     
-      pointers = new Array(this.amount).fill(0).map( n => Math.random() * this.length ),
-      distance = SCN.camera.position.length() - CFG.earth.radius,
-    end;
+      pointers = new Array(this.amount).fill(0).map( () => Math.random() * this.length ),
+      distance = SCN.camera.position.length() - CFG.earth.radius
+    ;
 
     return  new THREE.RawShaderMaterial({
 
@@ -349,7 +349,7 @@ Multiline.line.prototype = {
 
   init:  function( vertices, colors, widths ) {
 
-    var j, ver, cnt, col, n, l = this.length;
+    var j, ver, cnt, col, wid, n, l = this.length;
 
     for( j = 0; j < l; j++ ) {
 
@@ -384,7 +384,7 @@ Multiline.line.prototype = {
 
   process:      function() {
 
-    var j, c, v, n, w, l = this.positions.length / 6;
+    var j, v, l = this.positions.length / 6;
 
     v = this.compareV3( 0, l - 1 ) ? this.copyV3( l - 2 ) : this.copyV3( 0 ) ;
     this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );

@@ -319,7 +319,7 @@ CFG.Sprites = {
       image: 'hud/clouds.png'
     },
     onclick: (sprite) => {
-      SCN.toggle(SCN.objects.clouds);
+      SCN.toggle(SCN.objects.jetstream);
       sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },

@@ -68,7 +68,7 @@ CoordsPool.prototype = {
   },
   filter (sector) {
 
-    var i, out = [];
+    var i, coord, out = [];
 
     for (i=0; i<this.amount; i++) {
 

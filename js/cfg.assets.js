@@ -279,12 +279,17 @@ CFG.Objects = {
       amount:         512,
       hue:            220,
       sim: {
-        data: [
-          'data/gfs/ugrdprs/2017-06-13-12.ugrdprs.10.dods',
-          'data/gfs/vgrdprs/2017-06-13-12.vgrdprs.10.dods',
-          // 'data/gfs/DATETIME.ugrdprs.10.dods',
-          // 'data/gfs/DATETIME.vgrdprs.10.dods',
+        dataroot:     'data/gfs/',
+        patterns: [
+          '[ugrdprs/]YYYY-MM-DD-HH[.ugrdprs.10.dods]',
+          '[vgrdprs/]YYYY-MM-DD-HH[.vgrdprs.10.dods]',
         ],
+        // data: [
+        //   'data/gfs/ugrdprs/2017-06-13-12.ugrdprs.10.dods',
+        //   'data/gfs/vgrdprs/2017-06-13-12.vgrdprs.10.dods',
+        //   // 'data/gfs/DATETIME.ugrdprs.10.dods',
+        //   // 'data/gfs/DATETIME.vgrdprs.10.dods',
+        // ],
         sectors: [
           [ 89.9, -180,  45.0,  180 ], // top
           [-45.0, -180, -89.9,  180 ], // bottom

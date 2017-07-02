@@ -222,7 +222,7 @@ SIM.Datagram.prototype = {
 
         var 
             lon   = (lonin + 180) % 360,
-            data  = this.data[doe].data,
+            data  = this.data[doe],
             plane = data.subarray(0 * this.info.plane, (0 + 1) * this.info.plane),
             ylen  = this.info.lats.len,
             xlen  = this.info.lons.len,
