@@ -1,6 +1,4 @@
 
-SIM.Models = SIM.Models || {};
-
 SIM.Models.wind = (function () {
 
   var 

@@ -334,6 +334,23 @@ CFG.Objects = {
       }
     },
 
+    tmp2m: {
+      id:             21,
+      visible:        false,
+      title:          'GFS - air temperature at 2m',
+      type:           'simulation',
+      rotation:       [0, PI - PI/360, 0],
+      radius:         RADIUS + LEVEL_4, 
+      sim: {
+        variable:     'tmp2m',
+        dataroot:     'data/gfs/tmp2m/',
+        patterns: [
+          'YYYY-MM-DD-HH[.tmp2m.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
+
+        ],
+      }
+    },
+
 
   // FEATURES ( 23 - 25 )
 

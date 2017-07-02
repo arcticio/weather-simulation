@@ -1,8 +1,4 @@
 
-'use strict';
-
-SIM.Models = SIM.Models || {};
-
 SIM.Models.jetstream = (function () {
 
   var 

@@ -1,8 +1,4 @@
 
-'use strict';
-
-SIM.Models = SIM.Models || {};
-
 SIM.Models.variables = (function () {
 
   var 
@@ -188,7 +184,8 @@ SIM.Models.variables = (function () {
               value < +10.0 ? vec3(0.9294117, 0.9764705, 0.423529) :
               value < +20.0 ? vec3(0.9843137, 0.7921568, 0.384313) :
               value < +30.0 ? vec3(0.9843137, 0.3960784, 0.305882) :
-                vec3(0.8000000, 0.2509803, 0.250980)                 // dark red
+              value < +40.0 ? vec3(0.8000000, 0.2509803, 0.250980) :
+                vec3(0.6000000, 0.1509803, 0.150980)                 // dark red
             );
 
               gl_FragColor = vec4(color, 0.3);

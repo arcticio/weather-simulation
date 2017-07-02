@@ -39,7 +39,7 @@ IFC.Hud = (function () {
 
       camera.position.z = 10;
 
-      menu.scale.set(menuScale, menuScale, 1)
+      menu.scale.set(menuScale, menuScale, 1);
 
       self.initSprites();
       scene.add(menu);
@@ -56,8 +56,8 @@ IFC.Hud = (function () {
         var 
           widget = IFC.Hud[name],
           sprite = new THREE.Sprite( new THREE.SpriteMaterial({
-          opacity :     cfg.material.opacity,
-          transparent : true,
+            opacity :     cfg.material.opacity,
+            transparent : true,
         }));
 
         // https://threejs.org/examples/webgl_sprites.html

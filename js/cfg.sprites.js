@@ -275,11 +275,11 @@ CFG.Sprites = {
     onclick: (sprite) => {
       SCN.toggleBasemap('snpp');
       sprite.toggled = !sprite.toggled;
-      console.log('sprite.clicked', sprite.name);
+      // console.log('sprite.clicked', sprite.name);
     },
   },
 
-  temperature: {
+  tmp2m: {
     visible:  true,
     menu:     true,
     type:     'toggle',
@@ -296,9 +296,9 @@ CFG.Sprites = {
       image: 'hud/temperature.png'
     },
     onclick: (sprite) => {
-      SCN.toggle(SCN.objects.variables);
+      SCN.toggle(SCN.objects.tmp2m);
       sprite.toggled = !sprite.toggled;
-      console.log('sprite.clicked', sprite.name);
+      // console.log('sprite.clicked', sprite.name);
     },
   },
 

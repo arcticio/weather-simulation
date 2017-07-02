@@ -29,12 +29,14 @@ var SIM = (function () {
       model:       null,
       interval:    NaN,                                      // only calc full hours
       pointer:     NaN,                                           // coming from interface
-    },
+    }
 
-  end;
+  ;
 
 
   return self = {
+
+    Models: {},
 
     time,
     models,
@@ -148,11 +150,11 @@ var SIM = (function () {
 
       var 
         vari, datagramm,
-        model   = SIM.Models[name].create(cfg, datagrams),
         mom     = self.doe2mom(time.doe),
-        hours   = [-12, -6, 0, 6, 12, 18, 24, 30, 36, 42],
+        hours   = H.range(-6, 54, 6), // excluding last
         moms    = hours.map( h => mom.clone().add( h, 'hours') ),
-        urls    = model.calcUrls(moms)
+        model   = SIM.Models[name].create(cfg, moms, datagrams),
+        urls    = model.urls
       ;
 
       models[name] = model;

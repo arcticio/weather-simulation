@@ -127,7 +127,7 @@ var H = (function(){
     scale:      function (x,xMin,xMax,min,max){return (max-min)*(x-xMin)/(xMax-xMin)+min;},
     clamp:      function (val, min, max){return val < min ? min : val > max ? max : val;}, 
     isInteger:  function (n){return Math.floor(n) === n;},
-    round:      function  (n, p) {var fac = Math.pow(10, p); return Math.round(n * fac) / fac; },
+    round:      function (n, p) {var fac = Math.pow(10, p); return Math.round(n * fac) / fac; },
 
     // strings
     format:     function (){
@@ -137,7 +137,18 @@ var H = (function(){
         tokens = (args[0] || '').split('%s');
       return tokens.map(function (t) { return t + (inserts[c++] || '');}).join('');
     },
+    createAttenuator: function  (length) {
 
+      var last = NaN;
+
+      return function (data) {
+        return (
+          data === undefined  ? last :
+          last = (isNaN(last) ? data : last) * (length - 1) / length + data * 1 / length  
+        );
+      };
+
+    },
     replace:    function (s,f,r){return s.replace(new RegExp(H.escapeRex(f), 'g'), r);},
     padZero:    function (num, len){len = len || 2; var snum = '0000' + num; return snum.substr(snum.length-2, 2);},
     mulString:  function (s, l){return new Array(l+1).join(s);},

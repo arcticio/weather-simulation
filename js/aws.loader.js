@@ -41,8 +41,6 @@ var LDR = (function () {
 
       'reaching orbit',
         [ IFC.init ], 
-
-      'adjusting space time',
         [ SIM.setSimTime ], 
 
       'uploading to GPU',
@@ -55,7 +53,7 @@ var LDR = (function () {
         [ IFC.activate ],
         [ IFC.show ],
         [ self.clearInfo ],
-        // [ navigator.vibrate.bind(navigator), [200] ], needs https;
+        [ navigator.vibrate.bind(navigator), [200] ], // needs https soon;
 
       'have fun',
 
@@ -74,9 +72,7 @@ var LDR = (function () {
 
     parse: function (sequence) {
 
-      // var push = queue.push.bind(queue);
-
-      // generate tasks
+      // generate tasks by reading items from sequence
       H.each(sequence, (_, item) => {
 
         var subsequence, func, params, info;
@@ -151,7 +147,7 @@ var LDR = (function () {
           };
 
         }),
-        finalize = function (err /* , results */ ) {
+        onfinished = function (err /* , results */ ) {
           // console.log(results);
           if (err) {throw err} else {
             TIM.step('LDR.executed', tasks.length, 'tasks', ((Date.now() - t0) / 1000).toFixed(1), 'secs');
@@ -159,7 +155,7 @@ var LDR = (function () {
           }
         };
 
-      async.series(tasks, finalize);
+      async.series(tasks, onfinished);
 
     },
 
@@ -213,7 +209,7 @@ var LDR = (function () {
               self.message('', name);
               setTimeout(function () {
                 SCN.Tools.loader[config.type](name, config, callback);
-              }, 1);
+              }, delay);
             };
 
             sequence.push([fn, 'callback']);
@@ -245,10 +241,10 @@ var LDR = (function () {
           if (config.visible){
 
             fn = function (callback) {
-              self.message('', name);
+              self.message('', config.title);
               setTimeout(function () {
                 SCN.Tools.loader[config.type](name, config, callback);
-              }, 1);
+              }, delay);
             };
 
             sequence.push([fn, 'callback']);

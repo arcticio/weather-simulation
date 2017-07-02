@@ -23,8 +23,8 @@ IFC.Controller = (function () {
 
     frameCounter = 0,
 
-    bufOrientX = H.createRingBuffer(10),
-    bufOrientY = H.createRingBuffer(10),
+    attOrientX = H.createAttenuator(10),
+    attOrientY = H.createAttenuator(10),
 
     veloX      = 0,
     veloY      = 0,
@@ -135,8 +135,8 @@ IFC.Controller = (function () {
       status.veloY = veloY;
       status.veloZ = veloZ;
 
-      status.bufOrientX = bufOrientX;
-      status.bufOrientY = bufOrientY;
+      status.attOrientX = attOrientX();
+      status.attOrientY = attOrientY();
 
       return status;
 
@@ -201,7 +201,7 @@ IFC.Controller = (function () {
     },
     step: function (frame, deltatime) {
 
-      var distance, abs = Math.abs;
+      var distance;
 
       if (enabled) {
 
@@ -230,12 +230,15 @@ IFC.Controller = (function () {
           spcl.theta = spcl.theta > TAU ? spcl.theta - TAU : spcl.theta;
 
           // mind the poles
-          spcl.phi = max(EPS, spcl.phi);
+          spcl.phi = max(EPS,      spcl.phi);
           spcl.phi = min(PI - EPS, spcl.phi);
 
           cam.position.setFromSpherical(spcl);
 
-          // TODO: now calc lat/lon
+          // calc lat/lon
+          cam.phi    = spcl.phi;
+          cam.theta  = spcl.theta;
+          cam.radius = spcl.radius;
 
         }
 
@@ -265,12 +268,12 @@ IFC.Controller = (function () {
         // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Orientation_and_motion_data_explained
         // https://www.html5rocks.com/en/tutorials/device/orientation/
         
-        !(frameCounter % 10) && bufOrientX.push(event.gamma);  // [-90,90]    tilted right-to-left
-        !(frameCounter % 10) && bufOrientY.push(event.beta);   // [-180,180]  tilted front-to-back
+        !(frameCounter % 10) && attOrientX(event.gamma);  // [-90,90]    tilted right-to-left
+        !(frameCounter % 10) && attOrientY(event.beta);   // [-180,180]  tilted front-to-back
 
         var 
-          deltaX = event.gamma - bufOrientX.avg(),
-          deltaY = event.beta  - bufOrientY.avg();
+          deltaX = event.gamma - attOrientX(),
+          deltaY = event.beta  - attOrientY();
 
         alpha = event.alpha;   // ~0 pointing north, [0,360]
         beta  = event.beta;    // ~0 on flat surface, +90  top titlted up

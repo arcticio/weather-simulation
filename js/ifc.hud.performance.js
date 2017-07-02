@@ -56,8 +56,8 @@ IFC.Hud.performance = (function () {
       ctx.clearRect(0, 0, cvs.width, cvs.height);
 
       // debug
-      ctx.fillStyle = 'rgba(80, 80, 80, 0.8)';
-      ctx.fillRect(0, 0, cvs.width, cvs.height);
+      // ctx.fillStyle = 'rgba(80, 80, 80, 0.8)';
+      // ctx.fillRect(0, 0, cvs.width, cvs.height);
 
       self['render' + modi[modus]]();
 

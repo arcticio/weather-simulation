@@ -94,7 +94,7 @@ var SCN = (function () {
 
       var basename, lightset;
 
-      // normalize param
+      // sanitize param
       if (typeof basemap === 'string'){
         basename = basemap;
 
@@ -104,11 +104,15 @@ var SCN = (function () {
 
       H.each(objects, (name, obj) => {
 
-        if (name === basename){
-          self.toggle(obj, true);
+        if (CFG.Objects[name] !== undefined) {
 
-        } else if (CFG.BasemapIds.indexOf(CFG.Objects[name].id) !== -1 ) {
-          self.toggle(obj, false);
+          if (name === basename){
+            self.toggle(obj, true);
+
+          } else if (CFG.BasemapIds.indexOf(CFG.Objects[name].id) !== -1 ) {
+            self.toggle(obj, false);
+
+          }
 
         }
 
@@ -235,10 +239,12 @@ var SCN = (function () {
     },
 
     prerender: function () {
+      var t0 = Date.now();
       renderer.clear();
       renderer.render( scene, camera );
       renderer.clearDepth();
       renderer.render( IFC.Hud.scene, IFC.Hud.camera );
+      TIM.step('SCN.prerender', Date.now() - t0, 'ms');
     },
 
     render: function render () {
