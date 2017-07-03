@@ -139,7 +139,7 @@
     <script src='libs/native.history.js'></script>
     <script src='libs/store.modern.min.js'></script>
 
-    <script src='libs/three.js'></script>
+    <script src='libs/three.86.js'></script>
     <script src='libs/threeGeoJSON.js'></script>
 
     <script src='libs/dat.gui.js'></script>
@@ -149,7 +149,6 @@
     <script src="js/aws.helper.js"></script>
     <script src="js/aws.tools.js"></script>
     <script src="js/aws.time.js"></script>
-    <script src="js/aws.multiline.js"></script>
     <script src="js/aws.res.js"></script>
     <script src="js/aws.ani.js"></script>
 
@@ -175,6 +174,7 @@
     <script src="js/scn.js"></script>
     <script src="js/scn.tools.js"></script>
     <script src="js/scn.meshes.js"></script>
+    <script src="js/scn.meshes.multiline.js"></script>
     <script src="js/scn.meshes.atmosphere.js"></script>
     <script src="js/scn.meshes.background.js"></script>
     <script src="js/scn.meshes.basemaps.js"></script>
@@ -215,7 +215,7 @@
           ANI.insert(0, ANI.library.intro(800, function () {
             CFG.isLoaded = true;
             IFC.Tools.updateUrl();
-            console.log('CFG.Device', JSON.stringify(CFG.Device, null, 2));
+            // console.log('CFG.Device', JSON.stringify(CFG.Device, null, 2));
           }));
         });
 

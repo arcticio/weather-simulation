@@ -35,6 +35,11 @@ SIM.Models.jetstream = (function () {
     create: function (config, moms, simdata) {
 
       cfg = config;
+
+      if (CFG.Device.maxVertexUniforms < 4096){
+        cfg.amount = 200;
+      }
+
       datagram = simdata;
       model.prepare = self.prepare;
 
@@ -50,7 +55,7 @@ SIM.Models.jetstream = (function () {
       // TIM.step('Model.jets.in');
 
       var 
-        t0         = Date.now(), 
+        t0        = Date.now(), 
         i, j, u, v, speed, width, lat, lon, color, vec3, latlon, multiline, positions, widths, colors, seeds, hsl,
         spcl      = new THREE.Spherical(),
         length    = cfg.length,
@@ -58,12 +63,9 @@ SIM.Models.jetstream = (function () {
         factor    = 0.0003,                       // TODO: proper Math, also sync with wind10m
         alt       = cfg.radius - CFG.earth.radius,      // 0.001
         pool      = SIM.coordsPool.slice(cfg.amount * cfg.sim.sectors.length),
-
+        material  = SCN.Meshes.Multiline.material(cfg),
       end;
 
-      if (CFG.Device.maxVertexUniforms < 4096){
-        cfg.amount = 200;
-      }
 
       H.each(cfg.sim.sectors, (_, sector)  => {
 
@@ -109,11 +111,11 @@ SIM.Models.jetstream = (function () {
 
         }
 
-        multiline = new Multiline (
+        multiline = new SCN.Meshes.Multiline.mesh (
           positions, 
           colors, 
           widths, 
-          cfg
+          material,
         );
 
         model.obj.add(multiline.mesh);
@@ -121,11 +123,78 @@ SIM.Models.jetstream = (function () {
 
       });
 
+      model.obj.children[0].onAfterRender = function () {
+
+        var i, 
+          pointers = material.uniforms.pointers.value,
+          offset   = 1 / cfg.length
+        ;
+
+        for (i=0; i<cfg.amount; i++) {
+          pointers[i] = (pointers[i] + offset) % 1;
+        }
+
+        material.uniforms.pointers.needsUpdate = true;
+
+        material.uniforms.distance.value = SCN.camera.position.length() - CFG.earth.radius;
+        material.uniforms.distance.needsUpdate = true;
+        
+      }
+
       // TIM.step('Model.jets.out');
 
       return model;
 
     },
+
+
+
+
+
+
+    // createMaterial: function (amount, options) {
+
+    //   var     
+    //     pointers = new Array(amount).fill(0).map( () => Math.random() * this.length ),
+    //     distance = SCN.camera.position.length() - CFG.earth.radius
+    //   ;
+
+    //   // https://threejs.org/examples/webgl_materials_blending.html
+
+    //   return  new THREE.RawShaderMaterial({
+
+    //     vertexShader:    SCN.Meshes.Multiline.shaderVertex(cfg.amount),
+    //     fragmentShader:  SCN.Meshes.Multiline.shaderFragment(),
+
+    //     depthTest:       true,                    // false ignores planet
+    //     depthWrite:      false,
+    //     blending:        THREE.AdditiveBlending,    // NormalBlending, AdditiveBlending, MultiplyBlending
+    //     side:            THREE.DoubleSide,        // FrontSide (start=skewed), DoubleSide (start=vertical)
+    //     transparent:     true,                    // needed for alphamap, opacity + gradient
+    //     lights:          false,                   // no deco effex, true tries to add scene.lights
+
+    //     shading:         THREE.SmoothShading,     // *THREE.SmoothShading or THREE.FlatShading
+    //     vertexColors:    THREE.NoColors,          // *THREE.NoColors, THREE.FaceColors and THREE.VertexColors.
+
+    //     wireframe:       false,
+
+    //     uniforms: {
+
+    //       color:            { type: 'c',    value: options.color },
+    //       opacity:          { type: 'f',    value: options.opacity },
+    //       lineWidth:        { type: 'f',    value: options.lineWidth },
+    //       section:          { type: 'f',    value: options.section }, // length of trail in %
+
+    //       // these are updated each step
+    //       pointers:         { type: '1fv',  value: pointers },
+    //       distance:         { type: 'f',    value: distance },
+
+    //     },
+
+    //   });
+
+    // },
+
   };
 
 }());

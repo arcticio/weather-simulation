@@ -37,7 +37,8 @@ SCN.Meshes.basemaps = function (name, cfg, callback) {
 
     });
 
-    mesh = new THREE.Mesh( geometry, new THREE.MultiMaterial( materials ) );
+    // mesh = new THREE.Mesh( geometry, new THREE.MultiMaterial( materials ) );
+    mesh = new THREE.Mesh( geometry, materials );
 
     cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
 

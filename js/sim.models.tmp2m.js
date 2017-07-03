@@ -136,27 +136,6 @@ SIM.Models.tmp2m = (function () {
       
       return `
 
-        // #if NUM_HEMI_LIGHTS > 0
-
-        //   struct HemisphereLight {
-        //     vec3 direction;
-        //     vec3 skyColor;
-        //     vec3 groundColor;
-        //   };
-
-        //   uniform HemisphereLight hemisphereLights[ NUM_HEMI_LIGHTS ];
-
-        //   vec3 getHemisphereLightIrradiance( const in HemisphereLight hemiLight, const in GeometricContext geometry ) {
-
-        //     float dotNL = dot( geometry.normal, hemiLight.direction );
-        //     float hemiDiffuseWeight = 0.5 * dotNL + 0.5;
-
-        //     return PI * mix( hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight );
-
-        //   }
-
-        // #endif
-
         attribute float doe1;
         attribute float doe2;
 
@@ -192,6 +171,9 @@ SIM.Models.tmp2m = (function () {
         vec3 color;
 
         void main() {
+
+          vec3 irradiance;
+
 
           if (doe < 1.0) {
             gl_FragColor = vec4(1.0, 0.0, 0.0, 0.4); // error

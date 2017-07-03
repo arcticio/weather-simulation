@@ -6,11 +6,10 @@
 
 */
 
-function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
+
+function Multiline (trailsVectors, trailsColors, trailsWidths, material, options) {
 
   var idx = 0;
-
-  this.frame      = 0;
 
   this.bytes      = NaN;
   this.amount     = trailsVectors.length;
@@ -18,7 +17,7 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
   this.points     = this.amount * this.length;
 
   this.geometry   = new THREE.BufferGeometry();
-  this.material   = this.createMaterial(options);
+  // this.material   = this.createMaterial(options);
   
   this.attributes = {
     lineIndex: Float32Array,
@@ -83,9 +82,9 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 
   this.geometry.computeBoundingSphere();
 
-  this.mesh = new THREE.Mesh( this.geometry, this.material );
+  this.mesh = new THREE.Mesh( this.geometry, material );
 
-  this.mesh.onBeforeRender = this.onBeforeRender.bind(this);
+  this.mesh.onAfterRender = this.onAfterRender.bind(this);
 
   this.bytes = Object
     .keys(this.attributes)
@@ -98,32 +97,22 @@ function Multiline (trailsVectors, trailsColors, trailsWidths, options) {
 Multiline.prototype = {
   constructor: Multiline,
 
-  onBeforeRender: function (renderer, scene, camera, geometry, material) {
+  onAfterRender: function (renderer, scene, camera, geometry, material) {
 
-    this.step();
+    var i, 
+      pointers = this.material.uniforms.pointers.value,
+      offset   = 1 / this.length
+    ;
+
+    for (i=0; i<this.amount; i++) {
+      pointers[i] = (pointers[i] + offset) % 1;
+    }
+
+    this.material.uniforms.pointers.needsUpdate = true;
 
     material.uniforms.distance.value = camera.position.length() - CFG.earth.radius;
     material.uniforms.distance.needsUpdate = true;
     
-  },
-
-  step: function () {
-
-    // TODO: dTime math
-
-    var i, pointers, offset = 1 / this.length;
-
-    this.frame += 1;
-
-    for (i=0; i<this.amount; i++) {
-
-      pointers    = this.material.uniforms.pointers.value;
-      pointers[i] = (pointers[i] + offset) % 1;
-
-      this.material.uniforms.pointers.needsUpdate = true;
-
-    }
-
   },
 
   check: function (val, valDefault) {
@@ -137,13 +126,16 @@ Multiline.prototype = {
       distance = SCN.camera.position.length() - CFG.earth.radius
     ;
 
+    // https://threejs.org/examples/webgl_materials_blending.html
+
     return  new THREE.RawShaderMaterial({
 
       vertexShader:    this.shaderVertex(),
       fragmentShader:  this.shaderFragment(),
 
       depthTest:       true,                    // false ignores planet
-      blending:        THREE.NormalBlending,    // NormalBlending, AdditiveBlending
+      depthWrite:      false,
+      blending:        THREE.AdditiveBlending,    // NormalBlending, AdditiveBlending, MultiplyBlending
       side:            THREE.DoubleSide,        // FrontSide (start=skewed), DoubleSide (start=vertical)
       transparent:     true,                    // needed for alphamap, opacity + gradient
       lights:          false,                   // no deco effex, true tries to add scene.lights

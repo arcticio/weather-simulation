@@ -274,12 +274,13 @@ var SCN = (function () {
         // always check actions
         doAnimate && ANI.step(frame, deltasecs);
 
+
         if ( doRender && !(frame % 1) ) {
           renderer.clear();
           renderer.render( scene, camera );
-          // renderer.clearDepth();
-          IFC.Hud.doRender && renderer.render( IFC.Hud.scene, IFC.Hud.camera );
         }
+
+        IFC.Hud.doRender && renderer.render( IFC.Hud.scene, IFC.Hud.camera );
 
       IFC.Hud.performance.end();
       IFC.Hud.performance.render();
