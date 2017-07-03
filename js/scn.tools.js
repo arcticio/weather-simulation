@@ -1,6 +1,4 @@
 
-'use strict'
-
 SCN.Tools = {
 
   loadCube: function (name, cfg, callback) {

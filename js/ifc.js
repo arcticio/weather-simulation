@@ -32,6 +32,15 @@ var IFC = (function () {
       diagonal: NaN,
     },
 
+    geometry = {            // canvas actually
+      height:   NaN,        // canvas
+      width:    NaN,
+      aspect:   NaN,
+      diagonal: NaN,
+      distance: NaN,        // camera
+      radius:   NaN,
+    },
+
     mouse = {
       x:          NaN, 
       y:          NaN, 
@@ -73,6 +82,7 @@ var IFC = (function () {
     
     modus,
     pointer,
+    geometry,
     controller,
 
     urlDirty,
@@ -161,13 +171,6 @@ var IFC = (function () {
           }
 
         },
-        // onkey: function (key) {
-        //   var actions = {
-        //     // 't': () => SIM.setSimTime( -1, 'hours'),
-        //     // 'z': () => SIM.setSimTime(  1, 'hours'),
-        //   };
-        //   actions[key] && actions[key]();
-        // },
 
         onRelax: function () {
           self.urlDirty = true;
@@ -250,10 +253,10 @@ var IFC = (function () {
 
         SCN.resize();
 
-        canvas.width    = SCN.renderer.domElement.width;
-        canvas.height   = SCN.renderer.domElement.height;
-        canvas.aspect   = canvas.width / canvas.height;
-        canvas.diagonal = Math.hypot(canvas.width, canvas.height);
+        geometry.width    = SCN.renderer.domElement.width;
+        geometry.height   = SCN.renderer.domElement.height;
+        geometry.aspect   = geometry.width / geometry.height;
+        geometry.diagonal = Math.hypot(geometry.width, geometry.height);
 
         IFC.Hud.resize();
 
@@ -294,7 +297,7 @@ var IFC = (function () {
 
         if (mouse.button === 0) {
           // SCN.objects.arrowHelper.visible && SCN.objects.arrowHelper.setDirection( pointer.intersect );
-          marker.copy(pointer.intersect);
+          // marker.copy(pointer.intersect);
         }
 
         if (mouse.button === 2) {
@@ -313,8 +316,8 @@ var IFC = (function () {
         pointer.device = mouse;
         mouse.px = event.clientX; 
         mouse.py = event.clientY;
-        mouse.x  =   ( event.clientX / canvas.width )  * 2 - 1;
-        mouse.y  = - ( event.clientY / canvas.height ) * 2 + 1;
+        mouse.x  =   ( event.clientX / geometry.width )  * 2 - 1;
+        mouse.y  = - ( event.clientY / geometry.height ) * 2 + 1;
       },
       mouseenter:   function (event) { 
         pointer.device = mouse;
@@ -346,10 +349,10 @@ var IFC = (function () {
         console.log('touchstart');
 
         touch.down = event.touches.length > 0;
-        touch.px = event.touches[ 0 ].pageX;
-        touch.py = event.touches[ 0 ].pageY;
-        touch.x  =   ( touch.px / canvas.width )  * 2 - 1;
-        touch.y  = - ( touch.py / canvas.height ) * 2 + 1;
+        touch.px   = event.touches[ 0 ].pageX;
+        touch.py   = event.touches[ 0 ].pageY;
+        touch.x    =   ( touch.px / geometry.width )  * 2 - 1;
+        touch.y    = - ( touch.py / geometry.height ) * 2 + 1;
 
         pointer.device = touch;
 
@@ -395,24 +398,22 @@ var IFC = (function () {
         fraction = CFG.earth.radius * 2 / height
       ;
 
-      globe.height = canvas.height * fraction;
+      globe.height = geometry.height * fraction;
 
       globe.scan = (
-        globe.height > canvas.diagonal                              ? 1 : // big
-        globe.height > canvas.width || globe.height > canvas.height ? 0 : // fits
+        globe.height > geometry.diagonal                              ? 1 : // big
+        globe.height > geometry.width || globe.height > geometry.height ? 0 : // fits
           -1                                                              // tiny
       );
 
     },
     onglobeenter: function () {
       ANI.insert(0, ANI.library.scaleGLobe( 1.0,  800))
-      // console.log('onglobeenter');
       IFC.Hud.spacetime.updateModus('space');
     },
     onglobeleave: function () {
       ANI.insert(0, ANI.library.scaleGLobe( 0.94, 800));
       IFC.Hud.spacetime.updateModus('time');
-      // console.log('onglobeleave');
     },
     updatePointer: function () {
 

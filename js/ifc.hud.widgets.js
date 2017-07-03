@@ -5,9 +5,7 @@ IFC.Hud.spacetime = (function () {
 
   var 
     self, cfg, modus, 
-    sprite, cvs, ctx, img, texture,
-    width, height,
-    simtime, 
+    sprite, cvs, ctx, texture,
     vecUp       = new THREE.Vector3(0, 1, 0),
     vecRot      = new THREE.Vector3(0, 0, 0),
   end;
@@ -20,8 +18,8 @@ IFC.Hud.spacetime = (function () {
       cvs    = cfg.canvas;
       ctx    = cvs.getContext('2d');
 
-      width  = cfg.position.width;
-      height = cfg.position.height;
+      // width  = cfg.position.width;
+      // height = cfg.position.height;
 
       cvs.width  = 64;
       cvs.height = 64;
@@ -142,11 +140,8 @@ IFC.Hud.time = (function () {
     sprite,
     cfg,
     cvs, ctx, // img,
-    texture,
-    width, height,
-    simtime, 
-
-  end;
+    texture
+  ;
 
   return self = {
     init:  function (mesh, config) {
@@ -155,10 +150,9 @@ IFC.Hud.time = (function () {
       cfg    = config;
       cvs    = cfg.canvas;
       ctx    = cvs.getContext('2d');
-      // img    = sprite.material.map.image;
 
-      width  = cvs.width  = cfg.position.width;
-      height = cvs.height = cfg.position.height;
+      cvs.width  = cfg.position.width;
+      cvs.height = cfg.position.height;
 
       ctx.font         = '24px monospace'
       ctx.fillStyle    = '#eee';
@@ -208,6 +202,5 @@ IFC.Hud.time = (function () {
     },
 
   };
-
 
 }());

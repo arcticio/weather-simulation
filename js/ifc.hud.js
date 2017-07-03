@@ -24,14 +24,14 @@ IFC.Hud = (function () {
     mouse       = {x: NaN, y: NaN, sprite: null},
 
     menuToggled = false,
-    menuScale   = ( window.innerWidth + 64 ) / window.innerWidth * 3
+    menuScale   = NaN; //   = ( window.innerWidth + 64 ) / window.innerWidth * 3
   ;
 
   return self = {
 
     menu,
-    scene,
-    camera,
+    // scene,
+    // camera,
     sprites,
     doRender,
     
@@ -39,12 +39,19 @@ IFC.Hud = (function () {
 
       camera.position.z = 10;
 
+      menuScale = ( IFC.geometry.width + 64 ) / IFC.geometry.width * 3
+
       menu.scale.set(menuScale, menuScale, 1);
 
       self.initSprites();
       scene.add(menu);
       scene.add(camera);
       self.resize();
+
+    },
+    render: function (renderer) {
+
+      doRender && renderer.render( scene, camera );
 
     },
     initSprites: function () {
@@ -123,8 +130,8 @@ IFC.Hud = (function () {
 
       var
         pos, 
-        w  = SCN.canvas.width,
-        h  = SCN.canvas.height,
+        w  = IFC.geometry.width,
+        h  = IFC.geometry.height,
         w2 = w / 2,
         h2 = h / 2;
 
@@ -158,24 +165,25 @@ IFC.Hud = (function () {
     },
     resize: function () {
 
-      var w2 = SCN.canvas.width  / 2;
-      var h2 = SCN.canvas.height / 2;
+      var w2 = IFC.geometry.width  / 2;
+      var h2 = IFC.geometry.height / 2;
 
       camera.left   = - w2;
       camera.right  =   w2;
       camera.top    =   h2;
       camera.bottom = - h2;
+
       camera.updateProjectionMatrix();
 
-      menuScale   = ( window.innerWidth + 64 ) / window.innerWidth * 3,
+      menuScale = ( IFC.geometry.width + 64 ) / IFC.geometry.width * 3
 
       self.posSprites();
 
     },
     toggle: function () {
 
-      // need for screen shots
-      doRender = self.doRender = !doRender;
+      // needed for screen shots
+      doRender = !doRender;
       
     },
     activate: function () {
@@ -328,7 +336,7 @@ IFC.Hud = (function () {
       // works in screen space 0/0 = left/top
 
       var 
-        pos, isMenu, hasClick, hit = false, found = null, isActive,
+        pos, isMenu, hit = false, found = null, isActive,
         zone  = {left:0, top: 0, right: 0, bottom: 0},
         menuX = IFC.Hud.menu.position.x,
         menuY = IFC.Hud.menu.position.y,

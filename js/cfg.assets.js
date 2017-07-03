@@ -1,6 +1,4 @@
 
-'use strict'
-
 CFG.Objects = {
 
 // MANDATORY => (no id)
@@ -10,7 +8,7 @@ CFG.Objects = {
       title:          'pointer',
       type:           'mesh',
       mesh:           new THREE.Mesh(
-        new THREE.SphereGeometry(RADIUS - 0.01, 64, 64),                  
+        new THREE.SphereGeometry(RADIUS - 0.01, 32, 32),                  
         new THREE.MeshBasicMaterial({
           color:     0x330000,
           wireframe: true,
@@ -389,7 +387,7 @@ CFG.Objects = {
       altitude:       LEVEL_0,
       opacity:        0.8,
       radius:         RADIUS,
-      ucolor:         new THREE.Color(0xffffff),
+      color:          new THREE.Color(0xffffff),
     },
 
 

@@ -119,7 +119,7 @@
 
     <canvas class="simulator noselect"></canvas>
 
-  </div>  mana
+  </div>
 
   <div style="display:none">
 
@@ -195,10 +195,6 @@
 
     <script type="text/javascript">
 
-      'use strict';
-
-      // TIM.step('HTML.read')
-      
       Orb.Time = Orb.Core.Time;
       Orb.Tool = Orb.Core.Tool;
 
@@ -211,6 +207,7 @@
         CFG.Manager.init();
 
         LDR.parse(LDR.sequence());
+        
         LDR.execute(function () {
           ANI.insert(0, ANI.library.intro(800, function () {
             CFG.isLoaded = true;

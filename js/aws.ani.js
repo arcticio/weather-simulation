@@ -1,4 +1,3 @@
-'use strict';
 
 // https://github.com/sindresorhus/screenfull.js/
 
@@ -8,9 +7,7 @@ var ANI = (function () {
     self,
     status   = {frame: 0},
     actions  = [],
-    $        = document.getElementById.bind(document),
-    $$       = document.querySelectorAll.bind(document),
-  end;
+    $$       = document.querySelectorAll.bind(document);
 
 
   return self = {
@@ -20,7 +17,7 @@ var ANI = (function () {
     init: function () {},
     activate: function () {},
 
-    step: function (frame, dt) {
+    step: function (frame, deltatime) {
 
       status.frame = frame;
 
@@ -316,7 +313,7 @@ var ANI = (function () {
           current = {
             phi:    curShere.phi,
             theta:  curShere.theta,
-            radius: SCN.camera.position.length(),
+            radius: SCN.camera.radius,
           },
           target  = {
             phi:    futShere.phi,
@@ -347,14 +344,13 @@ var ANI = (function () {
 
       },
 
-      cam2vector: function (vector, distance){
+      cam2vector: function (vector){
 
         // https://stackoverflow.com/questions/14614252/how-to-fit-camera-to-object
 
-        var aspect = window.innnerWidth / window.innerHeight;
-        var fov    = SCN.camera.fov * ( Math.PI / 180 ); 
-
-        distance = Math.abs( RADIUS + RADIUS / 2 / Math.sin( fov / 2 ) );  // 45% height
+        var 
+          fov    = SCN.camera.fov * ( Math.PI / 180 ),
+          radius = Math.abs( RADIUS + RADIUS / 2 / Math.sin( fov / 2 ) );  // 45% height
 
         var 
           spherical,
@@ -364,12 +360,12 @@ var ANI = (function () {
           current = {
             phi:    curShere.phi,
             theta:  curShere.theta, 
-            radius: SCN.camera.position.length(),
+            radius: SCN.camera.radius,
           },
           target  = {
             phi:    futShere.phi,
             theta:  futShere.theta,  // east-direction
-            radius: distance,
+            radius: radius,
           },
 
         end;

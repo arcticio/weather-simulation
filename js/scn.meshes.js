@@ -1,6 +1,4 @@
 
-'use strict'
-
 SCN.Meshes = {
 
   calculate:  function (name, cfg) { return SCN.Meshes[name](cfg) },
@@ -87,11 +85,12 @@ SCN.Meshes = {
 
     }
 
-    function onBeforeRender () {
+    // function onBeforeRender () {
 
-    }
+    // }
 
   },
+
   graticule: function (cfg, callback) {
 
     /*

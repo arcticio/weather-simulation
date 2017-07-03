@@ -1,6 +1,4 @@
 
-'use strict'
-
 SCN.Meshes.population = function (name, cfg, callback) {
 
   // check shaders here:
@@ -11,14 +9,12 @@ SCN.Meshes.population = function (name, cfg, callback) {
   // TODO: make cities facing away from origin, implement lights
 
   var 
-    i, city, vec3, light, color, 
+    i, city, vec3,
     amount    = CITIES.length,
     positions = new Float32Array( amount * 3 ),
     sizes     = new Float32Array( amount * 1 ),
     geometry  = new THREE.BufferGeometry(),
-    texture   = new THREE.TextureLoader().load('images/red.dot.png', function () {
-      material.uniforms.map.needsUpdate = true;
-    }),
+    texture   = CFG.Textures['red.dot.png'],
     toVec3    = function (lat, lon) {
       return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, cfg.altitude);
     },
@@ -40,14 +36,14 @@ SCN.Meshes.population = function (name, cfg, callback) {
     `,
     fragmentShader = `
       uniform sampler2D map;
-      uniform vec3 ucolor;
+      uniform vec3 color;
       uniform float opacity;
 
       float factor = 0.8;
 
       void main() {
         vec3 color1 = texture2D( map, gl_PointCoord ).rgb;
-        vec3 color2 = mix(ucolor, color1, factor);
+        vec3 color2 = mix(color, color1, factor);
         gl_FragColor    = vec4( color2, opacity );
       }
     `,
@@ -60,12 +56,12 @@ SCN.Meshes.population = function (name, cfg, callback) {
         'map':      { type: 't', value: texture },
         'opacity':  { type: 'f', value: cfg.opacity },
         'radius':   { type: 'f', value: cfg.radius },
-        'ucolor':   { type: 'c', value: cfg.ucolor },
+        'color':    { type: 'c', value: cfg.color },
       }
     }),
-    points    = new THREE.Points( geometry, material ),
+    points    = new THREE.Points( geometry, material )
 
-  end;
+  ;
 
   for (i=0; i<amount; i++) {
 

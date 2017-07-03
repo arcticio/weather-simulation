@@ -244,8 +244,8 @@ var SCN = (function () {
       renderer.render( scene, camera );
       renderer.render( scene, camera ); // cause onAfterRender
       renderer.clearDepth();
-      renderer.render( IFC.Hud.scene, IFC.Hud.camera );
-      renderer.render( IFC.Hud.scene, IFC.Hud.camera );
+      IFC.Hud.render(renderer);
+      IFC.Hud.render(renderer);
       TIM.step('SCN.prerender', Date.now() - t0, 'ms');
     },
 
@@ -259,7 +259,8 @@ var SCN = (function () {
 
       IFC.Hud.performance.begin();
 
-        camera.distance = camera.position.length() - CFG.earth.radius;
+        camera.radius = camera.position.length();
+        camera.distance = camera.radius - CFG.earth.radius;
 
         objects.background.visible && objects.background.updatePosition();
 
@@ -280,7 +281,9 @@ var SCN = (function () {
           renderer.render( scene, camera );
         }
 
-        IFC.Hud.doRender && renderer.render( IFC.Hud.scene, IFC.Hud.camera );
+        IFC.Hud.render(renderer);
+
+      //   IFC.Hud.doRender && renderer.render( IFC.Hud.scene, IFC.Hud.camera );
 
       IFC.Hud.performance.end();
       IFC.Hud.performance.render();
@@ -292,17 +295,16 @@ var SCN = (function () {
     info: function () { },
     probeDevice: function () {
 
-      var gl = renderer.context;
+      var gl = renderer.context, dev = CFG.Device;
 
       gl.getSupportedExtensions().forEach(ex => extensions[ex] = ex);
 
-      CFG.Device.devicePixelRatio  = devicePixelRatio;
-      CFG.Device.maxVertexUniforms = renderer.capabilities.maxVertexUniforms;
-      CFG.Device.max_texture_size  = gl.getParameter(gl.MAX_TEXTURE_SIZE);
-      CFG.Device.max_cube_map_texture_size  = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
-      
-      CFG.Device.OES_texture_float         = !!extensions.OES_texture_float;
-      CFG.Device.OES_texture_float_linear  = !!extensions.OES_texture_float_linear;
+      dev.devicePixelRatio           = devicePixelRatio;
+      dev.maxVertexUniforms          = renderer.capabilities.maxVertexUniforms;
+      dev.max_texture_size           = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+      dev.max_cube_map_texture_size  = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+      dev.OES_texture_float          = !!extensions.OES_texture_float;
+      dev.OES_texture_float_linear   = !!extensions.OES_texture_float_linear;
 
     },
     logFullInfo: function () {

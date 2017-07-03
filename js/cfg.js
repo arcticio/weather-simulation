@@ -115,6 +115,7 @@ var CFG = {
     'transparent.face.512.png':     'images/transparent.face.512.png',
 
     'arcticio.logo.512.png':        'images/arcticio.logo.white.512.png',
+    'red.dot.png':                  'images/red.dot.png',
 
     // 'tex2.jpg':                     'images/test/tex2.jpg',
     // 'tex3.jpg':                     'images/test/tex3.jpg',

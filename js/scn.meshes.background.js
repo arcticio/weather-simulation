@@ -8,6 +8,7 @@ SCN.Meshes.background = function (name, cfg, callback) {
     vertexShader = `
 
       attribute vec3 colors;
+
       varying   vec2 vUv;  
       varying   vec3 vColor;  
 
@@ -42,7 +43,9 @@ SCN.Meshes.background = function (name, cfg, callback) {
         opacity: {type: 'f', value: 0.999}
       }
     }),
-    plane = new THREE.Mesh( geometry, material )
+    
+    plane = new THREE.Mesh( geometry, material );
+
   ;
 
   function updateColors(colors) {
@@ -74,11 +77,11 @@ SCN.Meshes.background = function (name, cfg, callback) {
 
     var 
       camera = SCN.camera,
-      aspect = window.innerWidth / window.innerHeight,
+      aspect = IFC.geometry.aspect,
       fov    = camera.fov * Math.PI / 180,
-      height = 2 * Math.tan(fov / 2) * camera.position.length() + 2,
+      height = 2 * Math.tan(fov / 2) * camera.radius + 2,
       width  = height * aspect,
-      factor = 1 / SCN.scene.scale.x * 1.0 // 0.9
+      factor = 1 / SCN.scene.scale.x
     ;
 
     plane.position.copy(camera.position.clone().negate().normalize().multiplyScalar(2));
