@@ -1,6 +1,4 @@
 
-'use strict';
-
 var SCN = (function () {
 
   var 
@@ -27,20 +25,20 @@ var SCN = (function () {
     scene         = new THREE.Scene(),
 
     doRender      = true,
-    doAnimate     = true,
-    doSimulate    = true,
+    // doAnimate     = true,
+    // doSimulate    = true,
 
     extensions    = {},
-    objects       = {},
+    objects       = {}
 
-  end;
+  ;
 
   return self = {
     
     home,
     scene,
     camera,
-    canvas,
+    // canvas,
     objects,
     renderer,
 
@@ -70,7 +68,6 @@ var SCN = (function () {
       }
 
       IFC.urlDirty = true;
-      // IFC.Tools.updateUrl();
 
     },
 
@@ -126,19 +123,27 @@ var SCN = (function () {
 
     },
 
-    resize: function () {
+    resize: function (geometry) {
 
-      renderer.setSize(window.innerWidth, window.innerHeight);
-
-      renderer.domElement.style.width  = window.innerWidth  + 'px';
-      renderer.domElement.style.height = window.innerHeight + 'px';
-      renderer.domElement.width        = window.innerWidth;
-      renderer.domElement.height       = window.innerHeight;
+      renderer.setSize(geometry.width, geometry.height);
 
       if (camera) {
-        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.aspect = geometry.aspect;
         camera.updateProjectionMatrix();
       }
+
+
+      // renderer.setSize(window.innerWidth, window.innerHeight);
+
+      // renderer.domElement.style.width  = window.innerWidth  + 'px';
+      // renderer.domElement.style.height = window.innerHeight + 'px';
+      // renderer.domElement.width        = window.innerWidth;
+      // renderer.domElement.height       = window.innerHeight;
+
+      // if (camera) {
+      //   camera.aspect = window.innerWidth / window.innerHeight;
+      //   camera.updateProjectionMatrix();
+      // }
       
     },
     init: function () {
@@ -147,7 +152,7 @@ var SCN = (function () {
       // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
       // webgl.min_capability_mode
 
-      renderer.setClearColor(0x883300, 1.0);  // red for danger
+      renderer.setClearColor(0x662200, 1.0);  // red for danger
       renderer.shadowMap.enabled = false;
       renderer.autoClear = false;             // cause HUD
 
@@ -155,7 +160,7 @@ var SCN = (function () {
       camera.position.copy(CFG.Camera.pos);
       self.add('camera', camera);
 
-      self.resize();
+      // self.resize();
 
     },
 
@@ -224,8 +229,8 @@ var SCN = (function () {
           Animations: {
             Rotate:       (value) => ANI.insert(0, ANI.library.datetime.add(1, 'days', 800)), 
           },
-        },
-      end;
+        }
+      ;
 
       try {
         config[folder][option](value);
@@ -259,40 +264,42 @@ var SCN = (function () {
 
       IFC.Hud.performance.begin();
 
-        camera.radius = camera.position.length();
-        camera.distance = camera.radius - CFG.earth.radius;
-
-        objects.background.visible && objects.background.updatePosition();
-
-        objects.spot.visible && objects.spot.position.copy(SIM.sunDirection).multiplyScalar(CFG.Sun.radius);
-        objects.sun.visible  && objects.sun.position.copy(SIM.sunDirection).multiplyScalar(CFG.Sun.radius);
-
         TWEEN.update();
 
+        // move cam
         IFC.step(frame, deltasecs);
-        IFC.Hud.step(frame, deltasecs);
 
-        // always check actions
-        doAnimate && ANI.step(frame, deltasecs);
+        camera.radius   = camera.position.length();
+        camera.distance = camera.radius - CFG.earth.radius;
 
+        objects.background.updatePosition();
+
+        SIM.updateSun();
+        objects.spot.position.copy(SIM.sunPosition);
+        objects.sun.position.copy(SIM.sunPosition);
+
+        // always look for new animations
+        ANI.step(frame, deltasecs);
 
         if ( doRender && !(frame % 1) ) {
           renderer.clear();
           renderer.render( scene, camera );
         }
 
+        // update Hud
+        IFC.Hud.step(frame, deltasecs);
         IFC.Hud.render(renderer);
 
-      //   IFC.Hud.doRender && renderer.render( IFC.Hud.scene, IFC.Hud.camera );
-
       IFC.Hud.performance.end();
+
+      // to next frame
       IFC.Hud.performance.render();
 
       lastTimestamp = timestamp;
       frame += 1;
 
     },
-    info: function () { },
+    // info: function () { },
     probeDevice: function () {
 
       var gl = renderer.context, dev = CFG.Device;
@@ -334,7 +341,7 @@ var SCN = (function () {
         floatFragmentTextures : renderer.capabilities.floatFragmentTextures,
         floatVertexTextures :   renderer.capabilities.floatVertexTextures,
         getMaxAnisotropy :      renderer.capabilities.getMaxAnisotropy,
-        capabilities:           canvas.getContext('webgl').getSupportedExtensions(),
+        extensions:             gl.getSupportedExtensions(),
 
       }, null, 2));
 

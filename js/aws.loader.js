@@ -24,7 +24,7 @@ var LDR = (function () {
         [ SCN.probeDevice ],
 
       'lift off!',
-        [ SCN.info ],   
+        // [ SCN.info ],   
         [ RES.init ],   
         [ ANI.init ], 
         [ SIM.init ], 
@@ -42,6 +42,7 @@ var LDR = (function () {
       'reaching orbit',
         [ IFC.init ], 
         [ SIM.setSimTime ], 
+        [ SIM.updateSun ], 
 
       'uploading to GPU',
         [ SCN.prerender, null, 'may take a while ...' ], 

@@ -54,7 +54,7 @@ CFG.Sprites = {
     hover:    false,
     menu:     false,
     position: {
-      zIndex:       1,
+      zIndex:       4.9,
       top:          0,
       width:        '100%',
       height:       72,

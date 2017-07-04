@@ -25,13 +25,6 @@ var IFC = (function () {
       sector:   []
     },
 
-    canvas = {            // canvas actually
-      height:   NaN,
-      width:    NaN,
-      aspect:   NaN,
-      diagonal: NaN,
-    },
-
     geometry = {            // canvas actually
       height:   NaN,        // canvas
       width:    NaN,
@@ -65,16 +58,8 @@ var IFC = (function () {
       intersect:    new THREE.Vector3(0, 0, 0),
     },
 
-    levels  = {
-      '8':  1.2,
-      '7':  1.4,
-      '6':  1.8,
-      '5':  2.6,
-      '4':  4.2,
-    },
-
-    raycaster = new THREE.Raycaster(),
-    marker    = new THREE.Vector3()
+    raycaster = new THREE.Raycaster()
+    // marker    = new THREE.Vector3()
 
   ;
 
@@ -116,7 +101,7 @@ var IFC = (function () {
         minDistance: CFG.Camera.minDistance,
         maxDistance: CFG.Camera.maxDistance,
 
-        onorient: function (callback, deltaX, deltaY, deltaZ) {
+        onorient: function (callback /* , deltaX, deltaY, deltaZ */ ) {
 
           // eat for now
           callback(0, 0, 0);
@@ -125,29 +110,24 @@ var IFC = (function () {
 
         ondrag: function (callback, deltaX, deltaY, deltaZ) {
 
-          var timescale = H.scale(pointer.device.py, 0, canvas.height, 0.5, 10) ;
+          var timescale = H.scale(pointer.device.py, 0, geometry.height, 0.5, 10) ;
 
           if (modus === 'space') {
 
             if (pointer.overGlobe) {
-              // IFC.Hud.spacetime.updateModus('space');
               callback(deltaX, deltaY, deltaZ);
 
             } else {
-              // overides space modus
-              // IFC.Hud.spacetime.updateModus('time');
               SIM.setSimTime(deltaX, 'hours');
               callback(0, 0, 0);
 
             }
 
           } else  {
-            // IFC.Hud.spacetime.updateModus('time');
             SIM.setSimTime(deltaX, 'hours');
             callback(0, 0, 0);
 
           }
-
 
         },
         onwheel: function (callback, deltaX, deltaY, deltaZ) {
@@ -157,14 +137,12 @@ var IFC = (function () {
               timescale: on top    1/3 screen.width = 1 hour
           */
 
-          var timescale = H.scale(pointer.device.py, 0, canvas.height, 0.5, 20) ;
+          var timescale = H.scale(pointer.device.py, 0, geometry.height, 0.5, 20) ;
 
           if (pointer.overGlobe) {
-            // IFC.Hud.spacetime.updateModus('space');
             callback(deltaX, deltaY, deltaZ);
 
           } else {
-            // IFC.Hud.spacetime.updateModus('time');
             SIM.setSimTime( ~~(deltaX * -5 * timescale), 'minutes');
             callback(0, 0, 0);
 
@@ -185,7 +163,7 @@ var IFC = (function () {
 
       guiOpen = !guiOpen;
 
-      guiCont.style.display = guiOpen ? 'block' : 'none'
+      guiCont.style.display = guiOpen ? 'block' : 'none';
       window.GUI.closed = !guiOpen;
 
     },
@@ -194,7 +172,7 @@ var IFC = (function () {
 
       $$('canvas.simulator')[0].style.display = 'block';
 
-      IFC.Hud.resize();
+      // IFC.Hud.resize();
       IFC.Hud.time.render();
       IFC.Tools.updateUrl();
       self.urlDirty = false;
@@ -251,14 +229,27 @@ var IFC = (function () {
 
         // TODO: Chrome on Android drops last event on leave fullscreen
 
-        SCN.resize();
-
-        geometry.width    = SCN.renderer.domElement.width;
-        geometry.height   = SCN.renderer.domElement.height;
+        geometry.width    = window.innerWidth;
+        geometry.height   = window.innerHeight;
         geometry.aspect   = geometry.width / geometry.height;
         geometry.diagonal = Math.hypot(geometry.width, geometry.height);
 
-        IFC.Hud.resize();
+        geometry.w2       = geometry.width  / 2;
+        geometry.h2       = geometry.height / 2;
+
+        simulator.style.width  = geometry.width  + 'px';
+        simulator.style.height = geometry.height + 'px';
+        simulator.width        = geometry.width;
+        simulator.height       = geometry.height;
+
+        SCN.resize(geometry);
+        IFC.Hud.resize(geometry);
+
+        // geometry.width    = SCN.renderer.domElement.width;
+        // geometry.height   = SCN.renderer.domElement.height;
+        // geometry.aspect   = geometry.width / geometry.height;
+        // geometry.diagonal = Math.hypot(geometry.width, geometry.height);
+
 
       },
       click:   function (event) { 

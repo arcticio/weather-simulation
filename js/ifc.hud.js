@@ -23,6 +23,8 @@ IFC.Hud = (function () {
     touch       = {x: NaN, y: NaN, sprite: null},
     mouse       = {x: NaN, y: NaN, sprite: null},
 
+    zone        = {left:0, top: 0, right: 0, bottom: 0}, // hittest
+
     menuToggled = false,
     menuScale   = NaN; //   = ( window.innerWidth + 64 ) / window.innerWidth * 3
   ;
@@ -37,16 +39,18 @@ IFC.Hud = (function () {
     
     init: function () {
 
+      var geo = IFC.geometry;
+
       camera.position.z = 10;
 
-      menuScale = ( IFC.geometry.width + 64 ) / IFC.geometry.width * 3
-
+      menuScale = ( geo.width + 64 ) / geo.width * 3
       menu.scale.set(menuScale, menuScale, 1);
 
       self.initSprites();
       scene.add(menu);
       scene.add(camera);
-      self.resize();
+
+      self.resize(geo);
 
     },
     render: function (renderer) {
@@ -54,9 +58,26 @@ IFC.Hud = (function () {
       doRender && renderer.render( scene, camera );
 
     },
+    resize: function (geometry) {
+
+      camera.left   = - geometry.w2;
+      camera.right  =   geometry.w2;
+      camera.top    =   geometry.h2;
+      camera.bottom = - geometry.h2;
+
+      camera.updateProjectionMatrix();
+
+      menuScale = ( geometry.width + 64 ) / geometry.width * 3
+
+      self.posSprites();
+
+    },
+
     initSprites: function () {
 
       // TODO: read sprite status from SCN.objects.XXX.visible
+
+      var geo = IFC.geometry;
 
       H.each(CFG.Sprites, (name, cfg) => {
 
@@ -90,7 +111,7 @@ IFC.Hud = (function () {
 
         // setup size
         if (cfg.position.width === '100%') {
-          sprite.scale.set( SCN.canvas.width, cfg.position.height, 1 );
+          sprite.scale.set( geo.width, cfg.position.height, 1 );
 
         } else {
           sprite.scale.set( cfg.position.width, cfg.position.height, 1 );
@@ -163,23 +184,7 @@ IFC.Hud = (function () {
       });
 
     },
-    resize: function () {
 
-      var w2 = IFC.geometry.width  / 2;
-      var h2 = IFC.geometry.height / 2;
-
-      camera.left   = - w2;
-      camera.right  =   w2;
-      camera.top    =   h2;
-      camera.bottom = - h2;
-
-      camera.updateProjectionMatrix();
-
-      menuScale = ( IFC.geometry.width + 64 ) / IFC.geometry.width * 3
-
-      self.posSprites();
-
-    },
     toggle: function () {
 
       // needed for screen shots
@@ -325,7 +330,6 @@ IFC.Hud = (function () {
     toggleMenu: function () {
 
       menuToggled = !menuToggled;
-
       menuToggled && menu.scale.set(0.01, 0.01, 1);
 
       ANI.insert(0, ANI.library.menu.scale(menuToggled ? 1 : menuScale, 200));
@@ -336,14 +340,16 @@ IFC.Hud = (function () {
       // works in screen space 0/0 = left/top
 
       var 
-        pos, isMenu, hit = false, found = null, isActive,
-        zone  = {left:0, top: 0, right: 0, bottom: 0},
+        pos, isMenu, isActive, 
+        hit   = false, 
+        found = null, 
         menuX = IFC.Hud.menu.position.x,
         menuY = IFC.Hud.menu.position.y,
-        w     = SCN.canvas.width,
-        h     = SCN.canvas.height,
-        w2    = w / 2,
-        h2    = h / 2
+        geo   = IFC.geometry,
+        w     = geo.width,
+        h     = geo.height,
+        w2    = geo.w2,
+        h2    = geo.h2
       ;
 
       H.each(sprites, (name, sprite) => {
@@ -354,44 +360,44 @@ IFC.Hud = (function () {
 
         if (!found && isActive && !!sprite.cfg.onclick) {
 
-          if (pos.bottom && pos.left){
+          if (pos.bottom !== undefined && pos.left !== undefined){
 
             zone.left   = !isMenu ?     pos.left    : menuX +     pos.left;
             zone.bottom = !isMenu ? h - pos.bottom  : menuY + h - pos.bottom;
             zone.top    = zone.bottom - pos.height;
             zone.right  = zone.left   + pos.width;
 
-          } else if (pos.right && pos.bottom) {
+          } else if (pos.right !== undefined && pos.bottom !== undefined) {
 
             zone.right  = !isMenu ? w - pos.right   : menuX + w - pos.right;
             zone.bottom = !isMenu ? h - pos.bottom  : menuY + h - pos.bottom;
             zone.top    = zone.bottom - pos.height;
             zone.left   = zone.right - pos.width;
 
-          } else if (pos.right && pos.top) {
+          } else if (pos.right !== undefined && pos.top !== undefined) {
 
             zone.right  = !isMenu ? w - pos.right   : menuX + w - pos.right;
             zone.top    = !isMenu ?     pos.top     : menuY +     pos.top;
             zone.left   = zone.right - pos.width;
             zone.bottom = zone.top   + pos.height;
 
-          } else if (pos.left && pos.top) {
+          } else if (pos.left !== undefined && pos.top !== undefined) {
 
             zone.left   = !isMenu ? pos.left    : menuX + pos.left;
             zone.top    = !isMenu ? pos.top     : menuY + pos.top;
             zone.right  = zone.left  + pos.width;
             zone.bottom = zone.top   + pos.height;
 
-          } else if (pos.center && pos.center === 'x') {
+          } else if (pos.center !== undefined && pos.center === 'x') {
 
-            // can't be menu
+            // can't be menu button
 
             zone.top    = pos.top;
             zone.left   = w2 - pos.width / 2;
             zone.bottom = zone.top   + pos.height;
             zone.right  = zone.left  + pos.width;
 
-          } else if (pos.center && pos.center === 'y') {
+          } else if (pos.center !== undefined && pos.center === 'y') {
             console.log('IFC.testHit', sprite.name, 'unhandled pos');
 
           } else {
@@ -409,7 +415,6 @@ IFC.Hud = (function () {
       return found;
 
     },
-
 
   };
 

@@ -90,14 +90,6 @@ IFC.Controller = (function () {
 
     };
 
-  // function sgn (num) { 
-  //   return (
-  //     ~~num === 0 ? 0 :
-  //       num >   0 ? 1 :
-  //         -1
-  //   );
-  // }
-
   function eat (event) {
     if (event) {
       event.preventDefault();
@@ -110,15 +102,8 @@ IFC.Controller = (function () {
     return (max - min) * (x - xMin) / (xMax - xMin) + min;
   }
 
-  // function clampScale (x, xMin, xMax, min, max) {
-  //     var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
-  //     return val < min ? min : val > max ? max : val;
-  // }
-
   function distanceScale (x, min, max) {
-    // var val= (max-min)*(x-cfg.minDistance)/(cfg.maxDistance-cfg.minDistance)+min;
     return (max-min)*(x-cfg.minDistance)/(cfg.maxDistance-cfg.minDistance)+min;
-    // return val < min ? min : val > max ? max : val;
   }
 
   return self = {
@@ -201,13 +186,11 @@ IFC.Controller = (function () {
     },
     step: function (frame, deltatime) {
 
-      var distance;
+      var radius = cam.radius;
 
       if (enabled) {
 
         frameCounter += 1;
-
-        distance = cam.position.length();
 
         veloX = abs(veloX) > EPS ? veloX * cfg.dampX : 0;  // right/left
         veloY = abs(veloY) > EPS ? veloY * cfg.dampY : 0;  // up/down
@@ -215,14 +198,14 @@ IFC.Controller = (function () {
 
         isMoving = veloX || veloY || veloZ;
 
-        (  isMoving && !wasMoving) && cfg.onAwake();
-        ( !isMoving &&  wasMoving) && cfg.onRelax();
+        (  isMoving && !wasMoving ) && cfg.onAwake();
+        ( !isMoving &&  wasMoving ) && cfg.onRelax();
 
         wasMoving = isMoving;
 
         if (veloX || veloY) {
 
-          spcl.radius = distance;
+          spcl.radius = radius;
           spcl.theta += veloX * deltatime;           // E/W
           spcl.phi   += veloY * deltatime;           // N/S
 
@@ -244,15 +227,15 @@ IFC.Controller = (function () {
 
         if (veloZ) {
 
-          distance *= 1 + ( veloZ * deltatime / distance );
+          radius *= 1 + ( veloZ * deltatime / radius );
 
-          distance  = (
-            distance < cfg.minDistance ? cfg.minDistance :
-            distance > cfg.maxDistance ? cfg.maxDistance :
-              distance
+          radius  = (
+            radius < cfg.minDistance ? cfg.minDistance :
+            radius > cfg.maxDistance ? cfg.maxDistance :
+              radius
           );
 
-          cam.position.setLength(distance);
+          cam.position.setLength(radius);
 
         }
 

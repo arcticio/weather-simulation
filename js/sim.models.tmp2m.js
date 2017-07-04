@@ -62,7 +62,7 @@ SIM.Models.tmp2m = (function () {
         },
 
         uniforms   = THREE.UniformsUtils.merge([
-            THREE.UniformsLib[ 'lights' ],
+            // THREE.UniformsLib[ 'lights' ],
             ownuniforms       
         ]),
         

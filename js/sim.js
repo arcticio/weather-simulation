@@ -14,9 +14,10 @@ var SIM = (function () {
     datagrams      = {}, // all models share GFS data
 
     sun            = Orb.SolarSystem().Sun(),
-    sunVector      = new THREE.Vector3(),
-    sunDirection   = new THREE.Vector3(),
-    sunSphererical = new THREE.Spherical(4, 0, -Math.PI / 2),
+    sunVector      = new THREE.Vector3(),             // pos of real sun
+    sunDirection   = new THREE.Vector3(),             // dir of real sun
+    sunSphererical = new THREE.Spherical(4, 0, -PI2),
+    sunPosition    = new THREE.Vector3(),             // pos of lights 
 
     timerange      = new TimeRange(),
 
@@ -43,6 +44,7 @@ var SIM = (function () {
     datagrams,
     coordsPool,
     sunVector,
+    sunPosition,
     sunDirection,
 
     calcdoe: function (mom) {
@@ -114,7 +116,7 @@ var SIM = (function () {
       // gfs data
       time.doe = self.mom2doe(time.model);
 
-      self.updateSun();
+      // self.updateSun();
 
       IFC.urlDirty = true;
 
@@ -142,6 +144,7 @@ var SIM = (function () {
       // updates
       sunVector.setFromSpherical(sunSphererical);
       sunDirection.copy(sunVector).normalize();
+      sunPosition.copy(sunDirection).multiplyScalar(CFG.Sun.radius);
 
     },
     loadModel: function (name, cfg, callback) {
