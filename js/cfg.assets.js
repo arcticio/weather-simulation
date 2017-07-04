@@ -349,7 +349,22 @@ CFG.Objects = {
         dataroot:     'data/gfs/tmp2m/',
         patterns: [
           'YYYY-MM-DD-HH[.tmp2m.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
+        ],
+      }
+    },
 
+    pratesfc: {
+      id:             22,
+      visible:        false,
+      title:          'GFS - surface precipitation rate',
+      type:           'simulation',
+      rotation:       [0, PI - PI/360, 0],
+      radius:         RADIUS + LEVEL_4, 
+      sim: {
+        variable:     'pratesfc',
+        dataroot:     'data/gfs/pratesfc/',
+        patterns: [
+          'YYYY-MM-DD-HH[.pratesfc.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
         ],
       }
     },

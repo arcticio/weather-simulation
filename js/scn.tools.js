@@ -39,7 +39,8 @@ SCN.Tools = {
 
       });
 
-      mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
+      // mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
+      mesh = new THREE.Mesh( geometry, materials );
 
       cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
 

@@ -141,7 +141,7 @@ var CFG = {
     'hud/space.png':                'images/hud/space.png',
     'hud/sst.png':                  'images/hud/sst.png',
     'hud/temperature.png':          'images/hud/temperature.png',
-
+    'hud/rain.png':                 'images/hud/rain.png',
 
     // 'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 

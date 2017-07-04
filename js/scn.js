@@ -6,13 +6,9 @@ var SCN = (function () {
     frame         = 0,
     lastTimestamp = NaN,
 
-    // $             = document.getElementById.bind(document),
     $$            = document.querySelectorAll.bind(document),
 
     canvas        = $$('.simulator')[0],
-    // monitor       = $$('canvas.panel.test')[0].getContext('2d'),
-    // expi          = $$('canvas.panel.expi')[0].getContext('2d'),
-
     home          = new THREE.Vector3(0, 0, 0),
 
     renderer      = new THREE.WebGLRenderer({
@@ -23,6 +19,8 @@ var SCN = (function () {
 
     camera,
     scene         = new THREE.Scene(),
+
+    comb          = 1,   // 0 = no render, 1 = all frames, 2 = every other, 3 etc 
 
     doRender      = true,
     // doAnimate     = true,
@@ -38,7 +36,6 @@ var SCN = (function () {
     home,
     scene,
     camera,
-    // canvas,
     objects,
     renderer,
 
@@ -50,9 +47,8 @@ var SCN = (function () {
       objects[name].name = name;
       scene.add(obj);
     },
+    setComb : function (val) {comb = val;},
     toggle: function (obj, force) {
-
-      // TODO: make use of callback
 
       if (scene.getObjectByName(obj.name) || force === false) {
         scene.remove(obj);
@@ -131,19 +127,6 @@ var SCN = (function () {
         camera.aspect = geometry.aspect;
         camera.updateProjectionMatrix();
       }
-
-
-      // renderer.setSize(window.innerWidth, window.innerHeight);
-
-      // renderer.domElement.style.width  = window.innerWidth  + 'px';
-      // renderer.domElement.style.height = window.innerHeight + 'px';
-      // renderer.domElement.width        = window.innerWidth;
-      // renderer.domElement.height       = window.innerHeight;
-
-      // if (camera) {
-      //   camera.aspect = window.innerWidth / window.innerHeight;
-      //   camera.updateProjectionMatrix();
-      // }
       
     },
     init: function () {
@@ -159,8 +142,6 @@ var SCN = (function () {
       camera = self.camera = CFG.Camera.cam;
       camera.position.copy(CFG.Camera.pos);
       self.add('camera', camera);
-
-      // self.resize();
 
     },
 
@@ -262,7 +243,9 @@ var SCN = (function () {
 
       requestAnimationFrame(render);
 
-      IFC.Hud.performance.begin();
+      if ( comb && !(frame % comb) ) {
+
+        IFC.Hud.performance.begin();
 
         TWEEN.update();
 
@@ -281,19 +264,20 @@ var SCN = (function () {
         // always look for new animations
         ANI.step(frame, deltasecs);
 
-        if ( doRender && !(frame % 1) ) {
-          renderer.clear();
-          renderer.render( scene, camera );
-        }
+        // update globe
+        renderer.clear();
+        renderer.render( scene, camera );
 
         // update Hud
         IFC.Hud.step(frame, deltasecs);
         IFC.Hud.render(renderer);
 
-      IFC.Hud.performance.end();
+        IFC.Hud.performance.end();
 
-      // to next frame
-      IFC.Hud.performance.render();
+        // to next frame
+        IFC.Hud.performance.render();
+
+      }
 
       lastTimestamp = timestamp;
       frame += 1;

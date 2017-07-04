@@ -170,6 +170,7 @@
     <script src="js/sim.models.jetstream.js"></script>
     <script src="js/sim.models.variables.js"></script>
     <script src="js/sim.models.wind.js"></script>
+    <script src="js/sim.models.pratesfc.js"></script>
 
     <script src="js/scn.js"></script>
     <script src="js/scn.tools.js"></script>
@@ -207,7 +208,7 @@
         CFG.Manager.init();
 
         LDR.parse(LDR.sequence());
-        
+
         LDR.execute(function () {
           ANI.insert(0, ANI.library.intro(800, function () {
             CFG.isLoaded = true;

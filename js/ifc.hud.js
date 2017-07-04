@@ -1,20 +1,15 @@
 
-'use strict';
-
 IFC.Hud = (function () {
 
   var 
     self,
 
-    // $  = document.getElementById.bind(document),
     $$ = document.querySelectorAll.bind(document),
 
     doRender    = true,
 
-    // loader      = $$('.interface img.loader')[0],
     simulator   = $$('.simulator')[0],
 
-                         // OrthographicCamera ( left, right, top, bottom, near, far )
     camera      = new THREE.OrthographicCamera (0, 0, 100, 100, 1, 10 ),
     scene       = new THREE.Scene(),
     menu        = new THREE.Object3D(),
@@ -26,16 +21,13 @@ IFC.Hud = (function () {
     zone        = {left:0, top: 0, right: 0, bottom: 0}, // hittest
 
     menuToggled = false,
-    menuScale   = NaN; //   = ( window.innerWidth + 64 ) / window.innerWidth * 3
+    menuScale   = NaN;
   ;
 
   return self = {
 
     menu,
-    // scene,
-    // camera,
     sprites,
-    doRender,
     
     init: function () {
 
@@ -54,9 +46,7 @@ IFC.Hud = (function () {
 
     },
     render: function (renderer) {
-
       doRender && renderer.render( scene, camera );
-
     },
     resize: function (geometry) {
 
@@ -246,9 +236,6 @@ IFC.Hud = (function () {
           if (!sprite.hit) {
             sprite.hit = true;
             sprite.onmouseenter();
-
-            // console.log('HIT', sprite.name);
-
           }
 
           mouse.sprite = sprite;
@@ -257,13 +244,9 @@ IFC.Hud = (function () {
         } else {
 
           if (mouse.sprite) {
-
-            // console.log('UNHIT', mouse.sprite.name);
-
             mouse.sprite.hit = false;
             mouse.sprite.onmouseleave();
             mouse.sprite = null;
-
           }
 
         }
@@ -298,7 +281,8 @@ IFC.Hud = (function () {
         var 
           sprite,
           x = event.changedTouches[ 0 ].pageX,
-          y = event.changedTouches[ 0 ].pageY;
+          y = event.changedTouches[ 0 ].pageY
+        ;
 
         if (( sprite = self.testHit(x, y) )) {
 

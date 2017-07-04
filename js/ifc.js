@@ -17,6 +17,8 @@ var IFC = (function () {
 
     controller, 
 
+    intersections  = [],
+
     modus =    'space',
 
     globe = {
@@ -55,6 +57,7 @@ var IFC = (function () {
     pointer = {
       device:       mouse,             // assumption
       overGlobe:    false,
+      overScreen:   false,
       intersect:    new THREE.Vector3(0, 0, 0),
     },
 
@@ -225,6 +228,14 @@ var IFC = (function () {
 
     },
     events: {
+      onglobeenter: function () {
+        ANI.insert(0, ANI.library.scaleGLobe( 1.0,  800))
+        IFC.Hud.spacetime.updateModus('space');
+      },
+      onglobeleave: function () {
+        ANI.insert(0, ANI.library.scaleGLobe( 0.94, 800));
+        IFC.Hud.spacetime.updateModus('time');
+      },
       resize: function () {
 
         // TODO: Chrome on Android drops last event on leave fullscreen
@@ -298,7 +309,7 @@ var IFC = (function () {
         }
 
       },
-      mouseup:     function (event) { 
+      mouseup:     function () { 
         pointer.device = mouse;
         mouse.down     = false;
         mouse.button   = NaN;
@@ -310,12 +321,14 @@ var IFC = (function () {
         mouse.x  =   ( event.clientX / geometry.width )  * 2 - 1;
         mouse.y  = - ( event.clientY / geometry.height ) * 2 + 1;
       },
-      mouseenter:   function (event) { 
+      mouseenter:   function () { 
         pointer.device = mouse;
-        SCN.toggleRender(true);
+        pointer.overScreen = true;
+        SCN.setComb(1);
       },
-      mouseleave:  function (event) {
-        SCN.toggleRender(false);
+      mouseleave:  function () {
+        pointer.overScreen = false;
+        SCN.setComb(4);
       },
       keydown:     function (event) { 
 
@@ -348,18 +361,15 @@ var IFC = (function () {
         pointer.device = touch;
 
       },
-      touchmove:   function (event) { 
+      touchmove:   function () { 
         pointer.device = touch;
-        // console.log('touchmove');
       },
       touchend:    function (event) { 
         pointer.device = touch;
-        // console.log('touchend');
         touch.down = event.touches.length === 0;
       },
       touchcancel: function (event) { 
         pointer.device = touch;
-        // console.log('touchcancel');
         touch.down = event.touches.length === 0;
       },
 
@@ -398,37 +408,25 @@ var IFC = (function () {
       );
 
     },
-    onglobeenter: function () {
-      ANI.insert(0, ANI.library.scaleGLobe( 1.0,  800))
-      IFC.Hud.spacetime.updateModus('space');
-    },
-    onglobeleave: function () {
-      ANI.insert(0, ANI.library.scaleGLobe( 0.94, 800));
-      IFC.Hud.spacetime.updateModus('time');
-    },
     updatePointer: function () {
 
       var 
         intersection, 
-        isOver, wasOver = pointer.overGlobe,
-        intersections  = []
+        isOver  = false, 
+        wasOver = pointer.overGlobe
       ;
 
+      intersections.splice(0, intersections.length);
       raycaster.setFromCamera( pointer.device, SCN.camera );
-
       SCN.objects.pointer.raycast(raycaster, intersections)
 
       if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
         pointer.intersect.copy(intersection.point).normalize();
         isOver = true;
-
-      } else {
-        isOver = false;
-
       }
 
-      (  isOver && !wasOver ) && self.onglobeenter();
-      ( !isOver &&  wasOver ) && self.onglobeleave();
+      (  isOver && !wasOver ) && self.events.onglobeenter();
+      ( !isOver &&  wasOver ) && self.events.onglobeleave();
 
       pointer.overGlobe = isOver;
 

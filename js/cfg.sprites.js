@@ -325,6 +325,28 @@ CFG.Sprites = {
     },
   },
 
+  rain: {
+    visible:  true,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:    5,
+      top:     300,
+      left:     80,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/rain.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggle(SCN.objects.pratesfc);
+      sprite.toggled = !sprite.toggled;
+    },
+  },
+
   snow: {
     visible:  true,
     menu:     true,
