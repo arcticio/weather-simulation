@@ -82,6 +82,7 @@
           <h1>Hypatia - Weather Simulation</h1>
           <h3><a id="homelink" rel="noreferrer noopener" href="https://github.com/arcticio/weather-simulation">Help &amp; Info</a></h3>
           <h3><a id="arcticio" rel="noreferrer noopener" target="_blank" href="http://www.arctic.io">arctic.io</a></h3>
+          <div class="version">...</div>
         </td>
       </tr>
       <tr>
@@ -200,6 +201,7 @@
       Orb.Tool = Orb.Core.Tool;
 
       document.querySelectorAll('.progress .header')[0].innerHTML = 'main engine started';
+      document.querySelectorAll('table .version')[0].innerHTML = VERSION;
 
       window.onload = function () {
 

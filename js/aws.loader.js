@@ -8,7 +8,8 @@ var LDR = (function () {
     $header  = $('.progress .header'),
     $info    = $('.progress .info'),
     $bar     = $('.progress .bar'),
-    $meter   = $('.progress .meter');
+    $meter   = $('.progress .meter')
+  ;
 
   return self = {
   

@@ -222,8 +222,10 @@ SIM.Datagram.prototype = {
 
         var i;
 
-        var low  = 273.15 - 40;
-        var high = low    + 80;
+        var low  = 273.15 - 30;
+        var high = low    + 70;
+
+        /*  ...  -30 -20 .... +30  +40  ... */
 
         var scale = (d) => this.clampScale(d, low, high, 0, 255);
 

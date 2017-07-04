@@ -146,6 +146,13 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666666', end
 
 }
 
+table.loader .version {
+  font-family: monospace;
+  font-size: 11px;
+  padding-top: 12px;
+  color: #a59a7a;
+}
+
 table.loader .title {
   font-size: 24px;
   text-align:center; 

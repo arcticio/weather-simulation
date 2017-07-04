@@ -185,7 +185,7 @@ IFC.Hud.time = (function () {
 
         ctx.font = 'bold 22px monospace'
         metrics = ctx.measureText(simDate);
-        ctx.fillText(simDate, (cvs.width - metrics.width) / 2, 34);
+        ctx.fillText(simDate, (cvs.width - metrics.width) / 2, 30);
 
         ctx.font = 'bold 16px monospace'
         metrics = ctx.measureText(simTime);
@@ -193,7 +193,7 @@ IFC.Hud.time = (function () {
 
         ctx.font = 'bold 11px monospace'
         metrics = ctx.measureText(simDoe);
-        ctx.fillText(simDoe, (cvs.width - metrics.width) / 2, 66);
+        // ctx.fillText(simDoe, (cvs.width - metrics.width) / 2, 66);
 
         texture.needsUpdate = true;
 

@@ -1,6 +1,4 @@
 
-'use strict'
-
 CFG.Sprites = {
 
   // SPACETIME
@@ -11,14 +9,15 @@ CFG.Sprites = {
     menu:     false,
     position: {
       zIndex:    5,
-      top:      14,
-      left:     18,
-      width:    48,
-      height:   48,
+      top:       2,
+      left:      12,
+      width:    64,
+      height:   64,
     },
     material: {
       opacity: 0.9,
-      image: 'arcticio.logo.512.png'
+      // image: 'arcticio.logo.512.png'
+      image: 'logo.128.png'
     },
     onclick: (sprite) => {
       location.reload();
@@ -60,7 +59,7 @@ CFG.Sprites = {
       height:       72,
     },
     material: {
-      color:  new THREE.Color(0x000022),
+      color:  new THREE.Color(0x444444),
       opacity: 0.5,
     },
   },
@@ -100,7 +99,7 @@ CFG.Sprites = {
       height:   64,
     },
     material: {
-      opacity: 0.9,
+      opacity: 0.7,
     },
     onclick: (sprite) => {
       console.log('sprite.clicked', sprite.name);
@@ -144,7 +143,7 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:      14,
+      top:      10,
       right:    18,
       width:    48,
       height:   48,
