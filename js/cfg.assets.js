@@ -402,7 +402,7 @@ CFG.Objects = {
       altitude:       LEVEL_0,
       opacity:        0.8,
       radius:         RADIUS,
-      color:          new THREE.Color(0xffffff),
+      color:          new THREE.Color(0xff00ff),
     },
 
 

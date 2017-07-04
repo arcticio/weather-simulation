@@ -116,6 +116,7 @@ var CFG = {
 
     'arcticio.logo.512.png':        'images/arcticio.logo.white.512.png',
     'red.dot.png':                  'images/red.dot.png',
+    'dot.white.128.png':            'images/dot.white.128.png',
 
     // 'tex2.jpg':                     'images/test/tex2.jpg',
     // 'tex3.jpg':                     'images/test/tex3.jpg',
@@ -142,8 +143,9 @@ var CFG = {
     'hud/sst.png':                  'images/hud/sst.png',
     'hud/temperature.png':          'images/hud/temperature.png',
     'hud/rain.png':                 'images/hud/rain.png',
+    'hud/population.png':           'images/hud/population.png',
 
-    // 'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
+    'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 
   },
 

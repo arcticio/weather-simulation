@@ -214,6 +214,82 @@ SIM.Datagram.prototype = {
 
 
     },
+    clampScale: function (x, xMin, xMax, min, max) {
+        var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
+        return val < min ? min : val > max ? max : val;
+    },
+    doetexture: function (doe1, doe2, doe3, doe4) {
+
+        var i;
+
+        var low  = 273.15 - 40;
+        var high = low    + 80;
+
+        var scale = (d) => this.clampScale(d, low, high, 0, 255);
+
+        var attr1 = this.attribute(doe1);
+        var attr2 = this.attribute(doe2);
+        var attr3 = this.attribute(doe3);
+        var attr4 = this.attribute(doe4);
+
+        var data = new Uint8Array(attr1.length * 4);
+
+        for (i=0; i< data.length; i++) {
+
+            data[ i * 4 + 0 ] = scale(attr1[i]);
+            data[ i * 4 + 1 ] = scale(attr2[i]);
+            data[ i * 4 + 2 ] = scale(attr3[i]);
+            data[ i * 4 + 3 ] = scale(attr4[i]);
+
+        }
+
+        var texture = new THREE.DataTexture(
+            data, 360, 181, 
+            THREE.RGBAFormat,
+            THREE.UnsignedByteType,
+            THREE.EquirectangularReflectionMapping,
+            THREE.RepeatWrapping,
+            THREE.RepeatWrapping,
+            THREE.LinearFilter,
+            THREE.LinearFilter
+        );
+
+        texture.flipY = true;
+        texture.needsUpdate = true;
+
+        return texture;
+
+    },
+    datatexture: function (doe) {
+
+        // https://threejs.org/docs/index.html#api/textures/DataTexture
+        // https://threejs.org/docs/index.html#api/constants/Textures
+
+        var attr = this.attribute(doe);
+
+        var data = attr.map( d => d + 273.0);
+
+        // DataTexture( data, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy )
+
+        var texture = new THREE.DataTexture(
+            data, 360, 181, 
+            THREE.LuminanceFormat, 
+            // THREE.UnsignedByteType,
+            THREE.FloatType,
+            // THREE.UVMapping,
+            THREE.EquirectangularReflectionMapping,
+            THREE.RepeatWrapping,
+            THREE.RepeatWrapping,
+            // THREE.LinearFilter,
+            // THREE.LinearFilter,
+            THREE.NearestFilter,
+            THREE.NearestFilter,
+            8
+        );
+
+        return texture;
+
+    },
     linearXY: function (doe, lat, lonin) {
 
         /*

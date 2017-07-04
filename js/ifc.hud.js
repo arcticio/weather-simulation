@@ -316,7 +316,7 @@ IFC.Hud = (function () {
       menuToggled = !menuToggled;
       menuToggled && menu.scale.set(0.01, 0.01, 1);
 
-      ANI.insert(0, ANI.library.menu.scale(menuToggled ? 1 : menuScale, 200));
+      ANI.insert(0, ANI.library.menu.scale(menuToggled ? 1 : menuScale, 400));
 
     },
     testHit: function testHit (x, y) {

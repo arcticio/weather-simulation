@@ -12,9 +12,8 @@ SCN.Meshes.population = function (name, cfg, callback) {
     i, city, vec3,
     amount    = CITIES.length,
     positions = new Float32Array( amount * 3 ),
-    sizes     = new Float32Array( amount * 1 ),
+    size      = new Float32Array( amount * 1 ),
     geometry  = new THREE.BufferGeometry(),
-    texture   = CFG.Textures['red.dot.png'],
     toVec3    = function (lat, lon) {
       return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, cfg.altitude);
     },
@@ -23,40 +22,50 @@ SCN.Meshes.population = function (name, cfg, callback) {
         return val < min ? min : val > max ? max : val;
     },
     vertexShader = `
-      attribute float sizes;
-      varying vec2 vUv;  
+
+      attribute float size;
+
       uniform float radius;
 
       void main() {
-        vUv = uv;
-        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-        gl_PointSize    = radius * sizes;
-        gl_Position     = projectionMatrix * mvPosition;
+        gl_PointSize    = radius * size;
+        gl_Position     = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
       }
+
     `,
     fragmentShader = `
+
       uniform sampler2D map;
-      uniform vec3 color;
+      uniform vec3 ucolor;
       uniform float opacity;
 
-      float factor = 0.8;
-
       void main() {
-        vec3 color1 = texture2D( map, gl_PointCoord ).rgb;
-        vec3 color2 = mix(color, color1, factor);
-        gl_FragColor    = vec4( color2, opacity );
+
+        vec4 color1 = texture2D( map, gl_PointCoord ).rgba;
+
+        if (color1.a <= 0.5 ) {
+          discard;
+        
+        } else {
+          vec3 color2   = mix(ucolor, color1.rgb, 0.5);
+          gl_FragColor  = vec4( color2, opacity);
+
+        }
+
       }
+
     `,
     material  = new THREE.ShaderMaterial({ 
       vertexShader,
       fragmentShader,
-      vertexColors: THREE.VertexColors,
-      blending:     THREE.AdditiveBlending,
+      transparent:    false,
+      // vertexColors:   THREE.VertexColors,
+      blending:       THREE.AdditiveBlending,
       uniforms: {
-        'map':      { type: 't', value: texture },
-        'opacity':  { type: 'f', value: cfg.opacity },
-        'radius':   { type: 'f', value: cfg.radius },
-        'color':    { type: 'c', value: cfg.color },
+        'map':        { type: 't', value: CFG.Textures['dot.white.128.png'] },
+        'opacity':    { type: 'f', value: cfg.opacity },
+        'radius':     { type: 'f', value: cfg.radius },
+        'ucolor':     { type: 'c', value: cfg.color },
       }
     }),
     points    = new THREE.Points( geometry, material )
@@ -73,12 +82,12 @@ SCN.Meshes.population = function (name, cfg, callback) {
     positions[i*3 + 1] = vec3.y;
     positions[i*3 + 2] = vec3.z;
 
-    sizes[i] = ~~clampScale(city.pop, 1e6, 160e6, 2.0, 160.0); // Tokyo = 22Mill
+    size[i] = ~~clampScale(city.pop, 1e6, 160e6, 2.0, 160.0); // Tokyo = 22Mill
 
   }
 
+  geometry.addAttribute( 'size',     new THREE.BufferAttribute( size,     1 ) );
   geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-  geometry.addAttribute( 'sizes', new THREE.BufferAttribute( sizes, 1 ) );
 
   geometry.computeBoundingSphere();
 

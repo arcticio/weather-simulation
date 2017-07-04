@@ -40,6 +40,74 @@ SIM.Models.tmp2m = (function () {
     },    
     prepare: function ( doe ) {
 
+
+      TIM.step('Model.variables.in', doe);
+
+      var
+        t0 = Date.now(), 
+        
+        doe1       = doe - (doe % 0.25),
+        doe2       = doe1 + 0.25,
+        doe3       = doe2 + 0.25,
+        doe4       = doe3 + 0.25,
+        
+        geometry = new THREE.SphereBufferGeometry(cfg.radius, 48, 24),
+
+        texture = datagram[cfg.sim.variable].doetexture(doe1, doe2, doe3, doe4),
+
+        // texture = CFG.Textures['oceanmask.4096x2048.grey.png'],
+
+        // textures = [
+        //   datagram[cfg.sim.variable].datatexture(doe1),
+        //   datagram[cfg.sim.variable].datatexture(doe2),
+        // ],
+
+        // ownuniforms   = {
+        //   doe:          { type: 'f',   value: doe },
+        //   opacity:      { type: 'f',   value: cfg.opacity },
+        //   sunDirection: { type: 'v3',  value: SIM.sunDirection },
+
+        //   texture:      { type: 't',   value: texture }, 
+        // },
+
+
+        // uniforms   = THREE.UniformsUtils.merge([
+        //     ownuniforms       
+        // ]),
+
+        uniforms = {
+          texture:      { type: 't',   value: texture }, 
+          doe:          { type: 'f',   value: doe },
+          opacity:      { type: 'f',   value: cfg.opacity },
+          sunDirection: { type: 'v3',  value: SIM.sunDirection },
+        },
+        
+        material   = new THREE.ShaderMaterial({
+          uniforms,
+          // lights:         true,
+          transparent:      true,
+          vertexShader:     self.vertexShader(),
+          fragmentShader:   self.fragmentShader(),
+          // side:           THREE.FrontSide,
+          // vertexColors:   THREE.NoColors,
+        }),
+
+        mesh = new THREE.Mesh( geometry, material )
+
+      ;
+
+      model.obj.add(mesh);
+      // mesh.onAfterRender = onAfterRender;
+
+      TIM.step('Model.variables.out', Date.now() -t0, 'ms');
+
+      return model;
+
+    },
+
+
+    prepareXXX: function ( doe ) {
+
       TIM.step('Model.variables.in', doe);
 
       var
@@ -136,6 +204,70 @@ SIM.Models.tmp2m = (function () {
       
       return `
 
+        varying vec2 vUv;
+
+        void main() {
+
+          vUv = uv;
+
+          gl_Position  = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+        }
+      
+      `;
+
+    },
+    fragmentShader: function () {
+
+      return `
+
+        uniform float doe;
+
+        uniform sampler2D texture;
+
+        float frac, fac1, fac2, value;
+
+        varying vec2 vUv;
+
+        vec3 color;
+
+        void main() {
+
+          // vec4 lookup = texture2D( texture, vUv );
+          // float val = lookup.x;
+
+          float value = texture2D( texture, vUv ).x;
+          // float g = texture2D( texture, vUv ).y;
+          // float b = texture2D( texture, vUv ).z;
+
+          value = -30.01 + value * 70.0 ;
+
+          color = (
+            value < -30.0 ? vec3(0.666, 0.400, 0.666) : // dark violett
+            value < -20.0 ? vec3(0.807, 0.607, 0.898) :
+            value < -10.0 ? vec3(0.423, 0.807, 0.886) :
+            value <  +0.0 ? vec3(0.423, 0.937, 0.423) :
+            value < +10.0 ? vec3(0.929, 0.976, 0.423) :
+            value < +20.0 ? vec3(0.984, 0.792, 0.384) :
+            value < +30.0 ? vec3(0.984, 0.396, 0.305) :
+            value < +40.0 ? vec3(0.800, 0.250, 0.250) :
+              vec3(0.600, 0.150, 0.150)                  // dark red
+          );
+
+
+
+          gl_FragColor = vec4(color, 0.5);
+          
+        }
+
+      `;
+
+    },
+
+    vertexShaderXXX: function () {
+      
+      return `
+
         attribute float doe1;
         attribute float doe2;
 
@@ -154,59 +286,6 @@ SIM.Models.tmp2m = (function () {
       `;
 
     },
-    fragmentShader: function () {
-
-      return `
-
-        // precision highp int;
-        // precision highp float;
-
-        uniform float doe;
-
-        varying float vData1;
-        varying float vData2;
-
-        float frac, fac1, fac2, value;
-
-        vec3 color;
-
-        void main() {
-
-          vec3 irradiance;
-
-
-          if (doe < 1.0) {
-            gl_FragColor = vec4(1.0, 0.0, 0.0, 0.4); // error
-
-          } else {
-
-            frac = fract(doe);
-            fac2 = mod(frac, 0.25) * 4.0;
-            fac1 = 1.0 - fac2;
-
-            value = -273.15 + (vData1 * fac1 + vData2 * fac2) ;
-
-            color = (
-              value < -30.0 ? vec3(0.666, 0.400, 0.666) : // dark violett
-              value < -20.0 ? vec3(0.807, 0.607, 0.898) :
-              value < -10.0 ? vec3(0.423, 0.807, 0.886) :
-              value <  +0.0 ? vec3(0.423, 0.937, 0.423) :
-              value < +10.0 ? vec3(0.929, 0.976, 0.423) :
-              value < +20.0 ? vec3(0.984, 0.792, 0.384) :
-              value < +30.0 ? vec3(0.984, 0.396, 0.305) :
-              value < +40.0 ? vec3(0.800, 0.250, 0.250) :
-                vec3(0.600, 0.150, 0.150)                  // dark red
-            );
-
-              gl_FragColor = vec4(color, 0.3); //0.3 good
-
-          }
-          
-        }
-
-      `;
-
-    }
 
   };
 
