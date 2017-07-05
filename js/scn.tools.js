@@ -84,7 +84,7 @@ SCN.Tools = {
     },
 
     'simulation': (name, cfg, callback) => {
-      SIM.loadModel(name, cfg, (name, obj) => {
+      SIM.loadVariable(name, cfg, (name, obj) => {
         cfg.rotation && obj.rotation.fromArray(cfg.rotation);
         SCN.add(name, obj);
         callback();

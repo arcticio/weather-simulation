@@ -185,7 +185,7 @@ IFC.Hud.time = (function () {
 
         ctx.font = 'bold 22px monospace'
         metrics = ctx.measureText(simDate);
-        ctx.fillText(simDate, (cvs.width - metrics.width) / 2, 30);
+        ctx.fillText(simDate, (cvs.width - metrics.width) / 2, 34);
 
         ctx.font = 'bold 16px monospace'
         metrics = ctx.measureText(simTime);

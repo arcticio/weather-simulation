@@ -342,7 +342,7 @@ var IFC = (function () {
 
         if (keys[event.key]) {
           keys[event.key]();          
-          console.log('IFC.keydown.done', `'${event.key}'`);
+          // console.log('IFC.keydown.done', `'${event.key}'`);
           return IFC.Tools.eat(event);
         }
 

@@ -218,31 +218,24 @@ SIM.Datagram.prototype = {
         var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
         return val < min ? min : val > max ? max : val;
     },
-    doetexture: function (doe1, doe2, doe3, doe4) {
+    dataTexture: function (does, scaler /* , doe1, doe2, doe3, doe4 */ ) {
 
         var i;
 
-        var low  = 273.15 - 30;
-        var high = low    + 70;
+        var length = this.info.plane;
 
-        /*  ...  -30 -20 .... +30  +40  ... */
-
-        var scale = (d) => this.clampScale(d, low, high, 0, 255);
-
-        var attr1 = this.attribute(doe1);
-        var attr2 = this.attribute(doe2);
-        var attr3 = this.attribute(doe3);
-        var attr4 = this.attribute(doe4);
+        var attr0 = does[0] ? this.attribute(does[0]) : new Float32Array(length);
+        var attr1 = does[1] ? this.attribute(does[1]) : new Float32Array(length);
+        var attr2 = does[2] ? this.attribute(does[2]) : new Float32Array(length);
+        var attr3 = does[3] ? this.attribute(does[3]) : new Float32Array(length);
 
         var data = new Uint8Array(attr1.length * 4);
 
         for (i=0; i< data.length; i++) {
-
-            data[ i * 4 + 0 ] = scale(attr1[i]);
-            data[ i * 4 + 1 ] = scale(attr2[i]);
-            data[ i * 4 + 2 ] = scale(attr3[i]);
-            data[ i * 4 + 3 ] = scale(attr4[i]);
-
+            data[ i * 4 + 0 ] = scaler(attr0[i]);
+            data[ i * 4 + 1 ] = scaler(attr1[i]);
+            data[ i * 4 + 2 ] = scaler(attr2[i]);
+            data[ i * 4 + 3 ] = scaler(attr3[i]);
         }
 
         var texture = new THREE.DataTexture(
@@ -250,8 +243,8 @@ SIM.Datagram.prototype = {
             THREE.RGBAFormat,
             THREE.UnsignedByteType,
             THREE.EquirectangularReflectionMapping,
-            THREE.RepeatWrapping,
-            THREE.RepeatWrapping,
+            THREE.ClampToEdgeWrapping,
+            THREE.ClampToEdgeWrapping,
             THREE.LinearFilter,
             THREE.LinearFilter
         );
@@ -262,7 +255,7 @@ SIM.Datagram.prototype = {
         return texture;
 
     },
-    datatexture: function (doe) {
+    datatextureXX: function (doe) {
 
         // https://threejs.org/docs/index.html#api/textures/DataTexture
         // https://threejs.org/docs/index.html#api/constants/Textures

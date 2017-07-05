@@ -19,7 +19,7 @@ var SIM = (function () {
     sunSphererical = new THREE.Spherical(4, 0, -PI2),
     sunPosition    = new THREE.Vector3(),             // pos of lights 
 
-    timerange      = new TimeRange(),
+    timeranges     = dataTimeRanges['hypatia'],       // timeranges.js
 
     time = {
       iso:         '',
@@ -28,12 +28,13 @@ var SIM = (function () {
       end:         moment.utc('2017-12-31-18', 'YYYY-MM-DD-HH'),  // complete full year
       now:         moment.utc(),                                  // now, plus init show
       model:       null,
-      interval:    NaN,                                      // only calc full hours
-      pointer:     NaN,                                           // coming from interface
+      range:       H.range(-12, 66, 6),
+      stamps:      null,
+      mindoe:      NaN,
+      maxdoe:      NaN,
     }
 
   ;
-
 
   return self = {
 
@@ -77,10 +78,20 @@ var SIM = (function () {
       var mom;
 
       if (val === undefined && what === undefined) {
-        // init
-        // rstrict now at avail dods
-        mom = TIMENOW;
-        time.model = mom.clone().hours(mom.hours() - (mom.hours() % 6));  
+
+        // init, rstrict now at avail dods
+
+        mom         = TIMENOW;
+        time.model  = mom.clone().hours(mom.hours() - (mom.hours() % 6));  
+        time.stamps = time.range.map( h => time.model.clone().add( h, 'hours') );
+        time.length = time.stamps.length;
+
+        time.mindoe = self.mom2doe(time.stamps[0]);
+        time.maxdoe = self.mom2doe(time.stamps.slice(-1)[0]);
+
+        // console.log('SIM', 0, time.stamps[0].format('YYYY-MM-DD-HH'), time.mindoe);
+        // console.log('SIM', time.length -1, time.stamps[time.length -1].format('YYYY-MM-DD-HH'), time.maxdoe);
+
 
       } else if (typeof val === 'number' && what === undefined) {
 
@@ -109,6 +120,14 @@ var SIM = (function () {
         console.log('WTF');
 
       }
+
+      // don't overshoot
+
+      time.model = (
+        time.model.valueOf() > time.stamps[time.stamps.length -1].valueOf() ?
+          time.stamps[time.stamps.length -1] :
+          time.model
+      );
 
       // display
       time.iso = time.model.format('YYYY-MM-DD HH');
@@ -147,22 +166,52 @@ var SIM = (function () {
       sunPosition.copy(sunDirection).multiplyScalar(CFG.Sun.radius);
 
     },
-    loadModel: function (name, cfg, callback) {
+    calcVariTimes: function (name, cfg) {
+
+      var range = timeranges[name];
+
+      var 
+        range = timeranges[name],
+        step  = cfg.sim.step,
+        times = {
+          mindoe: NaN,
+          maxdoe: NaN,
+          does:   [],
+          moms:   [],
+        },
+        mom      = moment.utc(range[0], 'YYYY-MM-DD-HH'),
+        momLast  = moment.utc(range[1], 'YYYY-MM-DD-HH')
+      ;
+
+      while (mom.valueOf() <= momLast.valueOf()) {
+        times.moms.push(mom.clone());
+        times.does.push(SIM.mom2doe(mom));
+        mom.add(step[0], step[1]);
+      }
+
+      times.length = times.does.length;
+      times.mindoe = times.does[0];
+      times.maxdoe = times.does[times.length -1];
+
+      TIM.step('SIM.times', name, range, times.length, times.mindoe, times.maxdoe);
+
+      return times;
+
+    },
+    loadVariable: function (name, cfg, callback) {
 
       !SIM.Models[name] && console.log('Model: "' + name + '" not avail, have:', Object.keys(SIM.Models));
 
       var 
-        vari, datagramm,
-        mom     = self.doe2mom(time.doe),
-        hours   = H.range(-6, 54, 6), // excluding last
-        moms    = hours.map( h => mom.clone().add( h, 'hours') ),
-        model   = SIM.Models[name].create(cfg, moms, datagrams),
-        urls    = model.urls
+        vari, 
+        datagramm,
+        times = self.calcVariTimes(name, cfg),
+        model = SIM.Models[name].create(cfg, times)
       ;
 
       models[name] = model;
 
-      RES.load({ urls, onFinish: function (err, responses) {
+      RES.load({ urls: model.urls, onFinish: function (err, responses) {
 
         if (err) { throw err } else {
 
@@ -181,7 +230,7 @@ var SIM = (function () {
 
           });
 
-          model.prepare(time.doe);
+          model.prepare();
           
           TIM.step('SIM.load', vari, time.doe);
 

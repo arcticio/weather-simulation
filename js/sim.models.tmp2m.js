@@ -2,181 +2,152 @@
 SIM.Models.tmp2m = (function () {
 
   var 
-    self, cfg, datagram,
+    self, cfg, times, vari,
     model = {
       obj:      new THREE.Object3D(),
       urls:     [],
-      minDoe:   NaN,
-      maxDoe:   NaN,
     }
   ;
 
   return self = {
-    create: function (config, moms, simdata) {
+    create: function (config, timcfg) {
 
-      cfg = config;
-      datagram = simdata;
+      // shortcuts
+      cfg   = config;
+      times = timcfg;
+      vari  = cfg.sim.variable;
+
+      // expose 
       model.prepare = self.prepare;
 
-      self.calcUrls(moms);
-      self.calcMinMax(moms);
+      // prepare for loader
+      self.calcUrls();
 
+      // done
       return model;
 
     },
-    calcMinMax: function (moms) {
-      // assumes sorted moms
-      model.minDoe = SIM.mom2doe(moms[0]);
-      model.maxDoe = SIM.mom2doe(moms.slice(-1)[0]);
-    },
-    calcUrls: function (moms) {
+    calcUrls: function () {
 
-      moms.forEach(mom => {
+      times.moms.forEach(mom => {
         cfg.sim.patterns.forEach(pattern => {
           model.urls.push(cfg.sim.dataroot + mom.format(pattern));
         });
       });
 
-    },    
-    prepare: function ( doe ) {
+    },
+    clampScale: function (x, xMin, xMax, min, max) {
+        var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
+        return val < min ? min : val > max ? max : val;
+    },
+    prepareTextures: function (data) {
 
+      /* tmp2m 
+          low  = 273.15 - 30 = 243.15;
+          high = low    + 70 = 313.75;
+          ...  -30 -20 .... +30  +40  ...
+      */
 
-      TIM.step('Model.variables.in', doe);
-
-      var
-        t0 = Date.now(), 
-        
-        doe1       = doe - (doe % 0.25),
-        doe2       = doe1 + 0.25,
-        doe3       = doe2 + 0.25,
-        doe4       = doe3 + 0.25,
-        
-        geometry = new THREE.SphereBufferGeometry(cfg.radius, 48, 24),
-
-        texture = datagram[cfg.sim.variable].doetexture(doe1, doe2, doe3, doe4),
-
-        // texture = CFG.Textures['oceanmask.4096x2048.grey.png'],
-
-        // textures = [
-        //   datagram[cfg.sim.variable].datatexture(doe1),
-        //   datagram[cfg.sim.variable].datatexture(doe2),
-        // ],
-
-        // ownuniforms   = {
-        //   doe:          { type: 'f',   value: doe },
-        //   opacity:      { type: 'f',   value: cfg.opacity },
-        //   sunDirection: { type: 'v3',  value: SIM.sunDirection },
-
-        //   texture:      { type: 't',   value: texture }, 
-        // },
-
-
-        // uniforms   = THREE.UniformsUtils.merge([
-        //     ownuniforms       
-        // ]),
-
-        uniforms = {
-          texture:      { type: 't',   value: texture }, 
-          doe:          { type: 'f',   value: doe },
-          opacity:      { type: 'f',   value: cfg.opacity },
-          sunDirection: { type: 'v3',  value: SIM.sunDirection },
-        },
-        
-        material   = new THREE.ShaderMaterial({
-          uniforms,
-          // lights:         true,
-          transparent:      true,
-          vertexShader:     self.vertexShader(),
-          fragmentShader:   self.fragmentShader(),
-          // side:           THREE.FrontSide,
-          // vertexColors:   THREE.NoColors,
-        }),
-
-        mesh = new THREE.Mesh( geometry, material )
-
+      var 
+        does     = [],
+        pointer  = 1,
+        textures = {},
+        scaler   = (d) => self.clampScale(d, 243.15, 313.75, 0, 255)
       ;
 
-      model.obj.add(mesh);
-      // mesh.onAfterRender = onAfterRender;
+      times.does.forEach( doe => {
 
-      TIM.step('Model.variables.out', Date.now() -t0, 'ms');
+        does.push(doe);
 
-      return model;
+        if (does.length === 4){
+          textures['tex' + pointer] = {type: 't', value: data[vari].dataTexture(does, scaler) };
+          does = [];
+          pointer += 1;
+        }
+
+      });
+
+      // rest
+      if (does.length) {
+        textures['tex' + pointer] = {type: 't', value: data[vari].dataTexture(does, scaler) };
+      } 
+
+      return textures;
 
     },
+    prepareFragmentShader: function () {
 
+      // doe < 0.25 ? texture2D( tex1, vUv ).r : 
 
-    prepareXXX: function ( doe ) {
+      var 
+        frags = {
+          samplers2D:  '',
+          val1Ternary: '',
+          val2Ternary: '',
+        },
+        amount = Math.ceil(times.length / 4);
 
-      TIM.step('Model.variables.in', doe);
+      frags.samplers2D = H.range(1, amount + 1).map( n => '\n  uniform sampler2D tex' + n + ';').join('');
+
+      frags.val1Ternary  = H.range(0, times.length).map( n => {
+        var 
+          t = ((n+1) * 0.25).toFixed(2),
+          s = 'tex' + (Math.floor(n/4) + 1),
+          p = {0:'r', 1:'g', 2:'b', 3:'a'}[ n % 4]
+        ;
+        return '\n  doe < ' + t + ' ? texture2D( ' + s + ', vUv ).' + p + ' :';
+      }).join('');
+
+      frags.val2Ternary  = H.range(0, times.length).map( n => {
+        var 
+          t = ((n+1) * 0.25).toFixed(2),
+          s = 'tex' + (Math.floor(n/4 + 0.25) + 1),
+          p = {0:'g', 1:'b', 2:'a', 3:'r'}[ n % 4]
+        ;
+        return '\n  doe < ' + t + ' ? texture2D( ' + s + ', vUv ).' + p + ' :';
+      }).join('');
+
+      return frags;
+
+    },
+    prepare: function ( ) {
 
       var
         t0 = Date.now(), 
-        
-        doe1       = doe - (doe % 0.25),
-        doe2       = doe1 + 0.25,
-        
-        geometry = new THREE.SphereBufferGeometry(cfg.radius, 359, 180),
 
-        attributes = {
-          doe1:    new THREE.BufferAttribute( datagram[cfg.sim.variable].attribute(doe1), 1 ),
-          doe2:    new THREE.BufferAttribute( datagram[cfg.sim.variable].attribute(doe2), 1 ),
-        },
+        datagrams = SIM.datagrams,
+        doe       = SIM.time.doe,
+        mindoe    = SIM.time.mindoe,
 
-        ownuniforms   = {
-          doe:          { type: 'f',   value: doe },
+        geometry  = new THREE.SphereBufferGeometry(cfg.radius, 64, 32),
+        textures  = self.prepareTextures(datagrams),
+        fragments = self.prepareFragmentShader(),
+
+        uniforms  = Object.assign(textures, {
+          doe:          { type: 'f',   value: doe - mindoe },
           opacity:      { type: 'f',   value: cfg.opacity },
           sunDirection: { type: 'v3',  value: SIM.sunDirection },
-        },
-
-        uniforms   = THREE.UniformsUtils.merge([
-            // THREE.UniformsLib[ 'lights' ],
-            ownuniforms       
-        ]),
+        }),
         
-        material   = new THREE.ShaderMaterial({
+        material  = new THREE.ShaderMaterial({
           uniforms,
+          transparent:      true,
+          vertexShader:     self.vertexShader(),
+          fragmentShader:   self.fragmentShader(fragments),
           // lights:         true,
-          transparent:    true,
-          vertexShader:   self.vertexShader(),
-          fragmentShader: self.fragmentShader(),
           // side:           THREE.FrontSide,
           // vertexColors:   THREE.NoColors,
         }),
-      
-        onAfterRender = function  () {
 
-          var
-            doe = SIM.time.doe, 
-            datagramm = datagram[cfg.sim.variable];
+        onBeforeRender =  function () {
 
-          uniforms.doe.value = doe;
+          uniforms.doe.value = (
+            SIM.time.doe >= times.mindoe && SIM.time.doe <= times.maxdoe ? 
+            uniforms.doe.value = SIM.time.doe - times.mindoe :
+            uniforms.doe.value = -9999.0
+          );
 
-          // check bounds
-          if ( doe >= model.minDoe && doe <= model.maxDoe ) {
-
-            // check whether update needed
-            if (doe < doe1 || doe > doe2) {
-
-              doe1 = doe  - (doe % 0.25);
-              doe2 = doe1 + 0.25;
-
-              geometry.attributes.doe1.array = datagramm.attribute(doe1);
-              geometry.attributes.doe2.array = datagramm.attribute(doe2);
-
-              geometry.attributes.doe1.needsUpdate = true;
-              geometry.attributes.doe2.needsUpdate = true;
-
-            }
-
-          } else {
-            uniforms.doe.value = 0.0;
-
-          }
-
-          uniforms.doe.needsUpdate          = true;
-          uniforms.sunDirection.value       = SIM.sunDirection;
-          uniforms.sunDirection.needsUpdate = true;
+          uniforms.doe.needsUpdate = true;
 
         },
 
@@ -184,13 +155,10 @@ SIM.Models.tmp2m = (function () {
 
       ;
 
-      geometry.addAttribute( 'doe1', attributes.doe1 );
-      geometry.addAttribute( 'doe2', attributes.doe2 );
-
       model.obj.add(mesh);
-      mesh.onAfterRender = onAfterRender;
+      mesh.onBeforeRender = onBeforeRender;
 
-      TIM.step('Model.variables.out', Date.now() -t0, 'ms');
+      TIM.step('Model.tmp2m.out', Date.now() -t0, 'ms');
 
       return model;
 
@@ -217,15 +185,15 @@ SIM.Models.tmp2m = (function () {
       `;
 
     },
-    fragmentShader: function () {
+    fragmentShader: function (frags) {
 
       return `
 
         uniform float doe;
 
-        uniform sampler2D texture;
+        ${frags.samplers2D}
 
-        float frac, fac1, fac2, value;
+        float frac, fac1, fac2, val1, val2, value;
 
         varying vec2 vUv;
 
@@ -233,30 +201,48 @@ SIM.Models.tmp2m = (function () {
 
         void main() {
 
-          // vec4 lookup = texture2D( texture, vUv );
-          // float val = lookup.x;
-
-          float value = texture2D( texture, vUv ).x;
-          // float g = texture2D( texture, vUv ).y;
-          // float b = texture2D( texture, vUv ).z;
-
-          value = -30.01 + value * 70.0 ;
-
-          color = (
-            value < -30.0 ? vec3(0.666, 0.400, 0.666) : // dark violett
-            value < -20.0 ? vec3(0.807, 0.607, 0.898) :
-            value < -10.0 ? vec3(0.423, 0.807, 0.886) :
-            value <  +0.0 ? vec3(0.423, 0.937, 0.423) :
-            value < +10.0 ? vec3(0.929, 0.976, 0.423) :
-            value < +20.0 ? vec3(0.984, 0.792, 0.384) :
-            value < +30.0 ? vec3(0.984, 0.396, 0.305) :
-            value < +40.0 ? vec3(0.800, 0.250, 0.250) :
-              vec3(0.600, 0.150, 0.150)                  // dark red
+          val1 = (
+            ${frags.val1Ternary}
+              -9999.0
           );
 
+          val2 = (
+            ${frags.val2Ternary}
+              -9999.0
+          );
 
+          if (doe == -9999.0){
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 0.1);
+          
+          } else if (val1 == -9999.0) {
+            gl_FragColor = vec4(0.0, 1.0, 0.0, 0.1);
 
-          gl_FragColor = vec4(color, 0.5);
+          } else if (val2 == -9999.0) {
+            gl_FragColor = vec4(0.0, 0.0, 1.0, 0.1);
+
+          } else {
+            frac = fract(doe);
+            fac2 = mod(frac, 0.25) * 4.0;
+            fac1 = 1.0 - fac2;
+
+            value = (val1 * fac1 + val2 * fac2) ;
+            value = -30.01 + value * 70.0 ;
+
+            color = (
+              value < -30.0 ? vec3(0.666, 0.400, 0.666) : // dark violett
+              value < -20.0 ? vec3(0.807, 0.607, 0.898) :
+              value < -10.0 ? vec3(0.423, 0.807, 0.886) :
+              value <  +0.0 ? vec3(0.423, 0.937, 0.423) :
+              value < +10.0 ? vec3(0.929, 0.976, 0.423) :
+              value < +20.0 ? vec3(0.984, 0.792, 0.384) :
+              value < +30.0 ? vec3(0.984, 0.396, 0.305) :
+              value < +40.0 ? vec3(0.800, 0.250, 0.250) :
+                vec3(0.600, 0.150, 0.150)                  // dark red
+            );
+
+            gl_FragColor = vec4(color, 0.3);
+
+          }
           
         }
 

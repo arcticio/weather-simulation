@@ -213,6 +213,10 @@ table.loader .progress .meter {
   overflow: hidden;
 }
 
+table.loader .btnFullscreen {
+  margin-top: 24px;
+}
+
 table.loader .error {
   font-size: 24px;
   text-align:center; 

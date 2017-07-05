@@ -92,6 +92,7 @@
           <div>
             <div class="bar"></div>
             <div class="meter"></div>
+            <img class="btnFullscreen" onclick="goFullscreen();this.src='images/transparent.png';" width="64"></img>
           </div>
         </td>
       </tr>
@@ -202,6 +203,11 @@
 
       document.querySelectorAll('.progress .header')[0].innerHTML = 'main engine started';
       document.querySelectorAll('table .version')[0].innerHTML = VERSION;
+
+      function goFullscreen() {
+        // debugger;
+        screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
+      }
 
       window.onload = function () {
 

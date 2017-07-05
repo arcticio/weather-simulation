@@ -163,26 +163,24 @@ CFG.Sprites = {
   // horizontal 
 
   fullscreen: {
-    visible:  true,
-    menu:     true,
-    type:     'toggle',
-    toggled:  false,
+    type:           'toggle',
+    menu:           true,
+    visible:        screenfull.enabled,
+    toggled:        screenfull.isFullscreen,
     position: {
-      zIndex:    5,
-      top:    180,
-      right:   18,
-      width:   48,
-      height:  48,
+      zIndex:       5,
+      top:          180,
+      right:        18,
+      width:        48,
+      height:       48,
     },
     material: {
-      opacity: 0.5,
-      image: 'hud/fullscreen.png'
+      opacity:      0.5,
+      image:        'hud/fullscreen.png'
     },
     onclick: (sprite) => {
-      screenfull.enabled && screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
+      screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
       sprite.toggled = !sprite.toggled;
-      // IFC.Hud.resize();
-      // console.log('sprite.clicked', sprite.name);
     },
   },
 
@@ -255,7 +253,7 @@ CFG.Sprites = {
 
   // MENU, Layers vertical
 
-  snpp: {
+  mask: {
     visible:  true,
     menu:     true,
     type:     'toggle',
@@ -269,12 +267,33 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.5,
+      image: 'hud/mask.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggleBasemap('mask');
+      sprite.toggled = !sprite.toggled;
+    },
+  },
+
+  snpp: {
+    visible:  true,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:    5,
+      top:     180,
+      left:     80,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.5,
       image: 'hud/satellite.png'
     },
     onclick: (sprite) => {
       SCN.toggleBasemap('snpp');
       sprite.toggled = !sprite.toggled;
-      // console.log('sprite.clicked', sprite.name);
     },
   },
 

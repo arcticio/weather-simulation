@@ -21,6 +21,7 @@ var LDR = (function () {
         [ IFC.initGUI ],
 
         [ CFG.Manager.probeDevice ],
+        [ CFG.Manager.probeFullscreen ],
         [ CFG.Manager.lockOrientation, [ 'portrait-primary' ] ],
         [ SCN.probeDevice ],
 
@@ -30,6 +31,7 @@ var LDR = (function () {
         [ ANI.init ], 
         [ SIM.init ], 
         [ SCN.init ], 
+        [ SIM.setSimTime ], 
 
       'stage 1',
         self.loadImages,
@@ -42,7 +44,6 @@ var LDR = (function () {
 
       'reaching orbit',
         [ IFC.init ], 
-        [ SIM.setSimTime ], 
         [ SIM.updateSun ], 
 
       'uploading to GPU',
@@ -230,11 +231,23 @@ var LDR = (function () {
 
     loadObservations: function () {
 
-      var sequence = [];
+      function registerResEvent () {
+        RES.onload = function (url) {
+          $info.text(url.split('/').slice(-1)[0]);
+        }
+      }
+
+      function unregisterResEvent () {
+        RES.onload = null;
+      }
+
+      var sequence = [
+        [registerResEvent]
+      ];
 
       H.each(CFG.Objects, (name, config) => {
 
-        var fn;
+        var action;
 
         if (config.type === 'simulation'){
 
@@ -242,14 +255,14 @@ var LDR = (function () {
 
           if (config.visible){
 
-            fn = function (callback) {
+            action = function (callback) {
               self.message('', config.title);
               setTimeout(function () {
                 SCN.Tools.loader[config.type](name, config, callback);
               }, delay);
             };
 
-            sequence.push([fn, 'callback']);
+            sequence.push([action, 'callback']);
 
           } else {
             SCN.objects[name] = config;
@@ -258,6 +271,8 @@ var LDR = (function () {
         }
 
       });
+
+      sequence.push([unregisterResEvent]);
 
       return sequence;
 

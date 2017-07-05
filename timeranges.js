@@ -107,8 +107,9 @@ dataTimeRanges['gfs-simulation'] = [];
   dataTimeRanges['gfs-simulation'].push(['2017-05-01', '2017-05-20']);
 ;
 
-//sim
-dataTimeRanges['3d-simulation'] = [];
-  dataTimeRanges['3d-simulation'].push(['2017-05-21', '2017-05-25']);
+//hypatia
+dataTimeRanges['hypatia'] = {
+  tmp2m: ['2017-06-19-18', '2017-06-23-18'],
+};
 ;
 

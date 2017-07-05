@@ -9,6 +9,8 @@ Renders current weather parameters onto a 3D sphere
   
   * https://github.com/spite/codevember-2016
   * https://github.com/qkevinto/planetarium/blob/master/app/js/app.js
+  * http://www.gutenberg.org/files/18936/18936-h/18936-h.htm#HYPATIA
+  * https://commons.wikimedia.org/wiki/File:Hypatia_portrait.png
 
 
 ## Inspiration
@@ -18,7 +20,7 @@ Renders current weather parameters onto a 3D sphere
   * [How We Made “Rewind the Red Planet”](https://source.opennews.org/articles/how-we-made-rewind-red-planet/)
   * []()
 
-
+ 
 ## Data Sources (+ planned)
   
   * [Greenland and Antarctic ice sheet topography](https://doi.pangaea.de/10.1594/PANGAEA.856844)

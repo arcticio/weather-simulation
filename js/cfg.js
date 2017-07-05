@@ -9,9 +9,6 @@
 */
 
 
-'use strict'
-
-
 /* GLOBALS */
 
 const 
@@ -29,22 +26,7 @@ const
   LEVEL_7 =   0.007   // atmosphere
 ;
 
-var TIMENOW = moment.utc('2017-06-15 1200', 'YYYY-MM-DD HHmm');
-
-const TIMERANGE = [
-  '2017-06-13',
-  '2017-06-14',
-  '2017-06-15',
-  '2017-06-16',
-  '2017-06-17',
-  '2017-06-18',
-  '2017-06-19',
-  '2017-06-20',
-  '2017-06-21',
-  '2017-06-22',
-  '2017-06-23',
-];
-
+var TIMENOW = moment.utc('2017-06-20 1200', 'YYYY-MM-DD HHmm');
 
 var CFG = {
 
@@ -130,20 +112,23 @@ var CFG = {
     // Tools
     'hud/fullscreen.png':           'images/hud/fullscreen.png',
     'hud/gear.png':                 'images/hud/gear.1.png',
-    'hud/graticule.png':            'images/hud/graticule.2.png',
+    // 'hud/graticule.png':            'images/hud/graticule.2.png',
+    'hud/graticule.png':            'images/hud/graticule.3.png',
     'hud/hamburger.png':            'images/hud/hamburger.png',
     'hud/info.png':                 'images/hud/info.png',
     'hud/movie.png':                'images/hud/movie.1.png',
     'hud/reload.png':               'images/hud/reload.png',
 
     // Assets
+    'hud/mask.png':                 'images/hud/mask.png',
     'hud/clouds.png':               'images/hud/clouds.png',
     'hud/satellite.png':            'images/hud/satellite.1.png',
     'hud/seaice.png':               'images/hud/seaice.png',
     'hud/snow.png':                 'images/hud/snow.png',
     'hud/space.png':                'images/hud/space.png',
     'hud/sst.png':                  'images/hud/sst.png',
-    'hud/temperature.png':          'images/hud/temperature.png',
+    // 'hud/temperature.png':          'images/hud/temperature.png',
+    'hud/temperature.png':          'images/hud/temperature.01.png',
     'hud/rain.png':                 'images/hud/rain.png',
     'hud/population.png':           'images/hud/population.png',
 

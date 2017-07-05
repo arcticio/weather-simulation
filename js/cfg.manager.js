@@ -22,6 +22,7 @@ CFG.Manager = (function () {
       var user = CFG.User;
 
       self.initStore();
+      self.probeFullscreen();
       self.sanitizeUrl();
 
       if (user.loc_detected) {
@@ -46,6 +47,14 @@ CFG.Manager = (function () {
 
     },
 
+    probeFullscreen: function () {
+
+      if (screenfull.enabled){
+        var img = document.querySelectorAll('.btnFullscreen')[0];
+        img.src = 'images/fullscreen.grey.png';
+      }
+
+    },
     lockOrientation: function (orientation) {
 
       // https://developer.mozilla.org/en-US/docs/Web/API/Screen/lockOrientation

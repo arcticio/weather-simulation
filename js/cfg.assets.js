@@ -342,14 +342,27 @@ CFG.Objects = {
       visible:        false,
       title:          'GFS - air temperature at 2m',
       type:           'simulation',
+      geometry:       new THREE.SphereBufferGeometry(RADIUS + LEVEL_4, 64, 32),
       rotation:       [0, PI - PI/360, 0],
       radius:         RADIUS + LEVEL_4, 
       sim: {
         variable:     'tmp2m',
+        step:         [6, 'hours'],
         dataroot:     'data/gfs/tmp2m/',
         patterns: [
-          'YYYY-MM-DD-HH[.tmp2m.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
+          'YYYY-MM-DD-HH[.tmp2m.10.dods]', 
         ],
+        palette: {
+          '-30' : new THREE.Color(0xaa66aa), // violet dark,
+          '-20' : new THREE.Color(0xce9be5), // violet,
+          '-10' : new THREE.Color(0x76cee2), // blue,
+          '  0' : new THREE.Color(0x6cef6c), // green,
+          '+10' : new THREE.Color(0xedf96c), // yellow,
+          '+20' : new THREE.Color(0xffbb55), // orange,
+          '+30' : new THREE.Color(0xfb654e), // red,
+          '+40' : new THREE.Color(0xcc4040), // red dark,
+          '+99' : new THREE.Color(0xbb2020), // red black,
+        }
       }
     },
 

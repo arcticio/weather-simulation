@@ -1,10 +1,8 @@
 
-'use strict';
-
 var RES = (function () {
 
   var 
-    self, i, j, div,
+    self, div,
 
     $$ = document.querySelectorAll.bind(document),
 
@@ -22,9 +20,8 @@ var RES = (function () {
       bytesTotal:  0,   // from jobs in queue
       jobsTotal:   0,   // historical
       percent:     0,   // done from jobs in queue
-    },
-    
-  end;
+    }
+  ;
 
   function format() {
     stats.percent = stats.requests ? (stats.bytesLoaded / stats.bytesTotal * 100).toFixed(1) : 'done';
@@ -47,6 +44,8 @@ var RES = (function () {
 
   return self = {
 
+    onload: null,
+
     init: function () {
     },
     activate: function (selector) {
@@ -54,13 +53,13 @@ var RES = (function () {
     },
     check: function () {
 
-      var candidate, candidates = [];
+      var candidates = [];
 
       // clean queue
       candidates = jobs.filter( j => j.failed || j.finished);
       candidates.forEach( c => H.remove(jobs, c) );
 
-      // select queueable jobs
+      // select queueable jobs up to concurrent
       candidates = jobs.filter( j => !j.active && j.ready && !j.failed ).slice(0, concurrent);
       candidates.forEach( c => {
         if (c.options.type === 'texture' ){
@@ -114,7 +113,7 @@ var RES = (function () {
     Job: function (options) {
 
       var 
-        mime, length, modified, 
+        mime, length,
         url  = options.url, 
         type = options.type || 'text', 
         bytesTotal  = 0, 
@@ -228,13 +227,17 @@ var RES = (function () {
         req.open('GET', url, true);
         req.responseType = type;
 
-        req.onload = function ( msg ) {
+        req.onload = function ( event ) {
 
-          // console.log('GET.onload', req.status, req.statusText, msg);
+          // console.log('GET.onload', req.status, req.statusText, event);
 
           if (req.readyState === 4){
             if (req.status === 200) {
               onLoaded(req.response);
+
+              if (self.onload) {
+                self.onload(event.target.responseURL);
+              }
 
             } else {
               onError(req.status + ' ' + req.statusText);
