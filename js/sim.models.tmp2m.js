@@ -4,8 +4,14 @@ SIM.Models.tmp2m = (function () {
   var 
     self, cfg, times, vari,
     model = {
-      obj:      new THREE.Object3D(),
-      urls:     [],
+      obj:          new THREE.Object3D(),
+      urls:         [],
+    },
+    frags = {
+      samplers2D:   '',
+      val1Ternary:  '',
+      val2Ternary:  '',
+      palette:      '',
     }
   ;
 
@@ -77,15 +83,7 @@ SIM.Models.tmp2m = (function () {
     },
     prepareFragmentShader: function () {
 
-      // doe < 0.25 ? texture2D( tex1, vUv ).r : 
-
-      var 
-        frags = {
-          samplers2D:  '',
-          val1Ternary: '',
-          val2Ternary: '',
-        },
-        amount = Math.ceil(times.length / 4);
+      var amount = Math.ceil(times.length / 4);
 
       frags.samplers2D = H.range(1, amount + 1).map( n => '\n  uniform sampler2D tex' + n + ';').join('');
 
@@ -107,7 +105,25 @@ SIM.Models.tmp2m = (function () {
         return '\n  doe < ' + t + ' ? texture2D( ' + s + ', vUv ).' + p + ' :';
       }).join('');
 
-      return frags;
+      Object
+        .keys(cfg.sim.palette)
+        .sort( (a,b) => parseFloat(a)-parseFloat(b))
+        .forEach( key => {
+
+          var 
+            col = cfg.sim.palette[key],
+            t = parseFloat(key).toFixed(1),
+            c = col.r.toFixed(3) + ', ' + col.g.toFixed(3) + ', ' + col.b.toFixed(3);
+
+          if (t !== '999.0') {
+            frags.palette += '  value < ' + t + ' ? vec3(' + c + ') : \n';
+
+          } else {
+            frags.palette += '    vec3(' + c + ')\n';
+          }
+
+        })
+      ;
 
     },
     prepare: function ( ) {
@@ -119,7 +135,7 @@ SIM.Models.tmp2m = (function () {
         doe       = SIM.time.doe,
         mindoe    = SIM.time.mindoe,
 
-        geometry  = new THREE.SphereBufferGeometry(cfg.radius, 64, 32),
+        geometry  = cfg.geometry,
         textures  = self.prepareTextures(datagrams),
         fragments = self.prepareFragmentShader(),
 
@@ -171,21 +187,15 @@ SIM.Models.tmp2m = (function () {
     vertexShader: function () {
       
       return `
-
         varying vec2 vUv;
-
         void main() {
-
           vUv = uv;
-
           gl_Position  = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-
         }
-      
       `;
 
     },
-    fragmentShader: function (frags) {
+    fragmentShader: function () {
 
       return `
 
@@ -229,15 +239,7 @@ SIM.Models.tmp2m = (function () {
             value = -30.01 + value * 70.0 ;
 
             color = (
-              value < -30.0 ? vec3(0.666, 0.400, 0.666) : // dark violett
-              value < -20.0 ? vec3(0.807, 0.607, 0.898) :
-              value < -10.0 ? vec3(0.423, 0.807, 0.886) :
-              value <  +0.0 ? vec3(0.423, 0.937, 0.423) :
-              value < +10.0 ? vec3(0.929, 0.976, 0.423) :
-              value < +20.0 ? vec3(0.984, 0.792, 0.384) :
-              value < +30.0 ? vec3(0.984, 0.396, 0.305) :
-              value < +40.0 ? vec3(0.800, 0.250, 0.250) :
-                vec3(0.600, 0.150, 0.150)                  // dark red
+              ${frags.palette}
             );
 
             gl_FragColor = vec4(color, 0.3);
@@ -246,29 +248,6 @@ SIM.Models.tmp2m = (function () {
           
         }
 
-      `;
-
-    },
-
-    vertexShaderXXX: function () {
-      
-      return `
-
-        attribute float doe1;
-        attribute float doe2;
-
-        varying float vData1;
-        varying float vData2;
-
-        void main() {
-
-          vData1 = doe1;
-          vData2 = doe2;
-
-          gl_Position  = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-
-        }
-      
       `;
 
     },

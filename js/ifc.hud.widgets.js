@@ -1,14 +1,12 @@
 
-'use strict'
-
 IFC.Hud.spacetime = (function () {
 
   var 
     self, cfg, modus, 
     sprite, cvs, ctx, texture,
     vecUp       = new THREE.Vector3(0, 1, 0),
-    vecRot      = new THREE.Vector3(0, 0, 0),
-  end;
+    vecRot      = new THREE.Vector3(0, 0, 0)
+  ;
 
   return self = {
     init:  function (mesh, config) {
@@ -17,9 +15,6 @@ IFC.Hud.spacetime = (function () {
       cfg    = config;
       cvs    = cfg.canvas;
       ctx    = cvs.getContext('2d');
-
-      // width  = cfg.position.width;
-      // height = cfg.position.height;
 
       cvs.width  = 64;
       cvs.height = 64;
@@ -169,8 +164,10 @@ IFC.Hud.time = (function () {
 
       var 
         metrics,
-        simDate = SIM.time.model.format('YYYY-MM-DD'),
-        simTime = SIM.time.model.format('HH:mm [UTC]'),
+        // simDate = SIM.time.model.format('YYYY-MM-DD'),
+        // simTime = SIM.time.model.format('HH:mm [UTC]'),
+        simDate = SIM.time.fmtDay,
+        simTime = SIM.time.fmtHour,
         simDoe  = SIM.time.doe.toFixed(2)
       ;
 
@@ -178,6 +175,7 @@ IFC.Hud.time = (function () {
 
         ctx.clearRect(0, 0, cvs.width, cvs.height);
 
+        // debug
         // ctx.fillStyle = 'rgba(200, 0, 0, 0.5)'
         // ctx.fillRect(0, 0, cvs.width, cvs.height);
 

@@ -32,6 +32,8 @@ var SIM = (function () {
       stamps:      null,
       mindoe:      NaN,
       maxdoe:      NaN,
+      fmtDay:      '',
+      fmtHour:     '',
     }
 
   ;
@@ -134,6 +136,10 @@ var SIM = (function () {
 
       // gfs data
       time.doe = self.mom2doe(time.model);
+
+      // hud
+      time.fmtDay  = time.model.format('YYYY-MM-DD');
+      time.fmtHour = time.model.format('HH:mm [UTC]');
 
       // self.updateSun();
 

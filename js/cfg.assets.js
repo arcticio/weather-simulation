@@ -360,8 +360,8 @@ CFG.Objects = {
           '+10' : new THREE.Color(0xedf96c), // yellow,
           '+20' : new THREE.Color(0xffbb55), // orange,
           '+30' : new THREE.Color(0xfb654e), // red,
-          '+40' : new THREE.Color(0xcc4040), // red dark,
-          '+99' : new THREE.Color(0xbb2020), // red black,
+          '+40' : new THREE.Color(0xcc4040), // dark red,
+          '999' : new THREE.Color(0xbb2020), // very dark red,
         }
       }
     },
