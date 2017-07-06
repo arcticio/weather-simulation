@@ -255,36 +255,6 @@ SIM.Datagram.prototype = {
         return texture;
 
     },
-    datatextureXX: function (doe) {
-
-        // https://threejs.org/docs/index.html#api/textures/DataTexture
-        // https://threejs.org/docs/index.html#api/constants/Textures
-
-        var attr = this.attribute(doe);
-
-        var data = attr.map( d => d + 273.0);
-
-        // DataTexture( data, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy )
-
-        var texture = new THREE.DataTexture(
-            data, 360, 181, 
-            THREE.LuminanceFormat, 
-            // THREE.UnsignedByteType,
-            THREE.FloatType,
-            // THREE.UVMapping,
-            THREE.EquirectangularReflectionMapping,
-            THREE.RepeatWrapping,
-            THREE.RepeatWrapping,
-            // THREE.LinearFilter,
-            // THREE.LinearFilter,
-            THREE.NearestFilter,
-            THREE.NearestFilter,
-            8
-        );
-
-        return texture;
-
-    },
     linearXY: function (doe, lat, lonin) {
 
         /*

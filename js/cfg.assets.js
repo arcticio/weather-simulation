@@ -8,7 +8,7 @@ CFG.Objects = {
       title:          'pointer',
       type:           'mesh',
       mesh:           new THREE.Mesh(
-        new THREE.SphereGeometry(RADIUS - 0.01, 32, 32),                  
+        new THREE.SphereGeometry(RADIUS - 0.01, 16, 16),                  
         new THREE.MeshBasicMaterial({
           color:     0x330000,
           wireframe: true,
@@ -95,9 +95,10 @@ CFG.Objects = {
       material: {
         transparent:  true,
         opacity:      0.2,
-        color:        0x000000,
-        linewidth:    1.1,
-        vertexColors: THREE.NoColors,
+        color:        0xdddddd,
+        // linewidth:    1.1,
+        // vertexColors: THREE.NoColors,
+        // lights:       true, // errors with material
       }
     },
 
@@ -345,6 +346,7 @@ CFG.Objects = {
       geometry:       new THREE.SphereBufferGeometry(RADIUS + LEVEL_4, 64, 32),
       rotation:       [0, PI - PI/360, 0],
       radius:         RADIUS + LEVEL_4, 
+      opacity:        0.5,
       sim: {
         variable:     'tmp2m',
         step:         [6, 'hours'],
@@ -361,7 +363,7 @@ CFG.Objects = {
           '+20' : new THREE.Color(0xffbb55), // orange,
           '+30' : new THREE.Color(0xfb654e), // red,
           '+40' : new THREE.Color(0xcc4040), // dark red,
-          '999' : new THREE.Color(0xbb2020), // very dark red,
+          '999' : new THREE.Color(0xbb20ff), // very dark red,
         }
       }
     },

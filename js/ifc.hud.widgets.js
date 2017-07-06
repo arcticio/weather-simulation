@@ -179,7 +179,7 @@ IFC.Hud.time = (function () {
         // ctx.fillStyle = 'rgba(200, 0, 0, 0.5)'
         // ctx.fillRect(0, 0, cvs.width, cvs.height);
 
-        ctx.fillStyle = '#fff'
+        ctx.fillStyle = '#ddd'
 
         ctx.font = 'bold 22px monospace'
         metrics = ctx.measureText(simDate);

@@ -59,6 +59,8 @@ var IFC = (function () {
       overGlobe:    false,
       overScreen:   false,
       intersect:    new THREE.Vector3(0, 0, 0),
+      latitude:     NaN,
+      longitude:    NaN,
     },
 
     raycaster = new THREE.Raycaster()
@@ -220,6 +222,7 @@ var IFC = (function () {
 
       self.updatePointer();
       self.updateGlobe();
+      self.updateLatLon();
 
       if (self.urlDirty)  {
         IFC.Tools.updateUrl();
@@ -231,10 +234,12 @@ var IFC = (function () {
       onglobeenter: function () {
         ANI.insert(0, ANI.library.scaleGLobe( 1.0,  800))
         IFC.Hud.spacetime.updateModus('space');
+        IFC.Hud.performance.selectModus(1);
       },
       onglobeleave: function () {
         ANI.insert(0, ANI.library.scaleGLobe( 0.94, 800));
         IFC.Hud.spacetime.updateModus('time');
+        IFC.Hud.performance.selectModus(2);
       },
       resize: function () {
 
@@ -423,12 +428,32 @@ var IFC = (function () {
       if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
         pointer.intersect.copy(intersection.point).normalize();
         isOver = true;
+      
+      } else {
+        pointer.intersect.set(0, 0, 0);
+
       }
 
       (  isOver && !wasOver ) && self.events.onglobeenter();
       ( !isOver &&  wasOver ) && self.events.onglobeleave();
 
       pointer.overGlobe = isOver;
+
+    },
+
+    updateLatLon: function () {
+
+      var v = pointer.intersect;
+
+      if (v.x || v.y || v.z) {
+        pointer.latitude  = 90 - (Math.acos(v.y))  * 180 / PI;
+        pointer.longitude = ((270 + (Math.atan2(v.x , v.z)) * 180 / PI) % 360);
+
+      } else {
+        pointer.latitude  = NaN;
+        pointer.longitude = NaN;
+
+      }
 
     },
 

@@ -23,7 +23,9 @@ const
   LEVEL_4 =   0.004,  // wind10, tmp2m
   LEVEL_5 =   0.005,  // clouds
   LEVEL_6 =   0.006,  // jetstream
-  LEVEL_7 =   0.007   // atmosphere
+  LEVEL_7 =   0.007,  // atmosphere
+
+  KELVIN  =   273.15
 ;
 
 var TIMENOW = moment.utc('2017-06-20 1200', 'YYYY-MM-DD HHmm');

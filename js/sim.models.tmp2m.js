@@ -24,13 +24,28 @@ SIM.Models.tmp2m = (function () {
       vari  = cfg.sim.variable;
 
       // expose 
-      model.prepare = self.prepare;
+      model.prepare       = self.prepare;
+      model.interpolateLL = self.interpolateLL;
 
       // prepare for loader
       self.calcUrls();
 
       // done
       return model;
+
+    },
+    interpolateLL: function (lat, lon) {
+
+      var doe = SIM.time.doe;
+      var doe1 = doe - (doe % 0.25);
+      var doe2 = doe1 + 0.25;
+      var t1 = SIM.datagrams.tmp2m.linearXY(doe1, lat, lon -180);
+      var t2 = SIM.datagrams.tmp2m.linearXY(doe2, lat, lon -180);
+      var frac = doe - ~~ doe;
+      var fac2 = (frac % 0.25) % 4;
+      var fac1 = 1.0 - fac2;
+
+      return (t1 * fac1 + t2 * fac2);
 
     },
     calcUrls: function () {
@@ -157,13 +172,17 @@ SIM.Models.tmp2m = (function () {
 
         onBeforeRender =  function () {
 
+          uniforms.sunDirection.value = SIM.sunDirection;
+          uniforms.sunDirection.value.y = -uniforms.sunDirection.value.y; // why
+
           uniforms.doe.value = (
             SIM.time.doe >= times.mindoe && SIM.time.doe <= times.maxdoe ? 
-            uniforms.doe.value = SIM.time.doe - times.mindoe :
-            uniforms.doe.value = -9999.0
+              SIM.time.doe - times.mindoe :
+              -9999.0
           );
 
           uniforms.doe.needsUpdate = true;
+          uniforms.sunDirection.needsUpdate = true;
 
         },
 
@@ -188,8 +207,10 @@ SIM.Models.tmp2m = (function () {
       
       return `
         varying vec2 vUv;
+        varying vec3 vNormal;
         void main() {
           vUv = uv;
+          vNormal = normal;
           gl_Position  = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `;
@@ -199,35 +220,56 @@ SIM.Models.tmp2m = (function () {
 
       return `
 
-        uniform float doe;
+        uniform float opacity;
+        uniform vec3 sunDirection;
 
         ${frags.samplers2D}
 
+        varying vec2 vUv;
+        varying vec3 vNormal;
+
+        // light
+        float dotNL;
+
+        // temperatur and time
+        const  float NODATA = -9999.0;
+        vec3 color;
+        uniform float doe;
         float frac, fac1, fac2, val1, val2, value;
 
-        varying vec2 vUv;
-
-        vec3 color;
+        // day night
+        float dnMix, dnZone;
+        float dnSharpness = 3.0;
+        float dnFactor    = 0.15;
 
         void main() {
 
+          // compute cosine sun to normal so -1 is away from sun and +1 is toward sun.
+          dotNL = dot(normalize(vNormal), sunDirection);
+
+          // sharpen the edge beween the transition
+          dnZone = clamp( dotNL * dnSharpness, -1.0, 1.0);
+
+          // convert to 0 to 1 for mixing, 0.5 for full range
+          dnMix = 0.5 - dnZone * dnFactor;
+
           val1 = (
             ${frags.val1Ternary}
-              -9999.0
+              NODATA
           );
 
           val2 = (
             ${frags.val2Ternary}
-              -9999.0
+              NODATA
           );
 
-          if (doe == -9999.0){
+          if (doe == NODATA){
             gl_FragColor = vec4(1.0, 0.0, 0.0, 0.1);
           
-          } else if (val1 == -9999.0) {
+          } else if (val1 == NODATA) {
             gl_FragColor = vec4(0.0, 1.0, 0.0, 0.1);
 
-          } else if (val2 == -9999.0) {
+          } else if (val2 == NODATA) {
             gl_FragColor = vec4(0.0, 0.0, 1.0, 0.1);
 
           } else {
@@ -242,7 +284,10 @@ SIM.Models.tmp2m = (function () {
               ${frags.palette}
             );
 
-            gl_FragColor = vec4(color, 0.3);
+            gl_FragColor = vec4(color * dnMix, opacity);
+
+            // debug
+            // gl_FragColor = vec4(dnMix, dnMix, dnMix, 0.5);
 
           }
           

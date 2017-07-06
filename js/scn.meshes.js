@@ -117,15 +117,20 @@ SCN.Meshes = {
       axisGeo   = new THREE.Geometry(),
       axis      = new THREE.Line( axisGeo, axisMat ),
 
+      pntrMat   = new THREE.LineBasicMaterial({color: 0xffff00}),
+      pntrGeo   = new THREE.Geometry(),
+      pntr      = new THREE.Line( pntrGeo, pntrMat ),
+      pointer   = new THREE.Vector3(),
+
+      sunMat    = new THREE.LineBasicMaterial({color: 0xff0000}),
+      sunGeo    = new THREE.Geometry(),
+      sun       = new THREE.Line( sunGeo, sunMat ),
+
       toVec3   = function (lat, lon) {
         return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, cfg.altitude);
       };
 
-    axisGeo.vertices.push(
-      new THREE.Vector3( 0,  1.5, 0 ),
-      new THREE.Vector3( 0, -1.5, 0 )
-    );
-
+    // calc parallels, 
     H.each(lats.slice(0, -1), (iLat, lat) => {
       H.each(lons.slice(0, -1), (iLon, lon) => {
 
@@ -144,11 +149,37 @@ SCN.Meshes = {
       });
     });
 
-    container.add(axis, graticule);
+    // earth rotation axis
+    axisGeo.vertices.push(
+      new THREE.Vector3( 0,  1.5, 0 ),
+      new THREE.Vector3( 0, -1.5, 0 )
+    );
 
-    container.onBeforeRender = function () {
-      // material.uniforms.distance.value = SCN.camera.position.length();
-      // material.uniforms.distance.needsUpdate = true;
+    // mouse pointer
+    pntrGeo.vertices.push(
+      new THREE.Vector3( 0,    0, 0 ),
+      new THREE.Vector3( 2,    2, 2 )
+    );
+
+    // sun pointer
+    sunGeo.vertices.push(
+      new THREE.Vector3( 0,    0, 0 ),
+      new THREE.Vector3( 0,    0, 0 ),
+    );
+
+    container.add(sun, pntr, axis, graticule);
+
+    graticule.onBeforeRender = function () {
+
+      pointer.copy(IFC.pointer.intersect).normalize().multiplyScalar(1.2);
+
+      pntrGeo.vertices[1] = pointer;
+      pntrGeo.verticesNeedUpdate = true;
+
+      // sunGeo.vertices[0] = SCN.home;
+      sunGeo.vertices[1] = SIM.sunPosition;
+      sunGeo.verticesNeedUpdate = true;
+
     };
 
     return container;

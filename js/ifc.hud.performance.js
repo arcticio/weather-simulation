@@ -64,27 +64,35 @@ IFC.Hud.performance = (function () {
       texture.needsUpdate = true;
 
     },
+    renderDebug:     function () {
+
+      var 
+        line = 1,
+        state = IFC.controller.status(),
+        tmp2m = NaN
+      ;
+
+      // tmp2m = SIM.models.tmp2m && SIM.models.tmp2m.interpolateLL(IFC.pointer.latitude, IFC.pointer.longitude) - KELVIN;
+
+      // ctx.font = '11px monospace'
+      // ctx.fillStyle = '#ddd';
+      // ctx.textBaseline = 'bottom';
+
+      // // ctx.fillText('alpha: ' + state.alpha, 4, line++ * 14);
+      // // ctx.fillText('beta:  ' + state.beta,  4, line++ * 14);
+      // // ctx.fillText('gamma: ' + state.gamma, 4, line++ * 14);
+
+      // ctx.fillText('LAT: ' + IFC.pointer.latitude.toFixed(4),  4, line++ * 14);
+      // ctx.fillText('LON: ' + IFC.pointer.longitude.toFixed(4), 4, line++ * 14);
+      // ctx.fillText('TMP: ' + (tmp2m ? tmp2m.toFixed(1) : 'X') + ' °C',          4, line++ * 14);
+
+    },
     renderBandwidth: function () {
 
       ctx.font      = '11px monospace'
       ctx.fillStyle = '#ddd';
 
       ctx.fillText('bandwidth', 4, cvs.height / 2);
-
-    },
-    renderDebug:     function () {
-
-      var 
-        line = 1,
-        state = IFC.controller.status()
-
-      ctx.font = '11px monospace'
-      ctx.fillStyle = '#ddd';
-      ctx.textBaseline = 'bottom';
-
-      ctx.fillText('alpha: ' + state.alpha, 4, line++ * 14);
-      ctx.fillText('beta:  ' + state.beta,  4, line++ * 14);
-      ctx.fillText('gamma: ' + state.gamma, 4, line++ * 14);
 
     },
     renderScene:     function () {
