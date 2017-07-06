@@ -183,8 +183,8 @@ vec3 unpackRGBToNormal( const in vec3 rgb ) {
 }
 
 const float PackUpscale = 256. / 255.;const float UnpackDownscale = 255. / 256.;
-const vec3 PackFactors = vec3( 256. * 256. * 256., 256. * 256.,  256. );
-const vec4 UnpackFactors = UnpackDownscale / vec4( PackFactors, 1. );
+const vec3  PackFactors = vec3( 256. * 256. * 256., 256. * 256.,  256. );
+const vec4  UnpackFactors = UnpackDownscale / vec4( PackFactors, 1. );
 const float ShiftRight8 = 1. / 256.;
 
 vec4 packDepthToRGBA( const in float v ) {

@@ -1,14 +1,11 @@
 
-'use strict'
-
-
 if( typeof importScripts === 'function') {
 
   var SIM = {};
 
   importScripts(
     'aws.helper.js', 
-    'aws.tools.js',
+    'aws.tools.js'
   );
 
   // say hello

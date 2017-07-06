@@ -164,7 +164,7 @@ SCN.Meshes = {
     // sun pointer
     sunGeo.vertices.push(
       new THREE.Vector3( 0,    0, 0 ),
-      new THREE.Vector3( 0,    0, 0 ),
+      new THREE.Vector3( 0,    0, 0 )
     );
 
     container.add(sun, pntr, axis, graticule);

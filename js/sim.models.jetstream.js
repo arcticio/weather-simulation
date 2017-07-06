@@ -115,7 +115,7 @@ SIM.Models.jetstream = (function () {
           positions, 
           colors, 
           widths, 
-          material,
+          material
         );
 
         model.obj.add(multiline.mesh);
