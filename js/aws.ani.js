@@ -1,6 +1,4 @@
 
-// https://github.com/sindresorhus/screenfull.js/
-
 var ANI = (function () {
 
   var 
@@ -17,7 +15,7 @@ var ANI = (function () {
     init: function () {},
     activate: function () {},
 
-    step: function (frame, deltatime) {
+    step: function (frame, /* deltatime */ ) {
 
       status.frame = frame;
 
@@ -50,7 +48,7 @@ var ANI = (function () {
 
     tween: function (current, target, duration, update, easing) {
       return function () {
-        var tween = new TWEEN.Tween(current)
+        return new TWEEN.Tween(current)
           .easing(easing)
           .to(target, duration)
           .onUpdate(update)
@@ -71,7 +69,7 @@ var ANI = (function () {
           var current = {y: SCN.meshes.data.rotation.y};
           var target  = {y: SCN.meshes.data.rotation.y + 2 * Math.PI};
 
-          var tween = new TWEEN
+          return new TWEEN
             .Tween(current)
             .delay(100)
             .easing(TWEEN.Easing.Exponential.Out)
@@ -101,6 +99,7 @@ var ANI = (function () {
         var 
           rgba,
           table    = $$('table.loader')[0],
+          cont     = $$('div.container')[0],
           curSpcl  = new THREE.Spherical().setFromVector3(new THREE.Vector3(8, 8, 8)),
           futSpcl  = new THREE.Spherical().setFromVector3(SCN.camera.position),
           current  = {
@@ -118,7 +117,7 @@ var ANI = (function () {
 
         return function () {
 
-          var tween = new TWEEN
+          return new TWEEN
             .Tween(current)
             .easing(TWEEN.Easing.Exponential.Out)
             .to(target, duration)
@@ -132,7 +131,8 @@ var ANI = (function () {
               SCN.camera.lookAt(SCN.home);
 
               if (stage > 0.5){
-                table.style.display = 'none';
+                // table.style.display = 'none';
+                cont.style.display = 'none';
               }
 
             })
@@ -281,22 +281,11 @@ var ANI = (function () {
 
         var 
           current = SCN.scene.scale,
-          target  = {x: scale, y: scale, z: scale};
+          target  = {x: scale, y: scale, z: scale},
+          update  = () => SCN.scene.scale.copy(current)
+        ;
 
-        return function () {
-
-          // TWEEN.removeAll();
-
-          var tween = new TWEEN.Tween(current)
-            .easing(TWEEN.Easing.Sinusoidal.Out)
-            .to(target, duration)
-            .onUpdate(function(d){
-              SCN.scene.scale.copy(current);
-            })
-            .start()
-          ;
-
-        };
+        return self.tween(current, target, duration, update, TWEEN.Easing.Sinusoidal.Out)
 
       },
 
@@ -366,9 +355,8 @@ var ANI = (function () {
             phi:    futShere.phi,
             theta:  futShere.theta,  // east-direction
             radius: radius,
-          },
-
-        end;
+          }
+        ;
 
         // handle moving over NUll Meridian
         if (target.theta - current.theta > Math.PI) {
@@ -379,10 +367,10 @@ var ANI = (function () {
 
           // TWEEN.removeAll();
 
-          var tween = new TWEEN.Tween(current)
+          return new TWEEN.Tween(current)
             .easing(TWEEN.Easing.Exponential.Out)
             .to(target, 500)
-            .onUpdate(function(d){
+            .onUpdate(function(){
               spherical = new THREE.Spherical(current.radius, current.phi, current.theta);
               SCN.camera.position.setFromSpherical(spherical);
               SCN.camera.lookAt(SCN.home);
@@ -405,11 +393,9 @@ var ANI = (function () {
 
 /*
 
-sphericalPosition = new THREE.Spherical().setFromVector3(vector3);
-sphericalPosition.theta += model.ugrd10.linearXY(0, lat, lon) * factor; // east-direction
-sphericalPosition.phi   += model.vgrd10.linearXY(0, lat, lon) * factor; // north-direction
-vector3 = vector3.setFromSpherical(sphericalPosition).clone();
-
-
+  sphericalPosition = new THREE.Spherical().setFromVector3(vector3);
+  sphericalPosition.theta += model.ugrd10.linearXY(0, lat, lon) * factor; // east-direction
+  sphericalPosition.phi   += model.vgrd10.linearXY(0, lat, lon) * factor; // north-direction
+  vector3 = vector3.setFromSpherical(sphericalPosition).clone();
 
 */

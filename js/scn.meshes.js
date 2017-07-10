@@ -176,7 +176,6 @@ SCN.Meshes = {
       pntrGeo.vertices[1] = pointer;
       pntrGeo.verticesNeedUpdate = true;
 
-      // sunGeo.vertices[0] = SCN.home;
       sunGeo.vertices[1] = SIM.sunPosition;
       sunGeo.verticesNeedUpdate = true;
 

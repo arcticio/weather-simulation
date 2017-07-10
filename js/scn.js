@@ -14,17 +14,17 @@ var SCN = (function () {
     renderer      = new THREE.WebGLRenderer({
       canvas,
       antialias:    true,
+      // alpha:        true, // lensflare ???
       preserveDrawingBuffer:    true,   // screenshots
     }),
 
-    camera,
+    camera, 
+    pointer,
     scene         = new THREE.Scene(),
 
     comb          = 1,   // 0 = no render, 1 = all frames, 2 = every other, 3 etc 
 
     doRender      = true,
-    // doAnimate     = true,
-    // doSimulate    = true,
 
     extensions    = {},
     objects       = {}
@@ -36,6 +36,7 @@ var SCN = (function () {
     home,
     scene,
     camera,
+    pointer,
     objects,
     renderer,
 
@@ -43,9 +44,17 @@ var SCN = (function () {
       doRender = force !== undefined ? force : !doRender;
     },
     add: function (name, obj) {
-      objects[name] = obj;
-      objects[name].name = name;
-      scene.add(obj);
+
+      if (name === 'pointer') {
+        pointer = self.pointer = obj;
+
+      } // else {
+        objects[name] = obj;
+        objects[name].name = name;
+        scene.add(obj);
+
+      // }
+
     },
     setComb : function (val) {comb = val;},
     toggle: function (obj, force) {
@@ -97,12 +106,12 @@ var SCN = (function () {
 
       H.each(objects, (name, obj) => {
 
-        if (CFG.Objects[name] !== undefined) {
+        if (CFG.Assets[name] !== undefined) {
 
           if (name === basename){
             self.toggle(obj, true);
 
-          } else if (CFG.BasemapIds.indexOf(CFG.Objects[name].id) !== -1 ) {
+          } else if (CFG.BasemapIds.indexOf(CFG.Assets[name].id) !== -1 ) {
             self.toggle(obj, false);
 
           }
@@ -111,7 +120,7 @@ var SCN = (function () {
 
       });
 
-      lightset = CFG.Lightsets[CFG.Objects[basename].lightset];
+      lightset = CFG.Lightsets[CFG.Assets[basename].lightset];
 
       ANI.insert(0, ANI.library.lightset(lightset, 300));
 
@@ -184,8 +193,8 @@ var SCN = (function () {
           Assets: (function () {
             var asets = {};
 
-            H.each(CFG.Objects, (name, config) => {
-              if (config.id) {
+            H.each(CFG.Assets, (name, config) => {
+              if (config.debuggable) {
                 asets[name.toUpperCase()] = (value) => self.toggle(objects[name], value);
               }
             });
@@ -247,30 +256,30 @@ var SCN = (function () {
 
         IFC.Hud.performance.begin();
 
-        TWEEN.update();
+          TWEEN.update();
 
-        // move cam
-        IFC.step(frame, deltasecs);
+          // moves cam
+          IFC.step(frame, deltasecs);
 
-        camera.radius   = camera.position.length();
-        camera.distance = camera.radius - CFG.earth.radius;
+          camera.radius   = camera.position.length();
+          camera.distance = camera.radius - CFG.earth.radius;
 
-        objects.background.updatePosition();
+          objects.background.updatePosition();
 
-        SIM.updateSun();
-        objects.spot.position.copy(SIM.sunPosition);
-        objects.sun.position.copy(SIM.sunPosition);
+          SIM.updateSun();
+          objects.spot.position.copy(SIM.sunPosition);
+          objects.sun.position.copy(SIM.sunPosition);
 
-        // always look for new animations
-        ANI.step(frame, deltasecs);
+          // always look for new animations
+          ANI.step(frame, deltasecs);
 
-        // update globe
-        renderer.clear();
-        renderer.render( scene, camera );
+          // update globe
+          renderer.clear();
+          renderer.render( scene, camera );
 
-        // update Hud
-        IFC.Hud.step(frame, deltasecs);
-        IFC.Hud.render(renderer);
+          // update Hud
+          IFC.Hud.step(frame, deltasecs);
+          IFC.Hud.render(renderer);
 
         IFC.Hud.performance.end();
 

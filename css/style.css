@@ -9,7 +9,17 @@ canvas {
 }
 
 html, body {
-  background-color: black; overflow: hidden;;
+  background-color: black; overflow: hidden; height: 100%; width: : 100%;
+}
+
+body {
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#666666+0,222222+100;Grey+3D+%231 */
+  background: #666666; /* Old browsers */
+  background: -moz-linear-gradient(top, #666666 0%, #222222 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top, #666666 0%,#222222 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom, #666666 0%,#222222 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666666', endColorstr='#222222',GradientType=0 ); /* IE6-9 */
+
 }
 
 /* hide dat.gui at load */ 
@@ -28,7 +38,7 @@ html, body {
 }
 
 .interface * {
-  display:none;
+  /*display:none;*/
 }
 
 .fullscreen {
@@ -114,6 +124,17 @@ canvas.panel.expi {
   width: 96px;
 }
 
+div.panel.chart.container {
+  background-color: rgba(80, 0, 0, 0.5);
+  display: none;
+  height: 256px;
+  left: 18px;
+  position: absolute;
+  top: 90px;
+  width: 128px;
+  z-index: 10;
+}
+
 h1 {
   color: #eee;
   font-family: monospace;
@@ -130,19 +151,13 @@ h3 {
 }
 
 table.loader {
-  background-color: #444;
+  /*background-color: #444;*/
   color: white;
   font-family: monospace;
   height: 100%;
   position: absolute;
   width:  100%;
 
-/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#666666+0,222222+100;Grey+3D+%231 */
-background: #666666; /* Old browsers */
-background: -moz-linear-gradient(top, #666666 0%, #222222 100%); /* FF3.6-15 */
-background: -webkit-linear-gradient(top, #666666 0%,#222222 100%); /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(to bottom, #666666 0%,#222222 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666666', endColorstr='#222222',GradientType=0 ); /* IE6-9 */
 
 }
 
@@ -156,8 +171,9 @@ table.loader .version {
 table.loader .title {
   font-size: 24px;
   text-align:center; 
-  vertical-align:middle;
+  vertical-align:bottom;
   height: 40%;
+  padding-bottom: 12px;
 }
 table.loader .progress {
   font-size: 20px;

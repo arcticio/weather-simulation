@@ -101,20 +101,11 @@ var CFG = {
     'arcticio.logo.512.png':        'images/arcticio.logo.white.512.png',
     'red.dot.png':                  'images/red.dot.png',
     'dot.white.128.png':            'images/dot.white.128.png',
-    // 'logo.128.png':                 'images/logo.128.png',
     'logo.128.png':                 'images/logo.128.01.png',
-
-    // 'tex2.jpg':                     'images/test/tex2.jpg',
-    // 'tex3.jpg':                     'images/test/tex3.jpg',
-    // 'tex4.jpg':                     'images/test/tex4.jpg',
-    // 'tex5.png':                     'images/test/tex5.png',
-    // 'tex6.png':                     'images/test/tex6.png',
-    // 'tex7.jpg':                     'images/test/tex7.jpg',
 
     // Tools
     'hud/fullscreen.png':           'images/hud/fullscreen.png',
     'hud/gear.png':                 'images/hud/gear.1.png',
-    // 'hud/graticule.png':            'images/hud/graticule.2.png',
     'hud/graticule.png':            'images/hud/graticule.3.png',
     'hud/hamburger.png':            'images/hud/hamburger.png',
     'hud/info.png':                 'images/hud/info.png',
@@ -129,12 +120,12 @@ var CFG = {
     'hud/snow.png':                 'images/hud/snow.png',
     'hud/space.png':                'images/hud/space.png',
     'hud/sst.png':                  'images/hud/sst.png',
-    // 'hud/temperature.png':          'images/hud/temperature.png',
     'hud/temperature.png':          'images/hud/temperature.01.png',
     'hud/rain.png':                 'images/hud/rain.png',
     'hud/population.png':           'images/hud/population.png',
+    'hud/backdrop.png':             'images/hud/backdrop.png',
 
-    'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
+    // 'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 
   },
 

@@ -1,25 +1,35 @@
 
-CFG.Objects = {
+/*
+
+  debuggable => appears as toggle in gui.dat
+  essential  => always in scene, regardless of URL
+  toggleable => sprite appears
+
+*/
+
+CFG.Assets = {
 
 // MANDATORY => (no id)
 
-    // click mesh for raycaster
+    // click mesh for raycaster, no debug gui, always in scene
     pointer: {
       title:          'pointer',
+      essential:      true,
       type:           'mesh',
       mesh:           new THREE.Mesh(
-        new THREE.SphereGeometry(RADIUS - 0.01, 16, 16),                  
+        new THREE.SphereGeometry(RADIUS - 0.005, 32, 32),                  
         new THREE.MeshBasicMaterial({
-          color:     0x330000,
+          color:     0xff0000,
           wireframe: true,
           transparent: true,
-          opacity: 0.1
+          opacity: 0.01
         })
       ),
     },
 
     background: {
       title:          'dynamic background',
+      essential:      true,
       type:           'mesh.module',
       size:           4.0,
       colors: [
@@ -34,6 +44,8 @@ CFG.Objects = {
 
     ambient: {
       title:          'ambient light',
+      essential:      true,
+      debuggable:     true,
       type:           'light',
       color:          0xffffff,
       intensity:      0.1,
@@ -42,6 +54,8 @@ CFG.Objects = {
 
     spot:    {
       title:          'spot light',
+      essential:      true,
+      debuggable:     true,
       type:           'light',
       color:          0xffffff, 
       intensity:      0.9, // no 0 here
@@ -55,6 +69,8 @@ CFG.Objects = {
 
     sun: {
       title:          'directional light',
+      essential:      true,
+      debuggable:     true,
       type:           'light',
       skycolor:       0xffddaa, // reddish
       grdcolor:       0x8989c3, // blueish
@@ -63,9 +79,12 @@ CFG.Objects = {
       pos:            new THREE.Vector3(2, 2, 2),
     },
 
-    basemaps: {
+    mask: {
       title:          'basic surface mask',
       type:           'mesh.module',
+      essential:      true,
+      debuggable:     true,
+      toggleable:     true,
       rotation:        [0, Math.PI / 2, 0],
       lightset:       'normal',
       cube: {
@@ -87,9 +106,10 @@ CFG.Objects = {
 
     graticule: {
       id:             5,
-      visible:        false,
       title:          'graticule',
       type:           'mesh.calculated',
+      debuggable:     true,
+      toggleable:     true,
       altitude:       0.01,
       resolution:     10,
       material: {
@@ -104,7 +124,8 @@ CFG.Objects = {
 
     atmosphere: {
       id:             6,
-      visible:        false,
+      debuggable:     true,
+      toggleable:     true,
       title:          'atmosphere',
       type:           'mesh.module',
       radius:         RADIUS + LEVEL_7,
@@ -115,30 +136,30 @@ CFG.Objects = {
 
   // BASEMAPS ( 9 - 11 )
 
-    basecopy: {
-      id:              9,
-      visible:         false,
-      title:          'simple surface layer',
-      type:           'mesh.module',
-      rotation:        [0, Math.PI / 2, 0],
-      lightset:       'normal',
-      cube: {
-        type:          'globe',
-        radius:        RADIUS + 0.01, 
-        texture:       'images/gmlc/globe.gmlc.FACE.512.png', 
-        material: {
-          transparent: true, 
-          opacity:     0.99,              // removes crazy seaice effeckt
-          side:        THREE.DoubleSide,
-        }
-      }
-    },
+    // basecopy: {
+    //   id:              9,
+    //   title:          'simple surface layer',
+    //   type:           'mesh.module',
+    //   rotation:        [0, Math.PI / 2, 0],
+    //   lightset:       'normal',
+    //   cube: {
+    //     type:          'globe',
+    //     radius:        RADIUS + 0.01, 
+    //     texture:       'images/gmlc/globe.gmlc.FACE.512.png', 
+    //     material: {
+    //       transparent: true, 
+    //       opacity:     0.99,              // removes crazy seaice effeckt
+    //       side:        THREE.DoubleSide,
+    //     }
+    //   }
+    // },
 
     rtopo2: {
       id:              10,
-      visible:         false,
       title:          'RTOPO2 surface layer',
       type:            'cube.textured',
+      debuggable:      true,
+      toggleable:      true,
       rotation:        [0, Math.PI / 2, 0],
       lightset:       'normal',
       cube: {
@@ -155,9 +176,10 @@ CFG.Objects = {
 
     gmlc: {
       id:             11,
-      visible:         false,
       title:          'GLCNMO - vegetation layer',
       type:            'cube.textured',
+      debuggable:      true,
+      toggleable:      true,
       rotation:        [0, Math.PI / 2, 0],
       lightset:       'normal',
       cube: {
@@ -177,7 +199,8 @@ CFG.Objects = {
 
     snpp: {
       id:             14,
-      visible:         false,
+      toggleable:     true,
+      debuggable:     true,
       type:           'cube.textured',
       title:            'SNPP - satellite surface layer',
       rotation:        [0, Math.PI / 2, 0],
@@ -197,9 +220,10 @@ CFG.Objects = {
 
     sst: {
       id:             15,
-      visible:        false,
       title:          'sea surface temperature',
       type:           'cube.textured',
+      debuggable:      true,
+      toggleable:      true,
       rotation:       [0, Math.PI / 2, 0],
       cube: {
         type:         'globe',
@@ -215,7 +239,8 @@ CFG.Objects = {
 
     seaice: {
       id:              16,
-      visible:         false,
+      debuggable:      true,
+      toggleable:      true,
       title:           'AMSR2 sea ice concentration',
       type:            'cube.textured',
       rotation:        [0, Math.PI * 0.5, 0],
@@ -233,7 +258,8 @@ CFG.Objects = {
 
     wind: {
       id:             17,
-      visible:        false,
+      debuggable:      true,
+      toggleable:      true,
       title:          'GFS - wind 10m',
       type:           'simulation',
       subtype:        'multiline',
@@ -264,7 +290,8 @@ CFG.Objects = {
 
     jetstream: {
       id:             18,
-      visible:        false,
+      debuggable:      true,
+      toggleable:      true,
       title:          'GFS - jetstream at 300hpa',
       type:           'simulation',
       subtype:        'multiline',
@@ -302,7 +329,8 @@ CFG.Objects = {
 
     clouds: {
       id:             19,
-      visible:        false,
+      debuggable:      true,
+      toggleable:      true,
       title:          'GFS - total cloud cover',
       type:           'simulation',
       rotation:       [0, Math.PI, 0],
@@ -320,36 +348,20 @@ CFG.Objects = {
       }
     },
 
-    variables: {
-      id:             20,
-      visible:        false,
-      title:          'GFS - generic layer',
-      type:           'simulation',
-      rotation:       [0, PI - PI/360, 0],
-      radius:         RADIUS + LEVEL_4, 
-      sim: {
-        variable:     'tmp2m',
-        dataroot:     'data/gfs/tmp2m/',
-        patterns: [
-          // '[landsfc.1.00.dods]', // '2017-06-13-12.tcdcclm.10.dods',
-          'YYYY-MM-DD-HH[.tmp2m.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
-
-        ],
-      }
-    },
-
     tmp2m: {
-      id:             21,
-      visible:        false,
+      id:             20,
+      debuggable:      true,
+      toggleable:      true,
       title:          'GFS - air temperature at 2m',
       type:           'simulation',
       geometry:       new THREE.SphereBufferGeometry(RADIUS + LEVEL_4, 64, 32),
-      rotation:       [0, PI - PI/360, 0],
+      rotation:       [0, PI, 0],
       radius:         RADIUS + LEVEL_4, 
       opacity:        0.5,
       sim: {
         variable:     'tmp2m',
         step:         [6, 'hours'],
+        scaler:       (d) => H.clampScale(d, 243.15, 313.75, 0, 255),
         dataroot:     'data/gfs/tmp2m/',
         patterns: [
           'YYYY-MM-DD-HH[.tmp2m.10.dods]', 
@@ -369,27 +381,56 @@ CFG.Objects = {
     },
 
     pratesfc: {
-      id:             22,
-      visible:        false,
-      title:          'GFS - surface precipitation rate',
+      id:             21,
+      debuggable:      true,
+      toggleable:      true,
+      title:          'GFS - urface precipitation rate',
       type:           'simulation',
-      rotation:       [0, PI - PI/360, 0],
+      geometry:       new THREE.SphereBufferGeometry(RADIUS + LEVEL_4, 64, 32),
+      rotation:       [0, PI, 0],
       radius:         RADIUS + LEVEL_4, 
+      opacity:        0.5,
       sim: {
         variable:     'pratesfc',
+        scaler:       (d) => H.clampScale(d, 0, 0.001, 0, 255),
+        step:         [6, 'hours'],
         dataroot:     'data/gfs/pratesfc/',
         patterns: [
-          'YYYY-MM-DD-HH[.pratesfc.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
+          'YYYY-MM-DD-HH[.pratesfc.10.dods]', 
         ],
+        palette: {
+          '0.0001' : new THREE.Color(0xaa66aa), // violet dark,
+          '0.0002' : new THREE.Color(0xce9be5), // violet,
+          '0.0003' : new THREE.Color(0x76cee2), // blue,
+          '0.0004' : new THREE.Color(0x6cef6c), // green,
+          '0.0005' : new THREE.Color(0xedf96c), // yellow,
+          '0.0006' : new THREE.Color(0xffbb55), // orange,
+          '0.0007' : new THREE.Color(0xfb654e), // red,
+          '0.0008' : new THREE.Color(0xcc4040), // dark red,
+          '0.0010' : new THREE.Color(0xbb20ff), // very dark red,
+        }
       }
     },
 
 
   // FEATURES ( 23 - 25 )
 
-    land: {
+    population: {
       id:             23,
-      visible:        false,
+      debuggable:      true,
+      toggleable:      true,
+      title:          '3000 cities',
+      type:           'mesh.module',
+      altitude:       LEVEL_0,
+      opacity:        0.8,
+      radius:         RADIUS,
+      color:          new THREE.Color(0xff00ff),
+    },
+
+    land: {
+      id:             24,
+      debuggable:      true,
+      toggleable:      false,
       title:          'geojson land',
       radius:         RADIUS + LEVEL_3,
       type:           'geo.json',
@@ -399,8 +440,9 @@ CFG.Objects = {
     },
 
     rivers: {
-      id:             24,
-      visible:        false,
+      id:             25,
+      debuggable:      true,
+      toggleable:      false,
       title:          'geojson rivers',
       type:           'geo.json',
       radius:         RADIUS + LEVEL_3,
@@ -409,23 +451,12 @@ CFG.Objects = {
       color:          new THREE.Color('#888888'),
     },
 
-    population: {
-      id:             25,
-      visible:        false,
-      title:          '3000 cities',
-      type:           'mesh.module',
-      altitude:       LEVEL_0,
-      opacity:        0.8,
-      radius:         RADIUS,
-      color:          new THREE.Color(0xff00ff),
-    },
 
 
   // OPTIONAL / DEV ( 26 - 28 )
 
     sector: {
       id:             27,
-      visible:        false,
       title:          'sector marker',
       type:           'mesh.calculated',
       altitude:       LEVEL_6,
@@ -442,19 +473,19 @@ CFG.Objects = {
 
     axes: {
       id:             28,
-      visible:        false,
+      debuggable:      true,
       title:          '3D axes',
       type:           'mesh',
       mesh:           new THREE.AxisHelper( RADIUS * 4 ),
     },
 
-    pixels: {
-      id:              30,
-      visible:        false,
-      type:            'mesh.module',
-      title:           'experiment',
-      texture:         'tex7.jpg',
-    }
+    // pixels: {
+    //   id:              30,
+    //   visible:        false,
+    //   type:            'mesh.module',
+    //   title:           'experiment',
+    //   texture:         'tex7.jpg',
+    // }
     
     // // lat lon pointer of click marker
     // arrowHelper: {

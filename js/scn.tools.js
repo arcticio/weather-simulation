@@ -4,7 +4,7 @@ SCN.Tools = {
   loadCube: function (name, cfg, callback) {
 
     var
-      idx, vertex,  materials, mesh,
+      idx, vertex,  material, materials, mesh,
       geometry = new THREE.BoxGeometry(1, 1, 1, 16, 16, 16),
       urls = CFG.Faces.map( face => {
 
@@ -39,7 +39,6 @@ SCN.Tools = {
 
       });
 
-      // mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
       mesh = new THREE.Mesh( geometry, materials );
 
       cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
@@ -51,13 +50,6 @@ SCN.Tools = {
   },
 
   loader: {
-
-    // 'camera': (name, cfg, callback) => {
-    //   SCN.camera = self.camera = cfg.cam;
-    //   camera.position.copy(CFG.Objects.perspective.pos);
-    //   self.add(name, cfg.cam);
-    //   callback();
-    // },
 
     'mesh': (name, cfg, callback) => {
       SCN.add(name, cfg.mesh);

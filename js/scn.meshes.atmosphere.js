@@ -1,5 +1,5 @@
 
-'use strict'
+// http://localhost:8765/1Y/2017-06-20-13-03/-0.19155;0.010723;5.670312
 
 SCN.Meshes.atmosphere = function (name, cfg, callback) {
 
@@ -23,7 +23,7 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
 
       uniform float opacity;
       uniform vec3  sunPosition;
-      uniform mat4  modelMatrix;       // = object.matrixWorld
+      uniform mat4  modelMatrix;       // = atmo model matrix
       uniform mat3  normalMatrix;      // = inverse transpose of modelViewMatrix
 
       varying vec3  vNormal, vPosition;
@@ -68,10 +68,12 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
 
       }
     `,
+
     uniforms = {
-      sunPosition: {'type': 'v3', 'value': SIM.sunVector}, //.clone()},
+      sunPosition: {'type': 'v3', 'value': SIM.sunDirection},
       opacity:     {'type': 'f',  'value': cfg.opacity},
     },
+
     mesh = new THREE.Mesh( geometry, new THREE.ShaderMaterial({
         vertexShader,
         fragmentShader,
@@ -80,12 +82,13 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
       }) 
     ),
 
-  end;
+    onBeforeRender = function () {
+      uniforms.sunPosition.value = SIM.sunDirection;
+      uniforms.sunPosition.needsUpdate = true;
+    }
+  ;
 
-  mesh.onBeforeRender = function () {
-    uniforms.sunPosition.value = SIM.sunVector;
-    uniforms.sunPosition.needsUpdate = true;
-  };
+  mesh.onBeforeRender = onBeforeRender;
 
   cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
 

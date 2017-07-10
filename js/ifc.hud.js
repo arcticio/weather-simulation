@@ -35,7 +35,7 @@ IFC.Hud = (function () {
 
       camera.position.z = 10;
 
-      menuScale = ( geo.width + 64 ) / geo.width * 3
+      menuScale = ( geo.width + 64 ) / geo.width * 5
       menu.scale.set(menuScale, menuScale, 1);
 
       self.initSprites();
@@ -67,7 +67,7 @@ IFC.Hud = (function () {
 
       // TODO: read sprite status from SCN.objects.XXX.visible
 
-      var geo = IFC.geometry;
+      var geo = IFC.geometry, visibles = SCN.scene.children.map( c => c.name);
 
       H.each(CFG.Sprites, (name, cfg) => {
 
@@ -126,6 +126,12 @@ IFC.Hud = (function () {
 
         if (cfg.onclick) {
           sprite.click = cfg.onclick.bind(sprite, sprite);
+        }
+
+        // is active?
+        if (H.contains(visibles, name)) {
+          sprite.toggled = true;
+          sprite.material.opacity = 0.99;
         }
 
         // init widget

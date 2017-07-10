@@ -64,7 +64,6 @@ var IFC = (function () {
     },
 
     raycaster = new THREE.Raycaster()
-    // marker    = new THREE.Vector3()
 
   ;
 
@@ -177,7 +176,6 @@ var IFC = (function () {
 
       $$('canvas.simulator')[0].style.display = 'block';
 
-      // IFC.Hud.resize();
       IFC.Hud.time.render();
       IFC.Tools.updateUrl();
       self.urlDirty = false;
@@ -260,12 +258,6 @@ var IFC = (function () {
 
         SCN.resize(geometry);
         IFC.Hud.resize(geometry);
-
-        // geometry.width    = SCN.renderer.domElement.width;
-        // geometry.height   = SCN.renderer.domElement.height;
-        // geometry.aspect   = geometry.width / geometry.height;
-        // geometry.diagonal = Math.hypot(geometry.width, geometry.height);
-
 
       },
       click:   function (event) { 
@@ -423,7 +415,7 @@ var IFC = (function () {
 
       intersections.splice(0, intersections.length);
       raycaster.setFromCamera( pointer.device, SCN.camera );
-      SCN.objects.pointer.raycast(raycaster, intersections)
+      SCN.pointer.raycast(raycaster, intersections)
 
       if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
         pointer.intersect.copy(intersection.point).normalize();

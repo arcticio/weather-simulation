@@ -29,7 +29,7 @@ IFC.Tools = {
       time   = SIM.time.model.format('YYYY-MM-DD-HH-mm'),
       assets = SCN.scene.children
         .filter(  c => c.visible && c.name !== 'camera')
-        .map(     c => CFG.Objects[c.name].id)
+        .map(     c => CFG.Assets[c.name].id)
         .filter( id => !!id),
       hash   = CFG.Manager.assets2hash(assets) || 0,
       pos    = SCN.camera.position,

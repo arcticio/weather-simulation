@@ -57,10 +57,6 @@ SIM.Models.tmp2m = (function () {
       });
 
     },
-    clampScale: function (x, xMin, xMax, min, max) {
-        var val= (max-min)*(x-xMin)/(xMax-xMin)+min;
-        return val < min ? min : val > max ? max : val;
-    },
     prepareTextures: function (data) {
 
       /* tmp2m 
@@ -73,7 +69,7 @@ SIM.Models.tmp2m = (function () {
         does     = [],
         pointer  = 1,
         textures = {},
-        scaler   = (d) => self.clampScale(d, 243.15, 313.75, 0, 255)
+        scaler   = cfg.sim.scaler
       ;
 
       times.does.forEach( doe => {
@@ -210,7 +206,15 @@ SIM.Models.tmp2m = (function () {
         varying vec3 vNormal;
         void main() {
           vUv = uv;
+
+          // wanted just y flipped
           vNormal = normal;
+
+          // camera rotates, light doesn't
+          // vNormal = normalize( normalMatrix * normal );
+
+
+
           gl_Position  = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `;
@@ -239,8 +243,8 @@ SIM.Models.tmp2m = (function () {
 
         // day night
         float dnMix, dnZone;
-        float dnSharpness = 3.0;
-        float dnFactor    = 0.15;
+        float dnSharpness = 4.0;
+        float dnFactor    = 0.2; // 0.15;
 
         void main() {
 

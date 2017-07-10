@@ -34,9 +34,9 @@ var RES = (function () {
       stats[what] += Number(value);
     }
     // div.innerHTML += format();
-    div.innerHTML = `Req: ${stats.requests} Per: ${stats.percent}`;
+    // div.innerHTML = `Req: ${stats.requests} Per: ${stats.percent}`;
 
-    div.style.backgroundSize = ~~stats.percent + '%';
+    // div.style.backgroundSize = ~~stats.percent + '%';
 
     // console.log(stats.requests, stats.bytesLoaded, stats.bytesTotal);
 

@@ -10,6 +10,9 @@ CFG.Manager = (function () {
   ;
 
   return self = {
+
+    assets,
+    
     boot: function () {
       CFG.debug    = self.debug;
       CFG.location = self.location;
@@ -31,10 +34,10 @@ CFG.Manager = (function () {
         TIM.step('CFG.User', 'location unknown');
       }
 
-      // rewrite CFG.Objects visibility to enable objects from url
+      // rewrite CFG.Assets visibility to enable objects from url
       // and enable always on assets without id (cam, etc.)
 
-      H.each(CFG.Objects, (name, cfg) => {
+      H.each(CFG.Assets, (name, cfg) => {
         if (cfg.id !== undefined){
           cfg.visible = assets.indexOf(cfg.id) !== -1;
         } else {
@@ -190,20 +193,20 @@ CFG.Manager = (function () {
       // Assets from URL
       if (locHash) {
         // 0 => default value
-        assets = locHash === '0' ? [] : self.hash2assets(String(locHash));
+        assets = self.assets = (locHash === '0') ? [] : self.hash2assets(String(locHash));
       }
 
-      // TODO: ensure at least some visibility
-      // Assets failsafe
-      if (!assets.length){
-        assets = [
-          CFG.Objects.background.id,
-          CFG.Objects.ambient.id,
-          CFG.Objects.spot.id,
-          CFG.Objects.sun.id,
-          CFG.Objects.basemaps.id,
-        ];
-      }
+      // // TODO: ensure at least some visibility
+      // // Assets failsafe
+      // if (!assets.length){
+      //   assets = self.assets = [
+      //     CFG.Assets.background.id,
+      //     // CFG.Assets.ambient.id,
+      //     // CFG.Assets.spot.id,
+      //     // CFG.Assets.sun.id,
+      //     // CFG.Assets.mask.id,
+      //   ];
+      // }
 
       // DateTime from URL
       // TODO: ensure within range
@@ -302,7 +305,7 @@ CFG.Manager = (function () {
           return a.indexOf(item) !== -1;
         };
 
-      H.each(CFG.Objects, (name, cfg) => {
+      H.each(CFG.Assets, (name, cfg) => {
 
         out[name] = {id: cfg.id || '-'};
 

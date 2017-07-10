@@ -76,46 +76,50 @@
 
   <div class="fullscreen">
 
-    <table class="loader">
-      <tr>
-        <td class="title">
-          <h1>Hypatia - Weather Simulation</h1>
-          <h3><a id="homelink" rel="noreferrer noopener" href="https://github.com/arcticio/weather-simulation">Help &amp; Info</a></h3>
-          <h3><a id="arcticio" rel="noreferrer noopener" target="_blank" href="http://www.arctic.io">arctic.io</a></h3>
-          <div class="version">...</div>
-        </td>
-      </tr>
-      <tr>
-        <td class="progress">
-          <div class="header">10, 9, 8, 7, ...</div>
-          <div class="info"></div>
-          <div>
-            <div class="bar"></div>
-            <div class="meter"></div>
-            <img class="btnFullscreen" onclick="goFullscreen();this.src='images/transparent.png';" width="64"></img>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td class="error">
-          <div class="header"></div>
-          <div class="message"></div>
-        </td>
-      </tr>
-    </table>
+    <div class="container" style="max-width: 600px; margin: auto; position: relative; height:100%">
+      <table class="loader" style="max-width: 600px; margin: 0 auto; height:100%">
+        <tr>
+          <td class="title">
+            <h1>Hypatia - Weather Simulation</h1>
+            <h3><a id="homelink" rel="noreferrer noopener" href="https://github.com/arcticio/weather-simulation">Help &amp; Info</a></h3>
+            <h3><a id="arcticio" rel="noreferrer noopener" target="_blank" href="http://www.arctic.io">arctic.io</a></h3>
+            <div class="version">...</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="progress">
+            <div class="header">10, 9, 8, 7, ...</div>
+            <div class="info"></div>
+            <div>
+              <div class="bar"></div>
+              <div class="meter"></div>
+              <img class="btnFullscreen" onclick="goFullscreen();this.src='images/transparent.png';" width="64"></img>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="error">
+            <div class="header"></div>
+            <div class="message"></div>
+          </td>
+        </tr>
+      </table>
+    </div>
 
     <div class="interface">
 
+      <div class="panel chart container" height="128" width="128"></div>
+
       <!-- <img    class="loader" src="images/earth.ani.comp.gif"> -->
-      <img    class="panel image" src="" height="180" width="360"></img>
+<!--       <img    class="panel image" src="" height="180" width="360"></img>
       <dir    class="panel latlon"></dir>
       <div    class="panel info" ondblclick="this.innerHTML = '' "></div>
       <canvas class="panel test" height="48" width="96" ondblclick=""></canvas>
-      <canvas class="panel expi" height="48" width="96" ondblclick=""></canvas>
+      <canvas class="panel expi" height="48" width="96" ondblclick=""></canvas> -->
 
-      <div class="labels">
+<!--       <div class="labels">
         <div class="label sun">Sun</div>
-      </div>
+      </div> -->
 
     </div>
 
@@ -127,11 +131,12 @@
 
     <script src='timeranges.js'></script>
     
-    <script src='dist/libs.pack.min.js'></script>
-    <script src='dist/js.pack.min.js'></script>
+<!--     <script src='dist/libs.pack.min.js'></script>
+
+    <script src='dist/js.pack.min.js'></script> -->
 
 
-<!--     <script src="libs/orb2/orb2.js"></script>
+    <script src="libs/orb2/orb2.js"></script>
     <script src="libs/orb2/core_v2r1.js"></script>
     <script src="libs/orb2/solarsystem_v2r1.js"></script>
     <script src="libs/orb2/vsop87a_ear.json"></script>
@@ -149,6 +154,8 @@
     <script src='libs/threeGeoJSON.js'></script>
 
     <script src='libs/dat.gui.js'></script>
+    
+    <script src='libs/canvasjs.min.js'></script>
 
 
     <script src="data/population/places.big.js"></script>
@@ -161,14 +168,15 @@
 
     <script src="js/cfg.js"></script>
     <script src="js/cfg.manager.js"></script>
-    <script src="js/cfg.sprites.js"></script>
     <script src="js/cfg.assets.js"></script>
+    <script src="js/cfg.sprites.js"></script>
     <script src="js/cfg.preset.js"></script>
 
     <script src="js/sim.js"></script>
     <script src="js/sim.vars.js"></script>
     <script src="js/sim.tools.js"></script>
-    <script src="js/sim.marray.js"></script>
+    <!-- <script src="js/sim.marray.js"></script> -->
+    <script src="js/sim.charts.js"></script>
     <script src="js/sim.datagram.js"></script>
     <script src="js/sim.models.tmp2m.js"></script>
     <script src="js/sim.models.clouds.js"></script>
@@ -185,7 +193,8 @@
     <script src="js/scn.meshes.atmosphere.js"></script>
     <script src="js/scn.meshes.background.js"></script>
     <script src="js/scn.meshes.basemaps.js"></script>
-    <script src="js/scn.meshes.basecopy.js"></script>
+    <script src="js/scn.meshes.mask.js"></script>
+    <!-- <script src="js/scn.meshes.basecopy.js"></script> -->
     <script src="js/scn.meshes.pixels.js"></script>
     <script src="js/scn.meshes.population.js"></script>
     
@@ -198,7 +207,7 @@
     <script src="js/ifc.controller.js"></script>
     <script src="js/aws.loader.js"></script>
 
- -->
+
     <script src="//freegeoip.net/json/?callback=CFG.location"></script>
 
     <script type="text/javascript">

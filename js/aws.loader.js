@@ -195,10 +195,10 @@ var LDR = (function () {
 
     loadAssets: function () {
 
-      var sequence = [];
+      var sequence = [], assets = CFG.Manager.assets;
 
 
-      H.each(CFG.Objects, (name, config) => {
+      H.each(CFG.Assets, (name, config) => {
 
         var fn;
 
@@ -206,7 +206,8 @@ var LDR = (function () {
 
           config.name = name;
 
-          if (config.visible){
+          // if (config.visible){
+          if (H.contains(assets, config.id) || config.essential){
 
             fn = function (callback) {
               self.message('', name);
@@ -241,11 +242,12 @@ var LDR = (function () {
         RES.onload = null;
       }
 
-      var sequence = [
-        [registerResEvent]
-      ];
+      var 
+        sequence = [ [registerResEvent] ],
+        assets   = CFG.Manager.assets
+      ;
 
-      H.each(CFG.Objects, (name, config) => {
+      H.each(CFG.Assets, (name, config) => {
 
         var action;
 
@@ -253,7 +255,7 @@ var LDR = (function () {
 
           config.name = name;
 
-          if (config.visible){
+          if (H.contains(assets, config.id) || config.essential){
 
             action = function (callback) {
               self.message('', config.title);

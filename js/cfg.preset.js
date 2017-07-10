@@ -1,6 +1,4 @@
 
-'use strict'
-
 CFG.Preset = {
 
   init: function () {
@@ -15,37 +13,37 @@ CFG.Preset = {
       ResetCam:       () => SCN.reset.controller(),
 
       Ambient: { isFolder: true,
-        toggle:       CFG.Objects.ambient.visible,
-        intensity:    {val: CFG.Objects.ambient.intensity, min: 0, max: 1},
+        toggle:       CFG.Assets.ambient.visible,
+        intensity:    {val: CFG.Assets.ambient.intensity, min: 0, max: 1},
         color:        '#ffffff'
       },
 
       Spot: { isFolder: true,
-        toggle:       CFG.Objects.spot.visible,
+        toggle:       CFG.Assets.spot.visible,
         angle:        {val: 0.26, min: 0, max: 0.5},
-        intensity:    {val: CFG.Objects.spot.intensity, min: 0, max: 1},
+        intensity:    {val: CFG.Assets.spot.intensity, min: 0, max: 1},
         color:        '#ffffff'
       },
 
       Sun: { isFolder: true,
-        toggle:       CFG.Objects.sun.visible,
-        intensity:    {val: CFG.Objects.sun.intensity, min: 0, max: 1},
-        skycolor:     CFG.Objects.sun.skycolor,
-        grdcolor:     CFG.Objects.sun.grdcolor,
+        toggle:       CFG.Assets.sun.visible,
+        intensity:    {val: CFG.Assets.sun.intensity, min: 0, max: 1},
+        skycolor:     CFG.Assets.sun.skycolor,
+        grdcolor:     CFG.Assets.sun.grdcolor,
       },
 
       Atmosphere: { isFolder: true,
-        toggle:       CFG.Objects.atmosphere.visible,
-        opacity:      {val: CFG.Objects.atmosphere.opacity, min: 0, max: 1},
+        toggle:       CFG.Assets.atmosphere.visible,
+        opacity:      {val: CFG.Assets.atmosphere.opacity, min: 0, max: 1},
       },
 
       Assets: (function () {
 
         var layers = {isFolder: true};
 
-        H.each(CFG.Objects, (name, config) => {
+        H.each(CFG.Assets, (name, config) => {
           if (config.id) {
-            layers[name.toUpperCase()] = CFG.Objects[name].visible;
+            layers[name.toUpperCase()] = CFG.Assets[name].visible;
           }
         });
 

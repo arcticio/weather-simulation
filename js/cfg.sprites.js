@@ -9,7 +9,7 @@ CFG.Sprites = {
     menu:     false,
     position: {
       zIndex:    5,
-      top:       2,
+      top:       0,
       left:      12,
       width:    64,
       height:   64,
@@ -59,7 +59,8 @@ CFG.Sprites = {
       height:       72,
     },
     material: {
-      color:  new THREE.Color(0x444444),
+      image: 'hud/backdrop.png',
+      // color:  new THREE.Color(0xe0a01f),
       opacity: 0.5,
     },
   },
@@ -180,6 +181,7 @@ CFG.Sprites = {
     },
     onclick: (sprite) => {
       screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
+      IFC.Hud.toggleMenu();
       sprite.toggled = !sprite.toggled;
     },
   },
@@ -276,7 +278,7 @@ CFG.Sprites = {
   },
 
   snpp: {
-    visible:  true,
+    visible:  CFG.Assets.snpp.toggable,
     menu:     true,
     type:     'toggle',
     toggled:  false,
@@ -298,7 +300,7 @@ CFG.Sprites = {
   },
 
   tmp2m: {
-    visible:  true,
+    visible:  CFG.Assets.tmp2m.toggable,
     menu:     true,
     type:     'toggle',
     toggled:  false,
@@ -321,7 +323,7 @@ CFG.Sprites = {
   },
 
   clouds: {
-    visible:  true,
+    visible:  CFG.Assets.tmp2m.toggable,
     menu:     true,
     type:     'toggle',
     toggled:  false,
@@ -343,8 +345,8 @@ CFG.Sprites = {
     },
   },
 
-  rain: {
-    visible:  true,
+  pratesfc: {
+    visible:  CFG.Assets.pratesfc.toggable,
     menu:     true,
     type:     'toggle',
     toggled:  false,
@@ -366,7 +368,7 @@ CFG.Sprites = {
   },
 
   snow: {
-    visible:  true,
+    visible:  false,
     menu:     true,
     type:     'toggle',
     toggled:  false,
@@ -389,7 +391,7 @@ CFG.Sprites = {
   },
 
   seaice: {
-    visible:  true,
+    visible:  CFG.Assets.seaice.toggable,
     menu:     true,
     type:     'toggle',
     toggled:  false,
@@ -412,7 +414,7 @@ CFG.Sprites = {
   },
 
   sst: {
-    visible:  true,
+    visible:  CFG.Assets.sst.toggable,
     menu:     true,
     type:     'toggle',
     toggled:  false,
@@ -435,7 +437,7 @@ CFG.Sprites = {
   },
 
   population: {
-    visible:  true,
+    visible:  CFG.Assets.population.toggable,
     menu:     true,
     type:     'toggle',
     toggled:  false,
@@ -458,7 +460,7 @@ CFG.Sprites = {
   },
 
   graticule: {
-    visible:  true,
+    visible:  CFG.Assets.graticule.toggable,
     menu:     true,
     type:     'toggle',
     toggled:  false,
