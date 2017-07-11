@@ -4,7 +4,7 @@ SCN.Tools = {
   loadCube: function (name, cfg, callback) {
 
     var
-      idx, vertex,  material, materials, mesh,
+      idx, vertex, materials, mesh,
       geometry = new THREE.BoxGeometry(1, 1, 1, 16, 16, 16),
       urls = CFG.Faces.map( face => {
 

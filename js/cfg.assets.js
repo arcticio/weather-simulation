@@ -22,7 +22,7 @@ CFG.Assets = {
           color:     0xff0000,
           wireframe: true,
           transparent: true,
-          opacity: 0.01
+          opacity: 0.0
         })
       ),
     },
@@ -208,7 +208,7 @@ CFG.Assets = {
       cube: {
         type:          'globe',
         radius:        RADIUS + LEVEL_1, 
-        texture:       'data/snpp/2017-06-15.globe.snpp.FACE.2048.jpg', 
+        texture:       'data/snpp/2017-06-20.globe.snpp.FACE.2048.jpg', 
         material: {
           transparent: true, 
           opacity:     0.99,              // removes crazy seaice effeckt
@@ -338,6 +338,9 @@ CFG.Assets = {
       amount:         1e5,
       size:           8.0,
       sim: {
+        variable:     'tcdcclm',
+        step:         [6, 'hours'],
+        scaler:       d => d,
         dataroot:     'data/gfs/tcdcclm/',
         patterns: [
           'YYYY-MM-DD-HH[.tcdcclm.10.dods]', // '2017-06-13-12.tcdcclm.10.dods',
@@ -361,7 +364,7 @@ CFG.Assets = {
       sim: {
         variable:     'tmp2m',
         step:         [6, 'hours'],
-        scaler:       (d) => H.clampScale(d, 243.15, 313.75, 0, 255),
+        scaler:       d => H.clampScale(d, 243.15, 313.75, 0, 255),
         dataroot:     'data/gfs/tmp2m/',
         patterns: [
           'YYYY-MM-DD-HH[.tmp2m.10.dods]', 

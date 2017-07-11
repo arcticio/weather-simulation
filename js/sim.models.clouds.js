@@ -2,47 +2,21 @@
 SIM.Models.clouds = (function () {
 
   var 
-    self,     
-    cfg,
-    datagram,
+    self, cfg, times, vari,
+    frags = {
+      samplers2D:   '',
+      val1Ternary:  '',
+      val2Ternary:  '',
+      palette:      '',
+    },
     model = {
       obj:     new THREE.Object3D(),
-      objects: {},
-      sectors: [],
-      mindoe:  NaN,
-      maxdoe:  NaN,
-      step:   function () {
-        H.each(model.sectors, (_, sec) => sec.step() )
-      },
-      url2doe: function (url) {
-
-        // "data/gfs/tcdcclm/2017-06-15-12.tcdcclm.10.dods"
-        // TODO: deal with multiple patterns
-
-        var 
-          file = url.split('/').slice(-1)[0],
-          mom  = moment.utc(file, cfg.sim.patterns[0]);
-
-        return mom.toDate() / 864e5;
-
-      },
-      calcUrls: function (moms) {
-
-        var urls = [];
-
-        moms.forEach(mom => {
-          cfg.sim.patterns.forEach(pattern => {
-            urls.push(cfg.sim.dataroot + mom.format(pattern))
-          });
-        });
-
-        return urls;
-
-      },
+      urls:         [],
     },
-    worker = new Worker('js/sim.models.clouds.worker.js'),
 
-  end;
+    worker = new Worker('js/sim.models.clouds.worker.js')
+
+  ;
 
   var payload = new Float32Array([1,2,3,4,5,6]);
 
@@ -60,31 +34,45 @@ SIM.Models.clouds = (function () {
       model.mindoe = Math.min.apply(Math, Object.keys(model.objects));
       model.maxdoe = Math.max.apply(Math, Object.keys(model.objects));
     },
-    // findDoes: function (target) {
+    create: function (config, timcfg) {
 
-    //   var doe1, doe2;
+      // shortcuts
+      cfg   = config;
+      times = timcfg;
+      vari  = cfg.sim.variable;
 
-    //   Object.keys(model.objects)
-    //     .sort( (a, b) =>  parseFloat(a) > parseFloat(b))
-    //     .forEach( doe => {
+      // expose 
+      model.prepare       = self.prepare;
+      model.interpolateLL = self.interpolateLL;
 
-    //       doe1 = doe < target          ? doe : doe1;
-    //       doe2 = doe > target && !doe2 ? doe : doe2;
+      // prepare for loader
+      self.calcUrls();
 
-    //     });
-
-    //     return [doe1, doe2];
-
-    // },
-    create: function (config, simdata) {
-
-      cfg = config;
-      datagram = simdata;
-
-      model.show    = self.show;
-      model.prepare = self.prepare;
-
+      // done
       return model;
+
+    },
+    interpolateLL: function (lat, lon) {
+
+      var doe = SIM.time.doe;
+      var doe1 = doe - (doe % 0.25);
+      var doe2 = doe1 + 0.25;
+      var t1 = SIM.datagrams.tmp2m.linearXY(doe1, lat, lon -180);
+      var t2 = SIM.datagrams.tmp2m.linearXY(doe2, lat, lon -180);
+      var frac = doe - ~~ doe;
+      var fac2 = (frac % 0.25) % 4;
+      var fac1 = 1.0 - fac2;
+
+      return (t1 * fac1 + t2 * fac2);
+
+    },
+    calcUrls: function () {
+
+      times.moms.forEach(mom => {
+        cfg.sim.patterns.forEach(pattern => {
+          model.urls.push(cfg.sim.dataroot + mom.format(pattern));
+        });
+      });
 
     },
     show: function (doe) {
@@ -126,70 +114,143 @@ SIM.Models.clouds = (function () {
       }
 
     },
+
+    prepareFragmentShader: function () {
+
+      var amount = Math.ceil(times.length / 4);
+
+      frags.samplers2D = H.range(1, amount + 1).map( n => '\n  uniform sampler2D tex' + n + ';').join('');
+
+      frags.val1Ternary  = H.range(0, times.length).map( n => {
+        var 
+          t = ((n+1) * 0.25).toFixed(2),
+          s = 'tex' + (Math.floor(n/4) + 1),
+          p = {0:'r', 1:'g', 2:'b', 3:'a'}[ n % 4]
+        ;
+        return '\n  doe < ' + t + ' ? texture2D( ' + s + ', uvSphere ).' + p + ' :';
+      }).join('');
+
+      frags.val2Ternary  = H.range(0, times.length).map( n => {
+        var 
+          t = ((n+1) * 0.25).toFixed(2),
+          s = 'tex' + (Math.floor(n/4 + 0.25) + 1),
+          p = {0:'g', 1:'b', 2:'a', 3:'r'}[ n % 4]
+        ;
+        return '\n  doe < ' + t + ' ? texture2D( ' + s + ', uvSphere ).' + p + ' :';
+      }).join('');
+
+    },
+    prepareTextures: function (data) {
+
+      /* tmp2m 
+          low  = 273.15 - 30 = 243.15;
+          high = low    + 70 = 313.75;
+          ...  -30 -20 .... +30  +40  ...
+      */
+
+      var 
+        does     = [],
+        pointer  = 1,
+        textures = {},
+        scaler   = cfg.sim.scaler
+      ;
+
+      times.does.forEach( doe => {
+
+        does.push(doe);
+
+        if (does.length === 4){
+          textures['tex' + pointer] = {type: 't', value: data[vari].dataTexture(does, scaler) };
+          does = [];
+          pointer += 1;
+        }
+
+      });
+
+      // rest
+      if (does.length) {
+        textures['tex' + pointer] = {type: 't', value: data[vari].dataTexture(does, scaler) };
+      } 
+
+      return textures;
+
+    },
+
     prepare: function ( doe ) {
     
       TIM.step('Model.clouds.in', doe);
 
-      if ( !datagram.tcdcclm.data[doe] ) {debugger;}
-
       var
         t0 = Date.now(),
-        i, p, m, ibp, ibc, coord, points, material, percentage, 
+        i, p, coord, mesh, material, 
         size     = cfg.size,
         amount   = cfg.amount,
         radius   = cfg.radius,
         pool     = SIM.coordsPool.slice(amount).pool,
         geometry = new THREE.BufferGeometry(),
 
-        attributes = {
-          percentage: new THREE.BufferAttribute( new Float32Array( amount * 1), 1 ),
-          position:   new THREE.BufferAttribute( new Float32Array( amount * 3), 3 ),
-        },
+        datagrams = SIM.datagrams,
+        doe       = SIM.time.doe,
+        mindoe    = SIM.time.mindoe,
 
-      end;
+        textures  = self.prepareTextures(datagrams),
+        fragments = self.prepareFragmentShader(),
+
+        position  = new THREE.BufferAttribute( new Float32Array( amount * 3), 3 ),
+
+        uniforms  = Object.assign(textures, {
+          doe:          { type: 'f',  value: doe - mindoe },
+          opacity:      { type: 'f',  value: cfg.opacity },
+          sunDirection: { type: 'v3', value: SIM.sunDirection },
+          size:         { type: 'f',  value: size },
+          radius:       { type: 'f',  value: radius },
+          distance:     { type: 'f',  value: SCN.camera.distance },
+        }),
+
+        material  = new THREE.ShaderMaterial({
+          uniforms,
+          transparent:      true,
+          vertexShader:     self.vertexShader(),
+          fragmentShader:   self.fragmentShader(fragments),
+        })
+
+      ;
 
       for ( i=0, p=0; i < pool.length; i+=1, p+=3 ) {
 
         coord = pool[i];
-        percentage = datagram.tcdcclm.linearXY(doe, coord.lat, coord.lon) / 100;
 
-        attributes.position.array[p + 0] = coord.x;
-        attributes.position.array[p + 1] = coord.y;
-        attributes.position.array[p + 2] = coord.z;
-
-        attributes.percentage.array[i + 0] = percentage;
+        position.array[p + 0] = coord.x;
+        position.array[p + 1] = coord.y;
+        position.array[p + 2] = coord.z;
 
       }
 
-      geometry.addAttribute( 'position',   attributes.position );
-      geometry.addAttribute( 'percentage', attributes.percentage );
+      geometry.addAttribute( 'position',   position );
       
-      material = new THREE.ShaderMaterial( {
-        uniforms:       {
-          size:     { type: 'f', value: size },
-          radius:   { type: 'f', value: radius },
-          factor:   { type: 'f', value: 1.0 },
-          seed:     { type: 'f', value: Math.random() },
-          distance: { type: 'f', value: SCN.camera.position.length() - CFG.earth.radius },
-        },
-        vertexShader:   self.vertexShader(),
-        fragmentShader: self.fragmentShader(),
-        transparent:    true,
-      });
-      
-      points = new THREE.Points( geometry, material );
+      mesh = new THREE.Points( geometry, material );
 
-      points.onBeforeRender = function (renderer, scene, camera, geometry, material, group) {
-        material.uniforms.seed.value = Math.random();
-        material.uniforms.seed.needsUpdate = true;
-        material.uniforms.distance.value = camera.position.length() - CFG.earth.radius;
+      mesh.onBeforeRender = function (renderer, scene, camera, geometry, material) {
+
+        uniforms.sunDirection.value = SIM.sunDirection;
+        uniforms.sunDirection.value.y = -uniforms.sunDirection.value.y; // why
+
+        material.uniforms.distance.value = SCN.camera.distance;
         material.uniforms.distance.needsUpdate = true;
+
+        uniforms.doe.value = (
+          SIM.time.doe >= times.mindoe && SIM.time.doe <= times.maxdoe ? 
+            SIM.time.doe - times.mindoe :
+            -9999.0
+        );
+
+        uniforms.doe.needsUpdate = true;
+        uniforms.sunDirection.needsUpdate = true;
+
+
       };
 
-      // model.obj.add(points);
-
-      model.objects[doe] = points;
-      self.updateMinMax();
+      model.obj.add(mesh);
 
       TIM.step('Model.clouds.out', Date.now() -t0, 'ms');
 
@@ -200,24 +261,70 @@ SIM.Models.clouds = (function () {
       
       return `
 
-        attribute float percentage;
+        float PI = 3.141592653589793;
 
+        uniform float  doe;
         uniform float  size;
         uniform float  radius;
         uniform float  distance;
 
-        varying vec4  vColor;
-        varying vec3  vPos;
+        varying float vSize;
+
+        const  float NODATA = -9999.0;
+
+        float saturate(float val) {
+          return clamp(val, 0.0, 1.0);
+        }
+
+        vec2 uvSphere;
+
+        float frac, fac1, fac2, val1, val2, value;
+
+        ${frags.samplers2D}
+
+        varying vec3 vNormal;
 
         void main() {
 
-          vec3 pos  = position * 2.0; // radius;
-          vPos = position;
+          uvSphere = vec2(
+           saturate(((atan(position.x, position.z) / PI) + 1.0) / 2.0), 
+           (0.5-(asin(position.y)/PI)) 
+          );
 
-          vColor = vec4(1.0, 1.0, 1.0, percentage);
+          val1 = (
+            ${frags.val1Ternary}
+              NODATA
+          );
 
-          gl_PointSize = size * percentage / (distance * 2.0);
-          gl_Position  = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );
+          val2 = (
+            ${frags.val2Ternary}
+              NODATA
+          );
+
+          if (doe == NODATA){
+            vSize = 0.0;
+          
+          } else if (val1 == NODATA) {
+            vSize = 0.0;
+
+          } else if (val2 == NODATA) {
+            vSize = 0.0;
+
+          } else {
+            frac = fract(doe);
+            fac2 = mod(frac, 0.25) * 4.0;
+            fac1 = 1.0 - fac2;
+
+            vSize = (val1 * fac1 + val2 * fac2) * 10.0;
+
+          }
+
+          // vSize = texture2D(tex1, uv).r;
+
+          vNormal = normalize(position);
+
+          gl_PointSize = vSize / (distance * distance) * 4.0;
+          gl_Position  = projectionMatrix * modelViewMatrix * vec4( position * 1.01, 1.0 );
 
          }
       
@@ -228,10 +335,19 @@ SIM.Models.clouds = (function () {
 
       return `
 
-        varying vec4 vColor;
-        varying vec3 vPos;
+        uniform float opacity;
+        uniform vec3 sunDirection;
 
-        uniform float  factor;
+        varying float vSize;
+        varying vec3 vNormal;
+
+        // light
+        float dotNL;
+
+        // day night
+        float dnMix, dnZone, grey;
+        float dnSharpness = 4.0;
+        float dnFactor    = 0.2; // 0.15;
 
         float rand(vec2 co){
             return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
@@ -239,13 +355,20 @@ SIM.Models.clouds = (function () {
 
         void main() {
 
-          if (rand(vPos.xy) > 0.5){
-            gl_FragColor = vColor;
+          // compute cosine sun to normal so -1 is away from sun and +1 is toward sun.
+          dotNL = dot(normalize(vNormal), sunDirection);
 
-          } else {
-            discard;
+          // sharpen the edge beween the transition
+          dnZone = clamp( dotNL * dnSharpness, -1.0, 1.0);
 
-          }
+          // convert to 0 to 1 for mixing, 0.5 for full range
+          dnMix = 0.5 - dnZone * dnFactor;
+
+
+          if (vSize < 0.15) discard;
+
+          // gl_FragColor = vec4(1.0, 1.0, 1.0, dnMix); // works
+          gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
 
         }
 

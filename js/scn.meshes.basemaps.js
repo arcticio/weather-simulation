@@ -1,6 +1,4 @@
 
-'use strict'
-
 SCN.Meshes.basemaps = function (name, cfg, callback) {
 
   var
@@ -16,8 +14,8 @@ SCN.Meshes.basemaps = function (name, cfg, callback) {
           H.replace(cfg.cube.texture, 'FACE', face) : 'images/transparent.face.512.png';
       }
 
-    }),
-  end;
+    })
+  ;
 
   for (idx in geometry.vertices) {
     vertex = geometry.vertices[idx];

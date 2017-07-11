@@ -299,13 +299,14 @@ var SCN = (function () {
 
       gl.getSupportedExtensions().forEach(ex => extensions[ex] = ex);
 
-      dev.devicePixelRatio           = devicePixelRatio;
-      dev.maxVertexUniforms          = renderer.capabilities.maxVertexUniforms;
-      dev.max_texture_size           = gl.getParameter(gl.MAX_TEXTURE_SIZE);
-      dev.max_texture_image_units    = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-      dev.max_cube_map_texture_size  = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
-      dev.OES_texture_float          = !!extensions.OES_texture_float;
-      dev.OES_texture_float_linear   = !!extensions.OES_texture_float_linear;
+      dev.devicePixelRatio                = devicePixelRatio;
+      dev.maxVertexUniforms               = renderer.capabilities.maxVertexUniforms;
+      dev.max_texture_size                = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+      dev.max_texture_image_units         = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+      dev.max_cube_map_texture_size       = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+      dev.max_vertex_texture_image_units  = gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS);
+      dev.OES_texture_float               = !!extensions.OES_texture_float;
+      dev.OES_texture_float_linear        = !!extensions.OES_texture_float_linear;
 
     },
     logFullInfo: function () {

@@ -176,10 +176,8 @@ var SIM = (function () {
     },
     calcVariTimes: function (name, cfg) {
 
-      var range = timeranges[name];
-
       var 
-        range = timeranges[name],
+        range = timeranges[cfg.sim.variable],
         step  = cfg.sim.step,
         times = {
           mindoe: NaN,

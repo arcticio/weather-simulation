@@ -111,6 +111,7 @@ dataTimeRanges['gfs-simulation'] = [];
 dataTimeRanges['hypatia'] = {
   tmp2m:    ['2017-06-19-18', '2017-06-23-18'],
   pratesfc: ['2017-06-19-18', '2017-06-23-18'],
+  tcdcclm:  ['2017-06-19-18', '2017-06-23-18'],
 };
 ;
 
