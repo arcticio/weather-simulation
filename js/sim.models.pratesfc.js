@@ -2,7 +2,7 @@
 SIM.Models.pratesfc = (function () {
 
   var 
-    self, cfg, datagram,
+    self, cfg, times, vari,
     model = {
       obj:      new THREE.Object3D(),
       urls:     [],
@@ -12,26 +12,28 @@ SIM.Models.pratesfc = (function () {
   ;
 
   return self = {
-    create: function (config, moms, simdata) {
+    create: function (config, timcfg) {
 
-      cfg = config;
-      datagram = simdata;
+      // shortcuts
+      cfg   = config;
+      times = timcfg;
+      vari  = cfg.sim.variable;
+
       model.prepare = self.prepare;
 
-      self.calcUrls(moms);
-      self.calcMinMax(moms);
+      self.calcUrls();
 
       return model;
 
     },
-    calcMinMax: function (moms) {
-      // assumes sorted moms
-      model.minDoe = SIM.mom2doe(moms[0]);
-      model.maxDoe = SIM.mom2doe(moms.slice(-1)[0]);
-    },
+    // calcMinMax: function (moms) {
+    //   // assumes sorted moms
+    //   model.minDoe = SIM.mom2doe(moms[0]);
+    //   model.maxDoe = SIM.mom2doe(moms.slice(-1)[0]);
+    // },
     calcUrls: function (moms) {
 
-      moms.forEach(mom => {
+      times.moms.forEach(mom => {
         cfg.sim.patterns.forEach(pattern => {
           model.urls.push(cfg.sim.dataroot + mom.format(pattern));
         });
@@ -44,15 +46,21 @@ SIM.Models.pratesfc = (function () {
 
       var
         t0 = Date.now(), 
+
+        doe        = SIM.time.doe,
         
         doe1       = doe - (doe % 0.25),
         doe2       = doe1 + 0.25,
         
+        datagrams = SIM.datagrams,
+        doe       = SIM.time.doe,
+        mindoe    = SIM.time.mindoe,
+
         geometry = new THREE.SphereBufferGeometry(cfg.radius, 359, 180),
 
         attributes = {
-          doe1:    new THREE.BufferAttribute( datagram[cfg.sim.variable].attribute(doe1), 1 ),
-          doe2:    new THREE.BufferAttribute( datagram[cfg.sim.variable].attribute(doe2), 1 ),
+          doe1:    new THREE.BufferAttribute( datagrams[vari].attribute(doe1), 1 ),
+          doe2:    new THREE.BufferAttribute( datagrams[vari].attribute(doe2), 1 ),
         },
 
         ownuniforms   = {
@@ -80,12 +88,12 @@ SIM.Models.pratesfc = (function () {
 
           var
             doe = SIM.time.doe, 
-            datagramm = datagram[cfg.sim.variable];
+            datagramm = SIM.datagrams[vari];
 
           uniforms.doe.value = doe;
 
           // check bounds
-          if ( doe >= model.minDoe && doe <= model.maxDoe ) {
+          if ( doe >= times.mindoe && doe <= times.maxdoe ) {
 
             // check whether update needed
             if (doe < doe1 || doe > doe2) {

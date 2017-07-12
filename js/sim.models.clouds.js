@@ -28,12 +28,7 @@ SIM.Models.clouds = (function () {
 
 
   return self = {
-    convLL: function (lat, lon, alt) {return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, alt); },
-    convV3: function (v3, alt) { return TOOLS.vector3ToLatLong(v3, CFG.earth.radius + alt); },
-    updateMinMax: function () {
-      model.mindoe = Math.min.apply(Math, Object.keys(model.objects));
-      model.maxdoe = Math.max.apply(Math, Object.keys(model.objects));
-    },
+    
     create: function (config, timcfg) {
 
       // shortcuts
@@ -75,45 +70,6 @@ SIM.Models.clouds = (function () {
       });
 
     },
-    // show: function (doe) {
-
-    //   var doe1, doe2;
-
-    //   // that's probaby to much
-    //   while (model.obj.children.length) {
-    //     model.obj.remove(model.obj.children[0]);
-    //   }
-
-    //   if (model.objects[doe]) {
-
-    //     // that's a hit
-    //     model.obj.add(model.objects[doe]);
-    //     model.objects[doe].material.uniforms.factor.value = 1.0;
-    //     model.objects[doe].material.uniforms.factor.needsUpdate = true;
-
-    //   } else if (doe > model.mindoe && doe < model.maxdoe) {
-
-    //     // mix them!
-    //     doe1 = doe  % 0.25;
-    //     doe2 = doe1 + 0.25;
-    //     model.obj.add(model.objects[doe1]);
-    //     model.obj.add(model.objects[doe2]);
-
-    //     model.objects[doe1].material.uniforms.factor.value = parseFloat(doe)  - parseFloat(doe1);
-    //     model.objects[doe2].material.uniforms.factor.value = parseFloat(doe2) - parseFloat(doe);
-    //     model.objects[doe1].material.uniforms.factor.needsUpdate = true;
-    //     model.objects[doe2].material.uniforms.factor.needsUpdate = true;
-
-    //     console.log('clouds.show.mix', doe1, doe, doe2);
-
-    //   } else {
-
-    //     // bail out!
-    //     console.warn('clouds.show.error', 'doe', doe, model.mindoe, model.maxdoe);
-
-    //   }
-
-    // },
 
     prepareFragmentShader: function () {
 

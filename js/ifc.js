@@ -192,9 +192,9 @@ var IFC = (function () {
         [simulator, 'mouseup'],
         [simulator, 'mousemove'],
         [simulator, 'mouseenter'],
-        [simulator, 'mouseover'],
+        // [simulator, 'mouseover'],
         [document,  'mouseleave'],
-        [document,  'mouseout'],
+        // [document,  'mouseout'],
         // [simulator, 'wheel'],
         [simulator, 'click'],
         // [simulator, 'dblclick'],
@@ -204,12 +204,15 @@ var IFC = (function () {
         [simulator, 'touchcancel'],
         [document,  'contextmenu'],
         [document,  'keydown'],
-        [window,    'orientationchange'],
+        // [window,    'orientationchange'], // no edge
         // [window,    'deviceorientation'], // needs https
         // [window,    'devicemotion'],
         [window,    'resize'],
       
-      ], (_, e) => e[0].addEventListener(e[1], self.events[e[1]], false) );
+      ], (_, e) => {
+        // console.log(e[1]);
+        e[0].addEventListener(e[1], self.events[e[1]], false);
+      } );
 
       controller.activate();
 

@@ -195,12 +195,13 @@ IFC.Hud = (function () {
         [simulator, 'mouseup'],
         [simulator, 'mousemove'],
         [simulator, 'touchstart'],
-        [simulator, 'touchmove'],
         [simulator, 'touchend'],
-        [simulator, 'touchcancel'],
-        [window,    'orientationchange'],
+        // [window,    'orientationchange'],
       
-      ], (_, e) => e[0].addEventListener(e[1], self.events[e[1]], false) );
+      ], (_, e) => {
+        // console.log(e[1]); 
+        e[0].addEventListener(e[1], self.events[e[1]], false)
+      });
 
     },
 

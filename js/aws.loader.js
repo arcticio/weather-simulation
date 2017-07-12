@@ -22,7 +22,7 @@ var LDR = (function () {
 
         [ CFG.Manager.probeDevice ],
         [ CFG.Manager.probeFullscreen ],
-        [ CFG.Manager.lockOrientation, [ 'portrait-primary' ] ],
+        // [ CFG.Manager.lockOrientation, [ 'portrait-primary' ] ], // no edge
         [ SCN.probeDevice ],
 
       'lift off!',
@@ -56,7 +56,7 @@ var LDR = (function () {
         [ IFC.activate ],
         [ IFC.show ],
         [ self.clearInfo ],
-        [ navigator.vibrate.bind(navigator), [200] ], // needs https soon;
+        // [ navigator.vibrate.bind(navigator), [200] ], // needs https soon; no edge
 
       'have fun',
 

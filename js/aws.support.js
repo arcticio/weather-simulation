@@ -25,7 +25,8 @@ try {
       }()),
 
       cleanup = (function () {
-        wgl.getExtension('WEBGL_lose_context').loseContext();
+        // no edge
+        wgl.getExtension('WEBGL_lose_context') && wgl.getExtension('WEBGL_lose_context').loseContext();
       } ()),
 
     end;

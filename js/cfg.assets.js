@@ -33,10 +33,10 @@ CFG.Assets = {
       type:           'mesh.module',
       size:           4.0,
       colors: [
-        0x666666,
-        0x666666,
-        0x222222,
-        0x222222,
+        0x666670,
+        0x666670,
+        0x222230,
+        0x222230,
       ]
     },
 
@@ -82,7 +82,7 @@ CFG.Assets = {
     mask: {
       title:          'basic surface mask',
       type:           'mesh.module',
-      essential:      false,                 // not in prod
+      essential:      true,                 // not in prod
       debuggable:     true,
       toggleable:     true,
       rotation:        [0, Math.PI / 2, 0],
