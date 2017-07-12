@@ -26,12 +26,7 @@ SIM.Models.pratesfc = (function () {
       return model;
 
     },
-    // calcMinMax: function (moms) {
-    //   // assumes sorted moms
-    //   model.minDoe = SIM.mom2doe(moms[0]);
-    //   model.maxDoe = SIM.mom2doe(moms.slice(-1)[0]);
-    // },
-    calcUrls: function (moms) {
+    calcUrls: function () {
 
       times.moms.forEach(mom => {
         cfg.sim.patterns.forEach(pattern => {
@@ -40,9 +35,9 @@ SIM.Models.pratesfc = (function () {
       });
 
     },    
-    prepare: function ( doe ) {
+    prepare: function ( ) {
 
-      TIM.step('Model.variables.in', doe);
+      // TIM.step('Model.pratesfc.in', SIM.time.doe);
 
       var
         t0 = Date.now(), 
@@ -130,7 +125,7 @@ SIM.Models.pratesfc = (function () {
       model.obj.add(mesh);
       mesh.onAfterRender = onAfterRender;
 
-      TIM.step('Model.variables.out', Date.now() -t0, 'ms');
+      TIM.step('SIM.pratesfc.out', Date.now() -t0, 'ms');
 
       return model;
 
@@ -169,14 +164,14 @@ SIM.Models.pratesfc = (function () {
         // precision highp int;
         // precision highp float;
 
-        uniform float doe;
+        uniform float doe, opacity;
 
         varying float vData1;
         varying float vData2;
 
         float frac, fac1, fac2, value;
 
-        vec3 color;
+        vec4 color;
 
         void main() {
 
@@ -198,19 +193,30 @@ SIM.Models.pratesfc = (function () {
               discard;
 
             } else {
+              // color = (
+              //   value < 0.0001 ? vec3(0.666, 0.400, 0.666) : // dark violett
+              //   value < 0.0002 ? vec3(0.807, 0.607, 0.898) :
+              //   value < 0.0003 ? vec3(0.423, 0.807, 0.886) :
+              //   value < 0.0004 ? vec3(0.423, 0.937, 0.423) :
+              //   value < 0.0005 ? vec3(0.929, 0.976, 0.423) :
+              //   value < 0.0006 ? vec3(0.984, 0.792, 0.384) :
+              //   value < 0.0007 ? vec3(0.984, 0.396, 0.305) :
+              //   value < 0.0008 ? vec3(0.800, 0.250, 0.250) :
+              //     vec3(0.600, 0.150, 0.150)                  // dark red
+              // );
               color = (
-                value < 0.0001 ? vec3(0.666, 0.400, 0.666) : // dark violett
-                value < 0.0002 ? vec3(0.807, 0.607, 0.898) :
-                value < 0.0003 ? vec3(0.423, 0.807, 0.886) :
-                value < 0.0004 ? vec3(0.423, 0.937, 0.423) :
-                value < 0.0005 ? vec3(0.929, 0.976, 0.423) :
-                value < 0.0006 ? vec3(0.984, 0.792, 0.384) :
-                value < 0.0007 ? vec3(0.984, 0.396, 0.305) :
-                value < 0.0008 ? vec3(0.800, 0.250, 0.250) :
-                  vec3(0.600, 0.150, 0.150)                  // dark red
+                value < 0.0004 ? vec4(0.04, 0.24, 0.59, 0.30) :
+                value < 0.0007 ? vec4(0.11, 0.30, 0.62, 0.40) :
+                value < 0.0013 ? vec4(0.18, 0.36, 0.66, 0.50) :
+                value < 0.0024 ? vec4(0.25, 0.43, 0.70, 0.60) :
+                value < 0.0042 ? vec4(0.32, 0.49, 0.74, 0.70) :
+                value < 0.0076 ? vec4(0.39, 0.55, 0.77, 0.80) :
+                value < 0.0136 ? vec4(0.47, 0.62, 0.81, 0.90) :
+                  vec4(1.0)                  // white
               );
 
-              gl_FragColor = vec4(color, 0.3); //0.3 good
+              color.a = color.a * opacity;
+              gl_FragColor = color;        //0.3 good
 
             }
 

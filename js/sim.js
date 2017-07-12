@@ -73,7 +73,7 @@ var SIM = (function () {
 
       SIM.Charts.init();
 
-      // TIM.step('SIM.time', 'time.now',   time.now.format('YYYY-MM-DD HH[:]mm'));
+      // TIM.step('SIM.time', 'now', time.now.format('YYYY-MM-DD HH[:]mm'), 'doe', time.doe);
       // TIM.step('SIM.time', 'time.model', time.model.format('YYYY-MM-DD HH[:]mm'));
 
     },
@@ -93,7 +93,8 @@ var SIM = (function () {
         time.mindoe = self.mom2doe(time.stamps[0]);
         time.maxdoe = self.mom2doe(time.stamps.slice(-1)[0]);
 
-        // console.log('SIM', 0, time.stamps[0].format('YYYY-MM-DD-HH'), time.mindoe);
+        TIM.step('SIM.time.set', 'now', time.now.format('YYYY-MM-DD HH[:]mm'), 'doe', time.doe);
+
         // console.log('SIM', time.length -1, time.stamps[time.length -1].format('YYYY-MM-DD-HH'), time.maxdoe);
 
 

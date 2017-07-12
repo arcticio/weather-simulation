@@ -393,7 +393,7 @@ CFG.Assets = {
       geometry:       new THREE.SphereBufferGeometry(RADIUS + LEVEL_4, 64, 32),
       rotation:       [0, PI, 0],
       radius:         RADIUS + LEVEL_4, 
-      opacity:        0.5,
+      opacity:        0.99,
       sim: {
         variable:     'pratesfc',
         scaler:       (d) => H.clampScale(d, 0, 0.001, 0, 255),
@@ -402,7 +402,7 @@ CFG.Assets = {
         patterns: [
           'YYYY-MM-DD-HH[.pratesfc.10.dods]', 
         ],
-        palette: {
+        paletteXX: {
           '0.0001' : new THREE.Color(0xaa66aa), // violet dark,
           '0.0002' : new THREE.Color(0xce9be5), // violet,
           '0.0003' : new THREE.Color(0x76cee2), // blue,
@@ -412,6 +412,17 @@ CFG.Assets = {
           '0.0007' : new THREE.Color(0xfb654e), // red,
           '0.0008' : new THREE.Color(0xcc4040), // dark red,
           '0.0010' : new THREE.Color(0xbb20ff), // very dark red,
+        },
+        palette: {
+          '0.0001' : new THREE.Color(0x000033), // violet dark,
+          '0.0002' : new THREE.Color(0x111155), // violet,
+          '0.0003' : new THREE.Color(0x333377), // blue,
+          '0.0004' : new THREE.Color(0x555599), // green,
+          '0.0005' : new THREE.Color(0x7777bb), // yellow,
+          '0.0006' : new THREE.Color(0x9999dd), // orange,
+          '0.0007' : new THREE.Color(0xbbbbff), // red,
+          '0.0008' : new THREE.Color(0xddddff), // dark red,
+          '0.0010' : new THREE.Color(0xffffff), // very dark red,
         }
       }
     },

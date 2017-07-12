@@ -63,6 +63,37 @@ IFC.Hud = (function () {
 
     },
 
+    toggle: function () {
+
+      // needed for screen shots
+      doRender = !doRender;
+      
+    },
+    activate: function () {
+
+      H.each([
+
+        [simulator, 'mousedown'],
+        [simulator, 'mouseup'],
+        [simulator, 'mousemove'],
+        [simulator, 'touchstart'],
+        [simulator, 'touchend'],
+        // [window,    'orientationchange'],
+      
+      ], (_, e) => {
+        // console.log(e[1]); 
+        e[0].addEventListener(e[1], self.events[e[1]], false)
+      });
+
+    },
+
+    step: function (frame, deltatime) {
+
+      !(frame % 4) && IFC.Hud.time.render();
+
+      IFC.Hud.spacetime.render();
+
+    },
     initSprites: function () {
 
       // TODO: read sprite status from SCN.objects.XXX.visible
@@ -181,37 +212,6 @@ IFC.Hud = (function () {
 
     },
 
-    toggle: function () {
-
-      // needed for screen shots
-      doRender = !doRender;
-      
-    },
-    activate: function () {
-
-      H.each([
-
-        [simulator, 'mousedown'],
-        [simulator, 'mouseup'],
-        [simulator, 'mousemove'],
-        [simulator, 'touchstart'],
-        [simulator, 'touchend'],
-        // [window,    'orientationchange'],
-      
-      ], (_, e) => {
-        // console.log(e[1]); 
-        e[0].addEventListener(e[1], self.events[e[1]], false)
-      });
-
-    },
-
-    step: function (frame, deltatime) {
-
-      !(frame % 4) && IFC.Hud.time.render();
-
-      IFC.Hud.spacetime.render();
-
-    },
 
     events: {
 

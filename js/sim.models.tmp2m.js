@@ -189,7 +189,7 @@ SIM.Models.tmp2m = (function () {
       model.obj.add(mesh);
       mesh.onBeforeRender = onBeforeRender;
 
-      TIM.step('Model.tmp2m.out', Date.now() -t0, 'ms');
+      TIM.step('SIM.tmp2m.out', Date.now() -t0, 'ms');
 
       return model;
 
