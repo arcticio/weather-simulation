@@ -39,8 +39,8 @@ var CFG = {
   Camera: {
     cam:            new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
     pos:            new THREE.Vector3(4, 0, 0),         
-    minDistance:    RADIUS + 0.2,
-    maxDistance:    8,                 
+    minRadius:      RADIUS + 0.2,
+    maxRadius:      8,                 
   },
 
   User: {

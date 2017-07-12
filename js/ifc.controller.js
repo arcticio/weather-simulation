@@ -46,8 +46,8 @@ IFC.Controller = (function () {
 
     defaults   = {
 
-      minDistance:   1.2,
-      maxDistance:   8.0,
+      minRadius:     1.2,
+      maxRadius:     8.0,
 
       onwheel:       null,
       ondrag:        null,
@@ -103,7 +103,7 @@ IFC.Controller = (function () {
   }
 
   function distanceScale (x, min, max) {
-    return (max-min)*(x-cfg.minDistance)/(cfg.maxDistance-cfg.minDistance)+min;
+    return (max-min)*(x-cfg.minRadius)/(cfg.maxRadius-cfg.minRadius)+min;
   }
 
   return self = {
@@ -230,8 +230,8 @@ IFC.Controller = (function () {
           radius *= 1 + ( veloZ * deltatime / radius );
 
           radius  = (
-            radius < cfg.minDistance ? cfg.minDistance :
-            radius > cfg.maxDistance ? cfg.maxDistance :
+            radius < cfg.minRadius ? cfg.minRadius :
+            radius > cfg.maxRadius ? cfg.maxRadius :
               radius
           );
 
@@ -298,7 +298,7 @@ IFC.Controller = (function () {
         var 
           deltaX, deltaY, 
           distance = cam.position.length(),
-          factor   = distanceScale(distance, 1, cfg.maxDistance - cfg.minDistance)
+          factor   = distanceScale(distance, 1, cfg.maxRadius - cfg.minRadius)
         ;
 
         if ( !isNaN(mouse.down.x) ) {
@@ -327,7 +327,7 @@ IFC.Controller = (function () {
         var 
           deltaX = 0, deltaY = 0, deltaZ = 0,
           distance  = cam.position.length(),
-          impFactor = distanceScale(distance, 0.2, cfg.maxDistance - cfg.minDistance)
+          impFactor = distanceScale(distance, 0.2, cfg.maxRadius - cfg.minRadius)
         ;
 
         switch ( event.deltaMode ) {
@@ -409,7 +409,7 @@ IFC.Controller = (function () {
         var 
           deltaX, deltaY, deltaZ,
           distance  = cam.position.length(),
-          impFactor = distanceScale(distance, 1, cfg.maxDistance - cfg.minDistance)
+          impFactor = distanceScale(distance, 1, cfg.maxRadius - cfg.minRadius)
         ;
 
         if (event.changedTouches.length === 1) {
@@ -456,7 +456,7 @@ IFC.Controller = (function () {
 
         var 
           distance  = cam.position.length(),
-          impFactor = distanceScale(distance, 1, cfg.maxDistance - cfg.minDistance),
+          impFactor = distanceScale(distance, 1, cfg.maxRadius - cfg.minRadius),
           xImp      = cfg.keyXimpulse * impFactor,
           yImp      = cfg.keyYimpulse * impFactor,
           zImp      = cfg.keyZimpulse * impFactor

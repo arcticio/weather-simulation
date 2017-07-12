@@ -262,7 +262,7 @@ var SCN = (function () {
           IFC.step(frame, deltasecs);
 
           camera.radius   = camera.position.length();
-          camera.distance = camera.radius - CFG.earth.radius;
+          camera.distance = (camera.radius - CFG.Camera.minRadius) / (CFG.Camera.maxRadius - CFG.Camera.minRadius);
 
           objects.background.updatePosition();
 

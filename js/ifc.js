@@ -102,8 +102,8 @@ var IFC = (function () {
       controller = self.controller = IFC.Controller;
       controller.init(SCN.camera, SCN.renderer.domElement, {
 
-        minDistance: CFG.Camera.minDistance,
-        maxDistance: CFG.Camera.maxDistance,
+        minRadius: CFG.Camera.minRadius,
+        maxRadius: CFG.Camera.maxRadius,
 
         onorient: function (callback /* , deltaX, deltaY, deltaZ */ ) {
 

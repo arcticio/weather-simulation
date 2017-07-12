@@ -289,12 +289,12 @@ var ANI = (function () {
 
       },
 
-      cam2latlon: function (lat, lon, distance){
+      cam2latlon: function (lat, lon, radius){
 
         var 
           spherical,
           curVec   = SCN.camera.position.clone(),
-          futVec   = TOOLS.latLongToVector3(lat, lon, distance, 0),
+          futVec   = TOOLS.latLongToVector3(lat, lon, radius, 0),
 
           curShere = new THREE.Spherical().setFromVector3(curVec),
           futShere = new THREE.Spherical().setFromVector3(futVec),
@@ -307,7 +307,7 @@ var ANI = (function () {
           target  = {
             phi:    futShere.phi,
             theta:  futShere.theta,
-            radius: distance,
+            radius: radius,
           };
 
         return function () {

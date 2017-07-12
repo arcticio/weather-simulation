@@ -13,16 +13,16 @@ CFG.Assets = {
 
     // click mesh for raycaster, no debug gui, always in scene
     pointer: {
-      title:          'pointer',
-      essential:      true,
-      type:           'mesh',
-      mesh:           new THREE.Mesh(
+      title:           'pointer',
+      essential:       true,
+      type:            'mesh',
+      mesh:            new THREE.Mesh(
         new THREE.SphereGeometry(RADIUS - 0.005, 32, 32),                  
         new THREE.MeshBasicMaterial({
-          color:     0xff0000,
-          wireframe: true,
+          color:       0xff0000,
+          wireframe:   false,
           transparent: true,
-          opacity: 0.0
+          opacity:     0.0
         })
       ),
     },
@@ -59,7 +59,7 @@ CFG.Assets = {
       type:           'light',
       color:          0xffffff, 
       intensity:      0.9, // no 0 here
-      distance:       0.0, 
+      // distance:       0.0, 
       angle:          0.3, 
       penumbra:       0.1, 
       decay:          0.0,
@@ -82,7 +82,7 @@ CFG.Assets = {
     mask: {
       title:          'basic surface mask',
       type:           'mesh.module',
-      essential:      true,
+      essential:      false,                 // not in prod
       debuggable:     true,
       toggleable:     true,
       rotation:        [0, Math.PI / 2, 0],
@@ -336,7 +336,8 @@ CFG.Assets = {
       rotation:       [0, Math.PI, 0],
       radius:         RADIUS + LEVEL_5, 
       amount:         1e5,
-      size:           8.0,
+      factor:         1.0,
+      opacity:        0.8,
       sim: {
         variable:     'tcdcclm',
         step:         [6, 'hours'],
@@ -419,15 +420,14 @@ CFG.Assets = {
   // FEATURES ( 23 - 25 )
 
     population: {
-      id:             23,
+      id:              23,
       debuggable:      true,
-      toggleable:      true,
-      title:          '3000 cities',
-      type:           'mesh.module',
-      altitude:       LEVEL_0,
-      opacity:        0.8,
-      radius:         RADIUS,
-      color:          new THREE.Color(0xff00ff),
+      toggleable:      true,  
+      title:           '3000 major cities',
+      type:            'mesh.module',
+      radius:          RADIUS + LEVEL_0,
+      opacity:         0.8,
+      color:           new THREE.Color(0xff00ff),
     },
 
     land: {
