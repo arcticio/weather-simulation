@@ -27,7 +27,7 @@ var SCN = (function () {
     doRender      = true,
 
     extensions    = {},
-    objects       = {}
+    assets        = {}
 
   ;
 
@@ -35,9 +35,9 @@ var SCN = (function () {
     
     home,
     scene,
+    assets,
     camera,
     pointer,
-    objects,
     renderer,
 
     toggleRender: function (force) {
@@ -49,8 +49,8 @@ var SCN = (function () {
         pointer = self.pointer = obj;
 
       } // else {
-        objects[name] = obj;
-        objects[name].name = name;
+        assets[name] = obj;
+        assets[name].name = name;
         scene.add(obj);
 
       // }
@@ -80,7 +80,7 @@ var SCN = (function () {
 
       var active = false;
 
-      H.each(objects, (name, asset) => {
+      H.each(assets, (name, asset) => {
 
         if (!active && name === assetname && asset instanceof THREE.Object3D ) {
           active = true;
@@ -104,7 +104,7 @@ var SCN = (function () {
         console.error('SCN.toggleBasemap', 'illegal basemap param');
       }
 
-      H.each(objects, (name, obj) => {
+      H.each(assets, (name, obj) => {
 
         if (CFG.Assets[name] !== undefined) {
 
@@ -170,32 +170,32 @@ var SCN = (function () {
           Render:   { toggle: (value) => doRender   = value },
           ResetCam: { toggle: (value) => doSimulate = value },
           Ambient: {
-            toggle:       (value) => self.toggle(objects.ambient, value),
-            intensity:    (value) => objects.ambient.intensity = value,
-            color:        (value) => objects.ambient.color = new THREE.Color( value ),
+            toggle:       (value) => self.toggle(assets.ambient, value),
+            intensity:    (value) => assets.ambient.intensity = value,
+            color:        (value) => assets.ambient.color = new THREE.Color( value ),
           },
           Spot: {
-            toggle:       (value) => self.toggle(objects.spot, value),
-            angle:        (value) => objects.spot.angle = value,
-            intensity:    (value) => objects.spot.intensity = value,
-            color:        (value) => objects.spot.color = new THREE.Color( value ),
+            toggle:       (value) => self.toggle(assets.spot, value),
+            angle:        (value) => assets.spot.angle = value,
+            intensity:    (value) => assets.spot.intensity = value,
+            color:        (value) => assets.spot.color = new THREE.Color( value ),
           },
           Sun: {
-            toggle:       (value) => self.toggle(objects.sun, value),
-            intensity:    (value) => objects.sun.intensity = value,
-            skycolor:     (value) => objects.sun.color = new THREE.Color( value ),
-            grdcolor:     (value) => objects.sun.groundColor = new THREE.Color( value ),
+            toggle:       (value) => self.toggle(assets.sun, value),
+            intensity:    (value) => assets.sun.intensity = value,
+            skycolor:     (value) => assets.sun.color = new THREE.Color( value ),
+            grdcolor:     (value) => assets.sun.groundColor = new THREE.Color( value ),
           },
           Atmosphere: {
-            toggle:       (value) => self.toggle(objects.atmosphere, value),
-            opacity:      (value) => objects.atmosphere.update({opacity: value}),
+            toggle:       (value) => self.toggle(assets.atmosphere, value),
+            opacity:      (value) => assets.atmosphere.update({opacity: value}),
           },
           Assets: (function () {
             var asets = {};
 
             H.each(CFG.Assets, (name, config) => {
               if (config.debuggable) {
-                asets[name.toUpperCase()] = (value) => self.toggle(objects[name], value);
+                asets[name.toUpperCase()] = (value) => self.toggle(assets[name], value);
               }
             });
 
@@ -264,11 +264,11 @@ var SCN = (function () {
           camera.radius   = camera.position.length();
           camera.distance = (camera.radius - CFG.Camera.minRadius) / (CFG.Camera.maxRadius - CFG.Camera.minRadius);
 
-          objects.background.updatePosition();
+          assets.background.updatePosition();
 
           SIM.updateSun();
-          objects.spot.position.copy(SIM.sunPosition);
-          objects.sun.position.copy(SIM.sunPosition);
+          assets.spot.position.copy(SIM.sunPosition);
+          assets.sun.position.copy(SIM.sunPosition);
 
           // always look for new animations
           ANI.step(frame, deltasecs);
@@ -305,8 +305,9 @@ var SCN = (function () {
       dev.max_texture_image_units         = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
       dev.max_cube_map_texture_size       = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
       dev.max_vertex_texture_image_units  = gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS);
-      dev.OES_texture_float               = !!extensions.OES_texture_float;
-      dev.OES_texture_float_linear        = !!extensions.OES_texture_float_linear;
+      dev.oes_texture_float               = !!extensions.OES_texture_float;
+      dev.oes_texture_float_linear        = !!extensions.OES_texture_float_linear;
+      dev.oes_standard_derivatives        = !!extensions.OES_standard_derivatives;
 
     },
     logFullInfo: function () {
@@ -329,6 +330,7 @@ var SCN = (function () {
         textures:               renderer.info.memory.textures,
         faces:                  renderer.info.render.faces,
         vertices:               renderer.info.render.vertices,
+
         maxAttributes :         renderer.capabilities.maxAttributes,
         maxTextures :           renderer.capabilities.maxTextures,
         maxVaryings :           renderer.capabilities.maxVaryings,

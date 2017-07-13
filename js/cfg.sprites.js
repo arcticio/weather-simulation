@@ -316,7 +316,7 @@ CFG.Sprites = {
       image: 'hud/temperature.png'
     },
     onclick: (sprite) => {
-      SCN.toggle(SCN.objects.tmp2m);
+      SCN.toggle(SCN.assets.tmp2m);
       sprite.toggled = !sprite.toggled;
       // console.log('sprite.clicked', sprite.name);
     },
@@ -339,7 +339,7 @@ CFG.Sprites = {
       image: 'hud/clouds.png'
     },
     onclick: (sprite) => {
-      SCN.toggle(SCN.objects.clouds);
+      SCN.toggle(SCN.assets.clouds);
       sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },
@@ -362,7 +362,7 @@ CFG.Sprites = {
       image: 'hud/rain.png'
     },
     onclick: (sprite) => {
-      SCN.toggle(SCN.objects.pratesfc);
+      SCN.toggle(SCN.assets.pratesfc);
       sprite.toggled = !sprite.toggled;
     },
   },
@@ -384,7 +384,7 @@ CFG.Sprites = {
       image: 'hud/snow.png'
     },
     onclick: (sprite) => {
-      // SCN.toggle(SCN.objects.snow);
+      // SCN.toggle(SCN.assets.snow);
       sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },
@@ -407,7 +407,7 @@ CFG.Sprites = {
       image: 'hud/seaice.png'
     },
     onclick: (sprite) => {
-      SCN.toggle(SCN.objects.seaice);
+      SCN.toggle(SCN.assets.seaice);
       sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },
@@ -430,7 +430,7 @@ CFG.Sprites = {
       image: 'hud/sst.png'
     },
     onclick: (sprite) => {
-      SCN.toggle(SCN.objects.sst);
+      SCN.toggle(SCN.assets.sst);
       sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },
@@ -453,7 +453,7 @@ CFG.Sprites = {
       image: 'hud/population.png'
     },
     onclick: (sprite) => {
-      SCN.toggle(SCN.objects.population);
+      SCN.toggle(SCN.assets.population);
       sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },
@@ -476,7 +476,7 @@ CFG.Sprites = {
       image: 'hud/graticule.png'
     },
     onclick: (sprite) => {
-      SCN.toggle(SCN.objects.graticule);
+      SCN.toggle(SCN.assets.graticule);
       sprite.toggled = !sprite.toggled;
       console.log('sprite.clicked', sprite.name);
     },

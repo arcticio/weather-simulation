@@ -219,7 +219,7 @@ var LDR = (function () {
             sequence.push([fn, 'callback']);
 
           } else {
-            SCN.objects[name] = config;
+            SCN.assets[name] = config;
 
           }
         }
@@ -267,7 +267,7 @@ var LDR = (function () {
             sequence.push([action, 'callback']);
 
           } else {
-            SCN.objects[name] = config;
+            SCN.assets[name] = config;
 
           }
         }

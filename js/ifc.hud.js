@@ -96,7 +96,7 @@ IFC.Hud = (function () {
     },
     initSprites: function () {
 
-      // TODO: read sprite status from SCN.objects.XXX.visible
+      // TODO: read sprite status from SCN.assets.XXX.visible
 
       var geo = IFC.geometry, visibles = SCN.scene.children.map( c => c.name);
 
