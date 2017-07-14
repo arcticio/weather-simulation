@@ -299,6 +299,29 @@ CFG.Sprites = {
     },
   },
 
+  gmlc: {
+    title:    'Global Land Cover',
+    visible:  CFG.Assets.gmlc.toggable,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:    5,
+      top:      180,
+      left:     140,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/vegetation.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggleBasemap('gmlc');
+      sprite.toggled = !sprite.toggled;
+    },
+  },
+
   tmp2m: {
     visible:  CFG.Assets.tmp2m.toggable,
     menu:     true,

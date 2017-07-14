@@ -89,13 +89,33 @@ var CFG = {
     opacityHigh: 0.99,
   },
 
+  Basemaps: {
+    resolution:        512,
+  },
+
   BasemapIds: [9, 10, 11, 14],
   defaultBasemap: 'basemaps',     // id = 8
 
   Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
   Textures: {
-    
+
+    // basemaps
+
+    'globe.mask.bottom.512.png':    'images/basemaps/512/globe.mask.bottom.512.png',
+    'globe.mask.top.512.png':       'images/basemaps/512/globe.mask.top.512.png',
+    'globe.mask.left.512.png':      'images/basemaps/512/globe.mask.left.512.png',
+    'globe.mask.right.512.png':     'images/basemaps/512/globe.mask.right.512.png',
+    'globe.mask.front.512.png':     'images/basemaps/512/globe.mask.front.512.png',
+    'globe.mask.back.512.png':      'images/basemaps/512/globe.mask.back.512.png',
+
+    // 'globe.glmc.bottom.512.png':    'images/basemaps/512/globe.glmc.bottom.512.png',
+    // 'globe.glmc.top.512.png':       'images/basemaps/512/globe.glmc.top.512.png',
+    // 'globe.glmc.left.512.png':      'images/basemaps/512/globe.glmc.left.512.png',
+    // 'globe.glmc.right.512.png':     'images/basemaps/512/globe.glmc.right.512.png',
+    // 'globe.glmc.front.512.png':     'images/basemaps/512/globe.glmc.front.512.png',
+    // 'globe.glmc.back.512.png':      'images/basemaps/512/globe.glmc.back.512.png',
+
     'transparent.face.512.png':     'images/transparent.face.512.png',
 
     'arcticio.logo.512.png':        'images/arcticio.logo.white.512.png',
@@ -114,6 +134,7 @@ var CFG = {
 
     // Assets
     'hud/mask.png':                 'images/hud/mask.png',
+    'hud/vegetation.png':           'images/hud/vegetation.png',
     'hud/clouds.png':               'images/hud/clouds.png',
     'hud/satellite.png':            'images/hud/satellite.1.png',
     'hud/seaice.png':               'images/hud/seaice.png',

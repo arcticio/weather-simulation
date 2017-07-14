@@ -6,12 +6,16 @@ CFG.Manager = (function () {
     assets = [], // found in URL
     simtime,     // found in URL
     simcoords,   // found in URL
-    position     
+    position,
+    activated = Object.assign({}, CFG.Activated, {
+      /* name: id*/
+    })
   ;
 
   return self = {
 
     assets,
+    activated,
     
     boot: function () {
       CFG.debug    = self.debug;
@@ -33,17 +37,6 @@ CFG.Manager = (function () {
       } else {
         TIM.step('CFG.User', 'location unknown');
       }
-
-      // rewrite CFG.Assets visibility to enable objects from url
-      // and enable always on assets without id (cam, etc.)
-
-      H.each(CFG.Assets, (name, cfg) => {
-        if (cfg.id !== undefined){
-          cfg.visible = assets.indexOf(cfg.id) !== -1;
-        } else {
-          cfg.visible = true;
-        }
-      });
 
       // update cam config
       CFG.Camera.pos = position;
@@ -188,7 +181,9 @@ CFG.Manager = (function () {
 
     sanitizeUrl: function () {
 
-      var [locHash, locTime, locCoords] = location.pathname.slice(1).split('/');
+      var
+        intersect, 
+        [locHash, locTime, locCoords] = location.pathname.slice(1).split('/');
 
       // Assets from URL
       if (locHash) {
@@ -196,17 +191,24 @@ CFG.Manager = (function () {
         assets = self.assets = (locHash === '0') ? [] : self.hash2assets(String(locHash));
       }
 
-      // // TODO: ensure at least some visibility
-      // // Assets failsafe
-      // if (!assets.length){
-      //   assets = self.assets = [
-      //     CFG.Assets.background.id,
-      //     // CFG.Assets.ambient.id,
-      //     // CFG.Assets.spot.id,
-      //     // CFG.Assets.sun.id,
-      //     // CFG.Assets.mask.id,
-      //   ];
-      // }
+      // populate activated from assets
+      H.each(CFG.Assets, ( name, cfg ) => {
+
+        if (cfg.id !== undefined && H.contains(assets, cfg.id) ) {
+          activated[name] = cfg.id;
+
+        } else if (cfg.ids !== undefined) {
+          intersect = H.intersect(assets, cfg.ids);
+          if (intersect.length) {
+            activated[name] = intersect[0];
+          }
+
+        }
+
+      });
+
+      console.log('activated', JSON.stringify(activated, null, 2));
+
 
       // DateTime from URL
       // TODO: ensure within range

@@ -2,8 +2,6 @@
 //  https://www.3dgep.com/texturing-and-lighting-with-opengl-and-glsl/
 // http://adrianboeing.blogspot.de/2011/02/sphere-effect-in-webgl.html
 
-'use strict'
-
 SCN.Meshes.pixels = function (name, cfg, callback) {
 
   var

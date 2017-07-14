@@ -31,7 +31,7 @@ var LDR = (function () {
         [ ANI.init ], 
         [ SIM.init ], 
         [ SCN.init ], 
-        [ SIM.setSimTime ], 
+        [ SIM.setSimTime ], // prepares display time range and time
 
       'stage 1',
         self.loadImages,
@@ -195,30 +195,37 @@ var LDR = (function () {
 
     loadAssets: function () {
 
-      var sequence = [], assets = CFG.Manager.assets;
-
+      var id, sequence = [];
 
       H.each(CFG.Assets, (name, config) => {
 
-        var fn;
+        var fn, intersect;
 
         if (config.type !== 'simulation'){
 
+          // makes key a value
           config.name = name;
 
-          // if (config.visible){
-          if (H.contains(assets, config.id) || config.essential){
+          // test
+          if ( CFG.Manager.activated[name] ) {
 
             fn = function (callback) {
               self.message('', name);
               setTimeout(function () {
-                SCN.Tools.loader[config.type](name, config, callback);
+                if (config.type === 'basemaps') {
+                  id = CFG.Manager.activated[name];
+                  SCN.Tools.loader[config.type](id, name, config, callback);
+                } else {
+                  SCN.Tools.loader[config.type](name, config, callback);
+                }
               }, delay);
             };
 
             sequence.push([fn, 'callback']);
 
           } else {
+
+            // just provide config to SCN
             SCN.assets[name] = config;
 
           }

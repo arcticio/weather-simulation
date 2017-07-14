@@ -14,7 +14,6 @@ var SCN = (function () {
     renderer      = new THREE.WebGLRenderer({
       canvas,
       antialias:    true,
-      // alpha:        true, // lensflare ???
       preserveDrawingBuffer:    true,   // screenshots
     }),
 
@@ -43,31 +42,30 @@ var SCN = (function () {
     toggleRender: function (force) {
       doRender = force !== undefined ? force : !doRender;
     },
-    add: function (name, obj) {
+    add: function (name, asset) {
 
       if (name === 'pointer') {
-        pointer = self.pointer = obj;
+        // expose pointer to IFC
+        pointer = self.pointer = asset;
+      }
 
-      } // else {
-        assets[name] = obj;
-        assets[name].name = name;
-        scene.add(obj);
-
-      // }
+      assets[name] = asset;
+      assets[name].name = name;
+      scene.add(asset);
 
     },
     setComb : function (val) {comb = val;},
-    toggle: function (obj, force) {
+    toggle: function (asset, force) {
 
-      if (scene.getObjectByName(obj.name) || force === false) {
-        scene.remove(obj);
+      if (scene.getObjectByName(asset.name) || force === false) {
+        scene.remove(asset);
 
       } else {
-        if (obj instanceof THREE.Object3D){
-          scene.add(obj);
+        if (asset instanceof THREE.Object3D){
+          scene.add(asset);
 
         } else {
-          SCN.Tools.loader[obj.type](obj.name, obj, () => {});
+          SCN.Tools.loader[asset.type](asset.name, asset, () => {});
 
         }
       }
@@ -91,10 +89,20 @@ var SCN = (function () {
       return active;
 
     },
+    activeAssets: function (arr) {
+      arr.splice(0, arr.length);
+      scene.children
+        .filter(c => c.visible && c.name !== 'camera')
+        .map(c => c.name === 'basemaps' ? c.getMapId() : CFG.Assets[c.name].id)
+        .filter(c => !!c)        
+        .forEach( id => arr.push(id))
+      ;
+      return arr.sort( (a, b) => a - b);
 
+    },
     toggleBasemap: function (basemap) {
 
-      var basename, lightset;
+      var basename, lightset, action = '';
 
       // sanitize param
       if (typeof basemap === 'string'){
@@ -110,9 +118,11 @@ var SCN = (function () {
 
           if (name === basename){
             self.toggle(obj, true);
+            action = 'on';
 
           } else if (CFG.BasemapIds.indexOf(CFG.Assets[name].id) !== -1 ) {
             self.toggle(obj, false);
+            action = 'off';
 
           }
 
@@ -124,7 +134,9 @@ var SCN = (function () {
 
       ANI.insert(0, ANI.library.lightset(lightset, 300));
 
-      console.log('SCN.toggleBasemap', basename);
+      IFC.urlDirty = true;
+
+      console.log('SCN.toggleBasemap', basename, action);
 
     },
 
@@ -145,8 +157,8 @@ var SCN = (function () {
       // webgl.min_capability_mode
 
       renderer.setClearColor(0x662200, 1.0);  // red for danger
-      renderer.shadowMap.enabled = false;
-      renderer.autoClear = false;             // cause HUD
+      renderer.shadowMap.enabled = false;     // not needed
+      renderer.autoClear = false;             // cause HUD has own scene
 
       camera = self.camera = CFG.Camera.cam;
       camera.position.copy(CFG.Camera.pos);

@@ -27,10 +27,7 @@ IFC.Tools = {
     var 
       prec   = 6,
       time   = SIM.time.model.format('YYYY-MM-DD-HH-mm'),
-      assets = SCN.scene.children
-        .filter(  c => c.visible && c.name !== 'camera')
-        .map(     c => CFG.Assets[c.name].id)
-        .filter( id => !!id),
+      assets = SCN.activeAssets([]),
       hash   = CFG.Manager.assets2hash(assets) || 0,
       pos    = SCN.camera.position,
       coords = `${H.round(pos.x, prec)};${H.round(pos.y, prec)};${H.round(pos.z, prec)}`,

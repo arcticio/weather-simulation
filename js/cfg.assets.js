@@ -7,6 +7,16 @@
 
 */
 
+CFG.Activated = {
+  pointer:    true,
+  background: true,
+  ambient:    true,
+  spot:       true,
+  sun:        true,
+  // mask:       true,
+  basemaps:   7,
+};
+
 CFG.Assets = {
 
 // MANDATORY => (no id)
@@ -85,7 +95,7 @@ CFG.Assets = {
       essential:      true,                 // not in prod
       debuggable:     true,
       toggleable:     true,
-      rotation:        [0, Math.PI / 2, 0],
+      rotation:        [0, PI2, 0],
       lightset:       'normal',
       cube: {
         type:          'globe',
@@ -129,42 +139,42 @@ CFG.Assets = {
       title:          'atmosphere',
       type:           'mesh.module',
       radius:         RADIUS + LEVEL_7,
-      rotation:       [0, Math.PI * 0.5, 0],
+      rotation:       [0, PI2, 0],
       opacity:        0.5,
     },
 
 
   // BASEMAPS ( 9 - 11 )
 
-    // basecopy: {
-    //   id:              9,
-    //   title:          'simple surface layer',
-    //   type:           'mesh.module',
-    //   rotation:        [0, Math.PI / 2, 0],
-    //   lightset:       'normal',
-    //   cube: {
-    //     type:          'globe',
-    //     radius:        RADIUS + 0.01, 
-    //     texture:       'images/gmlc/globe.gmlc.FACE.512.png', 
-    //     material: {
-    //       transparent: true, 
-    //       opacity:     0.99,              // removes crazy seaice effeckt
-    //       side:        THREE.DoubleSide,
-    //     }
-    //   }
-    // },
+    basemaps: {
+      ids:             [ 7,      8,      9],
+      maps:            ['mask', 'topo', 'gmlc'],
+      title:           'generic base maps',
+      type:            'basemaps',
+      debuggable:      true,
+      toggleable:      true,
+      rotation:        [0, PI2, 0],
+      radius:          RADIUS,
+      resolution:      CFG.Basemaps.resolution,
+      textures:        'globe.MAP.FACE.RESO.png',
+      material: {
+        transparent:   true, 
+        opacity:       0.99,              // removes crazy seaice effeckt
+        side:          THREE.DoubleSide,
+      },
+    },
 
     rtopo2: {
       id:              10,
-      title:          'RTOPO2 surface layer',
+      title:           'RTOPO2 surface layer',
       type:            'cube.textured',
       debuggable:      true,
       toggleable:      true,
-      rotation:        [0, Math.PI / 2, 0],
-      lightset:       'normal',
+      rotation:        [0, PI2, 0],
+      lightset:        'normal',
       cube: {
         type:          'globe',
-        radius:        RADIUS + 0.01, 
+        radius:        RADIUS + LEVEL_1, 
         texture:       'images/rtopo2/globe.rtopo2.FACE.4096.png', 
         material: {
           transparent: true, 
@@ -175,16 +185,16 @@ CFG.Assets = {
     },
 
     gmlc: {
-      id:             11,
-      title:          'GLCNMO - vegetation layer',
+      id:              11,
+      title:           'GLCNMO - vegetation layer',
       type:            'cube.textured',
       debuggable:      true,
       toggleable:      true,
-      rotation:        [0, Math.PI / 2, 0],
-      lightset:       'normal',
+      rotation:        [0, PI2, 0],
+      lightset:        'normal',
       cube: {
         type:          'globe',
-        radius:        RADIUS + 0.01, 
+        radius:        RADIUS + LEVEL_1, 
         texture:       'images/gmlc/globe.gmlc.FACE.4096.png', 
         material: {
           transparent: true, 
@@ -203,7 +213,7 @@ CFG.Assets = {
       debuggable:     true,
       type:           'cube.textured',
       title:            'SNPP - satellite surface layer',
-      rotation:        [0, Math.PI / 2, 0],
+      rotation:        [0, PI2, 0],
       lightset:       'snpp',
       cube: {
         type:          'globe',
@@ -224,7 +234,7 @@ CFG.Assets = {
       type:           'cube.textured',
       debuggable:      true,
       toggleable:      true,
-      rotation:       [0, Math.PI / 2, 0],
+      rotation:       [0, PI2, 0],
       cube: {
         type:         'globe',
         radius:       RADIUS + LEVEL_2, 
@@ -243,7 +253,7 @@ CFG.Assets = {
       toggleable:      true,
       title:           'AMSR2 sea ice concentration',
       type:            'cube.textured',
-      rotation:        [0, Math.PI * 0.5, 0],
+      rotation:        [0, PI2, 0],
       cube: {
         type:          'polar',
         radius:        RADIUS + LEVEL_3, 
@@ -389,6 +399,7 @@ CFG.Assets = {
       debuggable:      true,
       toggleable:      true,
       title:          'GFS - urface precipitation rate',
+      comment:        'units of kg/m^2/s, which is equivalent to mm/s.  To get 6-hourly then, you would 6*60*60*PRATEsfc which would be 6hrs*60mins*60secs.',
       type:           'simulation',
       geometry:       new THREE.SphereBufferGeometry(RADIUS + LEVEL_4, 64, 32),
       rotation:       [0, PI, 0],
@@ -448,7 +459,7 @@ CFG.Assets = {
       title:          'geojson land',
       radius:         RADIUS + LEVEL_3,
       type:           'geo.json',
-      rotation:       [0, Math.PI / 2, 0],
+      rotation:       [0, PI2, 0],
       json:           'data/json/countries_states.geojson',
       color:          new THREE.Color('#888888'),
     },
@@ -460,7 +471,7 @@ CFG.Assets = {
       title:          'geojson rivers',
       type:           'geo.json',
       radius:         RADIUS + LEVEL_3,
-      rotation:       [0, Math.PI / 2, 0],
+      rotation:       [0, PI2, 0],
       json:           'data/json/rivers.geojson',
       color:          new THREE.Color('#888888'),
     },
@@ -472,6 +483,7 @@ CFG.Assets = {
     sector: {
       id:             27,
       title:          'sector marker',
+      debuggable:      false,
       type:           'mesh.calculated',
       altitude:       LEVEL_6,
       resolution:     1,

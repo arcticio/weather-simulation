@@ -34,7 +34,7 @@ SCN.Tools = {
         return new THREE.MeshPhongMaterial(Object.assign({ 
           map:         response.data,
           shininess:   0,
-          alphaTest: 0.5,
+          alphaTest:   0.5,
         }), cfg.material);
 
       });
@@ -70,6 +70,13 @@ SCN.Tools = {
 
     'mesh.module': (name, cfg, callback) => {
       SCN.Meshes[name](name, cfg, function (name, mesh) {
+        SCN.add(name, mesh);
+        callback();
+      });
+    },
+
+    'basemaps': (ids, name, cfg, callback) => {
+      SCN.Meshes[name](ids, name, cfg, function (name, mesh) {
         SCN.add(name, mesh);
         callback();
       });

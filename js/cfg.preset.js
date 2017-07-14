@@ -13,27 +13,27 @@ CFG.Preset = {
       ResetCam:       () => SCN.reset.controller(),
 
       Ambient: { isFolder: true,
-        toggle:       CFG.Assets.ambient.visible,
+        toggle:       true, // CFG.Assets.ambient.visible,
         intensity:    {val: CFG.Assets.ambient.intensity, min: 0, max: 1},
         color:        '#ffffff'
       },
 
       Spot: { isFolder: true,
-        toggle:       CFG.Assets.spot.visible,
+        toggle:       true, // CFG.Assets.spot.visible,
         angle:        {val: 0.26, min: 0, max: 0.5},
         intensity:    {val: CFG.Assets.spot.intensity, min: 0, max: 1},
         color:        '#ffffff'
       },
 
       Sun: { isFolder: true,
-        toggle:       CFG.Assets.sun.visible,
+        toggle:       true, // CFG.Assets.sun.visible,
         intensity:    {val: CFG.Assets.sun.intensity, min: 0, max: 1},
         skycolor:     CFG.Assets.sun.skycolor,
         grdcolor:     CFG.Assets.sun.grdcolor,
       },
 
       Atmosphere: { isFolder: true,
-        toggle:       CFG.Assets.atmosphere.visible,
+        toggle:       false, // CFG.Assets.atmosphere.visible,
         opacity:      {val: CFG.Assets.atmosphere.opacity, min: 0, max: 1},
       },
 
@@ -42,8 +42,8 @@ CFG.Preset = {
         var layers = {isFolder: true};
 
         H.each(CFG.Assets, (name, config) => {
-          if (config.id) {
-            layers[name.toUpperCase()] = CFG.Assets[name].visible;
+          if (config.debuggable) {
+            layers[name.toUpperCase()] = CFG.Assets[name].debuggable;
           }
         });
 
