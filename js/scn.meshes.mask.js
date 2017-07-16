@@ -19,7 +19,7 @@ SCN.Meshes.mask = function (name, cfg, callback) {
 
   for (idx in geometry.vertices) {
     vertex = geometry.vertices[idx];
-    vertex.normalize().multiplyScalar(cfg.cube.radius);
+    vertex.normalize().multiplyScalar(cfg.radius);
   }
 
   geometry.computeVertexNormals();

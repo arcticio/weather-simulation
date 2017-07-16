@@ -22,8 +22,9 @@ const
   LEVEL_3 =   0.003,  // seaice
   LEVEL_4 =   0.004,  // wind10, tmp2m
   LEVEL_5 =   0.005,  // clouds
-  LEVEL_6 =   0.006,  // jetstream
+  LEVEL_6 =   0.006,  // jetstream, graticule
   LEVEL_7 =   0.007,  // atmosphere
+  LEVEL_8 =   0.008,  // atmosphere
 
   KELVIN  =   273.15
 ;
@@ -94,7 +95,6 @@ var CFG = {
   },
 
   BasemapIds: [9, 10, 11, 14],
-  defaultBasemap: 'basemaps',     // id = 8
 
   Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
@@ -145,6 +145,7 @@ var CFG = {
     'hud/rain.png':                 'images/hud/rain.png',
     'hud/population.png':           'images/hud/population.png',
     'hud/backdrop.png':             'images/hud/backdrop.png',
+    'hud/atmosphere.png':           'images/hud/atmosphere.png',
 
     // 'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 

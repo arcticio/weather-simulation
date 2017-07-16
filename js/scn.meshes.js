@@ -108,9 +108,12 @@ SCN.Meshes = {
       container = new THREE.Object3D(),
 
       gratGeo   = new THREE.Geometry(),
-      gratMat   = new THREE.LineBasicMaterial(Object.assign({}, cfg.material, {
-        // uniforms: {type: 'f', value: SCN.camera.position.length()}
-      })),
+      gratMat   = new THREE.LineBasicMaterial(
+        Object.assign(cfg.material, {
+          //
+        })
+      ),
+      
       graticule =  new THREE.LineSegments(gratGeo, gratMat),
 
       axisMat   = new THREE.LineBasicMaterial({color: 0xffffff}),
@@ -127,7 +130,7 @@ SCN.Meshes = {
       sun       = new THREE.Line( sunGeo, sunMat ),
 
       toVec3   = function (lat, lon) {
-        return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, cfg.altitude);
+        return TOOLS.latLonRadToVector3(lat, lon, cfg.radius);
       };
 
     // calc parallels, 
@@ -166,6 +169,11 @@ SCN.Meshes = {
       new THREE.Vector3( 0,    0, 0 ),
       new THREE.Vector3( 0,    0, 0 )
     );
+
+    sun.name       = 'sun';
+    pntr.name      = 'pointer';
+    axis.name      = 'axis';
+    graticule.name = 'graticule';
 
     container.add(sun, pntr, axis, graticule);
 

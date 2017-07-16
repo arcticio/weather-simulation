@@ -235,7 +235,12 @@
           ANI.insert(0, ANI.library.intro(800, function () {
             CFG.isLoaded = true;
             IFC.Tools.updateUrl();
+
+            SCN.logScene();
+            
             // console.log('CFG.Device', JSON.stringify(CFG.Device, null, 2));
+
+
           }));
         });
 

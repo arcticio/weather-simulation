@@ -1,6 +1,63 @@
 
 SCN.Tools = {
 
+  determineObject: function (obj) {
+
+    return {
+      order:    obj.renderOrder,
+      type:     SCN.Tools.determineType(obj),
+      material: SCN.Tools.determineMaterial(obj.material),
+      blending: SCN.Tools.determineBlending(obj.material),
+      children: obj.children.length,
+    };
+
+  },
+  determineType: function (obj) {
+
+    return (
+      obj instanceof THREE.Scene                ? 'Scene' :
+      obj instanceof THREE.Camera               ? 'Camera' :
+      obj instanceof THREE.AmbientLight         ? 'AmbientLight' :
+      obj instanceof THREE.HemisphereLight      ? 'HemisphereLight' :
+      obj instanceof THREE.SpotLight            ? 'SpotLight' :
+      obj.geometry instanceof THREE.SphereBufferGeometry ? 'SphereBufferGeometry' :
+      obj.geometry instanceof THREE.BufferGeometry       ? 'BufferGeometry' :
+      obj.geometry instanceof THREE.SphereGeometry       ? 'SphereGeometry' :
+      obj.geometry instanceof THREE.BoxGeometry          ? 'BoxGeometry' :
+      obj instanceof THREE.Object3D             ? 'Object3D' :
+        'unknown'
+    );
+
+  },
+
+  determineMaterial: function (mat) {
+
+    return (
+      mat === undefined                        ? '-' :
+      mat instanceof THREE.ShaderMaterial      ? 'ShaderMaterial' :
+      mat instanceof THREE.RawShaderMaterial   ? 'RawShaderMaterial' :
+      mat instanceof THREE.LineBasicMaterial   ? 'LineBasicMaterial' :
+      mat instanceof THREE.MeshLambertMaterial ? 'MeshLambertMaterial' :
+      mat instanceof THREE.MeshBasicMaterial   ? 'MeshBasicMaterial' :
+      mat instanceof THREE.MeshPhongMaterial   ? 'MeshPhongMaterial' :
+        '-'
+    );
+
+  },
+
+  determineBlending: function (mat) {
+
+    return (
+      mat === undefined                       ? '-' :
+      mat.blending === undefined              ? '-' :
+      mat.blending === THREE.AdditiveBlending ? 'Additive':
+      mat.blending === THREE.MultiplyBlending ? 'Multiply':
+      mat.blending === THREE.NormalBlending   ? 'Normal':
+        'wtf'
+    );
+
+  },
+
   loadCube: function (name, cfg, callback) {
 
     var
@@ -20,7 +77,7 @@ SCN.Tools = {
 
     for (idx in geometry.vertices) {
       vertex = geometry.vertices[idx];
-      vertex.normalize().multiplyScalar(cfg.cube.radius);
+      vertex.normalize().multiplyScalar(cfg.radius);
     }
 
     geometry.computeVertexNormals();
@@ -66,7 +123,7 @@ SCN.Tools = {
     'mesh.calculated': (name, cfg, callback) => {
       SCN.add(name, SCN.Meshes.calculate(name, cfg));
       callback();
-    },
+    },  
 
     'mesh.module': (name, cfg, callback) => {
       SCN.Meshes[name](name, cfg, function (name, mesh) {
@@ -78,6 +135,13 @@ SCN.Tools = {
     'basemaps': (ids, name, cfg, callback) => {
       SCN.Meshes[name](ids, name, cfg, function (name, mesh) {
         SCN.add(name, mesh);
+        callback();
+      });
+    },
+
+    'cube.textured': (name, cfg, callback) => {
+      SCN.Tools.loadCube(name, cfg, (name, obj) => {
+        SCN.add(name, obj);
         callback();
       });
     },
@@ -111,12 +175,6 @@ SCN.Tools = {
 
     },
 
-    'cube.textured': (name, cfg, callback) => {
-      SCN.Tools.loadCube(name, cfg, (name, obj) => {
-        SCN.add(name, obj);
-        callback();
-      });
-    },
 
   },
 };

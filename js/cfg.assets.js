@@ -115,32 +115,35 @@ CFG.Assets = {
   // VISUALS ( 5 - 6 )
 
     graticule: {
-      id:             5,
-      title:          'graticule',
-      type:           'mesh.calculated',
-      debuggable:     true,
-      toggleable:     true,
-      altitude:       0.01,
-      resolution:     10,
+      index:           5,
+      debuggable:      true,
+      toggleable:      true,
+      title:           'graticule',
+      type:            'mesh.calculated',
+      radius:          RADIUS + LEVEL_6,
+      resolution:      10,
       material: {
-        transparent:  true,
-        opacity:      0.2,
-        color:        0xdddddd,
-        // linewidth:    1.1,
-        // vertexColors: THREE.NoColors,
-        // lights:       true, // errors with material
+        transparent:   true,
+        opacity:       0.2,
+        color:         0xdddddd,
+        // depthWrite:    false
       }
     },
 
     atmosphere: {
-      id:             6,
-      debuggable:     true,
-      toggleable:     true,
-      title:          'atmosphere',
-      type:           'mesh.module',
-      radius:         RADIUS + LEVEL_7,
-      rotation:       [0, PI2, 0],
-      opacity:        0.5,
+      index:           6,
+      debuggable:      true,
+      toggleable:      true,
+      title:           'atmosphere',
+      type:            'mesh.module',
+      radius:          RADIUS + LEVEL_8,
+      rotation:        [0, PI2, 0],
+      opacity:         0.5,
+      material: {
+        transparent:   true,
+        opacity:       0.2,
+        // depthWrite:    true
+      }
     },
 
 
@@ -160,12 +163,12 @@ CFG.Assets = {
       material: {
         transparent:   true, 
         opacity:       0.99,              // removes crazy seaice effeckt
-        side:          THREE.DoubleSide,
+        // side:          THREE.DoubleSide,
       },
     },
 
     rtopo2: {
-      id:              10,
+      index:           10,
       title:           'RTOPO2 surface layer',
       type:            'cube.textured',
       debuggable:      true,
@@ -185,7 +188,7 @@ CFG.Assets = {
     },
 
     gmlc: {
-      id:              11,
+      index:           11,
       title:           'GLCNMO - vegetation layer',
       type:            'cube.textured',
       debuggable:      true,
@@ -208,7 +211,7 @@ CFG.Assets = {
   // OBSERVATIONS ( 14 - 20 )
 
     snpp: {
-      id:             14,
+      index:          14,
       toggleable:     true,
       debuggable:     true,
       type:           'cube.textured',
@@ -229,7 +232,7 @@ CFG.Assets = {
 
 
     sst: {
-      id:             15,
+      index:          15,
       title:          'sea surface temperature',
       type:           'cube.textured',
       debuggable:      true,
@@ -248,15 +251,15 @@ CFG.Assets = {
     },
 
     seaice: {
-      id:              16,
+      index:           16,
       debuggable:      true,
       toggleable:      true,
       title:           'AMSR2 sea ice concentration',
       type:            'cube.textured',
       rotation:        [0, PI2, 0],
+      radius:          RADIUS + LEVEL_3, 
       cube: {
         type:          'polar',
-        radius:        RADIUS + LEVEL_3, 
         texture:       'data/amsr2/2017-06-13.polar.amsr2.FACE.1024.grey.trans.png', 
         material: {
           transparent: true, 
@@ -267,7 +270,7 @@ CFG.Assets = {
     },
 
     wind: {
-      id:             17,
+      index:          17,
       debuggable:      true,
       toggleable:      true,
       title:          'GFS - wind 10m',
@@ -299,7 +302,7 @@ CFG.Assets = {
     },
 
     jetstream: {
-      id:             18,
+      index:          18,
       debuggable:      true,
       toggleable:      true,
       title:          'GFS - jetstream at 300hpa',
@@ -338,12 +341,12 @@ CFG.Assets = {
     },
 
     clouds: {
-      id:             19,
+      index:          19,
       debuggable:      true,
       toggleable:      true,
       title:          'GFS - total cloud cover',
       type:           'simulation',
-      rotation:       [0, Math.PI, 0],
+      rotation:       [0, PI, 0],
       radius:         RADIUS + LEVEL_5, 
       amount:         1e5,
       factor:         1.0,
@@ -363,7 +366,7 @@ CFG.Assets = {
     },
 
     tmp2m: {
-      id:             20,
+      index:          20,
       debuggable:      true,
       toggleable:      true,
       title:          'GFS - air temperature at 2m',
@@ -395,21 +398,21 @@ CFG.Assets = {
     },
 
     pratesfc: {
-      id:             21,
+      index:           21,
       debuggable:      true,
       toggleable:      true,
-      title:          'GFS - urface precipitation rate',
-      comment:        'units of kg/m^2/s, which is equivalent to mm/s.  To get 6-hourly then, you would 6*60*60*PRATEsfc which would be 6hrs*60mins*60secs.',
-      type:           'simulation',
-      geometry:       new THREE.SphereBufferGeometry(RADIUS + LEVEL_4, 64, 32),
-      rotation:       [0, PI, 0],
-      radius:         RADIUS + LEVEL_4, 
-      opacity:        0.99,
+      title:           'GFS - urface precipitation rate',
+      comment:         'units of kg/m^2/s, which is equivalent to mm/s.  To get 6-hourly then, you would 6*60*60*PRATEsfc which would be 6hrs*60mins*60secs.',
+      type:            'simulation',
+      geometry:        new THREE.SphereBufferGeometry(RADIUS + LEVEL_4, 64, 32),
+      rotation:        [0, PI, 0],
+      radius:          RADIUS + LEVEL_4, 
+      opacity:         0.99,
       sim: {
-        variable:     'pratesfc',
-        scaler:       (d) => H.clampScale(d, 0, 0.001, 0, 255),
-        step:         [6, 'hours'],
-        dataroot:     'data/gfs/pratesfc/',
+        variable:      'pratesfc',
+        scaler:        d => H.clampScale(d, 0, 0.001, 0, 255),
+        step:          [6, 'hours'],
+        dataroot:      'data/gfs/pratesfc/',
         patterns: [
           'YYYY-MM-DD-HH[.pratesfc.10.dods]', 
         ],
@@ -442,18 +445,22 @@ CFG.Assets = {
   // FEATURES ( 23 - 25 )
 
     population: {
-      id:              23,
+      index:           23,
       debuggable:      true,
       toggleable:      true,  
       title:           '3000 major cities',
       type:            'mesh.module',
       radius:          RADIUS + LEVEL_0,
-      opacity:         0.8,
       color:           new THREE.Color(0xff00ff),
+      opacity:         0.8,
+      material: {
+        transparent:   true,
+        blending:      THREE.AdditiveBlending,
+      }
     },
 
     land: {
-      id:             24,
+      index:           24,
       debuggable:      true,
       toggleable:      false,
       title:          'geojson land',
@@ -465,7 +472,7 @@ CFG.Assets = {
     },
 
     rivers: {
-      id:             25,
+      index:           25,
       debuggable:      true,
       toggleable:      false,
       title:          'geojson rivers',
@@ -481,7 +488,7 @@ CFG.Assets = {
   // OPTIONAL / DEV ( 26 - 28 )
 
     sector: {
-      id:             27,
+      index:          27,
       title:          'sector marker',
       debuggable:      false,
       type:           'mesh.calculated',
@@ -497,8 +504,8 @@ CFG.Assets = {
       }
     },
 
-    axes: {
-      id:             28,
+    axes: { 
+      index:           28,
       debuggable:      true,
       title:          '3D axes',
       type:           'mesh',
@@ -506,7 +513,7 @@ CFG.Assets = {
     },
 
     // pixels: {
-    //   id:              30,
+    //   index:           30,
     //   visible:        false,
     //   type:            'mesh.module',
     //   title:           'experiment',

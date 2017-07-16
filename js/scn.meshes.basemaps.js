@@ -25,7 +25,6 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
 
       void main () {
 
-        // gl_FragColor = texture2D( map, gl_PointCoord ).rgba;
         gl_FragColor = texture2D( map, vUv ).rgba;
         // gl_FragColor = vec4(0.8);
 
@@ -38,18 +37,18 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
       return CFG.Faces.map( face => {
 
         var
-          texkey  = `globe.${map}.${face}.${resolution}.png`,
-          texture = CFG.Textures[texkey]
+          texkey   = `globe.${map}.${face}.${resolution}.png`,
+          texture  = CFG.Textures[texkey],
+          uniforms = {
+            map: {type: 't', value: texture},
+          }
         ;
 
         return new THREE.ShaderMaterial(
           Object.assign(cfg.material, {
-            uniforms: {
-              map: {type: 't', value: texture},
-            },
+            uniforms,
             vertexShader,
             fragmentShader,
-            transparent: true,
           })
         );
 
@@ -82,22 +81,27 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
       });
       return id;
     }, 
-    convid = function (what) {
-      return typeof what === 'number' ? 
-        cfg.maps[cfg.ids.indexOf(what)] :
-        cfg.ids[cfg.maps.indexOf(what)]
+    convid = function (param) {
+      return typeof param === 'number' ? 
+        cfg.maps[cfg.ids.indexOf(param)] :
+        cfg.ids[cfg.maps.indexOf(param)]
       ;
     }
 
   ;
 
+  // https://stackoverflow.com/questions/15994944/transparent-objects-in-threejs/15995475#15995475
+
   cfg.maps.forEach(map => {
 
     var mesh = new THREE.Mesh( createGeometry(), createMaterials(map, cfg.resolution) );
 
-    mesh.name = map;
+    mesh.name        = map;
+    mesh.visible     = mesh.name === convid(id);
+    // mesh.renderOrder = 8; //~~(cfg.radius - CFG.earth.radius) * 1000;
+
     cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
-    mesh.visible = mesh.name === convid(id);
+
     container.add(mesh);
 
   });
@@ -107,6 +111,8 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
     getMapId,
     convid
   });
+
+  container.renderOrder = 8;
 
   callback(name, container);
 

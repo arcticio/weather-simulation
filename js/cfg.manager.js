@@ -194,8 +194,8 @@ CFG.Manager = (function () {
       // populate activated from assets
       H.each(CFG.Assets, ( name, cfg ) => {
 
-        if (cfg.id !== undefined && H.contains(assets, cfg.id) ) {
-          activated[name] = cfg.id;
+        if (cfg.index !== undefined && H.contains(assets, cfg.index) ) {
+          activated[name] = cfg.index;
 
         } else if (cfg.ids !== undefined) {
           intersect = H.intersect(assets, cfg.ids);
@@ -309,11 +309,11 @@ CFG.Manager = (function () {
 
       H.each(CFG.Assets, (name, cfg) => {
 
-        out[name] = {id: cfg.id || '-'};
+        out[name] = {index: cfg.index || '-'};
 
         H.each(cfg, (option, value) => {
 
-          if (option === 'id' || has(args, option)) {
+          if (option === 'index' || has(args, option)) {
             out[name][option] = value;
           }
 

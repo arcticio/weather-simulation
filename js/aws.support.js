@@ -31,6 +31,17 @@ try {
 
     end;
 
+    const _systemEndianness = (() => {
+      const b = new ArrayBuffer(4);
+      const a = new Uint32Array(b);
+      const c = new Uint8Array(b);
+      a[0] = 0xdeadbeef;
+      if (c[0] === 0xef) return 'LE';
+      if (c[0] === 0xde) return 'BE';
+      throw new Error('unknown endianness');
+    })();
+
+
     // checking for float texture render support 
     function checkFloatSupport () {
 

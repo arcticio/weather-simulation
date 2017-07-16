@@ -505,5 +505,27 @@ CFG.Sprites = {
     },
   },
 
+  atmosphere: {
+    visible:  CFG.Assets.atmosphere.toggable,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:    5,
+      top:     480,
+      left:     80,
+      width:    54,
+      height:   54,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/atmosphere.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggle(SCN.assets.atmosphere);
+      sprite.toggled = !sprite.toggled;
+    },
+  },
+
 
 };

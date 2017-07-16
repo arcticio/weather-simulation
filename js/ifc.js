@@ -333,16 +333,16 @@ var IFC = (function () {
       keydown:     function (event) { 
 
         var keys = {
-          ' ': () => SCN.toggleRender(),
-          'g': () => self.toggleGUI(),
-          'm': () => IFC.Hud.toggleMenu(),
+          ' ': SCN.toggleRender,
+          's': SCN.logScene,
+          'g': self.toggleGUI,
+          'm': IFC.Hud.toggleMenu,
           't': () => SIM.setSimTime( -1, 'hours'),
           'z': () => SIM.setSimTime(  1, 'hours'),
         };
 
         if (keys[event.key]) {
           keys[event.key]();          
-          // console.log('IFC.keydown.done', `'${event.key}'`);
           return IFC.Tools.eat(event);
         }
 

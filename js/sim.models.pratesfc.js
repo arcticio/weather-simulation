@@ -119,6 +119,8 @@ SIM.Models.pratesfc = (function () {
 
       ;
 
+      mesh.name = 'sector';
+
       geometry.addAttribute( 'doe1', attributes.doe1 );
       geometry.addAttribute( 'doe2', attributes.doe2 );
 

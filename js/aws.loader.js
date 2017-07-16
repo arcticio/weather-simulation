@@ -195,13 +195,20 @@ var LDR = (function () {
 
     loadAssets: function () {
 
-      var id, sequence = [];
+      var 
+        id, sequence = [],
+        sorter = function (a, b) {
+          return (CFG.Assets[a].radius || 0) - (CFG.Assets[b].radius || 0) ;
+        }
+      ;
 
-      H.each(CFG.Assets, (name, config) => {
+      Object
+        .keys(CFG.Assets)
+        .filter( a => CFG.Assets[a].type !== 'simulation' )
+        .sort(sorter)
+        .forEach(name => {
 
-        var fn, intersect;
-
-        if (config.type !== 'simulation'){
+          var action, config = CFG.Assets[name];
 
           // makes key a value
           config.name = name;
@@ -209,19 +216,26 @@ var LDR = (function () {
           // test
           if ( CFG.Manager.activated[name] ) {
 
-            fn = function (callback) {
+            action = function (callback) {
+
               self.message('', name);
+              
               setTimeout(function () {
+              
                 if (config.type === 'basemaps') {
                   id = CFG.Manager.activated[name];
                   SCN.Tools.loader[config.type](id, name, config, callback);
+              
                 } else {
                   SCN.Tools.loader[config.type](name, config, callback);
+              
                 }
+
               }, delay);
+
             };
 
-            sequence.push([fn, 'callback']);
+            sequence.push([action, 'callback']);
 
           } else {
 
@@ -229,9 +243,9 @@ var LDR = (function () {
             SCN.assets[name] = config;
 
           }
-        }
 
-      });
+        })
+      ;
 
       return sequence;
 
@@ -262,7 +276,7 @@ var LDR = (function () {
 
           config.name = name;
 
-          if (H.contains(assets, config.id) || config.essential){
+          if (H.contains(assets, config.index) || config.essential){
 
             action = function (callback) {
               self.message('', config.title);

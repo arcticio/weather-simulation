@@ -39,8 +39,38 @@ var SCN = (function () {
     pointer,
     renderer,
 
+    setComb : function (val) {comb = val;},
     toggleRender: function (force) {
       doRender = force !== undefined ? force : !doRender;
+    },
+    init: function () {
+
+      // https://www.quirksmode.org/blog/archives/2012/07/more_about_devi.html
+      // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
+      // webgl.min_capability_mode
+
+      scene.name = 'scene';
+
+      renderer.autoClear   = false;             // cause HUD has own scene
+      renderer.sortObjects = true;
+      renderer.setClearColor(0x662200, 1.0);  // red for danger
+      renderer.shadowMap.enabled = false;     // not needed
+
+      camera = self.camera = CFG.Camera.cam;
+      camera.position.copy(CFG.Camera.pos);
+      self.add('camera', camera);
+
+    },
+
+    resize: function (geometry) {
+
+      renderer.setSize(geometry.width, geometry.height);
+
+      if (camera) {
+        camera.aspect = geometry.aspect;
+        camera.updateProjectionMatrix();
+      }
+      
     },
     add: function (name, asset) {
 
@@ -51,10 +81,33 @@ var SCN = (function () {
 
       assets[name] = asset;
       assets[name].name = name;
+      self.setRenderOrder(asset);
+
+      asset.updateMatrixWorld();
       scene.add(asset);
 
     },
-    setComb : function (val) {comb = val;},
+    setRenderOrder: function (asset) {
+      
+      var cfg, order;
+
+      cfg   = CFG.Assets[asset.name];
+      order = (cfg && cfg.radius) ? - ~~((cfg.radius - CFG.earth.radius) * 1000) : 0;
+
+      asset.renderOrder = order;
+      asset.renderDepth = false;
+
+      // console.log(asset.name, order);
+
+      asset.children.forEach(c => {
+     
+        c.renderOrder = order;
+        c.renderDepth = false;
+        // console.log(c.name, order);
+     
+      });
+
+    },
     toggle: function (asset, force) {
 
       if (scene.getObjectByName(asset.name) || force === false) {
@@ -62,6 +115,9 @@ var SCN = (function () {
 
       } else {
         if (asset instanceof THREE.Object3D){
+          self.setRenderOrder(asset);
+          scene.updateMatrixWorld();
+          asset.updateMatrixWorld();
           scene.add(asset);
 
         } else {
@@ -93,7 +149,7 @@ var SCN = (function () {
       arr.splice(0, arr.length);
       scene.children
         .filter(c => c.visible && c.name !== 'camera')
-        .map(c => c.name === 'basemaps' ? c.getMapId() : CFG.Assets[c.name].id)
+        .map(c => c.name === 'basemaps' ? c.getMapId() : CFG.Assets[c.name].index)
         .filter(c => !!c)        
         .forEach( id => arr.push(id))
       ;
@@ -137,32 +193,6 @@ var SCN = (function () {
       IFC.urlDirty = true;
 
       console.log('SCN.toggleBasemap', basename, action);
-
-    },
-
-    resize: function (geometry) {
-
-      renderer.setSize(geometry.width, geometry.height);
-
-      if (camera) {
-        camera.aspect = geometry.aspect;
-        camera.updateProjectionMatrix();
-      }
-      
-    },
-    init: function () {
-
-      // https://www.quirksmode.org/blog/archives/2012/07/more_about_devi.html
-      // renderer.setPixelRatio( window.devicePixelRatio );  // What the fuss?
-      // webgl.min_capability_mode
-
-      renderer.setClearColor(0x662200, 1.0);  // red for danger
-      renderer.shadowMap.enabled = false;     // not needed
-      renderer.autoClear = false;             // cause HUD has own scene
-
-      camera = self.camera = CFG.Camera.cam;
-      camera.position.copy(CFG.Camera.pos);
-      self.add('camera', camera);
 
     },
 
@@ -304,6 +334,37 @@ var SCN = (function () {
       frame += 1;
 
     },
+    
+    logScene: function () {
+
+      var name, log = {}, config;
+
+      function indent (obj) {
+        return obj.parent ? '__' + indent(obj.parent) : ''; 
+      }
+
+      scene.traverse (function (object) {
+
+        config = CFG.Assets[object.name] || {};
+        name   = indent(object) + object.name;
+        
+        log[name] = Object.assign({
+            index    : config.index || '-',
+            visible  : object.visible,
+          }, SCN.Tools.determineObject(object))
+        ;
+
+      });
+      
+      console.log({
+        sortObjects: renderer.sortObjects
+
+      });
+
+      console.table(log);
+
+    },
+
     // info: function () { },
     probeDevice: function () {
 

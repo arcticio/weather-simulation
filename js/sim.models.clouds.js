@@ -199,7 +199,7 @@ SIM.Models.clouds = (function () {
       geometry.addAttribute( 'position',   position );
 
       mesh.onBeforeRender = onBeforeRender;
-
+      mesh.name = 'sector';
       model.obj.add(mesh);
 
       TIM.step('Model.clouds.out', Date.now() -t0, 'ms');

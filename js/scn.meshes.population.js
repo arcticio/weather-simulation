@@ -45,20 +45,20 @@ SCN.Meshes.population = function (name, cfg, callback) {
 
     `,
 
-    uniforms ={
+    uniforms = {
       'map':        { type: 't', value: CFG.Textures['dot.white.128.png'] },
       'opacity':    { type: 'f', value: cfg.opacity },
       'distance':   { type: 'f', value: SCN.camera.distance },
       'ucolor':     { type: 'c', value: cfg.color },
     },
 
-    material  = new THREE.ShaderMaterial({ 
-      uniforms,
-      vertexShader,
-      fragmentShader,
-      transparent:    true,
-      blending:       THREE.AdditiveBlending,
-    }),
+    material  = new THREE.ShaderMaterial(
+      Object.assign(cfg.material, { 
+        uniforms,
+        vertexShader,
+        fragmentShader,
+      })
+    ),
 
     size      = new Float32Array( amount * 1 ),
     positions = new Float32Array( amount * 3 ),

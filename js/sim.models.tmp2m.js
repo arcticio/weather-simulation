@@ -186,6 +186,8 @@ SIM.Models.tmp2m = (function () {
 
       ;
 
+      mesh.name = 'sector';
+
       model.obj.add(mesh);
       mesh.onBeforeRender = onBeforeRender;
 
@@ -288,7 +290,8 @@ SIM.Models.tmp2m = (function () {
               ${frags.palette}
             );
 
-            gl_FragColor = vec4(color * dnMix, opacity);
+            // gl_FragColor = vec4(color * dnMix, opacity);
+            gl_FragColor = vec4(color, opacity);
 
             // debug
             // gl_FragColor = vec4(dnMix, dnMix, dnMix, 0.5);
