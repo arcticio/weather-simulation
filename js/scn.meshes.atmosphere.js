@@ -23,6 +23,9 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
     `,
     fragmentShader = `
 
+      const vec4 lightDay   = vec4(0.1, 0.05, 0.0, 0.1);
+      const vec4 lightNight = vec4(0.0, 0.0,  0.1, 0.6);
+
       uniform float opacity;
       uniform vec3  sunDirection;
       uniform mat4  modelMatrix;       // = atmo model matrix
@@ -40,7 +43,7 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
 
       float dnMix, dnZone;
       float dnSharpness = 4.0;
-      float dnFactor    = 0.4; // 0.15;
+      float dnFactor    = 0.5; // 0.15;
 
       void main() {
 
@@ -51,13 +54,13 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
         dnZone = clamp( dotNL * dnSharpness, -1.0, 1.0);
 
         // convert to 0 to 1 for mixing, 0.5 for full range
-        dnMix = 0.6 - dnZone * dnFactor;
+        dnMix = 0.5 - dnZone * dnFactor;
         
-        color    = vec3( 0.3);
-
-        gl_FragColor = vec4(color / dnMix, 0.3);
+        gl_FragColor = mix(lightDay, lightNight, dnMix);
 
         return ;
+
+
 
         // worldNormal  = normalize ( normalMatrix * vNormal );     
         // sunDirection = normalize(sunDirection);                       
