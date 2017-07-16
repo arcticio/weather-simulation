@@ -49,7 +49,6 @@ SIM.Models.pratesfc = (function () {
         
         datagrams = SIM.datagrams,
         doe       = SIM.time.doe,
-        mindoe    = SIM.time.mindoe,
 
         geometry = new THREE.SphereBufferGeometry(cfg.radius, 359, 180),
 
@@ -61,7 +60,7 @@ SIM.Models.pratesfc = (function () {
         ownuniforms   = {
           doe:          { type: 'f',   value: doe },
           opacity:      { type: 'f',   value: cfg.opacity },
-          sunDirection: { type: 'v3',  value: SIM.sunDirection },
+          sunDirection: { type: 'v3',  value: SIM.sunDirection.clone() },
         },
 
         uniforms   = THREE.UniformsUtils.merge([
@@ -71,12 +70,9 @@ SIM.Models.pratesfc = (function () {
         
         material   = new THREE.ShaderMaterial({
           uniforms,
-          // lights:         true,
           transparent:    true,
           vertexShader:   self.vertexShader(),
           fragmentShader: self.fragmentShader(),
-          // side:           THREE.FrontSide,
-          // vertexColors:   THREE.NoColors,
         }),
       
         onAfterRender = function  () {
@@ -110,7 +106,7 @@ SIM.Models.pratesfc = (function () {
           }
 
           uniforms.doe.needsUpdate          = true;
-          uniforms.sunDirection.value       = SIM.sunDirection;
+          uniforms.sunDirection.value.copy(SIM.sunDirection);
           uniforms.sunDirection.needsUpdate = true;
 
         },
@@ -119,13 +115,12 @@ SIM.Models.pratesfc = (function () {
 
       ;
 
-      mesh.name = 'sector';
-
       geometry.addAttribute( 'doe1', attributes.doe1 );
       geometry.addAttribute( 'doe2', attributes.doe2 );
 
-      model.obj.add(mesh);
       mesh.onAfterRender = onAfterRender;
+      mesh.name = 'sector';
+      model.obj.add(mesh);
 
       TIM.step('SIM.pratesfc.out', Date.now() -t0, 'ms');
 

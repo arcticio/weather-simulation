@@ -153,7 +153,7 @@ SIM.Models.tmp2m = (function () {
         uniforms  = Object.assign(textures, {
           doe:          { type: 'f',   value: doe - mindoe },
           opacity:      { type: 'f',   value: cfg.opacity },
-          sunDirection: { type: 'v3',  value: SIM.sunDirection },
+          sunDirection: { type: 'v3',  value: SIM.sunDirection.clone() },
         }),
         
         material  = new THREE.ShaderMaterial({
@@ -161,15 +161,13 @@ SIM.Models.tmp2m = (function () {
           transparent:      true,
           vertexShader:     self.vertexShader(),
           fragmentShader:   self.fragmentShader(fragments),
-          // lights:         true,
-          // side:           THREE.FrontSide,
-          // vertexColors:   THREE.NoColors,
         }),
 
         onBeforeRender =  function () {
 
-          uniforms.sunDirection.value = SIM.sunDirection;
-          uniforms.sunDirection.value.y = -uniforms.sunDirection.value.y; // why
+          uniforms.sunDirection.value.copy(SIM.sunDirection);
+          uniforms.sunDirection.value.y *= -1; // why
+          uniforms.sunDirection.needsUpdate = true;
 
           uniforms.doe.value = (
             SIM.time.doe >= times.mindoe && SIM.time.doe <= times.maxdoe ? 
@@ -178,7 +176,6 @@ SIM.Models.tmp2m = (function () {
           );
 
           uniforms.doe.needsUpdate = true;
-          uniforms.sunDirection.needsUpdate = true;
 
         },
 
@@ -186,10 +183,9 @@ SIM.Models.tmp2m = (function () {
 
       ;
 
-      mesh.name = 'sector';
-
-      model.obj.add(mesh);
       mesh.onBeforeRender = onBeforeRender;
+      mesh.name = 'sector';
+      model.obj.add(mesh);
 
       TIM.step('SIM.tmp2m.out', Date.now() -t0, 'ms');
 

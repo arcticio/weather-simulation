@@ -4,12 +4,27 @@ SCN.Tools = {
   determineObject: function (obj) {
 
     return {
-      order:    obj.renderOrder,
-      type:     SCN.Tools.determineType(obj),
-      material: SCN.Tools.determineMaterial(obj.material),
-      blending: SCN.Tools.determineBlending(obj.material),
-      children: obj.children.length,
+      children:    obj.children.length ? obj.children.length : null,
+      order:       obj.renderOrder,
+      type:        SCN.Tools.determineType(obj),
+      material:    SCN.Tools.determineMaterial(obj.material),
+      blending:    SCN.Tools.determineBlending(obj.material),
+      depth:       SCN.Tools.determineDepth(obj),
+      transparent: obj.material ? obj.material.transparent : '-',
     };
+
+  },
+  determineDepth: function (obj) {
+
+    var 
+      depth = obj.renderDepth ? 'render' : '';
+
+      depth += !obj.material ? '' : 
+        (obj.material.depthTest  ? '-test'  : '') + 
+        (obj.material.depthWrite ? '-write' : '')
+      ;
+
+    return depth;
 
   },
   determineType: function (obj) {
@@ -24,7 +39,7 @@ SCN.Tools = {
       obj.geometry instanceof THREE.BufferGeometry       ? 'BufferGeometry' :
       obj.geometry instanceof THREE.SphereGeometry       ? 'SphereGeometry' :
       obj.geometry instanceof THREE.BoxGeometry          ? 'BoxGeometry' :
-      obj instanceof THREE.Object3D             ? 'Object3D' :
+      obj instanceof THREE.Object3D             ? 'Container' :
         'unknown'
     );
 
@@ -33,14 +48,15 @@ SCN.Tools = {
   determineMaterial: function (mat) {
 
     return (
-      mat === undefined                        ? '-' :
+      mat === undefined                        ? null :
       mat instanceof THREE.ShaderMaterial      ? 'ShaderMaterial' :
       mat instanceof THREE.RawShaderMaterial   ? 'RawShaderMaterial' :
       mat instanceof THREE.LineBasicMaterial   ? 'LineBasicMaterial' :
       mat instanceof THREE.MeshLambertMaterial ? 'MeshLambertMaterial' :
       mat instanceof THREE.MeshBasicMaterial   ? 'MeshBasicMaterial' :
       mat instanceof THREE.MeshPhongMaterial   ? 'MeshPhongMaterial' :
-        '-'
+      mat instanceof THREE.Material            ? 'Material' :
+        null
     );
 
   },
@@ -48,8 +64,8 @@ SCN.Tools = {
   determineBlending: function (mat) {
 
     return (
-      mat === undefined                       ? '-' :
-      mat.blending === undefined              ? '-' :
+      mat === undefined                       ? null :
+      mat.blending === undefined              ? null :
       mat.blending === THREE.AdditiveBlending ? 'Additive':
       mat.blending === THREE.MultiplyBlending ? 'Multiply':
       mat.blending === THREE.NormalBlending   ? 'Normal':

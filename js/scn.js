@@ -89,21 +89,18 @@ var SCN = (function () {
     },
     setRenderOrder: function (asset) {
       
-      var cfg, order;
+      var cfg, order, reverse = 1;
 
       cfg   = CFG.Assets[asset.name];
-      order = (cfg && cfg.radius) ? - ~~((cfg.radius - CFG.earth.radius) * 1000) : 0;
+      order = (cfg && cfg.radius) ? reverse * ~~((cfg.radius - CFG.earth.radius) * 1000) : 0;
 
-      asset.renderOrder = order;
-      asset.renderDepth = false;
-
-      // console.log(asset.name, order);
+      asset.renderOrder = ~~order;     // minds -0
+      asset.renderDepth = true;
 
       asset.children.forEach(c => {
      
-        c.renderOrder = order;
-        c.renderDepth = false;
-        // console.log(c.name, order);
+        c.renderOrder = ~~order;
+        c.renderDepth = true;
      
       });
 
@@ -349,13 +346,13 @@ var SCN = (function () {
         name   = indent(object) + object.name;
         
         log[name] = Object.assign({
-            index    : config.index || '-',
+            index    : config.index || null,
             visible  : object.visible,
           }, SCN.Tools.determineObject(object))
         ;
 
       });
-      
+
       console.log({
         sortObjects: renderer.sortObjects
 

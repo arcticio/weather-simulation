@@ -137,8 +137,8 @@ SIM.Models.clouds = (function () {
       TIM.step('Model.clouds.in');
 
       var
-        t0 = Date.now(),
         i, p, mesh, material, 
+        t0        = Date.now(), 
         pool      = SIM.coordsPool.slice(cfg.amount).pool,
         len       = pool.length,
         geometry  = new THREE.BufferGeometry(),
@@ -158,7 +158,7 @@ SIM.Models.clouds = (function () {
           factor:       { type: 'f',  value: cfg.factor },
           radius:       { type: 'f',  value: cfg.radius },
           distance:     { type: 'f',  value: SCN.camera.distance },
-          sunDirection: { type: 'v3', value: SIM.sunDirection },
+          sunDirection: { type: 'v3', value: SIM.sunDirection.clone() },
         }),
 
         material  = new THREE.ShaderMaterial({
@@ -172,8 +172,8 @@ SIM.Models.clouds = (function () {
 
         onBeforeRender = function () {
 
-          uniforms.sunDirection.value = SIM.sunDirection;
-          uniforms.sunDirection.value.y = -uniforms.sunDirection.value.y; // why
+          uniforms.sunDirection.value.copy(SIM.sunDirection);
+          uniforms.sunDirection.value.y *= -1;              // why
           uniforms.sunDirection.needsUpdate = true;
 
           material.uniforms.distance.value = SCN.camera.distance;

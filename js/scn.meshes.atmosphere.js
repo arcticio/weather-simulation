@@ -182,8 +182,8 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
     `,
 
     uniforms = {
-      sunDirection: {'type': 'v3', 'value': SIM.sunDirection},
-      opacity:     {'type': 'f',  'value': cfg.opacity},
+      sunDirection: {'type': 'v3', 'value': SIM.sunDirection.clone()},
+      opacity:      {'type': 'f',  'value': cfg.opacity},
     },
 
     mesh = new THREE.Mesh( geometry, new THREE.ShaderMaterial(
@@ -195,7 +195,7 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
     )),
 
     onBeforeRender = function () {
-      uniforms.sunDirection.value = SIM.sunDirection;
+      uniforms.sunDirection.value.copy(SIM.sunDirection);
       uniforms.sunDirection.needsUpdate = true;
     }
   ;
