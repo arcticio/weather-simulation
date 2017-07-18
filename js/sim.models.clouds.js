@@ -10,7 +10,7 @@ SIM.Models.clouds = (function () {
       palette:      '',
     },
     model = {
-      obj:     new THREE.Object3D(),
+      obj:          new THREE.Object3D(),
       urls:         [],
     },
 
@@ -49,11 +49,11 @@ SIM.Models.clouds = (function () {
     },
     interpolateLL: function (lat, lon) {
 
-      var doe = SIM.time.doe;
+      var doe  = SIM.time.doe;
       var doe1 = doe - (doe % 0.25);
       var doe2 = doe1 + 0.25;
-      var t1 = SIM.datagrams.tmp2m.linearXY(doe1, lat, lon -180);
-      var t2 = SIM.datagrams.tmp2m.linearXY(doe2, lat, lon -180);
+      var t1   = SIM.datagrams.tmp2m.linearXY(doe1, lat, lon -180);
+      var t2   = SIM.datagrams.tmp2m.linearXY(doe2, lat, lon -180);
       var frac = doe - ~~ doe;
       var fac2 = (frac % 0.25) % 4;
       var fac1 = 1.0 - fac2;

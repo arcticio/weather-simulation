@@ -31,18 +31,18 @@ IFC.Hud = (function () {
     
     init: function () {
 
-      var geo = IFC.geometry;
+      // var geo = IFC.geometry;
 
       camera.position.z = 10;
 
-      menuScale = ( geo.width + 64 ) / geo.width * 5
+      menuScale = ( IFC.geometry.width + 64 ) / IFC.geometry.width * 5
       menu.scale.set(menuScale, menuScale, 1);
 
       self.initSprites();
       scene.add(menu);
       scene.add(camera);
 
-      self.resize(geo);
+      self.resize(IFC.geometry);
 
     },
     render: function (renderer) {

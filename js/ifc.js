@@ -28,22 +28,22 @@ var IFC = (function () {
     },
 
     geometry = {            // canvas actually
-      height:   NaN,        // canvas
-      width:    NaN,
-      aspect:   NaN,
-      diagonal: NaN,
-      distance: NaN,        // camera
-      radius:   NaN,
+      height:        NaN,        // canvas
+      width:         NaN,
+      aspect:        NaN,
+      diagonal:      NaN,
+      distance:      NaN,        // camera
+      radius:        NaN,
     },
 
     mouse = {
-      x:          NaN, 
-      y:          NaN, 
-      px:         NaN, 
-      py:         NaN, 
-      down:       false, 
-      button:     NaN,
-      wheel:      {x: 0, y:0},
+      x:             NaN, 
+      y:             NaN, 
+      px:            NaN, 
+      py:            NaN, 
+      down:          false, 
+      button:        NaN,
+      wheel:         {x: 0, y:0},
     },
 
     touch = {
@@ -80,25 +80,29 @@ var IFC = (function () {
 
       self.events.resize();
 
-      self.urlDirty = urlDirty;
-
-      guiCont = $$('div.dg.ac')[0];
-      guiMain = $$('div.dg.main.a')[0];
+      // self.urlDirty = urlDirty;
 
       // move gui.dat to fullscreen container
+      guiCont = $$('div.dg.ac')[0];
       fullscreen.appendChild(guiCont);
 
       // pos gui.dat
-      guiMain.style.margin   = '0';
-      guiMain.style.top      = '72px';
-      guiMain.style.right    = '0';
-      guiMain.style.width    = '';
-      guiMain.style.position = 'absolute';
+      guiMain = $$('div.dg.main.a')[0];
+      Object.assign(guiMain.style, {
+        margin   : '0',
+        position : 'absolute',
+        right    : '0',
+        top      : '72px',
+        width    : '',
+      });
 
       // check this
       raycaster.params.Points.threshold = 0.001;
 
-      // globe controller
+      // init second scene
+      IFC.Hud.init();
+
+      // spacetime controller
       controller = self.controller = IFC.Controller;
       controller.init(SCN.camera, SCN.renderer.domElement, {
 
@@ -160,7 +164,7 @@ var IFC = (function () {
 
       });
 
-      IFC.Hud.init();
+      // IFC.Hud.init();
 
     },
     toggleGUI: function () {
@@ -172,19 +176,11 @@ var IFC = (function () {
 
     },
 
-    show: function () {
-
-      $$('canvas.simulator')[0].style.display = 'block';
-
-      IFC.Hud.time.render();
-      IFC.Tools.updateUrl();
-      self.urlDirty = false;
-
-    },
-      
     activate: function () {
 
       IFC.Hud.activate();
+
+      controller.activate();
 
       H.each([
 
@@ -214,9 +210,18 @@ var IFC = (function () {
         e[0].addEventListener(e[1], self.events[e[1]], false);
       } );
 
-      controller.activate();
+    },
+
+    show: function () {
+
+      $$('canvas.simulator')[0].style.display = 'block';
+
+      IFC.Hud.time.render();
+      // IFC.Tools.updateUrl();
+      self.urlDirty = true;
 
     },
+      
     step: function step (frame, deltatime) {
 
       controller.step(frame, deltatime);
@@ -246,13 +251,13 @@ var IFC = (function () {
 
         // TODO: Chrome on Android drops last event on leave fullscreen
 
-        geometry.width    = window.innerWidth;
-        geometry.height   = window.innerHeight;
-        geometry.aspect   = geometry.width / geometry.height;
-        geometry.diagonal = Math.hypot(geometry.width, geometry.height);
+        geometry.width         = window.innerWidth;
+        geometry.height        = window.innerHeight;
+        geometry.aspect        = geometry.width / geometry.height;
+        geometry.diagonal      = Math.hypot(geometry.width, geometry.height);
 
-        geometry.w2       = geometry.width  / 2;
-        geometry.h2       = geometry.height / 2;
+        geometry.w2            = geometry.width  / 2;
+        geometry.h2            = geometry.height / 2;
 
         simulator.style.width  = geometry.width  + 'px';
         simulator.style.height = geometry.height + 'px';
@@ -402,9 +407,9 @@ var IFC = (function () {
       globe.height = geometry.height * fraction;
 
       globe.scan = (
-        globe.height > geometry.diagonal                              ? 1 : // big
+        globe.height > geometry.diagonal                              ? 1 :   // big
         globe.height > geometry.width || globe.height > geometry.height ? 0 : // fits
-          -1                                                              // tiny
+          -1                                                                  // tiny
       );
 
     },
@@ -415,8 +420,9 @@ var IFC = (function () {
         isOver  = false, 
         wasOver = pointer.overGlobe
       ;
-
-      intersections.splice(0, intersections.length);
+      
+      intersections.length = 0;
+      // intersections.splice(0, intersections.length);
       raycaster.setFromCamera( pointer.device, SCN.camera );
       SCN.pointer.raycast(raycaster, intersections)
 

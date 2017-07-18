@@ -2,6 +2,7 @@
 SCN.Meshes = {
 
   calculate:  function (name, cfg) { return SCN.Meshes[name](cfg) },
+  
   sector: function (cfg, callback) {
 
     /*
@@ -23,11 +24,11 @@ SCN.Meshes = {
       colors    = new Float32Array( MAX_RANGE * 3 ),
       toVec3    = function (lat, lon) {
         return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, cfg.altitude);
-      },
-    end;
+      }
+    ;
 
+    geometry.addAttribute( 'color',    new THREE.BufferAttribute( colors,    3 ) );
     geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-    geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
 
     updateSector(cfg.sector);
 
@@ -59,8 +60,8 @@ SCN.Meshes = {
           H.linspace(lat1, lat1, width),
           H.linspace(lat1, lat0, height -2),
           [lat0]
-        ]),
-      end;
+        ])
+      ;
 
       H.zip(lats, lons, (lat, lon) => {
 
@@ -131,7 +132,8 @@ SCN.Meshes = {
 
       toVec3   = function (lat, lon) {
         return TOOLS.latLonRadToVector3(lat, lon, cfg.radius);
-      };
+      }
+    ;
 
     // calc parallels, 
     H.each(lats.slice(0, -1), (iLat, lat) => {

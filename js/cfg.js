@@ -45,18 +45,18 @@ var CFG = {
   },
 
   User: {
-    ip:             '',
-    country_code:   '',
-    country_name:   'Unknown',
-    region_code:    '',
-    region_name:    '',
-    city:           '',
-    zip_code:       '',
-    time_zone:      '',
-    latitude:       0.0,
-    longitude:      0.0,
-    metro_code:     0,
-    loc_detected:   false,
+    ip:                        '',
+    country_code:              '',
+    country_name:              'Unknown',
+    region_code:               '',
+    region_name:               '',
+    city:                      '',
+    zip_code:                  '',
+    time_zone:                 '',
+    latitude:                  0.0,
+    longitude:                 0.0,
+    metro_code:                0,
+    loc_detected:              false,
   },
 
   Device: {
@@ -81,22 +81,22 @@ var CFG = {
 
   Sim: {
     coordspool : {
-      amount:       5e5,
+      amount:                  5e5,
     }
   },
 
   Hud: {
-    opacityLow:  0.5,
-    opacityHigh: 0.99,
+    opacityLow:                0.5,
+    opacityHigh:               0.99,
   },
 
   Basemaps: {
-    resolution:        512,
+    resolution:                512,
   },
 
-  BasemapIds: [9, 10, 11, 14],
+  BasemapIds:                  [9, 10, 11, 14],
 
-  Faces: ['right', 'left', 'top', 'bottom', 'front', 'back'],
+  Faces:                       ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
   Textures: {
 
@@ -173,13 +173,12 @@ var CFG = {
   },
 
   Sun: {
-    radius: 10,
+    radius:            10,
   },
 
   earth: {
-    factor:        6371,
-    radius:        RADIUS,
-    // radiusOverlay: RADIUS + 0.1,
+    factor:            6371,
+    radius:            RADIUS,
   },
 
 };

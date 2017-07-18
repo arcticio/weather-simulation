@@ -11,13 +11,9 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
       
       void main() {
 
-        // vNormal   = normal;
-
-        vNormal = (modelMatrix * vec4(normal, 0.0)).xyz; // crazy
-
-        vPosition = (modelMatrix * vec4(position, 1.0)).xyz;
-
-        gl_Position  = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        vNormal     = normalize((modelMatrix * vec4(normal, 0.0)).xyz); 
+        vPosition   = (modelMatrix * vec4(position, 1.0)).xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 
       }
     `,
@@ -43,18 +39,19 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
 
       float dnMix, dnZone;
       float dnSharpness = 4.0;
-      float dnFactor    = 0.5; // 0.15;
+      float dnFactor    = 0.5;
+      float dnOffset    = 0.8;
 
       void main() {
 
         // compute cosine sun to normal so -1 is away from sun and +1 is toward sun.
-        dotNL = dot(normalize(vNormal), sunDirection);
+        dotNL = dot(vNormal, sunDirection);
 
         // sharpen the edge beween the transition
         dnZone = clamp( dotNL * dnSharpness, -1.0, 1.0);
 
         // convert to 0 to 1 for mixing, 0.5 for full range
-        dnMix = 0.5 - dnZone * dnFactor;
+        dnMix = dnOffset - dnZone * dnFactor;
         
         gl_FragColor = mix(lightDay, lightNight, dnMix);
 

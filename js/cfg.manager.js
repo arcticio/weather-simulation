@@ -207,7 +207,8 @@ CFG.Manager = (function () {
 
       });
 
-      console.log('activated', JSON.stringify(activated, null, 2));
+      // debug overview
+      // console.log('activated', JSON.stringify(activated, null, 2));
 
 
       // DateTime from URL

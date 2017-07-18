@@ -22,4 +22,11 @@ images/tmp
 images/sources
 images/.ipynb_checkpoints
 
+dist/images
+dist/js
+dist/css
+dist/data
+
+support/
+
 ## git rm --cached FILENAME

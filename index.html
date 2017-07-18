@@ -62,7 +62,6 @@
 
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
-
   <script src='js/aws.support.js'></script>
 
   <style>
@@ -107,20 +106,7 @@
     </div>
 
     <div class="interface">
-
       <div class="panel chart container" height="128" width="128"></div>
-
-      <!-- <img    class="loader" src="images/earth.ani.comp.gif"> -->
-<!--       <img    class="panel image" src="" height="180" width="360"></img>
-      <dir    class="panel latlon"></dir>
-      <div    class="panel info" ondblclick="this.innerHTML = '' "></div>
-      <canvas class="panel test" height="48" width="96" ondblclick=""></canvas>
-      <canvas class="panel expi" height="48" width="96" ondblclick=""></canvas> -->
-
-<!--       <div class="labels">
-        <div class="label sun">Sun</div>
-      </div> -->
-
     </div>
 
     <canvas class="simulator noselect"></canvas>
@@ -157,14 +143,13 @@
     
     <script src='libs/canvasjs.min.js'></script>
 
-
     <script src="data/population/places.big.js"></script>
 
     <script src="js/aws.helper.js"></script>
     <script src="js/aws.tools.js"></script>
-    <script src="js/aws.time.js"></script>
     <script src="js/aws.res.js"></script>
     <script src="js/aws.ani.js"></script>
+    <script src="js/aws.loader.js"></script>
 
     <script src="js/cfg.js"></script>
     <script src="js/cfg.assets.js"></script>
@@ -175,14 +160,12 @@
     <script src="js/sim.js"></script>
     <script src="js/sim.vars.js"></script>
     <script src="js/sim.tools.js"></script>
-    <!-- <script src="js/sim.marray.js"></script> -->
     <script src="js/sim.charts.js"></script>
     <script src="js/sim.datagram.js"></script>
     <script src="js/sim.models.tmp2m.js"></script>
     <script src="js/sim.models.clouds.js"></script>
     <script src="js/sim.models.clouds.worker.js"></script>
     <script src="js/sim.models.jetstream.js"></script>
-    <script src="js/sim.models.variables.js"></script>
     <script src="js/sim.models.wind.js"></script>
     <script src="js/sim.models.pratesfc.js"></script>
 
@@ -194,23 +177,24 @@
     <script src="js/scn.meshes.background.js"></script>
     <script src="js/scn.meshes.basemaps.js"></script>
     <script src="js/scn.meshes.mask.js"></script>
-    <!-- <script src="js/scn.meshes.basecopy.js"></script> -->
-    <script src="js/scn.meshes.pixels.js"></script>
     <script src="js/scn.meshes.population.js"></script>
     
     <script src="js/ifc.js"></script>
     <script src="js/ifc.debug.js"></script>
     <script src="js/ifc.tools.js"></script>
+    <script src="js/ifc.controller.js"></script>
+
     <script src="js/ifc.hud.js"></script>
     <script src="js/ifc.hud.widgets.js"></script>
     <script src="js/ifc.hud.performance.js"></script>
-    <script src="js/ifc.controller.js"></script>
-    <script src="js/aws.loader.js"></script>
 
-
+<!--     <script src="js/aws.loader.js"></script>
+ -->
     <script src="//freegeoip.net/json/?callback=CFG.location"></script>
 
     <script type="text/javascript">
+
+      // global
 
       Orb.Time = Orb.Core.Time;
       Orb.Tool = Orb.Core.Tool;
@@ -230,18 +214,21 @@
         CFG.Manager.init();
 
         LDR.parse(LDR.sequence());
+        LDR.execute(function onDone () {
 
-        LDR.execute(function () {
-          ANI.insert(0, ANI.library.intro(800, function () {
+          ANI.insert(0, ANI.library.intro(800, function onDone () {
+
             CFG.isLoaded = true;
             IFC.Tools.updateUrl();
 
-            SCN.logScene();
-            
+            // debug
+            // SCN.logScene();
             // console.log('CFG.Device', JSON.stringify(CFG.Device, null, 2));
 
+            TIM.step('Hypatia', 'waiting...');
 
           }));
+
         });
 
       };

@@ -13,13 +13,11 @@ CFG.Activated = {
   ambient:    true,
   spot:       true,
   sun:        true,
-  // mask:       true,
+  atmosphere: true,
   basemaps:   7,
 };
 
 CFG.Assets = {
-
-// MANDATORY => (no id)
 
     // click mesh for raycaster, no debug gui, always in scene
     pointer: {
