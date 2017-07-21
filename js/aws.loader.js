@@ -12,6 +12,20 @@ var LDR = (function () {
   ;
 
   return self = {
+
+    goFullscreen: function () {
+      screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
+    },
+
+    onload: function () {
+
+      Orb.Time = Orb.Core.Time;
+      Orb.Tool = Orb.Core.Tool;
+
+      document.querySelectorAll('.progress .header')[0].innerHTML = 'main engine started';
+      document.querySelectorAll('table .version')[0].innerHTML = VERSION;
+
+    },
   
     sequence: function () { return [
 
@@ -26,7 +40,6 @@ var LDR = (function () {
         [ SCN.probeDevice ],
 
       'lift off!',
-        // [ SCN.info ],   
         [ RES.init ],   
         [ ANI.init ], 
         [ SIM.init ], 

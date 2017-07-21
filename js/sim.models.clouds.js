@@ -12,19 +12,19 @@ SIM.Models.clouds = (function () {
     model = {
       obj:          new THREE.Object3D(),
       urls:         [],
-    },
+    }
 
-    worker = new Worker('js/sim.models.clouds.worker.js')
+    // worker = new Worker('js/sim.models.clouds.worker.js')
 
   ;
 
-  var payload = new Float32Array([1,2,3,4,5,6]);
+  // var payload = new Float32Array([1,2,3,4,5,6]);
 
-  worker.postMessage({topic: 'quadratic', payload, id: Date.now() }, [payload.buffer]);
+  // worker.postMessage({topic: 'quadratic', payload, id: Date.now() }, [payload.buffer]);
 
-  worker.onmessage = function (event) {
-    // console.log('answer', event.data);
-  };
+  // worker.onmessage = function (event) {
+  //   // console.log('answer', event.data);
+  // };
 
 
   return self = {

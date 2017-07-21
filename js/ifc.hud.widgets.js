@@ -3,9 +3,11 @@ IFC.Hud.spacetime = (function () {
 
   var 
     self, cfg, modus, 
-    sprite, cvs, ctx, texture,
-    vecUp       = new THREE.Vector3(0, 1, 0),
-    vecRot      = new THREE.Vector3(0, 0, 0)
+    sprite, cvs, ctx, 
+    texTime, texSpace,
+    vecUp  = new THREE.Vector3(0, 1, 0),
+    vecRot = new THREE.Vector3(0, 0, 0),
+    lastMom = moment()
   ;
 
   return self = {
@@ -19,7 +21,8 @@ IFC.Hud.spacetime = (function () {
       cvs.width  = 64;
       cvs.height = 64;
 
-      texture = new THREE.CanvasTexture(cvs);
+      texTime  = new THREE.CanvasTexture(cvs);
+      texSpace = CFG.Textures['hud/space.png'];
 
       self.updateModus();
       self.render();
@@ -30,11 +33,7 @@ IFC.Hud.spacetime = (function () {
 
       modus = force === undefined ? IFC.modus : force;
 
-      sprite.material.map = (modus === 'space') ?
-        CFG.Textures['hud/space.png'] : 
-        texture
-      ;
-
+      sprite.material.map = (modus === 'space') ? texSpace : texTime;
       sprite.material.map.needsUpdate = true;
 
     },
@@ -81,6 +80,12 @@ IFC.Hud.spacetime = (function () {
         min  = time.minutes(),
         hr   = time.hours() % 12;
 
+      if (lastMom.isSame(time)) {
+        return;
+      }
+
+      lastMom = moment(time);
+
       sprite.material.rotation = 0;
 
       ctx.save();
@@ -88,14 +93,14 @@ IFC.Hud.spacetime = (function () {
       ctx.clearRect(0, 0, w, h);
       ctx.translate(w2, h2);
       ctx.scale(0.4, 0.4);
-      ctx.rotate(-Math.PI / 2);
+      ctx.rotate(-PI2);
 
       ctx.strokeStyle = 'white';
-      ctx.lineCap = 'round';
+      ctx.lineCap     = 'round';
 
       // Hours
       ctx.save();
-      ctx.rotate(hr * (Math.PI / 6) + (Math.PI / 360) * min + (Math.PI / 21600) * sec);
+      ctx.rotate(hr * (PI / 6) + (PI / 360) * min + (PI / 21600) * sec);
       ctx.lineWidth = 14;
       ctx.beginPath();
       ctx.moveTo(-10, 0);
@@ -105,7 +110,7 @@ IFC.Hud.spacetime = (function () {
 
       // Minutes
       ctx.save();
-      ctx.rotate((Math.PI / 30) * min + (Math.PI / 1800) * sec);
+      ctx.rotate((PI / 30) * min + (PI / 1800) * sec);
       ctx.lineWidth = 10;
       ctx.beginPath();
       ctx.moveTo(-16, 0);
@@ -117,10 +122,12 @@ IFC.Hud.spacetime = (function () {
       ctx.beginPath();
       ctx.lineWidth = 12;
       ctx.strokeStyle = '#ddd';
-      ctx.arc(0, 0, 72, 0, Math.PI * 2, true);
+      ctx.arc(0, 0, 72, 0, TAU, true);
       ctx.stroke();
 
       ctx.restore();
+
+      sprite.material.map.needsUpdate = true;
 
     }
 

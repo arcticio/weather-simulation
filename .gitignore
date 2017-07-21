@@ -1,18 +1,13 @@
-# Google App Engine generated folder
-appengine-generated/
-google_appengine/
 
 /stuff.txt
 /http-8765.sh
 /npm-debug.log
-/.eslintrc
 /deploy.sh
 
-compiler/
 stuff/
 doc/
 node_modules/
-data_old/
+support/
 
 data/*.nc
 data/*.hdf
@@ -26,7 +21,5 @@ dist/images
 dist/js
 dist/css
 dist/data
-
-support/
 
 ## git rm --cached FILENAME

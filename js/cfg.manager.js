@@ -22,6 +22,7 @@ CFG.Manager = (function () {
       CFG.location = self.location;
       return self;
     },
+
     init: function () {
 
       // called BEFORE launch sequence
@@ -29,17 +30,13 @@ CFG.Manager = (function () {
       var user = CFG.User;
 
       self.initStore();
-      self.probeFullscreen();
-      self.sanitizeUrl();
+      self.parseUrl();
 
       if (user.loc_detected) {
         TIM.step('CFG.User', 'lat:', user.latitude, 'lon:', user.longitude, user.country_code, user.country_name);
       } else {
         TIM.step('CFG.User', 'location unknown');
       }
-
-      // update cam config
-      CFG.Camera.pos = position;
 
     },
 
@@ -48,9 +45,20 @@ CFG.Manager = (function () {
       if (screenfull.enabled){
         var img = document.querySelectorAll('.btnFullscreen')[0];
         img.src = 'images/fullscreen.grey.png';
+        img.onclick = function () {
+          LDR.goFullscreen();
+          img.src='images/transparent.png';
+        }
       }
 
     },
+
+    location: function (response) {
+      // called by geojson in HTML
+      Object.assign(CFG.User, response);
+      CFG.User.loc_detected = (CFG.User.latitude || CFG.User.longitude);
+    },
+
     lockOrientation: function (orientation) {
 
       // https://developer.mozilla.org/en-US/docs/Web/API/Screen/lockOrientation
@@ -89,12 +97,6 @@ CFG.Manager = (function () {
 
     },
 
-    location: function (response) {
-      // called by geojson
-      Object.assign(CFG.User, response);
-      CFG.User.loc_detected = (CFG.User.latitude || CFG.User.longitude);
-    },
-
     probeDevice: function () {
 
       function onMotion (event) {
@@ -125,8 +127,11 @@ CFG.Manager = (function () {
         window.removeEventListener('userproximity', onuserproximity, false);
       }
 
-      window.addEventListener('devicemotion',      onMotion, false);
-      window.addEventListener('deviceorientation', onOrientation, false);
+      if (CFG.Connection.secure) {
+        window.addEventListener('devicemotion',      onMotion, false);
+        window.addEventListener('deviceorientation', onOrientation, false);
+      }
+
       window.addEventListener('deviceproximity',   ondeviceproximity, false);
       window.addEventListener('userproximity',     onuserproximity, false);
 
@@ -179,7 +184,7 @@ CFG.Manager = (function () {
 
     },
 
-    sanitizeUrl: function () {
+    parseUrl: function () {
 
       var
         intersect, 
@@ -251,6 +256,9 @@ CFG.Manager = (function () {
       if (position.length() < CFG.earth.radius + 0.01){
         position = CFG.Camera.pos.clone();
       }
+
+      // update cam config from url
+      CFG.Camera.pos = position;
 
     },
 

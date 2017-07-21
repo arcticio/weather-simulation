@@ -15,7 +15,7 @@ var ANI = (function () {
     init: function () {},
     activate: function () {},
 
-    step: function (frame, /* deltatime */ ) {
+    step: function (frame  /* , deltatime */ ) {
 
       status.frame = frame;
 
@@ -333,28 +333,32 @@ var ANI = (function () {
 
       },
 
-      cam2vector: function (vector){
+      cam2vector: function (vector, duration){
 
         // https://stackoverflow.com/questions/14614252/how-to-fit-camera-to-object
 
         var 
           fov    = SCN.camera.fov * ( Math.PI / 180 ),
-          radius = Math.abs( RADIUS + RADIUS / 2 / Math.sin( fov / 2 ) );  // 45% height
+          radius = Math.abs( RADIUS + RADIUS / 2 / Math.sin( fov / 2 ) ),  // 45% height
 
-        var 
           spherical,
-          curShere = new THREE.Spherical().setFromVector3(SCN.camera.position),
-          futShere = new THREE.Spherical().setFromVector3(vector),
+          curSpcl = new THREE.Spherical().setFromVector3(SCN.camera.position),
+          futSpcl = new THREE.Spherical().setFromVector3(vector),
 
           current = {
-            phi:    curShere.phi,
-            theta:  curShere.theta, 
+            phi:    curSpcl.phi,
+            theta:  curSpcl.theta, 
             radius: SCN.camera.radius,
           },
           target  = {
-            phi:    futShere.phi,
-            theta:  futShere.theta,  // east-direction
+            phi:    futSpcl.phi,
+            theta:  futSpcl.theta,  // east-direction
             radius: radius,
+          },
+          update = function () {
+            spherical = new THREE.Spherical(current.radius, current.phi, current.theta);
+            SCN.camera.position.setFromSpherical(spherical);
+            SCN.camera.lookAt(SCN.home);
           }
         ;
 
@@ -363,22 +367,20 @@ var ANI = (function () {
           target.theta += 2 * Math.PI;
         }
 
-        return function () {
+        return self.tween(current, target, duration, update, TWEEN.Easing.Exponential.Out)
 
-          // TWEEN.removeAll();
 
-          return new TWEEN.Tween(current)
-            .easing(TWEEN.Easing.Exponential.Out)
-            .to(target, 500)
-            .onUpdate(function(){
-              spherical = new THREE.Spherical(current.radius, current.phi, current.theta);
-              SCN.camera.position.setFromSpherical(spherical);
-              SCN.camera.lookAt(SCN.home);
-            })
-            .start()
-          ;
+        // return function () {
 
-        };
+        //   return new TWEEN.Tween(current)
+        //     .easing(TWEEN.Easing.Exponential.Out)
+        //     .to(target, 500)
+        //     .onUpdate(function(){
+        //     })
+        //     .start()
+        //   ;
+
+        // };
 
 
       },

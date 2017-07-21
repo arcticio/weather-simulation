@@ -1,6 +1,4 @@
 
-'use strict'
-
 IFC.Controller = (function () {
 
   const
@@ -145,7 +143,7 @@ IFC.Controller = (function () {
         [document,  'keydown'],
         [document,  'keyup'],
         // [window,    'devicemotion'],
-        [window,    'deviceorientation'],   // against fixed frame
+        // [window,    'deviceorientation'],   // against fixed frame, needs secure connection
       ];
       
       spcl.setFromVector3(cam.position);

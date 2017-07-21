@@ -35,7 +35,7 @@ var CFG = {
 
   isLoaded:         false,
 
-  Title:            'Simulator',
+  Title:            'Hypatia - Gloabl Weather',
 
   Camera: {
     cam:            new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
@@ -66,6 +66,7 @@ var CFG = {
     devicePixelRatio:          NaN,
 
     canMotion:                 false,
+    canVibrate:                navigator.vibrate && location.protocol === 'https:',
     canOrientation:            false,
     canUserProximitry:         false,
     canDeviceProximitry:       false,
@@ -77,6 +78,11 @@ var CFG = {
     OES_texture_float:         false,
     OES_texture_float_linear:  false,
 
+  },
+
+  Connection: {
+    secure:                    location.protocol === 'https:',
+    bandwidth:                 NaN
   },
 
   Sim: {

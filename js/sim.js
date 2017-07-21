@@ -106,7 +106,6 @@ var SIM = (function () {
       } else if (typeof val === 'number' && ['minutes', 'hours', 'days'].indexOf(what) !== -1 ) {
 
         // add/sub some diff
-        // time.show = time.start.clone().add(val, what);
         time.model.add(val, what);
 
       } else if (typeof val === 'number') {

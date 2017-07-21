@@ -317,7 +317,7 @@ var SCN = (function () {
           renderer.render( scene, camera );
 
           // update Hud
-          IFC.Hud.step(frame, deltasecs);
+          // IFC.Hud.step(frame, deltasecs);
           IFC.Hud.render(renderer);
 
         IFC.Hud.performance.end();
@@ -362,7 +362,6 @@ var SCN = (function () {
 
     },
 
-    // info: function () { },
     probeDevice: function () {
 
       var gl = renderer.context, dev = CFG.Device;

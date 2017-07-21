@@ -80,8 +80,6 @@ var IFC = (function () {
 
       self.events.resize();
 
-      // self.urlDirty = urlDirty;
-
       // move gui.dat to fullscreen container
       guiCont = $$('div.dg.ac')[0];
       fullscreen.appendChild(guiCont);
@@ -164,8 +162,6 @@ var IFC = (function () {
 
       });
 
-      // IFC.Hud.init();
-
     },
     toggleGUI: function () {
 
@@ -217,7 +213,6 @@ var IFC = (function () {
       $$('canvas.simulator')[0].style.display = 'block';
 
       IFC.Hud.time.render();
-      // IFC.Tools.updateUrl();
       self.urlDirty = true;
 
     },
@@ -295,8 +290,8 @@ var IFC = (function () {
       mousedown:   function (event) { 
 
         pointer.device = mouse;
-        mouse.down = true;
-        mouse.button = event.button;
+        mouse.down     = true;
+        mouse.button   = event.button;
 
         // console.log('mousedown', event.button, event);
 
@@ -309,7 +304,7 @@ var IFC = (function () {
 
         if (mouse.button === 2) {
           if (pointer.overGlobe){
-            ANI.insert(0, ANI.library.cam2vector(pointer.intersect, 2));
+            ANI.insert(0, ANI.library.cam2vector(pointer.intersect, 500));
           }
         }
 
@@ -321,10 +316,10 @@ var IFC = (function () {
       },
       mousemove:   function (event) { 
         pointer.device = mouse;
-        mouse.px = event.clientX; 
-        mouse.py = event.clientY;
-        mouse.x  =   ( event.clientX / geometry.width )  * 2 - 1;
-        mouse.y  = - ( event.clientY / geometry.height ) * 2 + 1;
+        mouse.px       = event.clientX; 
+        mouse.py       = event.clientY;
+        mouse.x        = ( event.clientX / geometry.width )  * 2 - 1;
+        mouse.y        = - ( event.clientY / geometry.height ) * 2 + 1;
       },
       mouseenter:   function () { 
         pointer.device = mouse;
@@ -400,7 +395,8 @@ var IFC = (function () {
       var 
         cam      = SCN.camera,
         fov      = cam.fov * Math.PI / 180,
-        height   = 2 * Math.tan( fov / 2 ) * cam.position.length(),
+        // height   = 2 * Math.tan( fov / 2 ) * cam.position.length(),
+        height   = 2 * Math.tan( fov / 2 ) * cam.radius,
         fraction = CFG.earth.radius * 2 / height
       ;
 

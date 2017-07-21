@@ -46,7 +46,13 @@ IFC.Hud = (function () {
 
     },
     render: function (renderer) {
-      doRender && renderer.render( scene, camera );
+
+      if (doRender) {
+        IFC.Hud.time.render();
+        IFC.Hud.spacetime.render();
+        renderer.render( scene, camera );
+      }
+      
     },
     resize: function (geometry) {
 
@@ -87,13 +93,11 @@ IFC.Hud = (function () {
 
     },
 
-    step: function (frame, deltatime) {
+    // step: function (frame, deltatime) {
 
-      !(frame % 4) && IFC.Hud.time.render();
 
-      IFC.Hud.spacetime.render();
 
-    },
+    // },
     initSprites: function () {
 
       // TODO: read sprite status from SCN.assets.XXX.visible

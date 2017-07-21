@@ -63,6 +63,8 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
   <script src='js/aws.support.js'></script>
+  <script src='timeranges.js'></script>
+
 
   <style>
       
@@ -75,8 +77,8 @@
 
   <div class="fullscreen">
 
-    <div class="container" style="max-width: 600px; margin: auto; position: relative; height:100%">
-      <table class="loader" style="max-width: 600px; margin: 0 auto; height:100%">
+    <div class="container">
+      <table class="loader">
         <tr>
           <td class="title">
             <h1>Hypatia - Weather Simulation</h1>
@@ -92,7 +94,7 @@
             <div>
               <div class="bar"></div>
               <div class="meter"></div>
-              <img class="btnFullscreen" onclick="goFullscreen();this.src='images/transparent.png';" width="64" />
+              <img class="btnFullscreen" />
             </div>
           </td>
         </tr>
@@ -113,14 +115,9 @@
 
   </div>
 
-  <div style="display:none">
+  <div id="scripts" style="display:none">
 
-    <script src='timeranges.js'></script>
-    
-<!--     <script src='dist/libs.pack.min.js'></script>
-
-    <script src='dist/js.pack.min.js'></script> -->
-
+    <!-- packing here -->
 
     <script src="libs/orb2/orb2.js"></script>
     <script src="libs/orb2/core_v2r1.js"></script>
@@ -135,15 +132,11 @@
     <script src='libs/tween.min.js'></script>
     <script src='libs/native.history.js'></script>
     <script src='libs/store.modern.min.js'></script>
-
     <script src='libs/three.86.js'></script>
     <script src='libs/threeGeoJSON.js'></script>
-
     <script src='libs/dat.gui.js'></script>
-    
     <script src='libs/canvasjs.min.js'></script>
 
-    <script src="data/population/places.big.js"></script>
 
     <script src="js/aws.helper.js"></script>
     <script src="js/aws.tools.js"></script>
@@ -188,24 +181,19 @@
     <script src="js/ifc.hud.widgets.js"></script>
     <script src="js/ifc.hud.performance.js"></script>
 
-<!--     <script src="js/aws.loader.js"></script>
- -->
+  </div>
+
+  <div style="display:none">
+
+    <!-- no packing here -->
+
     <script src="//freegeoip.net/json/?callback=CFG.location"></script>
+    <script src="data/population/places.big.js"></script>
 
     <script type="text/javascript">
 
-      // global
-
-      Orb.Time = Orb.Core.Time;
-      Orb.Tool = Orb.Core.Tool;
-
-      document.querySelectorAll('.progress .header')[0].innerHTML = 'main engine started';
-      document.querySelectorAll('table .version')[0].innerHTML = VERSION;
-
-      function goFullscreen() {
-        // debugger;
-        screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
-      }
+      // prepare GUI, adjust Orb lib
+      LDR.onload();
 
       window.onload = function () {
 

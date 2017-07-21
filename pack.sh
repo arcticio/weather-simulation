@@ -2,30 +2,34 @@
 
 : << '--COMMENT--'
 
-  Documentaion
+  Documentation
     https://lethain.com/deployment-scripts-with-beautifulsoup/
 
   Dependencies
+    java 
     sudo apt-get install tree
     sudo pip install --upgrade beautifulsoup4
     sudo pip install --upgrade html5lib
 
 --COMMENT--
 
-set -e
-
 pyPack="
 
+## works in root
+
 import sys
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 task = sys.argv[1]
 
-html = open('index.html', 'r')
-soup = BeautifulSoup(html.read(), 'lxml')
-html.close()
+htmlIndex = 'index.html'
+htmlDist  = 'dist/index.html'
 
-filePack = open('dist/%s.pack.js' % task, 'w')
+fileIndex = open(htmlIndex, 'r')
+soup = BeautifulSoup(fileIndex.read(), 'lxml')
+fileIndex.close()
+
+filePack = open('dist/js/%s.pack.js' % task, 'w')
 
 tags = soup.findAll('script')
 
@@ -41,11 +45,26 @@ for tag in tags :
 
 filePack.close()
 
+divScripts = soup.find(id='scripts')
+scriptJS   = soup.new_tag('script', src=u'js/js.pack.min.js')
+scriptLibs = soup.new_tag('script', src=u'js/libs.pack.min.js')
+
+divScripts.replaceWith(scriptLibs)
+scriptLibs.insert_after(scriptJS)
+
+fileIndex = open(htmlDist, 'w')
+fileIndex.write(str(soup))
+fileIndex.close()
+
 "
 
-pathRoot="/media/noiv/OS/Octets/Projects/weather-simulation"
+################################
+
+set -e
+
+pathRoot="/media/noiv/Octets/Projects/weather-simulation"
 pathDist="${pathRoot}/dist"
-compiler="${pathRoot}/compiler/compiler.jar"
+compiler="${pathRoot}/support/compiler/closure-compiler-v20170626.jar"
 
 cd $pathRoot
 echo 
@@ -53,45 +72,75 @@ echo "-- Start - Hypatia --"
 echo 
 
 
-echo "packing"
+echo "running"
+
 echo "  deleting old"
-
 cd $pathDist
+    
+    rm  -f ./index.html
+    rm  -f ./timeranges.js
+    rm  -f ./js/libs.pack.js
+    rm  -f ./js/libs.pack.min.js
+    rm  -f ./js/js.pack.js
+    rm  -f ./js/js.pack.min.js
 
-    rm  -f ./libs.pack.js
-    rm  -f ./libs.pack.min.js
-    rm  -f ./js.pack.js
-    rm  -f ./js.pack.min.js
 
-echo
+echo "  copy"
 cd $pathRoot
+    
+    cp index.html        $pathDist/index.html
+    cp images/favicon.ico       $pathDist/favicon.ico
+    cp timeranges.js     $pathDist/timeranges.js
+    cp js/aws.version.js $pathDist/js/aws.version.js
+    cp js/aws.support.js $pathDist/js/aws.support.js
+    cp css/style.css     $pathDist/css.style.css
+
+    cp js/sim.models.clouds.worker.js $pathDist/js/sim.models.clouds.worker.js
+    cp js/aws.helper.js $pathDist/js/aws.helper.js
+    cp js/aws.tools.js  $pathDist/js/aws.tools.js
+
+
+echo "  updating version.js"
+
+# cd $pathRoot
+    
+
+
+
+
+echo "  packing"
+cd $pathRoot
+
     python -c "$pyPack" libs
     python -c "$pyPack" js
 
-echo 
-echo compressing libs ...
-cd $pathDist
+
+echo "  compressing libs"
+cd $pathDist/js
 
     java -jar                                      \
-        ../compiler/closure-compiler-v20170626.jar \
+        $compiler                                  \
         --compilation_level SIMPLE                 \
         --warning_level     QUIET                  \
         --js                libs.pack.js           \
         --js_output_file    libs.pack.min.js
 
-echo compressing js ...
+echo "  compressing js"
     java -jar                                      \
-        ../compiler/closure-compiler-v20170626.jar \
+        $compiler                                  \
         --compilation_level SIMPLE                 \
         --warning_level     QUIET                  \
         --js                js.pack.js             \
         --js_output_file    js.pack.min.js
 
-echo clean up
-cd $pathDist
-rm  -f \
-    /dist/.fuse*        \
-    /dist/*.pack.js          
 
-echo done
-echo
+
+echo "  clean up"
+cd $pathDist
+rm  -f            \
+    .fuse*        \
+    js/*.pack.js          
+
+
+echo "done"
+echo  

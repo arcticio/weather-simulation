@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base href="/"/>
+<title>Hypatia</title>
+<meta charset="utf-8"/>
+<meta content="Hypatia visualizes a set of cryospheric parameters provided by NOAA's Global Forecasing System (GFS), " name="description"/>
+<meta content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" name="viewport"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="no" name="msapplication-tap-highlight"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Hypatia" name="apple-mobile-web-app-title"/>
+<link href="" rel="apple-touch-icon"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<!-- update fb image https://developers.facebook.com/tools/debug/ -->
+<meta content="Hypatia - Weather-Simulation" property="og:title"/>
+<meta content="website" property="og:type"/>
+<meta content="Hypatia visualizes a set of earth parameters provided by NOAA's Global Forecasing System (GFS) and others" property="og:description"/>
+<meta content="https://arcticio.github.io/weather-simulation/images/preview.lg.png" property="og:image"/>
+<meta content="https://arcticio.github.io/weather-simulation/" property="og:url"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<!-- more: https://gist.github.com/kevinSuttle/1997924 -->
+<script src="js/aws.version.js"></script>
+<script type="text/javascript">
+
+    var DEVELOP = 'False' === 'True'   ? true : false;
+    var DEBUG   = 'False'   === 'True' ? true : false;
+    // var ADMIN   = 'False'   === 'True' ? true : false;
+
+    var TIM = (function(){
+      
+      var fill = new Array(18).join(' '), 
+          pad  = function(s){return (s+fill).substr(0, fill.length);},
+          now  = function( ){return (window.performance.now() / 1000).toFixed(2);}
+
+      return {
+        now: now,
+        step: function( /* */ ){
+          var args = [].slice.call(arguments);
+          console.log (pad(args[0]), '-', now() + 's', ...args.slice(1));
+        }
+      };
+      
+    })();
+
+    TIM.step('Hypatia', VERSION);
+
+  </script>
+<link href="css/style.css" rel="stylesheet"/>
+<link href="images/favicon.ico" rel="icon" type="image/x-icon"/>
+<script src="js/aws.support.js"></script>
+<script src="timeranges.js"></script>
+<style>
+</style>
+</head>
+<body>
+<div class="fullscreen">
+<div class="container" style="max-width: 600px; margin: auto; position: relative; height:100%">
+<table class="loader" style="max-width: 600px; margin: 0 auto; height:100%">
+<tr>
+<td class="title">
+<h1>Hypatia - Weather Simulation</h1>
+<h3><a href="https://github.com/arcticio/weather-simulation" id="homelink" rel="noreferrer noopener">Help &amp; Info</a></h3>
+<h3><a href="http://www.arctic.io" id="arcticio" rel="noreferrer noopener" target="_blank">arctic.io</a></h3>
+<div class="version">...</div>
+</td>
+</tr>
+<tr>
+<td class="progress">
+<div class="header">10, 9, 8, 7, ...</div>
+<div class="info"></div>
+<div>
+<div class="bar"></div>
+<div class="meter"></div>
+<img class="btnFullscreen" onclick="goFullscreen();this.src='images/transparent.png';" width="64"/>
+</div>
+</td>
+</tr>
+<tr>
+<td class="error">
+<div class="header"></div>
+<div class="message"></div>
+</td>
+</tr>
+</table>
+</div>
+<div class="interface">
+<div class="panel chart container" height="128" width="128"></div>
+</div>
+<canvas class="simulator noselect"></canvas>
+</div>
+<script src="js/libs.pack.min.js"></script><script src="js/js.pack.min.js"></script>
+<div>
+<script src="//freegeoip.net/json/?callback=CFG.location"></script>
+<script type="text/javascript">
+
+      // global
+
+      Orb.Time = Orb.Core.Time;
+      Orb.Tool = Orb.Core.Tool;
+
+      document.querySelectorAll('.progress .header')[0].innerHTML = 'main engine started';
+      document.querySelectorAll('table .version')[0].innerHTML = VERSION;
+
+      function goFullscreen() {
+        // debugger;
+        screenfull.toggle(document.querySelectorAll('.fullscreen')[0]);
+      }
+
+      window.onload = function () {
+
+        TIM.step('WIN.load.in', 'threads:', navigator.hardwareConcurrency || 'unknown');
+
+        CFG.Manager.init();
+
+        LDR.parse(LDR.sequence());
+        LDR.execute(function onDone () {
+
+          ANI.insert(0, ANI.library.intro(800, function onDone () {
+
+            CFG.isLoaded = true;
+            IFC.Tools.updateUrl();
+
+            // debug
+            // SCN.logScene();
+            // console.log('CFG.Device', JSON.stringify(CFG.Device, null, 2));
+
+            TIM.step('Hypatia', 'waiting...');
+
+          }));
+
+        });
+
+      };
+
+    </script>
+</div>
+</body>
+</html>

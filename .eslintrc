@@ -1,0 +1,91 @@
+{
+  "globals": {
+
+    // browser leaks
+    "opr":             true,
+    "safari":          true,
+
+    // modern JS
+    "Float32Array":    true,
+    "Uint8Array":      true,
+    "Uint16Array":     true,
+    "Uint32Array":     true,
+    "ArrayBuffer":     true,
+
+    // GUI.DAT leaks
+    "GUIcontrollers":  true,
+
+    // lib leaks
+    "jQuery":          true,
+    "$":               true,
+    "THREE":           true,
+
+    "CanvasJS":        true,
+    "screenfull":      true,
+    "async":           true,
+    "Orb":             true,
+    "TWEEN":           true,
+    "store":           true,
+    "moment":          true,
+    
+    // Math shortcuts
+    "PI":              true,
+    "TAU":             true,
+    "PI2":             true,
+
+    // Data shortcuts
+    "CITIES":          true,
+    
+    // CFG shortcuts
+    "RADIUS":          true,
+    "LEVEL_0":         true,
+    "LEVEL_1":         true,
+    "LEVEL_2":         true,
+    "LEVEL_3":         true,
+    "LEVEL_4":         true,
+    "LEVEL_5":         true,
+    "LEVEL_6":         true,
+    "LEVEL_7":         true,
+    "LEVEL_8":         true,
+
+
+    // own globals
+    "H":               true,
+    "VERSION":         true,
+    "TIMENOW":         true,
+    "TOOLS":           true,
+    "TIM":             true,
+    "IFC":             true,
+    "SCN":             true,
+    "ANI":             true,
+    "LDR":             true,
+    "CFG":             true,
+    "SIM":             true,
+    "RES":             true,
+
+  },
+
+  "env": {
+    "browser":   true,
+    "node":      false
+  },
+
+  "parser": "babel-eslint",
+
+  // To give you an idea how to override rule options:
+  "rules": {
+    // Tons of rules you can use, for example...
+    "quotes":                     [1, "single"],
+    "no-dupe-keys":               1,
+    "no-empty":                   1,
+    "eqeqeq":                     1,
+    "strict":                     1,
+    // "no-extra-strict":         1,
+    // "no-shadow":               1,
+    "no-shadow-restricted-names": 1,
+    "no-undef":                   1,
+    "no-unused-vars":             1,
+    "no-use-before-define":       1,
+    "no-mixed-spaces-and-tabs":   1,
+  }
+} 
