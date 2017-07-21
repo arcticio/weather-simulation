@@ -277,28 +277,6 @@ CFG.Sprites = {
     },
   },
 
-  snpp: {
-    visible:  CFG.Assets.snpp.toggable,
-    menu:     true,
-    type:     'toggle',
-    toggled:  false,
-    position: {
-      zIndex:    5,
-      top:     180,
-      left:     80,
-      width:    48,
-      height:   48,
-    },
-    material: {
-      opacity: 0.5,
-      image: 'hud/satellite.png'
-    },
-    onclick: (sprite) => {
-      SCN.toggleBasemap('snpp');
-      sprite.toggled = !sprite.toggled;
-    },
-  },
-
   gmlc: {
     title:    'Global Land Cover',
     visible:  CFG.Assets.gmlc.toggable,
@@ -318,6 +296,28 @@ CFG.Sprites = {
     },
     onclick: (sprite) => {
       SCN.toggleBasemap('gmlc');
+      sprite.toggled = !sprite.toggled;
+    },
+  },
+
+  snpp: {
+    visible:  CFG.Assets.snpp.toggable,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:    5,
+      top:     180,
+      left:     80,
+      width:    48,
+      height:   48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/satellite.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggleBasemap('snpp');
       sprite.toggled = !sprite.toggled;
     },
   },

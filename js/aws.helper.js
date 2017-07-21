@@ -152,6 +152,9 @@ var H = (function(){
       };
 
     },
+    titleCase: function (str) {
+      return str.toLowerCase().replace(/\b(\w)/g, s => s.toUpperCase());
+    },
     replace:    function (s,f,r){return s.replace(new RegExp(H.escapeRex(f), 'g'), r);},
     padZero:    function (num, len){len = len || 2; var snum = '0000' + num; return snum.substr(snum.length-2, 2);},
     mulString:  function (s, l){return new Array(l+1).join(s);},

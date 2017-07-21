@@ -155,41 +155,45 @@ var SCN = (function () {
     },
     toggleBasemap: function (basemap) {
 
-      var basename, lightset, action = '';
+      assets.basemaps.blendMap(basemap);
 
-      // sanitize param
-      if (typeof basemap === 'string'){
-        basename = basemap;
+      // var basename, lightset, action = '';
 
-      } else  {
-        console.error('SCN.toggleBasemap', 'illegal basemap param');
-      }
+      // // sanitize param
+      // if (typeof basemap === 'string'){
+      //   basename = basemap;
 
-      H.each(assets, (name, obj) => {
+      // } else  {
+      //   console.error('SCN.toggleBasemap', 'illegal basemap param');
+      // }
 
-        if (CFG.Assets[name] !== undefined) {
+      // H.each(assets, (name, obj) => {
 
-          if (name === basename){
-            self.toggle(obj, true);
-            action = 'on';
+      //   if (CFG.Assets[name] !== undefined) {
 
-          } else if (CFG.BasemapIds.indexOf(CFG.Assets[name].id) !== -1 ) {
-            self.toggle(obj, false);
-            action = 'off';
+      //     if (name === basename){
+      //       self.toggle(obj, true);
+      //       action = 'on';
 
-          }
+      //     } else if (CFG.BasemapIds.indexOf(CFG.Assets[name].id) !== -1 ) {
+      //       self.toggle(obj, false);
+      //       action = 'off';
 
-        }
+      //     }
 
-      });
+      //   }
 
-      lightset = CFG.Lightsets[CFG.Assets[basename].lightset];
+      // });
 
-      ANI.insert(0, ANI.library.lightset(lightset, 300));
+
+
+      // lightset = CFG.Lightsets[CFG.Assets[basename].lightset];
+
+      // ANI.insert(0, ANI.library.lightset(lightset, 300));
 
       IFC.urlDirty = true;
 
-      console.log('SCN.toggleBasemap', basename, action);
+      console.log('SCN.toggleBasemap.to', basemap);
 
     },
 

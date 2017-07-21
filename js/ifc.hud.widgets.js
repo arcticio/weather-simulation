@@ -5,12 +5,13 @@ IFC.Hud.spacetime = (function () {
     self, cfg, modus, 
     sprite, cvs, ctx, 
     texTime, texSpace,
-    vecUp  = new THREE.Vector3(0, 1, 0),
-    vecRot = new THREE.Vector3(0, 0, 0),
+    vecUp   = new THREE.Vector3(0, 1, 0),
+    vecRot  = new THREE.Vector3(0, 0, 0),
     lastMom = moment()
   ;
 
   return self = {
+
     init:  function (mesh, config) {
 
       sprite = mesh;
@@ -91,6 +92,7 @@ IFC.Hud.spacetime = (function () {
       ctx.save();
 
       ctx.clearRect(0, 0, w, h);
+
       ctx.translate(w2, h2);
       ctx.scale(0.4, 0.4);
       ctx.rotate(-PI2);
@@ -146,6 +148,7 @@ IFC.Hud.time = (function () {
   ;
 
   return self = {
+
     init:  function (mesh, config) {
 
       sprite = mesh;
@@ -171,8 +174,6 @@ IFC.Hud.time = (function () {
 
       var 
         metrics,
-        // simDate = SIM.time.model.format('YYYY-MM-DD'),
-        // simTime = SIM.time.model.format('HH:mm [UTC]'),
         simDate = SIM.time.fmtDay,
         simTime = SIM.time.fmtHour,
         simDoe  = SIM.time.doe.toFixed(2)

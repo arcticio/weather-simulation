@@ -158,6 +158,7 @@ CFG.Assets = {
       radius:          RADIUS,
       resolution:      CFG.Basemaps.resolution,
       textures:        'globe.MAP.FACE.RESO.png',
+      geometry:        new THREE.BoxGeometry(1, 1, 1, 16, 16, 16),
       material: {
         transparent:   true, 
         opacity:       0.99,              // removes crazy seaice effeckt

@@ -7,7 +7,9 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
       'topo': '8',
       'gmlc': '9',
     },
-    container = new THREE.Object3D(),
+    curId  = id,
+    lastId = id,
+    materials,
     vertexShader = `
 
       varying vec2 vUv;
@@ -20,27 +22,45 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
     `,    
     fragmentShader = `
 
-      uniform sampler2D map;
+      uniform float opacity;
+      uniform float facMask, facTopo, facGmlc;
+
+      uniform sampler2D texMask, texTopo, texGmlc;
+
+      vec3 color;
+
       varying vec2 vUv;
 
       void main () {
 
-        gl_FragColor = texture2D( map, vUv ).rgba;
-        // gl_FragColor = vec4(0.8);
+        color = (
+          texture2D( texMask, vUv ).rgb * facMask + 
+          texture2D( texGmlc, vUv ).rgb * facGmlc + 
+          texture2D( texTopo, vUv ).rgb * facTopo
+        );
+
+        gl_FragColor = vec4(color, opacity);
 
       }
 
     `,
     
-    createMaterials = function (map, resolution) {
+    createMaterials = function (resolution) {
 
       return CFG.Faces.map( face => {
 
         var
-          texkey   = `globe.${map}.${face}.${resolution}.png`,
-          texture  = CFG.Textures[texkey],
+          keyMask  = `globe.mask.${face}.${resolution}.png`,
+          keyTopo  = `globe.topo.${face}.${resolution}.png`,
+          keyGmlc  = `globe.gmlc.${face}.${resolution}.png`,
           uniforms = {
-            map: {type: 't', value: texture},
+            opacity: {type: 'f', value: 1.0},
+            facMask: {type: 'f', value: 0.0},
+            facTopo: {type: 'f', value: 0.0},
+            facGmlc: {type: 'f', value: 1.0},
+            texMask: {type: 't', value: CFG.Textures[keyMask]},
+            texTopo: {type: 't', value: CFG.Textures[keyTopo]},
+            texGmlc: {type: 't', value: CFG.Textures[keyGmlc]},
           }
         ;
 
@@ -57,7 +77,7 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
     },
     createGeometry = function () {
 
-      var idx, vertex, geometry = new THREE.BoxGeometry(1, 1, 1, 16, 16, 16);
+      var idx, vertex, geometry = cfg.geometry;
 
       for (idx in geometry.vertices) {
         vertex = geometry.vertices[idx];
@@ -67,53 +87,41 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
       return geometry;
 
     },
+    materials = createMaterials(cfg.resolution),
+    geometry  = createGeometry(),
+    mesh      = new THREE.Mesh( geometry, materials),
 
-    switchMap = function (map) {
-      container.children.forEach( mesh => {
-        mesh.visible = mesh.name === map;
-      });
+    blendMap = function (map) {
+
+      var 
+        uniform  = 'fac' + H.titleCase(map),
+        names    = ['facTopo', 'facMask', 'facGmlc']
+      ;
+        
+      materials.forEach(mat => {
+        names.forEach(name => {
+          mat.uniforms[name].value = name === uniform ? 1.0 : 0.0;  
+          mat.uniforms[name].needsUpdate = true;
+        });
+      });  
+
+      curId = maps[map];
+
     },
 
     getMapId = function () {
-      var id = NaN;
-      container.children.forEach( mesh => {
-        id = mesh.visible ? convid(mesh.name) : id;
-      });
-      return id;
-    }, 
-    convid = function (param) {
-      return typeof param === 'number' ? 
-        cfg.maps[cfg.ids.indexOf(param)] :
-        cfg.ids[cfg.maps.indexOf(param)]
-      ;
+      return curId;
     }
 
   ;
 
-  // https://stackoverflow.com/questions/15994944/transparent-objects-in-threejs/15995475#15995475
 
-  cfg.maps.forEach(map => {
+  mesh.name = 'basemaps';
+  cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
 
-    var mesh = new THREE.Mesh( createGeometry(), createMaterials(map, cfg.resolution) );
+  mesh.getMapId = getMapId;
+  mesh.blendMap = blendMap;
 
-    mesh.name        = map;
-    mesh.visible     = mesh.name === convid(id);
-    // mesh.renderOrder = 8; //~~(cfg.radius - CFG.earth.radius) * 1000;
-
-    cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
-
-    container.add(mesh);
-
-  });
-
-  Object.assign(container, {
-    switchMap,
-    getMapId,
-    convid
-  });
-
-  container.renderOrder = 8;
-
-  callback(name, container);
+  callback(name, mesh);
 
 };

@@ -1,6 +1,8 @@
 
 SCN.Meshes.mask = function (name, cfg, callback) {
 
+  debugger;
+
   var
     idx, vertex,  materials, mesh,
     geometry = new THREE.BoxGeometry(1, 1, 1, 16, 16, 16),
