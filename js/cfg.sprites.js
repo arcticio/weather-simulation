@@ -482,6 +482,29 @@ CFG.Sprites = {
     },
   },
 
+  jetstream: {
+    visible:  CFG.Assets.jetstream.toggable,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:    5,
+      top:     420,
+      left:     80,
+      width:    54,
+      height:   54,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/jetstream.png'
+    },
+    onclick: (sprite) => {
+      SCN.toggle(SCN.assets.jetstream);
+      sprite.toggled = !sprite.toggled;
+      console.log('sprite.clicked', sprite.name);
+    },
+  },
+
   graticule: {
     visible:  CFG.Assets.graticule.toggable,
     menu:     true,

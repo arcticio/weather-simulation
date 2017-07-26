@@ -159,6 +159,7 @@ var CFG = {
     'hud/population.png':           'images/hud/population.png',
     'hud/backdrop.png':             'images/hud/backdrop.png',
     'hud/atmosphere.png':           'images/hud/atmosphere.png',
+    'hud/jetstream.png':            'images/hud/jetstream.png',
 
     // 'oceanmask.4096x2048.grey.png': 'images/spheres/oceanmask.4096x2048.grey.png',
 

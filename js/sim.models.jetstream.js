@@ -2,14 +2,29 @@
 SIM.Models.jetstream = (function () {
 
   var 
-    self, cfg, datagram,
+    self, cfg, times, vari,
     model = {
-      obj:      new THREE.Object3D(),
-      sectors:  [],
-      urls:     [],
-      minDoe:   NaN,
-      maxDoe:   NaN,
-    };
+      obj:          new THREE.Object3D(),
+      urls:         [],
+      sectors:      [],
+    },
+    frags = {
+      samplers2D:   '',
+      val1Ternary:  '',
+      val2Ternary:  '',
+      palette:      '',
+    }
+  ;
+
+  // var 
+  //   self, cfg, datagram,
+  //   model = {
+  //     obj:      new THREE.Object3D(),
+  //     sectors:  [],
+  //     urls:     [],
+  //     minDoe:   NaN,
+  //     maxDoe:   NaN,
+  //   };
 
   return self = {
     convLL: function (lat, lon, alt) {return TOOLS.latLongToVector3(lat, lon, CFG.earth.radius, alt); },
@@ -25,14 +40,38 @@ SIM.Models.jetstream = (function () {
     },
     calcUrls: function (moms) {
 
-      moms.forEach(mom => {
+      times.moms.forEach(mom => {
         cfg.sim.patterns.forEach(pattern => {
           model.urls.push(cfg.sim.dataroot + mom.format(pattern));
         });
       });
 
+      // moms.forEach(mom => {
+      //   cfg.sim.patterns.forEach(pattern => {
+      //     model.urls.push(cfg.sim.dataroot + mom.format(pattern));
+      //   });
+      // });
+
     },   
-    create: function (config, moms, simdata) {
+    create: function (config, timcfg) {
+
+      // shortcuts
+      cfg   = config;
+      times = timcfg;
+      vari  = cfg.sim.variable;
+
+      // expose 
+      model.prepare       = self.prepare;
+      model.interpolateLL = self.interpolateLL;
+
+      // prepare for loader
+      self.calcUrls();
+
+      // done
+      return model;
+
+    },
+    createX: function (config, moms, simdata) {
 
       cfg = config;
 
@@ -52,19 +91,27 @@ SIM.Models.jetstream = (function () {
 
     prepare: function (doe) {
       
-      // TIM.step('Model.jets.in');
+      TIM.step('Model.jets.in');
 
       var 
         t0        = Date.now(), 
+
+        datagrams = SIM.datagrams,
+        doe       = SIM.time.doe,
+        mindoe    = SIM.time.mindoe,
+
+
         i, j, u, v, speed, width, lat, lon, color, vec3, latlon, multiline, positions, widths, colors, seeds, hsl,
         spcl      = new THREE.Spherical(),
         length    = cfg.length,
         amount    = NaN,
-        factor    = 0.0003,                       // TODO: proper Math, also sync with wind10m
         alt       = cfg.radius - CFG.earth.radius,      // 0.001
         pool      = SIM.coordsPool.slice(cfg.amount * cfg.sim.sectors.length),
         material  = SCN.Meshes.Multiline.material(cfg),
       end;
+
+      //debug
+      doe = 17336.75;
 
 
       H.each(cfg.sim.sectors, (_, sector)  => {
@@ -84,8 +131,8 @@ SIM.Models.jetstream = (function () {
 
           for (j=0; j<length; j++) {
 
-            u = datagram.ugrdprs.linearXY(doe, lat, lon);
-            v = datagram.vgrdprs.linearXY(doe, lat, lon);
+            u = datagrams.ugrdprs.linearXY(doe, lat, lon);
+            v = datagrams.vgrdprs.linearXY(doe, lat, lon);
 
             speed = Math.hypot(u, v);
 
@@ -99,8 +146,8 @@ SIM.Models.jetstream = (function () {
             widths[i].push(width);
 
             spcl.setFromVector3(vec3);
-            spcl.theta += u * factor;                   // east-direction
-            spcl.phi   -= v * factor;                   // north-direction
+            spcl.theta += u * cfg.factor;                   // east-direction
+            spcl.phi   -= v * cfg.factor;                   // north-direction
             vec3 = vec3.setFromSpherical(spcl).clone();
             
             latlon = self.convV3(vec3, alt);
