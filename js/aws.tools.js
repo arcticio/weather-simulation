@@ -1,6 +1,4 @@
 
-'use strict'
-
 var TOOLS = {
 
   debounce: function (fn, delay) {

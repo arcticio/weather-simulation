@@ -35,7 +35,7 @@ var CFG = {
 
   isLoaded:         false,
 
-  Title:            'Hypatia - Gloabl Weather',
+  Title:            'Hypatia - Global Weather',
 
   Camera: {
     cam:            new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),

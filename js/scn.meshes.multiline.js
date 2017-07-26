@@ -15,10 +15,8 @@ SCN.Meshes.Multiline = {
     this.bytes      = NaN;
     this.amount     = trailsVectors.length;
     this.length     = trailsVectors[0].length;
-    this.points     = this.amount * this.length;
-
+    // this.points     = this.amount * this.length;
     this.geometry   = new THREE.BufferGeometry();
-    // this.material   = this.createMaterial(options);
     
     this.attributes = {
       lineIndex: Float32Array,
@@ -27,7 +25,6 @@ SCN.Meshes.Multiline = {
       position:  Float32Array,
       previous:  Float32Array,
       side:      Float32Array,
-      uv:        Float32Array,
       width:     Float32Array,
       index:     Uint16Array,
     };
@@ -99,24 +96,10 @@ SCN.Meshes.Multiline = {
         distance = SCN.camera.position.length() - CFG.earth.radius
       ;
 
-      // https://threejs.org/examples/webgl_materials_blending.html
-
-      return  new THREE.RawShaderMaterial({
+      return  new THREE.RawShaderMaterial(Object.assign(cfg.material, {
 
         vertexShader:    SCN.Meshes.Multiline.shaderVertex(cfg.amount),
         fragmentShader:  SCN.Meshes.Multiline.shaderFragment(),
-
-        depthTest:       true,                    // false ignores planet
-        depthWrite:      false,
-        blending:        THREE.AdditiveBlending,    // NormalBlending, AdditiveBlending, MultiplyBlending
-        side:            THREE.DoubleSide,        // FrontSide (start=skewed), DoubleSide (start=vertical)
-        transparent:     true,                    // needed for alphamap, opacity + gradient
-        lights:          false,                   // no deco effex, true tries to add scene.lights
-
-        shading:         THREE.SmoothShading,     // *THREE.SmoothShading or THREE.FlatShading
-        vertexColors:    THREE.NoColors,          // *THREE.NoColors, THREE.FaceColors and THREE.VertexColors.
-
-        wireframe:       false,
 
         uniforms: {
 
@@ -131,7 +114,7 @@ SCN.Meshes.Multiline = {
 
         },
 
-      });
+      }));
 
   },
 
@@ -140,7 +123,6 @@ SCN.Meshes.Multiline = {
     // precision highp float;
 
     attribute float side;
-    attribute vec2  uv;
     attribute vec3  next;
     attribute vec3  position;
     attribute vec3  previous;
@@ -159,7 +141,6 @@ SCN.Meshes.Multiline = {
 
     uniform float pointers[  ${amount}  ];  // start for each line
     
-    varying vec2  vUV;
     varying vec4  vColor;
     varying float vHead;
     varying float vCounter;
@@ -172,8 +153,6 @@ SCN.Meshes.Multiline = {
 
     void main() {
 
-
-        // vUV       = uv;
         vHead     = pointers[int(lineIndex)];   // get head for this segment
         vCounter  = fract(lineIndex);           // get pos of this segment 
         vColor    = vec4( colors, opacity );
@@ -255,7 +234,6 @@ SCN.Meshes.Multiline.line = function ( idx, vertices, colors, widths ) {
   this.positions = [];
   this.previous  = [];
   this.side      = [];
-  this.uvs       = [];
   this.widths    = [];
   this.colors    = [];
 
@@ -271,7 +249,6 @@ SCN.Meshes.Multiline.line = function ( idx, vertices, colors, widths ) {
     position:  new THREE.BufferAttribute( new Float32Array( this.positions ), 3 ),
     previous:  new THREE.BufferAttribute( new Float32Array( this.previous ),  3 ),
     side:      new THREE.BufferAttribute( new Float32Array( this.side ),      1 ),
-    uv:        new THREE.BufferAttribute( new Float32Array( this.uvs ),       2 ),
     width:     new THREE.BufferAttribute( new Float32Array( this.widths ),    1 ),
     colors:    new THREE.BufferAttribute( new Float32Array( this.colors ),    3 ),
   }
@@ -301,9 +278,9 @@ SCN.Meshes.Multiline.line.prototype = {
 
   init:  function( vertices, colors, widths ) {
 
-    var j, ver, cnt, col, wid, n, l = this.length;
+    var j, ver, cnt, col, wid, n, len = this.length;
 
-    for( j = 0; j < l; j++ ) {
+    for( j = 0; j < len; j++ ) {
 
       ver = vertices[ j ];
       col = colors[ j ];
@@ -318,15 +295,12 @@ SCN.Meshes.Multiline.line.prototype = {
       this.colors.push(col.r, col.g, col.b);
       this.widths.push(wid);
       this.widths.push(wid);
-
       this.side.push(  1 );
       this.side.push( -1 );
-      this.uvs.push( j / ( l - 1 ), 0 );
-      this.uvs.push( j / ( l - 1 ), 1 );
 
     }
 
-    for( j = 0; j < l - 1; j++ ) {
+    for( j = 0; j < len - 1; j++ ) {
       n = j + j;
       this.indices.push( n,     n + 1, n + 2 );
       this.indices.push( n + 2, n + 1, n + 3 );
@@ -361,201 +335,3 @@ SCN.Meshes.Multiline.line.prototype = {
   }
 
 };
-
-
-// function Multiline (trailsVectors, trailsColors, trailsWidths, material, options) {
-
-
-
-// Multiline.prototype = {
-//   constructor: Multiline,
-
-//   onAfterRender: function (renderer, scene, camera, geometry, material) {
-
-//     var i, 
-//       pointers = this.material.uniforms.pointers.value,
-//       offset   = 1 / this.length
-//     ;
-
-//     for (i=0; i<this.amount; i++) {
-//       pointers[i] = (pointers[i] + offset) % 1;
-//     }
-
-//     this.material.uniforms.pointers.needsUpdate = true;
-
-//     material.uniforms.distance.value = camera.position.length() - CFG.earth.radius;
-//     material.uniforms.distance.needsUpdate = true;
-    
-//   },
-
-//   check: function (val, valDefault) {
-//     return val === undefined ? valDefault : val;
-//   },
-
-//   createMaterial: function (options) {
-
-//     var     
-//       pointers = new Array(this.amount).fill(0).map( () => Math.random() * this.length ),
-//       distance = SCN.camera.position.length() - CFG.earth.radius
-//     ;
-
-//     // https://threejs.org/examples/webgl_materials_blending.html
-
-//     return  new THREE.RawShaderMaterial({
-
-//       vertexShader:    this.shaderVertex(),
-//       fragmentShader:  this.shaderFragment(),
-
-//       depthTest:       true,                    // false ignores planet
-//       depthWrite:      false,
-//       blending:        THREE.AdditiveBlending,    // NormalBlending, AdditiveBlending, MultiplyBlending
-//       side:            THREE.DoubleSide,        // FrontSide (start=skewed), DoubleSide (start=vertical)
-//       transparent:     true,                    // needed for alphamap, opacity + gradient
-//       lights:          false,                   // no deco effex, true tries to add scene.lights
-
-//       shading:         THREE.SmoothShading,     // *THREE.SmoothShading or THREE.FlatShading
-//       vertexColors:    THREE.NoColors,          // *THREE.NoColors, THREE.FaceColors and THREE.VertexColors.
-
-//       wireframe:       false,
-
-//       uniforms: {
-
-//         color:            { type: 'c',    value: options.color },
-//         opacity:          { type: 'f',    value: options.opacity },
-//         lineWidth:        { type: 'f',    value: options.lineWidth },
-//         pointers:         { type: '1fv',  value: pointers },
-//         section:          { type: 'f',    value: options.section }, // length of trail in %
-//         distance:         { type: 'f',    value: distance },
-
-//       },
-
-//     });
-
-//   },
-
-//   shaderVertex: function () {
-
-//     return `
-
-//       // precision highp float;
-
-//       attribute float side;
-//       attribute vec2  uv;
-//       attribute vec3  next;
-//       attribute vec3  position;
-//       attribute vec3  previous;
-
-//       attribute float width;
-//       attribute vec3  colors;
-//       attribute float lineIndex;
-
-//       uniform mat4  projectionMatrix;
-//       uniform mat4  modelViewMatrix;
-
-//       uniform float distance;
-//       uniform float lineWidth;
-//       uniform vec3  color;
-//       uniform float opacity;
-
-//       uniform float pointers[  ${this.amount}  ];  // start for each line
-      
-//       varying vec2  vUV;
-//       varying vec4  vColor;
-//       varying float vHead;
-//       varying float vCounter;
-
-//       vec2 dir;
-//       vec2 dir1;
-//       vec2 dir2;
-//       vec2 normal;
-//       vec4 offset;
-
-//       void main() {
-
-
-//           // vUV       = uv;
-//           vHead     = pointers[int(lineIndex)];   // get head for this segment
-//           vCounter  = fract(lineIndex);           // get pos of this segment 
-//           vColor    = vec4( colors, opacity );
-
-//           mat4 m = projectionMatrix * modelViewMatrix;
-
-//           vec4 finalPosition = m * vec4( position, 1.0 );
-//           vec4 prevPos       = m * vec4( previous, 1.0 );
-//           vec4 nextPos       = m * vec4( next, 1.0 );
-
-//           vec2 currP = finalPosition.xy / finalPosition.w;
-//           vec2 prevP = prevPos.xy       / prevPos.w;
-//           vec2 nextP = nextPos.xy       / nextPos.w;
-
-//           if      ( nextP == currP ) { dir = normalize( currP - prevP) ;}
-//           else if ( prevP == currP ) { dir = normalize( nextP - currP) ;}
-//           else {
-//               dir1 = normalize( currP - prevP );
-//               dir2 = normalize( nextP - currP );
-//               dir  = normalize( dir1  + dir2 );
-//           }
-
-//           normal  = vec2( -dir.y, dir.x );
-//           normal *= lineWidth * width * distance;
-
-//           offset = vec4( normal * side, 0.0, 1.0 );
-//           finalPosition.xy += offset.xy;
-
-//           gl_Position = finalPosition;
-
-//       } 
-
-//     `;
-
-//   },
-
-//   /*
-//         distance = 1 => width = 1
-//                    2 => width = 0.5
-
-
-
-//   */
-
-
-
-//   shaderFragment: function () { return `
-
-//     precision mediump float;
-
-//     float alpha  = 0.0;
-
-//     uniform float section;   // visible segment length
-
-//     varying vec4  vColor;    // color from attribute, includes uni opacity
-//     varying float vHead;     // head of line segment
-//     varying float vCounter;  // current position, goes from 0 to 1 
-
-//     void main() {
-
-//         vec4  color = vColor;
-//         float head  = vHead;
-//         float tail  = max(0.0, vHead - section);
-//         float pos   = vCounter;
-
-//         if ( pos > tail && pos < head ) {
-//           alpha = (pos - tail) / section;
-
-//         } else if ( pos > ( 1.0 - section ) && head < section ) {
-//           alpha = ( pos - section - head ) / section; 
-
-//         } else {
-//           discard;
-
-//         }
-
-//         gl_FragColor = vec4( color.rgb, alpha * color.a );
-
-//     } 
-
-//   `;},
-
-// };
-
-

@@ -12,7 +12,7 @@ CFG.Activated = {
   background: true,
   ambient:    true,
   atmosphere: true,
-  basemaps:   5,       // 7,8,9 == 'mask', 'topo', 'gmlc'
+  basemaps:   7,       // 7,8,9 == 'mask', 'topo', 'gmlc'
 };
 
 CFG.Assets = {
@@ -315,6 +315,9 @@ CFG.Assets = {
       length:         60,
       amount:         512,
       hue:            220,
+      material: {
+                      transparent: true,
+      },
       sim: {
         dataroot:     'data/gfs/',
         variable:     'ugrdprs',
