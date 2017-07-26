@@ -38,8 +38,8 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
       float dotNL;
 
       float dnMix, dnZone;
-      float dnSharpness = 4.0;
-      float dnFactor    = 0.5;
+      float dnSharpness = 8.0;  // was 4.0, 1.0 very soft, 8.0 
+      float dnFactor    = 0.5;  // 
       float dnOffset    = 0.8;
 
       void main() {
@@ -52,6 +52,7 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
 
         // convert to 0 to 1 for mixing, 0.5 for full range
         dnMix = dnOffset - dnZone * dnFactor;
+        dnMix = 0.5 - dnZone * 0.5;
         
         gl_FragColor = mix(lightDay, lightNight, dnMix);
 

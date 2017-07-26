@@ -11,10 +11,8 @@ CFG.Activated = {
   pointer:    true,
   background: true,
   ambient:    true,
-  spot:       true,
-  sun:        true,
   atmosphere: true,
-  basemaps:   7,
+  basemaps:   5,       // 7,8,9 == 'mask', 'topo', 'gmlc'
 };
 
 CFG.Assets = {
@@ -52,7 +50,7 @@ CFG.Assets = {
 
     ambient: {
       title:          'ambient light',
-      essential:      true,
+      essential:      true,  // TODO remove from sea ice, snpp
       debuggable:     true,
       type:           'light',
       color:          0xffffff,
@@ -62,7 +60,7 @@ CFG.Assets = {
 
     spot:    {
       title:          'spot light',
-      essential:      true,
+      // essential:      true,
       debuggable:     true,
       type:           'light',
       color:          0xffffff, 
@@ -77,7 +75,7 @@ CFG.Assets = {
 
     sun: {
       title:          'directional light',
-      essential:      true,
+      // essential:      true,
       debuggable:     true,
       type:           'light',
       skycolor:       0xffddaa, // reddish

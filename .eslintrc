@@ -35,6 +35,7 @@
 
     // Data shortcuts
     "CITIES":          true,
+    "dataTimeRanges":  true,
     
     // CFG shortcuts
     "RADIUS":          true,

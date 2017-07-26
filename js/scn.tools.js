@@ -30,16 +30,16 @@ SCN.Tools = {
   determineType: function (obj) {
 
     return (
-      obj instanceof THREE.Scene                ? 'Scene' :
-      obj instanceof THREE.Camera               ? 'Camera' :
-      obj instanceof THREE.AmbientLight         ? 'AmbientLight' :
-      obj instanceof THREE.HemisphereLight      ? 'HemisphereLight' :
-      obj instanceof THREE.SpotLight            ? 'SpotLight' :
-      obj.geometry instanceof THREE.SphereBufferGeometry ? 'SphereBufferGeometry' :
-      obj.geometry instanceof THREE.BufferGeometry       ? 'BufferGeometry' :
-      obj.geometry instanceof THREE.SphereGeometry       ? 'SphereGeometry' :
-      obj.geometry instanceof THREE.BoxGeometry          ? 'BoxGeometry' :
-      obj instanceof THREE.Object3D             ? 'Container' :
+      obj instanceof THREE.Scene                ? 'Scene':                         
+      obj instanceof THREE.Camera               ? 'Camera':                        
+      obj instanceof THREE.AmbientLight         ? 'AmbientLight':                  
+      obj instanceof THREE.HemisphereLight      ? 'HemisphereLight':               
+      obj instanceof THREE.SpotLight            ? 'SpotLight':                     
+      obj.geometry instanceof THREE.SphereBufferGeometry ? 'SphereBufferGeometry': 
+      obj.geometry instanceof THREE.BufferGeometry       ? 'BufferGeometry':       
+      obj.geometry instanceof THREE.SphereGeometry       ? 'SphereGeometry':       
+      obj.geometry instanceof THREE.BoxGeometry          ? 'BoxGeometry':          
+      obj instanceof THREE.Object3D             ? 'Container':                     
         'unknown'
     );
 

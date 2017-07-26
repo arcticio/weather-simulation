@@ -17,23 +17,27 @@ pyPack="
 
 ## works in root
 
-import sys
-from bs4 import BeautifulSoup, Tag
+import sys, hashlib, time
+from bs4 import BeautifulSoup, Tag, NavigableString, Comment
 
 task = sys.argv[1]
 
 htmlIndex = 'index.html'
 htmlDist  = 'dist/index.html'
 
-fileIndex = open(htmlIndex, 'r')
-soup = BeautifulSoup(fileIndex.read(), 'lxml')
-fileIndex.close()
+with open('dist/js/aws.version.js', 'r') as myfile :
+    version = myfile.read()
+    hash = hashlib.md5(version).hexdigest()
+
+with open(htmlIndex, 'r') as myfile :
+    soup = BeautifulSoup(myfile.read(), 'lxml')
 
 filePack = open('dist/js/%s.pack.js' % task, 'w')
 
 tags = soup.findAll('script')
 
-print 'task = %s' % task
+print '  task = %s, hash = %s' % (task, hash)
+print
 
 for tag in tags :
     if tag.has_attr('src') :
@@ -45,15 +49,26 @@ for tag in tags :
 
 filePack.close()
 
+## rewrite lib script tags
 divScripts = soup.find(id='scripts')
-scriptJS   = soup.new_tag('script', src=u'js/js.pack.min.js')
-scriptLibs = soup.new_tag('script', src=u'js/libs.pack.min.js')
+scriptJS   = soup.new_tag('script', src=u'js/js.pack.min.js'   + '?' + hash)
+scriptLibs = soup.new_tag('script', src=u'js/libs.pack.min.js' + '?' + hash)
 
 divScripts.replaceWith(scriptLibs)
 scriptLibs.insert_after(scriptJS)
+scriptLibs.insert_after(NavigableString('\n'))
 
+## mark version
+comment = Comment('\n %s \n %s %s \n' % (
+    time.strftime('%X %x %Z'),
+    version.split(' ')[-1],
+    hash
+))
+soup.head.insert(-1, comment)
+
+## write new index.html
 fileIndex = open(htmlDist, 'w')
-fileIndex.write(str(soup))
+fileIndex.write(str(soup.prettify()))
 fileIndex.close()
 
 "

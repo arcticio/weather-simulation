@@ -2,14 +2,7 @@
 SCN.Meshes.basemaps = function (id, name, cfg, callback) {
 
   var
-    maps = {
-      'mask': '7',
-      'topo': '8',
-      'gmlc': '9',
-    },
-    curId  = id,
-    lastId = id,
-    materials,
+    curId = id,
     vertexShader = `
 
       varying vec2 vUv;
@@ -22,18 +15,15 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
     `,    
     fragmentShader = `
 
-      uniform float opacity;
-      uniform float facMask, facTopo, facGmlc;
+      uniform float opacity, facMask, facTopo, facGmlc;
 
       uniform sampler2D texMask, texTopo, texGmlc;
-
-      vec3 color;
 
       varying vec2 vUv;
 
       void main () {
 
-        color = (
+        vec3 color = (
           texture2D( texMask, vUv ).rgb * facMask + 
           texture2D( texGmlc, vUv ).rgb * facGmlc + 
           texture2D( texTopo, vUv ).rgb * facTopo
@@ -87,10 +77,6 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
       return geometry;
 
     },
-    materials = createMaterials(cfg.resolution),
-    geometry  = createGeometry(),
-    mesh      = new THREE.Mesh( geometry, materials),
-
     blendMap = function (map) {
 
       var 
@@ -105,13 +91,20 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
         });
       });  
 
-      curId = maps[map];
+      curId = cfg.ids[cfg.maps.indexOf(map)];
 
+    },
+    id2map = function (id) {
+      return cfg.maps[cfg.ids.indexOf(id)];
     },
 
     getMapId = function () {
-      return curId;
-    }
+      return ~~curId;
+    },
+
+    materials = createMaterials(cfg.resolution),
+    geometry  = createGeometry(),
+    mesh      = new THREE.Mesh( geometry, materials)
 
   ;
 
@@ -121,6 +114,9 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
 
   mesh.getMapId = getMapId;
   mesh.blendMap = blendMap;
+
+  // activate requested map
+  blendMap(id2map(id));
 
   callback(name, mesh);
 

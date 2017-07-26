@@ -23,11 +23,11 @@ var SIM = (function () {
 
     time = {
       iso:         '',
-      doe:         NaN,
+      doe:         NaN,                                           // day of epoch
       start:       moment.utc('2017-01-01-00', 'YYYY-MM-DD-HH'),  // give full year, no purpose
       end:         moment.utc('2017-12-31-18', 'YYYY-MM-DD-HH'),  // complete full year
       now:         moment.utc(),                                  // now, plus init show
-      model:       null,
+      model:       null,                                          //  what's shown
       range:       H.range(-12, 66, 6),
       stamps:      null,
       mindoe:      NaN,
@@ -46,14 +46,9 @@ var SIM = (function () {
     models,
     datagrams,
     coordsPool,
-    sunVector,
     sunPosition,
     sunDirection,
 
-    calcdoe: function (mom) {
-      // mom = mom.clone().hours(mom.hours() - (mom.hours() % 6));  // rstrict now at avail dods
-      return H.date2doeFloat(mom.toDate());
-    },
     mom2doe: function (mom) {return mom.toDate() / 864e5},
     doe2mom: function (doe) {return moment.utc(doe * 864e5)},
 
@@ -65,37 +60,29 @@ var SIM = (function () {
 
       TIM.step('Pool.generate', Date.now() - t0, 'ms', CFG.Sim.coordspool.amount);
 
-      time.interval = 6 * 60 * 60 * 1000; //SIM.Tools.minutesYear() * 60;
-
-      time.now   = TIMENOW.clone();
-      time.model = TIMENOW.clone();
-      time.doe   = self.calcdoe(time.model);
-
-      SIM.Charts.init();
-
-      // TIM.step('SIM.time', 'now', time.now.format('YYYY-MM-DD HH[:]mm'), 'doe', time.doe);
-      // TIM.step('SIM.time', 'time.model', time.model.format('YYYY-MM-DD HH[:]mm'));
+      // SIM.Charts.init();
 
     },
     setSimTime: function (val, what) {
 
-      var mom;
+      // var mom;
 
       if (val === undefined && what === undefined) {
 
-        // init, rstrict now at avail dods
+        time.model  = CFG.Manager.urlMom;
+        // time.doe    = self.calcdoe(time.model);
+        time.doe    = self.mom2doe(time.model);
 
-        mom         = TIMENOW;
-        time.model  = mom.clone().hours(mom.hours() - (mom.hours() % 6));  
+        // debug: mod to 00, 06, 12, 18
+        // time.model  = mom.clone().hours(mom.hours() - (mom.hours() % 6));  
+
         time.stamps = time.range.map( h => time.model.clone().add( h, 'hours') );
         time.length = time.stamps.length;
 
         time.mindoe = self.mom2doe(time.stamps[0]);
         time.maxdoe = self.mom2doe(time.stamps.slice(-1)[0]);
 
-        TIM.step('SIM.time.set', 'now', time.now.format('YYYY-MM-DD HH[:]mm'), 'doe', time.doe);
-
-        // console.log('SIM', time.length -1, time.stamps[time.length -1].format('YYYY-MM-DD-HH'), time.maxdoe);
+        TIM.step('SIM.time.set', 'model', time.model.format('YYYY-MM-DD HH[:]mm'), time.doe.toFixed(2));
 
 
       } else if (typeof val === 'number' && what === undefined) {
@@ -143,8 +130,7 @@ var SIM = (function () {
       time.fmtDay  = time.model.format('YYYY-MM-DD');
       time.fmtHour = time.model.format('HH:mm [UTC]');
 
-      // self.updateSun();
-
+      // enforce pushstate update
       IFC.urlDirty = true;
 
     },
@@ -160,11 +146,11 @@ var SIM = (function () {
       // query sun by time
       orbTime = new Orb.Time(time.model.toDate());
       orbSun  = sun.position.equatorial(orbTime);
-      theta   = (time.model.hour() + time.model.minutes() / 60) * (Math.PI / 12);
-      phi     = orbSun.dec * Math.PI / 180 - Math.PI / 2;
+      theta   = (time.model.hour() + time.model.minutes() / 60) * (TAU / 24);
+      phi     = orbSun.dec * PI / 180 - PI2;
 
       //  Spherical( radius, phi, theta )
-      sunSphererical.set(4, 0, -PI / 2);
+      sunSphererical.set(4, 0, -PI2);
       sunSphererical.theta -= theta;
       sunSphererical.phi   -= phi;
 
@@ -209,8 +195,7 @@ var SIM = (function () {
       !SIM.Models[name] && console.log('Model: "' + name + '" not avail, have:', Object.keys(SIM.Models));
 
       var 
-        vari, 
-        datagramm,
+        vari, datagramm,
         times = self.calcVariTimes(name, cfg),
         model = SIM.Models[name].create(cfg, times)
       ;

@@ -24,6 +24,7 @@ handlers:
 - url: /timeranges.js
   static_files: timeranges.js
   upload: timeranges.js
+  expiration: "5s"
 
 ## FAVICON
 - url: /favicon\.ico
@@ -43,10 +44,16 @@ handlers:
   mime_type: text/plain
   expiration: "30d"
 
-## DODS
+## DODS / OBS
 - url: /data/gfs/(.*\.dods)
   static_files: data/gfs/\1
   upload: data/gfs/(.*\.dods)
+  mime_type: text/plain
+
+## DODS / STATIC
+- url: /data/landsfc/(.*\.dods)
+  static_files: data/landsfc/\1
+  upload: data/landsfc/(.*\.dods)
   mime_type: text/plain
 
 ## DATA

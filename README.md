@@ -27,7 +27,8 @@ Renders current weather parameters onto a 3D sphere
   * [Global Forecast System (GFS), wind10m, tmp2m, jetstream](https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-forcast-system-gfs)
   * [Global Imagery Browse Services, GIBS (sea ice conc., sea surface temperature)](https://earthdata.nasa.gov/about/science-system-description/eosdis-components/global-imagery-browse-services-gibs)
   * [Cryosat Antartic DEM](http://www.cpom.ucl.ac.uk/csopr/icesheets2/)
-  * [UNI Bremen, AMSR2, SIC](https://seaice.uni-bremen.de/sea-ice-concentration/)
+  <!-- * [UNI Bremen, AMSR2, SIC](https://seaice.uni-bremen.de/sea-ice-concentration/) -->
+  * [OSISAF, Amsr2, sea ice concentraion (OSI-408)](http://osisaf.met.no/p/ice/amsr_ice_conc_long_description.html)
   * [Polar Science Center, PIOMAS, SIT](http://psc.apl.uw.edu/research/projects/arctic-sea-ice-volume-anomaly/)
   * [Antarctica Ice Velocity Map](https://nsidc.org/data/docs/measures/nsidc0484_rignot/)
   * [Greenland Ice Sheet Velocity Map](http://nsidc.org/data/docs/measures/nsidc0478_joughin/)

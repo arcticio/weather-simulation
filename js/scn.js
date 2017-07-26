@@ -74,16 +74,16 @@ var SCN = (function () {
     },
     add: function (name, asset) {
 
-      if (name === 'pointer') {
-        // expose pointer to IFC
-        pointer = self.pointer = asset;
-      }
+      // if (name === 'pointer') {
+      //   // expose pointer to IFC
+      //   pointer = self.pointer = asset;
+      // }
 
       assets[name] = asset;
       assets[name].name = name;
       self.setRenderOrder(asset);
 
-      asset.updateMatrixWorld();
+      // asset.updateMatrixWorld();
       scene.add(asset);
 
     },
@@ -113,8 +113,8 @@ var SCN = (function () {
       } else {
         if (asset instanceof THREE.Object3D){
           self.setRenderOrder(asset);
-          scene.updateMatrixWorld();
-          asset.updateMatrixWorld();
+          // scene.updateMatrixWorld();
+          // asset.updateMatrixWorld();
           scene.add(asset);
 
         } else {
@@ -156,40 +156,6 @@ var SCN = (function () {
     toggleBasemap: function (basemap) {
 
       assets.basemaps.blendMap(basemap);
-
-      // var basename, lightset, action = '';
-
-      // // sanitize param
-      // if (typeof basemap === 'string'){
-      //   basename = basemap;
-
-      // } else  {
-      //   console.error('SCN.toggleBasemap', 'illegal basemap param');
-      // }
-
-      // H.each(assets, (name, obj) => {
-
-      //   if (CFG.Assets[name] !== undefined) {
-
-      //     if (name === basename){
-      //       self.toggle(obj, true);
-      //       action = 'on';
-
-      //     } else if (CFG.BasemapIds.indexOf(CFG.Assets[name].id) !== -1 ) {
-      //       self.toggle(obj, false);
-      //       action = 'off';
-
-      //     }
-
-      //   }
-
-      // });
-
-
-
-      // lightset = CFG.Lightsets[CFG.Assets[basename].lightset];
-
-      // ANI.insert(0, ANI.library.lightset(lightset, 300));
 
       IFC.urlDirty = true;
 
@@ -310,8 +276,8 @@ var SCN = (function () {
           assets.background.updatePosition();
 
           SIM.updateSun();
-          assets.spot.position.copy(SIM.sunPosition);
-          assets.sun.position.copy(SIM.sunPosition);
+          assets.spot.position && assets.spot.position.copy(SIM.sunPosition);
+          assets.sun.position  && assets.sun.position.copy(SIM.sunPosition);
 
           // always look for new animations
           ANI.step(frame, deltasecs);
@@ -321,7 +287,6 @@ var SCN = (function () {
           renderer.render( scene, camera );
 
           // update Hud
-          // IFC.Hud.step(frame, deltasecs);
           IFC.Hud.render(renderer);
 
         IFC.Hud.performance.end();

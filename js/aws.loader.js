@@ -44,7 +44,8 @@ var LDR = (function () {
         [ ANI.init ], 
         [ SIM.init ], 
         [ SCN.init ], 
-        [ SIM.setSimTime ], // prepares display time range and time
+        [ SIM.setSimTime ],    // prepares display time range and time
+        [ SIM.Charts.init ],
 
       'stage 1',
         self.loadImages,
@@ -59,7 +60,7 @@ var LDR = (function () {
         [ IFC.init ], 
         [ SIM.updateSun ], 
 
-      'uploading to GPU',
+      'uploading to reality rendering device',
         [ SCN.prerender, null, 'may take a while ...' ], 
 
       'recalibrating',
@@ -88,7 +89,7 @@ var LDR = (function () {
 
     parse: function (sequence) {
 
-      // generate tasks by reading items from sequence
+      // generates tasks by reading actions from sequence
       H.each(sequence, (_, item) => {
 
         var subsequence, func, params, info;

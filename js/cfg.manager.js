@@ -4,8 +4,8 @@ CFG.Manager = (function () {
   var 
     self, 
     assets = [], // found in URL
-    simtime,     // found in URL
-    simcoords,   // found in URL
+    urlMom,      // found in URL
+    urlCoords,   // found in URL
     position,
     activated = Object.assign({}, CFG.Activated, {
       /* name: id*/
@@ -13,6 +13,8 @@ CFG.Manager = (function () {
   ;
 
   return self = {
+
+    urlMom,
 
     assets,
     activated,
@@ -36,19 +38,6 @@ CFG.Manager = (function () {
         TIM.step('CFG.User', 'lat:', user.latitude, 'lon:', user.longitude, user.country_code, user.country_name);
       } else {
         TIM.step('CFG.User', 'location unknown');
-      }
-
-    },
-
-    probeFullscreen: function () {
-
-      if (screenfull.enabled){
-        var img = document.querySelectorAll('.btnFullscreen')[0];
-        img.src = 'images/fullscreen.grey.png';
-        img.onclick = function () {
-          LDR.goFullscreen();
-          img.src='images/transparent.png';
-        }
       }
 
     },
@@ -93,6 +82,19 @@ CFG.Manager = (function () {
 
         }
 
+      }
+
+    },
+
+    probeFullscreen: function () {
+
+      if (screenfull.enabled){
+        var img = document.querySelectorAll('.btnFullscreen')[0];
+        img.src = 'images/fullscreen.grey.png';
+        img.onclick = function () {
+          LDR.goFullscreen();
+          img.src='images/transparent.png';
+        }
       }
 
     },
@@ -213,31 +215,34 @@ CFG.Manager = (function () {
       });
 
       // debug overview
-      // console.log('activated', JSON.stringify(activated, null, 2));
+      console.log('activated', JSON.stringify(activated, null, 2));
 
 
       // DateTime from URL
       // TODO: ensure within range
       if (locTime) {
-        simtime = moment.utc(locTime, 'YYYY-MM-DD-HH-mm');
-        if (!simtime.isValid()) {
-          simtime = undefined;
+        urlMom = moment.utc(locTime, 'YYYY-MM-DD-HH-mm');
+        if (!urlMom.isValid()) {
+          urlMom = undefined;
         }
       }
 
       // DateTime failsafe
-      if (!simtime) {
-        simtime = TIMENOW ? TIMENOW : moment.utc();
+      if (!urlMom) {
+        urlMom = TIMENOW ? TIMENOW : moment.utc();
       }
+
+      // expose // TODO: check range of obs
+      self.urlMom = urlMom;
 
       // Coords from URL
       if (locCoords) {
-        simcoords = locCoords.split(';').map(Number);
-        if (simcoords.length === 3){
+        urlCoords = locCoords.split(';').map(Number);
+        if (urlCoords.length === 3){
           position = new THREE.Vector3().add({
-            x: simcoords[0] !== undefined ? simcoords[0] : 2.0,
-            y: simcoords[1] !== undefined ? simcoords[1] : 2.0,
-            z: simcoords[2] !== undefined ? simcoords[2] : 2.0,
+            x: urlCoords[0] !== undefined ? urlCoords[0] : 2.0,
+            y: urlCoords[1] !== undefined ? urlCoords[1] : 2.0,
+            z: urlCoords[2] !== undefined ? urlCoords[2] : 2.0,
           });
         }
       }

@@ -318,7 +318,7 @@ var IFC = (function () {
         pointer.device = mouse;
         mouse.px       = event.clientX; 
         mouse.py       = event.clientY;
-        mouse.x        = ( event.clientX / geometry.width )  * 2 - 1;
+        mouse.x        =   ( event.clientX / geometry.width )  * 2 - 1;
         mouse.y        = - ( event.clientY / geometry.height ) * 2 + 1;
       },
       mouseenter:   function () { 
@@ -420,7 +420,7 @@ var IFC = (function () {
       intersections.length = 0;
       // intersections.splice(0, intersections.length);
       raycaster.setFromCamera( pointer.device, SCN.camera );
-      SCN.pointer.raycast(raycaster, intersections)
+      SCN.assets.pointer.raycast(raycaster, intersections)
 
       if (( intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null )) {
         pointer.intersect.copy(intersection.point).normalize();
