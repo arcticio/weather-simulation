@@ -55,20 +55,10 @@
   </script>
   <script src="timeranges.js">
   </script>
-  <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-    ga('create', 'UA-22811255-1', 'auto');
-    ga('send', 'pageview');
-
-  </script>
   <style>
   </style>
   <!--
- 14:12:01 07/23/17 CEST 
+ 10:53:03 07/26/17 CEST 
  '0.3a/arcticio/23-July-2017';
  f74d8e9e50389260647eb83ac3be5bcc 
 -->
@@ -156,7 +146,7 @@
           ANI.insert(0, ANI.library.intro(800, function onDone () {
 
             CFG.isLoaded = true;
-            IFC.Tools.updateUrl();
+            IFC.urlDirty = true;
 
             // debug
             // SCN.logScene();
