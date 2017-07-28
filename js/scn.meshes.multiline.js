@@ -82,11 +82,11 @@ SCN.Meshes.Multiline = {
 
     this.mesh = new THREE.Mesh( this.geometry, material );
 
-    this.bytes = Object
-      .keys(this.attributes)
-      .map(attr => this.attributes[attr].array.length)
-      .reduce( (a, b) =>  a + b, 0)
-    ;
+    // this.bytes = Object
+    //   .keys(this.attributes)
+    //   .map(attr => this.attributes[attr].array.length)
+    //   .reduce( (a, b) =>  a + b, 0)
+    // ;
 
   },
   material: function (cfg) {
@@ -142,13 +142,9 @@ SCN.Meshes.Multiline = {
     uniform float pointers[  ${amount}  ];  // start for each line
     
     varying vec4  vColor;
-    varying float vHead;
-    varying float vCounter;
+    varying float vHead, vCounter;
 
-    vec2 dir;
-    vec2 dir1;
-    vec2 dir2;
-    vec2 normal;
+    vec2 dir, dir1, dir2, normal;
     vec4 offset;
 
     void main() {
@@ -176,7 +172,7 @@ SCN.Meshes.Multiline = {
         }
 
         normal  = vec2( -dir.y, dir.x );
-        normal *= lineWidth * width * distance;
+        normal *= lineWidth * width * 1.0; //distance;
 
         offset = vec4( normal * side, 0.0, 1.0 );
         finalPosition.xy += offset.xy;

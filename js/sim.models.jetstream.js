@@ -63,17 +63,18 @@ SIM.Models.jetstream = (function () {
         datagrams = SIM.datagrams,
         doe       = SIM.time.doe,
 
-        i, j, u, v, speed, width, lat, lon, color, vec3, latlon, multiline, positions, widths, colors, seeds, hsl,
+        i, j, u, v, speed, width, lat, lon, color, vec3, latlon, multiline, positions, widths, colors, seeds,
         spcl      = new THREE.Spherical(),
         length    = cfg.length,
         amount    = NaN,
         pool      = SIM.coordsPool.slice(cfg.amount * cfg.sim.sectors.length),
-        material  = SCN.Meshes.Multiline.material(cfg)
+        material  = SCN.Meshes.Multiline.material(cfg),
+        filler    = () => []
       ;
 
 
       //debug
-      doe = 17336.75;
+      doe = 17336.75; var total = 0;
 
 
       H.each(cfg.sim.sectors, (_, sector)  => {
@@ -81,9 +82,11 @@ SIM.Models.jetstream = (function () {
         seeds     = pool.filter(sector).slice(0, cfg.amount);
         amount    = seeds.length; 
 
-        positions = new Array(amount).fill(0).map( () => []);
-        colors    = new Array(amount).fill(0).map( () => []);
-        widths    = new Array(amount).fill(0).map( () => []);
+        total +=  amount;
+
+        positions = new Array(amount).fill(0).map(filler);
+        colors    = new Array(amount).fill(0).map(filler);
+        widths    = new Array(amount).fill(0).map(filler);
 
         for (i=0; i<amount; i++) {
 
@@ -97,10 +100,7 @@ SIM.Models.jetstream = (function () {
             v = datagrams.vgrdprs.linearXY(doe, lat, lon);
 
             speed = Math.hypot(u, v);
-
-            hsl   = 'hsl(' + cfg.hue + ', 40%, ' +  ~~speed + '%)'
-            color = new THREE.Color(hsl);
-
+            color = new THREE.Color().setHSL(cfg.hue, 0.4, speed / 100);
             width = H.clampScale(speed, 0, 50, 0.5, 2.0);
 
             positions[i].push(vec3);
@@ -145,12 +145,13 @@ SIM.Models.jetstream = (function () {
 
         material.uniforms.pointers.needsUpdate = true;
 
-        material.uniforms.distance.value = SCN.camera.position.length() - CFG.earth.radius;
+        // material.uniforms.distance.value = SCN.camera.position.length() - CFG.earth.radius;
+        material.uniforms.distance.value = SCN.camera.distance;
         material.uniforms.distance.needsUpdate = true;
         
       }
 
-      TIM.step('Model.jets.out', Date.now() - t0, 'ms');
+      TIM.step('Model.jets.out', total, Date.now() - t0, 'ms');
 
       // console.profileEnd();
 

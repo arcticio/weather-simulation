@@ -11,6 +11,15 @@ var SCN = (function () {
     canvas        = $$('.simulator')[0],
     home          = new THREE.Vector3(0, 0, 0),
 
+    /*
+
+The second conclusion is that the preserveDrawingBuffer context creation flag is
+best left in its default false value. Setting it to true essentially means that the browser
+can’t just swap buffers anymore, and instead must copy buffers, which is expensive in
+terms of memory bandwidth.
+
+    */
+
     renderer      = new THREE.WebGLRenderer({
       canvas,
       antialias:    true,
