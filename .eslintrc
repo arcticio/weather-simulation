@@ -12,6 +12,9 @@
     "Uint32Array":     true,
     "ArrayBuffer":     true,
 
+    "importScripts":   true,
+    "onmessage":       true,
+
     // GUI.DAT leaks
     "GUIcontrollers":  true,
 

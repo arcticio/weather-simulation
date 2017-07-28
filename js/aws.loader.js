@@ -53,6 +53,9 @@ var LDR = (function () {
       'stage 2',
         self.loadAssets,
 
+      // 'stage 3',
+      //   self.loadParallels,
+
       'stage 3',
         self.loadObservations,
 
@@ -219,6 +222,7 @@ var LDR = (function () {
       Object
         .keys(CFG.Assets)
         .filter( a => CFG.Assets[a].type !== 'simulation' )
+        .filter( a => CFG.Assets[a].type !== 'simulation.parallel' )
         .sort(sorter)
         .forEach(name => {
 
@@ -226,6 +230,8 @@ var LDR = (function () {
 
           // makes key a value
           config.name = name;
+
+          // console.log('loadAssets', name);
 
           // test
           if ( CFG.Manager.activated[name] ) {
@@ -265,6 +271,14 @@ var LDR = (function () {
 
     },
 
+    loadParallels: function () {
+
+      // async parallel
+
+
+
+    },
+
     loadObservations: function () {
 
       function registerResEvent () {
@@ -286,9 +300,11 @@ var LDR = (function () {
 
         var action;
 
-        if (config.type === 'simulation'){
+        if (config.type === 'simulation' || config.type === 'simulation.parallel' ){
 
           config.name = name;
+
+          // console.log('loadObservations', name);
 
           if (H.contains(assets, config.index) || config.essential){
 

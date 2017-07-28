@@ -170,6 +170,14 @@ SCN.Tools = {
       });
     },
 
+    'simulation.parallel': (name, cfg, callback) => {
+      SIM.loadVariableParallel(name, cfg, (name, obj) => {
+        cfg.rotation && obj.rotation.fromArray(cfg.rotation);
+        SCN.add(name, obj);
+        callback();
+      });
+    },
+
     'geo.json': (name, cfg, callback) => {
 
       RES.load({type: 'text', urls: [cfg.json], onFinish: (err, responses) => {

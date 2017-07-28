@@ -303,7 +303,8 @@ CFG.Assets = {
       debuggable:      true,
       toggleable:      true,
       title:          'GFS - jetstream at 300hpa',
-      type:           'simulation',
+      type:           'simulation.parallel',
+      worker:         'js/sim.worker.jetstream.js',
       subtype:        'multiline',
       rotation:       [0, PI, 0],
       radius:         RADIUS + LEVEL_6, 
@@ -337,6 +338,46 @@ CFG.Assets = {
         ],
       }
     },
+
+    // jetstreamX: {
+    //   index:          18,
+    //   debuggable:      true,
+    //   toggleable:      true,
+    //   title:          'GFS - jetstream at 300hpa',
+    //   type:           'simulation',
+    //   subtype:        'multiline',
+    //   rotation:       [0, PI, 0],
+    //   radius:         RADIUS + LEVEL_6, 
+    //   // color:          new THREE.Color('#ff0000'),
+    //   opacity:        0.8,
+    //   lineWidth:      RADIUS * PI / 180 * 0.1,
+    //   factor:         0.0003,  // TODO: proper Math, also sync with wind10m
+    //   section:        33 * 1/60,
+    //   length:         60,
+    //   amount:         512,
+    //   hue:            220 / 255,
+    //   material: {
+    //                   transparent: true,
+    //   },
+    //   sim: {
+    //     dataroot:     'data/gfs/',
+    //     variable:     'ugrdprs',
+    //     step:         [6, 'hours'],
+    //     scaler:       d => d,        
+    //     patterns: [
+    //       '[ugrdprs/]YYYY-MM-DD-HH[.ugrdprs.10.dods]',
+    //       '[vgrdprs/]YYYY-MM-DD-HH[.vgrdprs.10.dods]',
+    //     ],
+    //     sectors: [
+    //       [ 89.9, -180,  45.0,  180 ], // top
+    //       [-45.0, -180, -89.9,  180 ], // bottom
+    //       [ 45.0, -180, -45.0,  -90 ], // left back
+    //       [ 45.0,  -90, -45.0,    0 ], // left front
+    //       [ 45.0,    0, -45.0,   90 ], // right front
+    //       [ 45.0,   90, -45.0,  180 ], // right back
+    //     ],
+    //   }
+    // },
 
     clouds: {
       index:          19,

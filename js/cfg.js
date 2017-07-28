@@ -64,6 +64,7 @@ var CFG = {
     browser:                   'unknown',
     platform:                  navigator.platform,
     devicePixelRatio:          NaN,
+    threads:                   navigator.hardwareConcurrency || 2,
 
     canMotion:                 false,
     canVibrate:                navigator.vibrate && location.protocol === 'https:',
@@ -100,7 +101,7 @@ var CFG = {
     resolution:                512,
   },
 
-  BasemapIds:                  [9, 10, 11, 14],
+  // BasemapIds:                  [9, 10, 11, 14],
 
   Faces:                       ['right', 'left', 'top', 'bottom', 'front', 'back'],
 
@@ -115,19 +116,19 @@ var CFG = {
     'globe.mask.front.512.png':     'images/basemaps/512/globe.mask.front.512.png',
     'globe.mask.back.512.png':      'images/basemaps/512/globe.mask.back.512.png',
 
-    'globe.topo.bottom.512.png':    'images/basemaps/512/globe.topo.bottom.512.png',
-    'globe.topo.top.512.png':       'images/basemaps/512/globe.topo.top.512.png',
-    'globe.topo.left.512.png':      'images/basemaps/512/globe.topo.left.512.png',
-    'globe.topo.right.512.png':     'images/basemaps/512/globe.topo.right.512.png',
-    'globe.topo.front.512.png':     'images/basemaps/512/globe.topo.front.512.png',
-    'globe.topo.back.512.png':      'images/basemaps/512/globe.topo.back.512.png',
+    // 'globe.topo.bottom.512.png':    'images/basemaps/512/globe.topo.bottom.512.png',
+    // 'globe.topo.top.512.png':       'images/basemaps/512/globe.topo.top.512.png',
+    // 'globe.topo.left.512.png':      'images/basemaps/512/globe.topo.left.512.png',
+    // 'globe.topo.right.512.png':     'images/basemaps/512/globe.topo.right.512.png',
+    // 'globe.topo.front.512.png':     'images/basemaps/512/globe.topo.front.512.png',
+    // 'globe.topo.back.512.png':      'images/basemaps/512/globe.topo.back.512.png',
 
-    'globe.gmlc.bottom.512.png':    'images/basemaps/512/globe.gmlc.bottom.512.png',
-    'globe.gmlc.top.512.png':       'images/basemaps/512/globe.gmlc.top.512.png',
-    'globe.gmlc.left.512.png':      'images/basemaps/512/globe.gmlc.left.512.png',
-    'globe.gmlc.right.512.png':     'images/basemaps/512/globe.gmlc.right.512.png',
-    'globe.gmlc.front.512.png':     'images/basemaps/512/globe.gmlc.front.512.png',
-    'globe.gmlc.back.512.png':      'images/basemaps/512/globe.gmlc.back.512.png',
+    // 'globe.gmlc.bottom.512.png':    'images/basemaps/512/globe.gmlc.bottom.512.png',
+    // 'globe.gmlc.top.512.png':       'images/basemaps/512/globe.gmlc.top.512.png',
+    // 'globe.gmlc.left.512.png':      'images/basemaps/512/globe.gmlc.left.512.png',
+    // 'globe.gmlc.right.512.png':     'images/basemaps/512/globe.gmlc.right.512.png',
+    // 'globe.gmlc.front.512.png':     'images/basemaps/512/globe.gmlc.front.512.png',
+    // 'globe.gmlc.back.512.png':      'images/basemaps/512/globe.gmlc.back.512.png',
 
     'transparent.face.512.png':     'images/transparent.face.512.png',
 

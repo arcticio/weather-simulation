@@ -190,6 +190,47 @@ var SIM = (function () {
       return times;
 
     },
+    loadVariableParallel: function (name, cfg, callback) {
+
+      // get number of stamps
+      // create urls for stamp from pattern
+      // init workers
+
+      // http://0.0.0.0:8765/16FE/2017-06-20-12-00/2.49928;3.108127;-0.305199
+
+      var 
+        tasks = [],
+        does  = [17336.75, 17337.00, 17337.25, 17337.50],
+        container = new THREE.Object3D()
+      ;
+
+      does.forEach( doe => {
+
+        var task = function (callback) {
+
+          var 
+            worker  = new Worker(cfg.worker),
+            payload = new Float32Array([1,2,3,4,5,6]);
+          ;
+
+          worker.postMessage({topic: 'quadratic', payload, id: Date.now() }, [payload.buffer]);
+
+          worker.onmessage = function (event) {
+            console.log('answer', event.data);
+            callback();
+          };
+
+        }
+
+        tasks.push(task);
+
+      });
+
+      async.parallelLimit(tasks, CFG.Device.threads, function () {
+        callback(name, container);
+      });
+
+    },
     loadVariable: function (name, cfg, callback) {
 
       !SIM.Models[name] && console.log('Model: "' + name + '" not avail, have:', Object.keys(SIM.Models));
