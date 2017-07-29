@@ -239,6 +239,7 @@ SCN.Meshes.Multiline.line = function ( idx, vertices, colors, widths ) {
   this.process();
 
   this.attributes = {
+    colors:    new THREE.BufferAttribute( new Float32Array( this.colors ),    3 ),
     index:     new THREE.BufferAttribute( new Uint16Array(  this.indices ),   1 ),
     lineIndex: new THREE.BufferAttribute( new Float32Array( this.lineIndex ), 1 ),
     next:      new THREE.BufferAttribute( new Float32Array( this.next ),      3 ),
@@ -246,7 +247,6 @@ SCN.Meshes.Multiline.line = function ( idx, vertices, colors, widths ) {
     previous:  new THREE.BufferAttribute( new Float32Array( this.previous ),  3 ),
     side:      new THREE.BufferAttribute( new Float32Array( this.side ),      1 ),
     width:     new THREE.BufferAttribute( new Float32Array( this.widths ),    1 ),
-    colors:    new THREE.BufferAttribute( new Float32Array( this.colors ),    3 ),
   }
 
 };

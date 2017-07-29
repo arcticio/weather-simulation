@@ -101,7 +101,6 @@ if( typeof importScripts === 'function') {
     // console.log('new worker.job', topic, id, typeof payload);
 
     if (topics[topic]) {
-
       topics[topic](id, payload, function (id, result, transferables) {
         postMessage({id, result}, transferables);
       });
@@ -125,8 +124,8 @@ if( typeof importScripts === 'function') {
       var datagramm, vari, t0 = Date.now();
 
       cfg  = payload.cfg;
-      doe  = cfg.doe;
-      pool = cfg.pool;
+      doe  = payload.doe;
+      pool = payload.pool;
 
       RES.load({ urls: payload.urls, onFinish: function (err, responses) {
 
@@ -215,6 +214,9 @@ if( typeof importScripts === 'function') {
 
         }
 
+        // sectors with 512 lines * cfg.length
+        console.log(positions.length, colors.length, widths.length);
+
         return {
           positions, 
           colors, 
@@ -259,40 +261,44 @@ if( typeof importScripts === 'function') {
     combine: function (id, payload, callback) { 
 
       var 
+        transferables = [],
         t0 = Date.now(),
-        counter = (a, b) => a + b.position.length
+        counter = (a, b) => a + b.position.length,
+        config = {
+          colors:    {type: Float32Array, itemSize: 3},
+          index:     {type: Uint16Array,  itemSize: 1},
+          lineIndex: {type: Float32Array, itemSize: 1},
+          next:      {type: Float32Array, itemSize: 3},
+          position:  {type: Float32Array, itemSize: 3},
+          previous:  {type: Float32Array, itemSize: 3},
+          side:      {type: Float32Array, itemSize: 1},
+          width:     {type: Float32Array, itemSize: 1},
+        }
       ;
 
-      sectors = multilines.map( multiline => {
+      sectors = multilines.map( lines => {
 
-        var config = {
-            colors:    {type: Float32Array, itemSize: 3},
-            index:     {type: Uint16Array,  itemSize: 1},
-            lineIndex: {type: Float32Array, itemSize: 1},
-            next:      {type: Float32Array, itemSize: 3},
-            position:  {type: Float32Array, itemSize: 3},
-            previous:  {type: Float32Array, itemSize: 3},
-            side:      {type: Float32Array, itemSize: 1},
-            width:     {type: Float32Array, itemSize: 1},
-          },
-          amount = multiline[0].positions.length,
+        var 
+          totalLength,
+          // amount = lines[0].positions.length,  // # lines
           attributes = {}
         ;
 
         H.each(config, (name, cfg) => {
 
-          attributes[name] = new cfg.type(cfg.itemSize * amount);
+          // debugger;
+
+          totalLength      = lines[0].attributes[name].length * lines.length;
+          attributes[name] = new cfg.type(totalLength);
 
           var 
-            target,
             pointer     = 0,
             indexOffset = 0,
-            positLength = amount,
-            target = attributes[name]
+            positLength = lines[0].attributes['position'].length,
+            target      = attributes[name]
           ;
 
-
-          H.each(multiline.lines, (idx, line) => {
+          H.each(lines, (_, line) => {
 
             var i,
               source = line.attributes[name],
@@ -323,17 +329,23 @@ if( typeof importScripts === 'function') {
       // debugger;
       // console.log(name + ': combine', id, Date.now() - t0, sectors.reduce(counter, 0));
 
-      callback(id, sectors, []);
+      H.each(sectors, (_, sector) => {
+        H.each(config, (name, _) => {
+          transferables.push(sector[name].buffer);
+        });
+      });
+
+      callback(id, sectors, transferables);
 
       // callback(id, sectors, [
-      //   sectors[0].colors,
-      //   sectors[0].index,
-      //   sectors[0].lineIndex,
-      //   sectors[0].next,
-      //   sectors[0].positions,
-      //   sectors[0].previous,
-      //   sectors[0].side,
-      //   sectors[0].width,
+      //   sectors[0].colors.buffer,
+      //   sectors[0].index.buffer,
+      //   sectors[0].lineIndex.buffer,
+      //   sectors[0].next.buffer,
+      //   sectors[0].position.buffer,
+      //   sectors[0].previous.buffer,
+      //   sectors[0].side.buffer,
+      //   sectors[0].width.buffer,
       // ]);
 
     }

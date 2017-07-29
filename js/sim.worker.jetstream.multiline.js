@@ -5,7 +5,7 @@ Multiline.line = function ( idx, vertices, colors, widths ) {
 
   this.idx       = idx;
 
-  this.indices   = [];
+  this.index     = [];
   this.lineIndex = [];
   this.next      = [];
   this.positions = [];
@@ -30,8 +30,8 @@ Multiline.line = function ( idx, vertices, colors, widths ) {
   //   colors:    new THREE.BufferAttribute( new Float32Array( this.colors ),    3 ),
   // }
 
-  this.preAttributes = {
-    index:     new Uint16Array(  this.indices ),   
+  this.attributes = {
+    index:     new Uint16Array(  this.index ),   
     lineIndex: new Float32Array( this.lineIndex ), 
     next:      new Float32Array( this.next ),      
     position:  new Float32Array( this.positions ), 
@@ -90,8 +90,8 @@ Multiline.line.prototype = {
 
     for( j = 0; j < len - 1; j++ ) {
       n = j + j;
-      this.indices.push( n,     n + 1, n + 2 );
-      this.indices.push( n + 2, n + 1, n + 3 );
+      this.index.push( n,     n + 1, n + 2 );
+      this.index.push( n + 2, n + 1, n + 3 );
     }
 
   },

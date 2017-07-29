@@ -25,8 +25,8 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
 
     renderer      = new THREE.WebGLRenderer({
       canvas,
-      antialias:    true,
-      preserveDrawingBuffer:    true,   // screenshots
+      antialias:                true,
+      preserveDrawingBuffer:    true,   // screenshots, might slowdown evth.
     }),
 
     camera, 

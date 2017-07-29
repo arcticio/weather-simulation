@@ -197,6 +197,19 @@ var SIM = (function () {
     },
     loadVariableParallel: function (name, cfg, onloaded) {
 
+      !SIM.Models[name] && console.log('Model: "' + name + '" not avail, have:', Object.keys(SIM.Models));
+
+      var 
+        times = self.calcVariTimes(name, cfg),
+        model = SIM.Models[name].create(cfg, times)
+      ;
+
+      model.prepare(name, onloaded);
+
+
+    },
+    loadVariableParallelX: function (name, cfg, onloaded) {
+
       // get number of stamps
       // create urls for stamp from pattern
       // init workers
@@ -234,6 +247,7 @@ var SIM = (function () {
 
           payload.cfg.doe  = SIM.mom2doe(mom);
           payload.cfg.pool = poolJetStream;
+          payload.cfg.amount =  CFG.Device.maxVertexUniforms < 4096 ? 200 : cfg.amount;
 
           worker.postMessage({id, topic: 'retrieve', payload });
 
@@ -251,7 +265,7 @@ var SIM = (function () {
 
       async.parallelLimit(tasks, threads, function () {
         console.log('SIM.loaded jetstream', 't:', threads, 'm:',  times.length, 'ms:', Date.now() - t0);
-        onloaded(name, model);
+        onloaded(name, models[name].obj);
       });
 
     },
