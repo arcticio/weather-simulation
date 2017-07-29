@@ -4,14 +4,14 @@ var RES = (function () {
   var 
     self, div,
 
-    $$ = document.querySelectorAll.bind(document),
+    // $$ = document.querySelectorAll.bind(document),
 
     jobs       = [],
     counter    = 0,
     isDev      = true,
     concurrent = 2,
 
-    div = $$('.panel.info')[0],
+    // div = $$('.panel.info')[0],
 
     stats   = {
       queue:       0,   // jobs in queue
@@ -49,7 +49,7 @@ var RES = (function () {
     init: function () {
     },
     activate: function (selector) {
-      div.innerHTML = 'R: 0, ETA: 0';
+      // div.innerHTML = 'R: 0, ETA: 0';
     },
     check: function () {
 

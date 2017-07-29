@@ -1,6 +1,5 @@
 
-'use strict'
-
+var SIM = SIM || {};
 
 SIM.Datagram = function (dods) {
 

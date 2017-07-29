@@ -323,7 +323,7 @@ CFG.Assets = {
         dataroot:     'data/gfs/',
         variable:     'ugrdprs',
         step:         [6, 'hours'],
-        scaler:       d => d,        
+        // scaler:       d => d,        
         patterns: [
           '[ugrdprs/]YYYY-MM-DD-HH[.ugrdprs.10.dods]',
           '[vgrdprs/]YYYY-MM-DD-HH[.vgrdprs.10.dods]',

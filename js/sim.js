@@ -9,6 +9,7 @@ var SIM = (function () {
     image          = $$('.panel.image')[0],  // debug sun
 
     coordsPool     = null, 
+    poolJetStream  = NaN,
 
     models         = {},
     datagrams      = {}, // all models share GFS data
@@ -57,6 +58,8 @@ var SIM = (function () {
       var t0 = Date.now();
 
       coordsPool = self.coordsPool = new CoordsPool(CFG.Sim.coordspool.amount).generate();
+
+      poolJetStream = new CoordsPool().latlonArray(5000);
 
       TIM.step('Pool.generate', Date.now() - t0, 'ms', CFG.Sim.coordspool.amount);
 
@@ -190,7 +193,7 @@ var SIM = (function () {
       return times;
 
     },
-    loadVariableParallel: function (name, cfg, callback) {
+    loadVariableParallel: function (name, cfg, onloaded) {
 
       // get number of stamps
       // create urls for stamp from pattern
@@ -201,22 +204,39 @@ var SIM = (function () {
       var 
         tasks = [],
         does  = [17336.75, 17337.00, 17337.25, 17337.50],
-        container = new THREE.Object3D()
+        times = does.map(self.doe2mom),
+
+        model = new THREE.Object3D()
       ;
 
-      does.forEach( doe => {
+      models[name] = model;
+
+      // models does update, adjusting samples visibility, has material
+
+      // samples have sectors, spatially
+      // go from url to geometry attributes
+      // build meshs from worker's attributes + model's material
+
+
+      times.forEach( mom => {
 
         var task = function (callback) {
 
           var 
+            id      = Date.now(),
             worker  = new Worker(cfg.worker),
-            payload = new Float32Array([1,2,3,4,5,6]);
+            urls    = cfg.sim.patterns.map( (pattern) => '/' + cfg.sim.dataroot + mom.format(pattern)),
+            payload = {cfg, urls}
           ;
 
-          worker.postMessage({topic: 'quadratic', payload, id: Date.now() }, [payload.buffer]);
+          payload.cfg.doe  = SIM.mom2doe(mom);
+          payload.cfg.pool = poolJetStream;
+
+          worker.postMessage({id, topic: 'retrieve', payload });
 
           worker.onmessage = function (event) {
-            console.log('answer', event.data);
+            var response = event.data;
+            console.log('answer', response.id, response.result);
             callback();
           };
 
@@ -227,7 +247,7 @@ var SIM = (function () {
       });
 
       async.parallelLimit(tasks, CFG.Device.threads, function () {
-        callback(name, container);
+        onloaded(name, model);
       });
 
     },

@@ -66,6 +66,34 @@ CoordsPool.prototype = {
     return this;
 
   },
+  latlonArray: function (amount) {
+
+    const DEGRAD = 180 / Math.PI;
+
+    var i, d, x, y, z, lat, lon, result = [];
+    
+    for (i=0; i<amount; i++) {
+    
+      x = -1 + Math.random() * 2;
+      y = -1 + Math.random() * 2;
+      z = -1 + Math.random() * 2;
+
+      d = 1 / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+
+      x = x * d;
+      y = y * d;
+      z = z * d;
+
+      lat =   90 - Math.acos(y)      * DEGRAD;
+      lon = (270 + Math.atan2(x , z) * DEGRAD) % 360 - 180;
+
+      result.push({ lat, lon });
+
+    }
+
+    return result;
+
+  },
   filter (sector) {
 
     var i, coord, out = [];

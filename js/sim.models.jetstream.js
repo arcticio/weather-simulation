@@ -1,4 +1,40 @@
 
+SIM.Models.pjetstream = (function () {
+
+  var 
+    self
+    model = {
+      obj:          new THREE.Object3D(),
+    }
+  ;
+
+  return self = {
+
+    sample: function () {
+
+    }
+
+  };
+
+}());
+
+SIM.Models.pjetstream.sample = function (cfg, mom) {
+
+  this.urls = [];
+
+  cfg.sim.patterns.forEach(pattern => {
+    this.urls.push(cfg.sim.dataroot + mom.format(pattern));
+  });
+
+
+}
+
+SIM.Models.pjetstream.sample.prototype = {
+  constructor: SIM.Models.pjetstream.sample,
+
+}
+
+
 SIM.Models.jetstream = (function () {
 
   var 
