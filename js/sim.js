@@ -35,7 +35,9 @@ var SIM = (function () {
       maxdoe:      NaN,
       fmtDay:      '',
       fmtHour:     '',
-    }
+    },
+
+    unique = 100
 
   ;
 
@@ -199,31 +201,32 @@ var SIM = (function () {
       // create urls for stamp from pattern
       // init workers
 
-      // http://0.0.0.0:8765/16FE/2017-06-20-12-00/2.49928;3.108127;-0.305199
-
-      var 
-        tasks = [],
-        does  = [17336.75, 17337.00, 17337.25, 17337.50],
-        times = does.map(self.doe2mom),
-
-        model = new THREE.Object3D()
-      ;
-
-      models[name] = model;
-
       // models does update, adjusting samples visibility, has material
 
       // samples have sectors, spatially
       // go from url to geometry attributes
       // build meshs from worker's attributes + model's material
 
+      // http://0.0.0.0:8765/16FE/2017-06-20-12-00/2.49928;3.108127;-0.305199
+
+      var 
+        t0      = Date.now(),
+        threads = CFG.Device.threads,
+        tasks = [],
+        // does  = [17336.75, 17337.00, 17337.25, 17337.50],
+        does  = [17336.50, 17336.75, 17337.00, 17337.25, 17337.50, 17337.75, 17338.0, 17338.25, 17338.50, 17338.75],
+        times = does.map(self.doe2mom),
+
+        model = models[name] = new THREE.Object3D()
+      ;
 
       times.forEach( mom => {
 
         var task = function (callback) {
 
           var 
-            id      = Date.now(),
+            t0      = Date.now(),
+            id      = String(unique++),
             worker  = new Worker(cfg.worker),
             urls    = cfg.sim.patterns.map( (pattern) => '/' + cfg.sim.dataroot + mom.format(pattern)),
             payload = {cfg, urls}
@@ -236,7 +239,7 @@ var SIM = (function () {
 
           worker.onmessage = function (event) {
             var response = event.data;
-            console.log('answer', response.id, response.result);
+            console.log('answered', id, Date.now() - t0);
             callback();
           };
 
@@ -246,7 +249,8 @@ var SIM = (function () {
 
       });
 
-      async.parallelLimit(tasks, CFG.Device.threads, function () {
+      async.parallelLimit(tasks, threads, function () {
+        console.log('SIM.loaded jetstream', 't:', threads, 'm:',  times.length, 'ms:', Date.now() - t0);
         onloaded(name, model);
       });
 

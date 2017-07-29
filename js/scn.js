@@ -18,6 +18,9 @@ best left in its default false value. Setting it to true essentially means that 
 can’t just swap buffers anymore, and instead must copy buffers, which is expensive in
 terms of memory bandwidth.
 
+What forces layout / reflow ?
+https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+
     */
 
     renderer      = new THREE.WebGLRenderer({

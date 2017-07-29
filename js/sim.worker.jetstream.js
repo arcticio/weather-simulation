@@ -1,3 +1,17 @@
+/*
+
+  SIM.loaded jetstream t:  1 m: 10 ms: 15651
+  SIM.loaded jetstream t:  2 m: 10 ms:  9348
+  SIM.loaded jetstream t:  3 m: 10 ms:  8583
+  SIM.loaded jetstream t:  4 m: 10 ms:  7969
+  SIM.loaded jetstream t:  5 m: 10 ms:  7891
+  SIM.loaded jetstream t:  6 m: 10 ms:  8037
+  SIM.loaded jetstream t:  7 m: 10 ms:  7981
+  SIM.loaded jetstream t:  8 m: 10 ms:  8594
+  SIM.loaded jetstream t:  9 m: 10 ms:  9060
+  SIM.loaded jetstream t: 10 m: 10 ms:  8797
+
+*/
 
 if( typeof importScripts === 'function') {
 
@@ -12,7 +26,9 @@ if( typeof importScripts === 'function') {
       vgrd10m: null
     },
 
-    prelines = null  // pos, wid, col per sector
+    prelines   = null,  // pos, wid, col per sector
+    multilines = null,  // lines per sector
+    sectors    = null   // with attributes per sector
 
   ;
 
@@ -22,7 +38,8 @@ if( typeof importScripts === 'function') {
     'aws.tools.js',
     'aws.math.js',
     'aws.res.js',
-    'sim.datagram.js'
+    'sim.datagram.js',
+    'sim.worker.jetstream.multiline.js'
   );
 
 
@@ -50,9 +67,9 @@ if( typeof importScripts === 'function') {
 
   function filterPool (sector, amount) {
 
-    var i, coord, out = [], len = pool.length;
+    var i, j = 0, coord, out = [], len = pool.length;
 
-    for (i=0; i<amount && i<len; i++) {
+    for (i=0; j<amount && i<len; i++) {
 
       coord = pool[i];
       
@@ -64,6 +81,7 @@ if( typeof importScripts === 'function') {
         ) {
 
         out.push(coord);
+        j += 1;
       
       }
 
@@ -73,6 +91,28 @@ if( typeof importScripts === 'function') {
 
   }
 
+  function onmessage (event) {
+
+    var 
+      id      = event.data.id,
+      topic   = event.data.topic,
+      payload = event.data.payload;
+
+    // console.log('new worker.job', topic, id, typeof payload);
+
+    if (topics[topic]) {
+
+      topics[topic](id, payload, function (id, result, transferables) {
+        postMessage({id, result}, transferables);
+      });
+
+
+    } else {
+      console.warn(name + ': unknown topic', topic);
+
+    }
+
+  }
 
   topics = {
 
@@ -82,7 +122,7 @@ if( typeof importScripts === 'function') {
 
     retrieve: function (id, payload, callback) {
 
-      var datagramm, vari;
+      var datagramm, vari, t0 = Date.now();
 
       cfg  = payload.cfg;
       doe  = cfg.doe;
@@ -100,12 +140,16 @@ if( typeof importScripts === 'function') {
 
           });
 
-          console.log(name + ': have datagrams', id, datagramm.info.data.avg);
+          // console.log(name + ': retrieve', id, Date.now() - t0);
 
           topics.prepare(id, payload, function () {
+            topics.process(id, payload, function () {
+              topics.combine(id, payload, function (id, result, transferables) {
 
-            callback(id, {}, [])
+                callback(id, result, transferables)
 
+              });
+            });
           });
 
         }
@@ -119,32 +163,32 @@ if( typeof importScripts === 'function') {
       var 
         t0        = Date.now(), 
 
-        total = 0,
-
         i, j, u, v, speed, width, lat, lon, color, vec3, latlon, positions, widths, colors, seeds,
         spcl      = new Spherical(),
         length    = cfg.length,
         amount    = NaN,
-        filler    = () => []
+        filler    = () => [],
+        counter   = (a, b) => a + b.positions.length
       ;
 
+      // over sectors
       prelines = cfg.sim.sectors.map( sector => {
 
         seeds     = filterPool(sector, cfg.amount);
         amount    = seeds.length; 
 
-        total +=  amount;
-
         positions = new Array(amount).fill(0).map(filler);
         colors    = new Array(amount).fill(0).map(filler);
         widths    = new Array(amount).fill(0).map(filler);
 
+        // over lines
         for (i=0; i<amount; i++) {
 
           lat  = seeds[i].lat;
           lon  = seeds[i].lon;
           vec3 = latLonRadToVector3(lat, lon, cfg.radius);
 
+          // over points
           for (j=0; j<length; j++) {
 
             u = datagrams.ugrdprs.linearXY(doe, lat, lon);
@@ -177,38 +221,120 @@ if( typeof importScripts === 'function') {
           widths, 
         };
 
-        // model.obj.add(multiline.mesh);
-        // model.sectors.push(multiline);
-
       });
 
-      console.log(name + ': build prelines', id, total, Date.now() - t0);
+      // debugger;
+      // console.log(name + ': prepare', id, Date.now() - t0, prelines.reduce(counter, 0));
+
       callback(id, {}, [])
 
     },
 
-  };
+    process: function (id, payload, callback) {
 
+      var 
+        t0 = Date.now(),
+        idx = 0,
+        counter = (a, b) => a + b.length
+      ;
 
-  // process something
-  onmessage = function(event) {
+      multilines = prelines.map(preline => {
 
-    var 
-      id      = event.data.id,
-      topic   = event.data.topic,
-      payload = event.data.payload;
+        return H.zip(
+          preline.positions,
+          preline.colors,
+          preline.widths,
+          (vectors, colors, widths) => new Multiline.line(idx++, vectors, colors, widths)
+        );
 
-    console.log('new worker.job', topic, id, typeof payload);
-
-    if (topics[topic]) {
-
-      topics[topic](id, payload, function (id, result, transferables) {
-        postMessage({id, result}, transferables);
       });
 
+      // debugger;
+      // console.log(name + ': process', id, Date.now() - t0, multilines.reduce(counter, 0));
 
-    } else {
-      console.warn(name + ': unknown topic', topic);
+      callback(id, {}, []);
+
+    },
+
+    combine: function (id, payload, callback) { 
+
+      var 
+        t0 = Date.now(),
+        counter = (a, b) => a + b.position.length
+      ;
+
+      sectors = multilines.map( multiline => {
+
+        var config = {
+            colors:    {type: Float32Array, itemSize: 3},
+            index:     {type: Uint16Array,  itemSize: 1},
+            lineIndex: {type: Float32Array, itemSize: 1},
+            next:      {type: Float32Array, itemSize: 3},
+            position:  {type: Float32Array, itemSize: 3},
+            previous:  {type: Float32Array, itemSize: 3},
+            side:      {type: Float32Array, itemSize: 1},
+            width:     {type: Float32Array, itemSize: 1},
+          },
+          amount = multiline[0].positions.length,
+          attributes = {}
+        ;
+
+        H.each(config, (name, cfg) => {
+
+          attributes[name] = new cfg.type(cfg.itemSize * amount);
+
+          var 
+            target,
+            pointer     = 0,
+            indexOffset = 0,
+            positLength = amount,
+            target = attributes[name]
+          ;
+
+
+          H.each(multiline.lines, (idx, line) => {
+
+            var i,
+              source = line.attributes[name],
+              length = source.length;
+
+            if (name === 'index'){
+              for (i=0; i<length; i++) {
+                target[pointer + i] = source[i] + indexOffset;
+              }
+
+            } else {
+              for (i=0; i<length; i++) {
+                target[pointer + i] = source[i];
+              }
+            }
+
+            pointer     += length;
+            indexOffset += positLength;
+
+          });
+
+        });
+
+        return attributes;
+
+      });
+
+      // debugger;
+      // console.log(name + ': combine', id, Date.now() - t0, sectors.reduce(counter, 0));
+
+      callback(id, sectors, []);
+
+      // callback(id, sectors, [
+      //   sectors[0].colors,
+      //   sectors[0].index,
+      //   sectors[0].lineIndex,
+      //   sectors[0].next,
+      //   sectors[0].positions,
+      //   sectors[0].previous,
+      //   sectors[0].side,
+      //   sectors[0].width,
+      // ]);
 
     }
 

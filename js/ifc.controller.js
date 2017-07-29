@@ -130,6 +130,8 @@ IFC.Controller = (function () {
       cam  = camera;
       home = cam.position.clone();
 
+      // TODO make touchstart, -move, wheel passive
+
       dispatcher = [
         [element,   'mousedown'],
         [element,   'mouseup'],

@@ -160,6 +160,17 @@ CFG.Manager = (function () {
           'unknown'
       );
 
+      // Test via a getter in the options object to see if the passive property is accessed
+      // https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
+      try {
+        var opts = Object.defineProperty({}, 'passive', {
+          get: function() {
+            CFG.Device.supportsPassive = true;
+          }
+        });
+        window.addEventListener('test', null, opts);
+      } catch (e) { /* not needed */ }
+
     },
 
     initStore: function () {

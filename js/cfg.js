@@ -66,6 +66,8 @@ var CFG = {
     devicePixelRatio:          NaN,
     threads:                   navigator.hardwareConcurrency || 2,
 
+    supportsPassive:           false,
+
     canMotion:                 false,
     canVibrate:                navigator.vibrate && location.protocol === 'https:',
     canOrientation:            false,
