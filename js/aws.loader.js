@@ -53,9 +53,6 @@ var LDR = (function () {
       'stage 2',
         self.loadAssets,
 
-      // 'stage 3',
-      //   self.loadParallels,
-
       'stage 3',
         self.loadObservations,
 
@@ -268,14 +265,6 @@ var LDR = (function () {
       ;
 
       return sequence;
-
-    },
-
-    loadParallels: function () {
-
-      // async parallel
-
-
 
     },
 

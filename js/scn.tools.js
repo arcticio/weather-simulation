@@ -122,6 +122,9 @@ SCN.Tools = {
 
   },
 
+
+  // loaders interface to app load AND icon click to load assets
+
   loader: {
 
     'mesh': (name, cfg, callback) => {

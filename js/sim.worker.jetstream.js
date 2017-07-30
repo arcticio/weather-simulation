@@ -1,5 +1,5 @@
 /*
-
+  t=threads, m=stamps
   SIM.loaded jetstream t:  1 m: 10 ms: 15651
   SIM.loaded jetstream t:  2 m: 10 ms:  9348
   SIM.loaded jetstream t:  3 m: 10 ms:  8583
@@ -215,7 +215,7 @@ if( typeof importScripts === 'function') {
         }
 
         // sectors with 512 lines * cfg.length
-        console.log(positions.length, colors.length, widths.length);
+        // console.log(positions.length, colors.length, widths.length);
 
         return {
           positions, 
@@ -242,6 +242,8 @@ if( typeof importScripts === 'function') {
 
       multilines = prelines.map(preline => {
 
+        idx = 0;
+
         return H.zip(
           preline.positions,
           preline.colors,
@@ -265,39 +267,38 @@ if( typeof importScripts === 'function') {
         t0 = Date.now(),
         counter = (a, b) => a + b.position.length,
         config = {
-          colors:    {type: Float32Array, itemSize: 3},
-          index:     {type: Uint16Array,  itemSize: 1},
-          lineIndex: {type: Float32Array, itemSize: 1},
-          next:      {type: Float32Array, itemSize: 3},
-          position:  {type: Float32Array, itemSize: 3},
-          previous:  {type: Float32Array, itemSize: 3},
-          side:      {type: Float32Array, itemSize: 1},
-          width:     {type: Float32Array, itemSize: 1},
+          colors:    Float32Array,
+          index:     Uint16Array,
+          lineIndex: Float32Array,
+          next:      Float32Array,
+          position:  Float32Array,
+          previous:  Float32Array,
+          side:      Float32Array,
+          width:     Float32Array,
         }
       ;
 
+      // over sectors (n=6)
       sectors = multilines.map( lines => {
 
-        var 
-          totalLength,
-          // amount = lines[0].positions.length,  // # lines
-          attributes = {}
-        ;
+        var totalLength, attributes = {};
 
-        H.each(config, (name, cfg) => {
+        // over attributes (n=8)
+        H.each(config, (name, type) => {
 
           // debugger;
 
           totalLength      = lines[0].attributes[name].length * lines.length;
-          attributes[name] = new cfg.type(totalLength);
+          attributes[name] = new type(totalLength);
 
           var 
             pointer     = 0,
             indexOffset = 0,
-            positLength = lines[0].attributes['position'].length,
+            positLength = lines[0].attributes['position'].length / 3,
             target      = attributes[name]
           ;
 
+          // over lines (n=512)
           H.each(lines, (_, line) => {
 
             var i,
@@ -335,18 +336,8 @@ if( typeof importScripts === 'function') {
         });
       });
 
+      // TODO: check edge + transferable
       callback(id, sectors, transferables);
-
-      // callback(id, sectors, [
-      //   sectors[0].colors.buffer,
-      //   sectors[0].index.buffer,
-      //   sectors[0].lineIndex.buffer,
-      //   sectors[0].next.buffer,
-      //   sectors[0].position.buffer,
-      //   sectors[0].previous.buffer,
-      //   sectors[0].side.buffer,
-      //   sectors[0].width.buffer,
-      // ]);
 
     }
 

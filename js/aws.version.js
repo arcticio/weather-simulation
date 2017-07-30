@@ -1,2 +1,2 @@
 
-var VERSION = '0.3a/arcticio/26-July-2017';
+var VERSION = '0.4.0/arcticio/30-July-2017';

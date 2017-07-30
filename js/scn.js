@@ -86,16 +86,10 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
     },
     add: function (name, asset) {
 
-      // if (name === 'pointer') {
-      //   // expose pointer to IFC
-      //   pointer = self.pointer = asset;
-      // }
-
       assets[name] = asset;
       assets[name].name = name;
       self.setRenderOrder(asset);
 
-      // asset.updateMatrixWorld();
       scene.add(asset);
 
     },
@@ -125,8 +119,6 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
       } else {
         if (asset instanceof THREE.Object3D){
           self.setRenderOrder(asset);
-          // scene.updateMatrixWorld();
-          // asset.updateMatrixWorld();
           scene.add(asset);
 
         } else {
@@ -258,7 +250,7 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
       var t0 = Date.now();
       renderer.clear();
       renderer.render( scene, camera );
-      renderer.render( scene, camera ); // cause onAfterRender
+      renderer.render( scene, camera ); // twice cause onAfterRender
       renderer.clearDepth();
       IFC.Hud.render(renderer);
       IFC.Hud.render(renderer);
@@ -410,13 +402,4 @@ surface.computeMorphNormals();
 surface.computeFlatVertexNormals();
 
 
-
 */
-
-
-
-
-
-
-
-

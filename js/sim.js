@@ -75,7 +75,6 @@ var SIM = (function () {
       if (val === undefined && what === undefined) {
 
         time.model  = CFG.Manager.urlMom;
-        // time.doe    = self.calcdoe(time.model);
         time.doe    = self.mom2doe(time.model);
 
         // debug: mod to 00, 06, 12, 18
@@ -118,7 +117,6 @@ var SIM = (function () {
       }
 
       // don't overshoot
-
       time.model = (
         time.model.valueOf() > time.stamps[time.stamps.length -1].valueOf() ?
           time.stamps[time.stamps.length -1] :
@@ -195,6 +193,7 @@ var SIM = (function () {
       return times;
 
     },
+
     loadVariableParallel: function (name, cfg, onloaded) {
 
       !SIM.Models[name] && console.log('Model: "' + name + '" not avail, have:', Object.keys(SIM.Models));
@@ -206,69 +205,8 @@ var SIM = (function () {
 
       model.prepare(name, onloaded);
 
-
     },
-    loadVariableParallelX: function (name, cfg, onloaded) {
 
-      // get number of stamps
-      // create urls for stamp from pattern
-      // init workers
-
-      // models does update, adjusting samples visibility, has material
-
-      // samples have sectors, spatially
-      // go from url to geometry attributes
-      // build meshs from worker's attributes + model's material
-
-      // http://0.0.0.0:8765/16FE/2017-06-20-12-00/2.49928;3.108127;-0.305199
-
-      var 
-        t0      = Date.now(),
-        threads = CFG.Device.threads,
-        tasks = [],
-        // does  = [17336.75, 17337.00, 17337.25, 17337.50],
-        does  = [17336.50, 17336.75, 17337.00, 17337.25, 17337.50, 17337.75, 17338.0, 17338.25, 17338.50, 17338.75],
-        times = does.map(self.doe2mom),
-
-        model = models[name] = new THREE.Object3D()
-      ;
-
-      times.forEach( mom => {
-
-        var task = function (callback) {
-
-          var 
-            t0      = Date.now(),
-            id      = String(unique++),
-            worker  = new Worker(cfg.worker),
-            urls    = cfg.sim.patterns.map( (pattern) => '/' + cfg.sim.dataroot + mom.format(pattern)),
-            payload = {cfg, urls}
-          ;
-
-          payload.cfg.doe  = SIM.mom2doe(mom);
-          payload.cfg.pool = poolJetStream;
-          payload.cfg.amount =  CFG.Device.maxVertexUniforms < 4096 ? 200 : cfg.amount;
-
-          worker.postMessage({id, topic: 'retrieve', payload });
-
-          worker.onmessage = function (event) {
-            var response = event.data;
-            console.log('answered', id, Date.now() - t0);
-            callback();
-          };
-
-        }
-
-        tasks.push(task);
-
-      });
-
-      async.parallelLimit(tasks, threads, function () {
-        console.log('SIM.loaded jetstream', 't:', threads, 'm:',  times.length, 'ms:', Date.now() - t0);
-        onloaded(name, models[name].obj);
-      });
-
-    },
     loadVariable: function (name, cfg, callback) {
 
       !SIM.Models[name] && console.log('Model: "' + name + '" not avail, have:', Object.keys(SIM.Models));

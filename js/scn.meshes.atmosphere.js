@@ -201,10 +201,7 @@ SCN.Meshes.atmosphere = function (name, cfg, callback) {
     }
   ;
 
-  // mesh.renderOrder    = 1; //~~(cfg.radius - CFG.earth.radius) * 1000;
   mesh.onBeforeRender = onBeforeRender;
-
-  // cfg.rotation && mesh.rotation.fromArray(cfg.rotation);
 
   callback(name, mesh);
 

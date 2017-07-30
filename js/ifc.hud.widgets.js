@@ -72,6 +72,7 @@ IFC.Hud.spacetime = (function () {
     renderTime: function () {
 
       // credits: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_animations
+      // possible improvement: 2 sprites w/ one handle, rotated independently
 
       var 
         w    = cvs.width,  w2 = w/2,

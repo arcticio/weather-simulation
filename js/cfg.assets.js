@@ -305,7 +305,6 @@ CFG.Assets = {
       title:          'GFS - jetstream at 300hpa',
       type:           'simulation.parallel',
       worker:         'js/sim.worker.jetstream.js',
-      // subtype:        'multiline',
       rotation:       [0, PI, 0],
       radius:         RADIUS + LEVEL_6, 
       opacity:        0.8,
@@ -314,7 +313,7 @@ CFG.Assets = {
       section:        33 * 1/60,
       length:         60,
       amount:         512,
-      hue:            220 / 255,
+      hue:            220 / 360, // https://tympanus.net/codrops/css_reference/hsl/
       material: {
         transparent: true,
       },
@@ -346,46 +345,6 @@ CFG.Assets = {
         ],
       }
     },
-
-    // jetstreamX: {
-    //   index:          18,
-    //   debuggable:      true,
-    //   toggleable:      true,
-    //   title:          'GFS - jetstream at 300hpa',
-    //   type:           'simulation',
-    //   subtype:        'multiline',
-    //   rotation:       [0, PI, 0],
-    //   radius:         RADIUS + LEVEL_6, 
-    //   // color:          new THREE.Color('#ff0000'),
-    //   opacity:        0.8,
-    //   lineWidth:      RADIUS * PI / 180 * 0.1,
-    //   factor:         0.0003,  // TODO: proper Math, also sync with wind10m
-    //   section:        33 * 1/60,
-    //   length:         60,
-    //   amount:         512,
-    //   hue:            220 / 255,
-    //   material: {
-    //                   transparent: true,
-    //   },
-    //   sim: {
-    //     dataroot:     'data/gfs/',
-    //     variable:     'ugrdprs',
-    //     step:         [6, 'hours'],
-    //     scaler:       d => d,        
-    //     patterns: [
-    //       '[ugrdprs/]YYYY-MM-DD-HH[.ugrdprs.10.dods]',
-    //       '[vgrdprs/]YYYY-MM-DD-HH[.vgrdprs.10.dods]',
-    //     ],
-    //     sectors: [
-    //       [ 89.9, -180,  45.0,  180 ], // top
-    //       [-45.0, -180, -89.9,  180 ], // bottom
-    //       [ 45.0, -180, -45.0,  -90 ], // left back
-    //       [ 45.0,  -90, -45.0,    0 ], // left front
-    //       [ 45.0,    0, -45.0,   90 ], // right front
-    //       [ 45.0,   90, -45.0,  180 ], // right back
-    //     ],
-    //   }
-    // },
 
     clouds: {
       index:          19,
@@ -463,17 +422,6 @@ CFG.Assets = {
         patterns: [
           'YYYY-MM-DD-HH[.pratesfc.10.dods]', 
         ],
-        paletteXX: {
-          '0.0001' : new THREE.Color(0xaa66aa), // violet dark,
-          '0.0002' : new THREE.Color(0xce9be5), // violet,
-          '0.0003' : new THREE.Color(0x76cee2), // blue,
-          '0.0004' : new THREE.Color(0x6cef6c), // green,
-          '0.0005' : new THREE.Color(0xedf96c), // yellow,
-          '0.0006' : new THREE.Color(0xffbb55), // orange,
-          '0.0007' : new THREE.Color(0xfb654e), // red,
-          '0.0008' : new THREE.Color(0xcc4040), // dark red,
-          '0.0010' : new THREE.Color(0xbb20ff), // very dark red,
-        },
         palette: {
           '0.0001' : new THREE.Color(0x000033), // violet dark,
           '0.0002' : new THREE.Color(0x111155), // violet,
@@ -558,39 +506,5 @@ CFG.Assets = {
       type:           'mesh',
       mesh:           new THREE.AxisHelper( RADIUS * 4 ),
     },
-
-    // pixels: {
-    //   index:           30,
-    //   visible:        false,
-    //   type:            'mesh.module',
-    //   title:           'experiment',
-    //   texture:         'tex7.jpg',
-    // }
-    
-    // // lat lon pointer of click marker
-    // arrowHelper: {
-    //   visible:        false,
-    //   title:          'arrow helper',
-    //   type:           'mesh',
-    //   mesh:           new THREE.ArrowHelper( 
-    //                   new THREE.Vector3( 1, 1,  1), 
-    //                   new THREE.Vector3( 0, 0,  0), 
-    //                   RADIUS + 0.08, 
-    //                   0xffff00
-    //   )
-    // },
-
-    // sunPointer: {
-    //   // sun dir pointer
-    //   visible:        false,
-    //   title:          'sun pointer',
-    //   type:           'mesh',
-    //   mesh:           new THREE.ArrowHelper( 
-    //                     new THREE.Vector3( 1, 1,  1), 
-    //                     new THREE.Vector3( 0,  0,  0), 
-    //                     RADIUS + 0.2, 
-    //                     0xff0000
-    //   )
-    // },
 
 };

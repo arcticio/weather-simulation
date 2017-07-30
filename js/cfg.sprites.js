@@ -16,7 +16,6 @@ CFG.Sprites = {
     },
     material: {
       opacity: 0.9,
-      // image: 'arcticio.logo.512.png'
       image: 'logo.128.png'
     },
     onclick: (sprite) => {
