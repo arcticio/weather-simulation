@@ -48,7 +48,8 @@ var LDR = (function () {
         [ SIM.Charts.init ],
 
       'stage 1',
-        self.loadImages,
+        // self.loadTextures,
+        self.loadTexturesParallel,
 
       'stage 2',
         self.loadAssets,
@@ -176,7 +177,56 @@ var LDR = (function () {
 
     },
 
-    loadImages: function () {
+    loadTexturesParallel: function () {
+
+      var 
+        t0 = Date.now(),
+        threads = CFG.Device.threads,
+        replaceTx = function (tex, url) {
+          H.each(CFG.Textures, (key, value) => {
+            if (value === url) {
+              CFG.Textures[key] = tex;
+            }
+          });
+        },
+        urls    = Object.keys(CFG.Textures).map( key => CFG.Textures[key] ),
+        tasks   = urls.map( url => {
+
+          return function (callback) {
+
+            var loader = new THREE.TextureLoader();
+
+            loader.load( url,
+              function onlad ( texture ) {
+                self.message(null, url.split('/').slice(-1)[0]);
+                replaceTx(texture, url);
+                callback();
+              },
+              function onprogress ( ) {},
+              function onerror ( xhr ) {
+                throw(xhr.status + ' ' + xhr.statusText);
+              }
+            );
+
+          };
+
+        }),
+        loader = function (callback) {
+
+          async.parallelLimit(tasks, threads, function () {
+            TIM.step('LOAD.load', 'textures', 't:', threads, 'm:', 'ms:', Date.now() - t0);
+            callback()
+          });
+
+        }
+      ;
+
+      return [[ loader, 'callback' ]];
+
+    },
+    loadTextures: function () {
+
+      // TODO: make parallel and let browser manage image access threading
 
       var urls = Object.keys(CFG.Textures).map( key => CFG.Textures[key] );
 
