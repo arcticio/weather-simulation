@@ -171,6 +171,11 @@ CFG.Manager = (function () {
         window.addEventListener('test', null, opts);
       } catch (e) { /* not needed */ }
 
+      // https://github.com/eligrey/FileSaver.js
+      try {
+        CFG.Device.isFileSaverSupported = !!new Blob;
+      } catch (e) { /* not needed */ }
+
     },
 
     initStore: function () {
@@ -320,6 +325,30 @@ CFG.Manager = (function () {
       });
 
       return H.Base62.fromNumber(out);
+
+    },
+
+    download: function () {
+
+      var 
+        system = Object.assign({
+
+          version:   VERSION,
+          timestamp: new Date(),
+          location:  location.href,
+          runtime:   '',
+
+        }, {
+
+          User:      CFG.User,
+          Device:    CFG.Device, 
+
+        }),
+        json   = JSON.stringify(system, null, 2),
+        blob = new Blob([json], {type: 'text/plain;charset=utf-8'})
+      ;
+
+      saveAs(blob, 'hypatia.debug.txt');
 
     },
 

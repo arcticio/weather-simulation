@@ -312,7 +312,7 @@ CFG.Assets = {
       factor:         0.0003,  // TODO: proper Math, also sync with wind10m
       section:        33 * 1/60,
       length:         60,
-      amount:         512,
+      amount:         256,
       hue:            220 / 360, // https://tympanus.net/codrops/css_reference/hsl/
       material: {
         transparent: true,
@@ -401,7 +401,39 @@ CFG.Assets = {
           '999' : new THREE.Color(0xbb20ff), // very dark red,
         }
       }
-    },
+    },    
+
+    // tmp2mXXX: {
+    //   index:          20,
+    //   debuggable:      true,
+    //   toggleable:      true,
+    //   title:          'GFS - air temperature at 2m',
+    //   type:           'simulation',
+    //   geometry:       new THREE.SphereBufferGeometry(RADIUS + LEVEL_4, 64, 32),
+    //   rotation:       [0, PI, 0],
+    //   radius:         RADIUS + LEVEL_4, 
+    //   opacity:        0.5,
+    //   sim: {
+    //     variable:     'tmp2m',
+    //     step:         [6, 'hours'],
+    //     scaler:       d => H.clampScale(d, 243.15, 313.75, 0, 255),
+    //     dataroot:     'data/gfs/tmp2m/',
+    //     patterns: [
+    //       'YYYY-MM-DD-HH[.tmp2m.10.dods]', 
+    //     ],
+    //     palette: {
+    //       '-30' : new THREE.Color(0xaa66aa), // violet dark,
+    //       '-20' : new THREE.Color(0xce9be5), // violet,
+    //       '-10' : new THREE.Color(0x76cee2), // blue,
+    //       '  0' : new THREE.Color(0x6cef6c), // green,
+    //       '+10' : new THREE.Color(0xedf96c), // yellow,
+    //       '+20' : new THREE.Color(0xffbb55), // orange,
+    //       '+30' : new THREE.Color(0xfb654e), // red,
+    //       '+40' : new THREE.Color(0xcc4040), // dark red,
+    //       '999' : new THREE.Color(0xbb20ff), // very dark red,
+    //     }
+    //   }
+    // },
 
     pratesfc: {
       index:           21,

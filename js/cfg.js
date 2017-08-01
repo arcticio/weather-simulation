@@ -4,7 +4,7 @@
     values get possibly overwritten (e.g. texture),
     there are function, eval'd later,
     or event handlers,
-    if creates globals (e.g PI, TAU)
+    it creates globals (e.g PI, TAU)
 
 */
 
@@ -38,7 +38,7 @@ var CFG = {
   Title:            'Hypatia - Global Weather',
 
   Camera: {
-    cam:            new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1500),
+    cam:            new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10),
     pos:            new THREE.Vector3(4, 0, 0),         
     minRadius:      RADIUS + 0.2,
     maxRadius:      8,                 
@@ -63,9 +63,13 @@ var CFG = {
 
     browser:                   'unknown',
     platform:                  navigator.platform,
-    devicePixelRatio:          NaN,
-    threads:                   navigator.hardwareConcurrency || 2,
+    vendor_webgl:              'unknown',
+    renderer_webgl:            'unknown',
 
+    threads:                   navigator.hardwareConcurrency || 2,
+    devicePixelRatio:          NaN,
+
+    // latest scroll event handling
     supportsPassive:           false,
 
     canMotion:                 false,
@@ -74,15 +78,17 @@ var CFG = {
     canUserProximitry:         false,
     canDeviceProximitry:       false,
 
-    maxVertexUniforms:         NaN,
-    max_texture_size:          NaN,
-    max_cube_map_texture_size: NaN,
+    maxvertexuniforms:              NaN,
+    max_texture_image_units:        NaN,
+    max_texture_size:               NaN,
+    max_vertex_texture_image_units: NaN,
 
-    OES_texture_float:         false,
-    OES_texture_float_linear:  false,
+    oes_texture_float:         false,
+    oes_texture_float_linear:  false,
+    oes_standard_derivatives:  false,
 
   },
-
+      
   Connection: {
     secure:                    location.protocol === 'https:',
     bandwidth:                 NaN

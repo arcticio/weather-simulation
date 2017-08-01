@@ -298,7 +298,7 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
         // to next frame
         IFC.Hud.performance.render();
 
-      }
+      } // end comb
 
       lastTimestamp = timestamp;
       frame += 1;
@@ -338,22 +338,25 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
     probeDevice: function () {
 
       var gl = renderer.context, dev = CFG.Device;
+      var debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
 
       gl.getSupportedExtensions().forEach(ex => extensions[ex] = ex);
 
-      dev.devicePixelRatio                = devicePixelRatio;
-      dev.maxVertexUniforms               = renderer.capabilities.maxVertexUniforms;
-      dev.max_texture_size                = gl.getParameter(gl.MAX_TEXTURE_SIZE);
-      dev.max_texture_image_units         = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-      dev.max_cube_map_texture_size       = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
-      dev.max_vertex_texture_image_units  = gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS);
-      dev.oes_texture_float               = !!extensions.OES_texture_float;
-      dev.oes_texture_float_linear        = !!extensions.OES_texture_float_linear;
-      dev.oes_standard_derivatives        = !!extensions.OES_standard_derivatives;
+      dev.devicePixelRatio               = devicePixelRatio;
+      dev.maxvertexuniforms              = renderer.capabilities.maxVertexUniforms;
+      dev.max_texture_size               = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+      dev.max_texture_image_units        = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+      dev.max_cube_map_texture_size      = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+      dev.max_vertex_texture_image_units = gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS);
+      dev.oes_texture_float              = !!extensions.OES_texture_float;
+      dev.oes_texture_float_linear       = !!extensions.OES_texture_float_linear;
+      dev.oes_standard_derivatives       = !!extensions.OES_standard_derivatives;
+      dev.vendor_webgl                   = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+      dev.renderer_webgl                 = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
 
     },
     logFullInfo: function () {
-
+        
       // http://codeflow.org/entries/2013/feb/22/how-to-write-portable-webgl/
       // Each uniform is aligned to 4 floats.
 
@@ -373,14 +376,15 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
         faces:                  renderer.info.render.faces,
         vertices:               renderer.info.render.vertices,
 
-        maxAttributes :         renderer.capabilities.maxAttributes,
-        maxTextures :           renderer.capabilities.maxTextures,
-        maxVaryings :           renderer.capabilities.maxVaryings,
-        maxVertexUniforms :     renderer.capabilities.maxVertexUniforms, // this limits multiline amount
-        floatFragmentTextures : renderer.capabilities.floatFragmentTextures,
-        floatVertexTextures :   renderer.capabilities.floatVertexTextures,
-        getMaxAnisotropy :      renderer.capabilities.getMaxAnisotropy,
-        extensions:             gl.getSupportedExtensions(),
+        maxAttributes:           renderer.capabilities.maxAttributes,
+        maxTextures:             renderer.capabilities.maxTextures,
+        maxVaryings:             renderer.capabilities.maxVaryings,
+        maxVertexUniforms:       renderer.capabilities.maxVertexUniforms, // this limits multiline amount
+        floatFragmentTextures:   renderer.capabilities.floatFragmentTextures,
+        floatVertexTextures:     renderer.capabilities.floatVertexTextures,
+        getMaxAnisotropy:        renderer.capabilities.getMaxAnisotropy,
+        max_texture_image_units: gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS),
+        extensions:              gl.getSupportedExtensions(),
 
       }, null, 2));
 

@@ -12,6 +12,7 @@
     "Uint32Array":     true,
     "ArrayBuffer":     true,
 
+    // global in workers
     "importScripts":   true,
     "onmessage":       true,
 
@@ -23,6 +24,7 @@
     "$":               true,
     "THREE":           true,
 
+    "saveAs":          true,
     "CanvasJS":        true,
     "screenfull":      true,
     "async":           true,

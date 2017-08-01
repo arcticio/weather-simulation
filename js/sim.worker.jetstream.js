@@ -1,15 +1,15 @@
 /*
-  t=threads, m=stamps
-  SIM.loaded jetstream t:  1 m: 10 ms: 15651
-  SIM.loaded jetstream t:  2 m: 10 ms:  9348
-  SIM.loaded jetstream t:  3 m: 10 ms:  8583
-  SIM.loaded jetstream t:  4 m: 10 ms:  7969
-  SIM.loaded jetstream t:  5 m: 10 ms:  7891
-  SIM.loaded jetstream t:  6 m: 10 ms:  8037
-  SIM.loaded jetstream t:  7 m: 10 ms:  7981
-  SIM.loaded jetstream t:  8 m: 10 ms:  8594
-  SIM.loaded jetstream t:  9 m: 10 ms:  9060
-  SIM.loaded jetstream t: 10 m: 10 ms:  8797
+  6 sectors * 512 lines * 60 vertices, t=threads, m=stamps
+  jetstream t:  1 m: 10 ms: 15651
+  jetstream t:  2 m: 10 ms:  9348
+  jetstream t:  3 m: 10 ms:  8583
+  jetstream t:  4 m: 10 ms:  7969
+  jetstream t:  5 m: 10 ms:  7891
+  jetstream t:  6 m: 10 ms:  8037
+  jetstream t:  7 m: 10 ms:  7981
+  jetstream t:  8 m: 10 ms:  8594
+  jetstream t:  9 m: 10 ms:  9060
+  jetstream t: 10 m: 10 ms:  8797
 
 */
 
@@ -39,7 +39,7 @@ if( typeof importScripts === 'function') {
     'aws.math.js',
     'aws.res.js',
     'sim.datagram.js',
-    'sim.worker.jetstream.multiline.js'
+    // 'sim.worker.jetstream.multiline.js'
   );
 
 
@@ -94,17 +94,16 @@ if( typeof importScripts === 'function') {
   function onmessage (event) {
 
     var 
-      id      = event.data.id,
-      topic   = event.data.topic,
-      payload = event.data.payload;
-
-    // console.log('new worker.job', topic, id, typeof payload);
+      id       = event.data.id,
+      topic    = event.data.topic,
+      payload  = event.data.payload,
+      callback = function (id, result, transferables) {
+        postMessage({id, result}, transferables);
+      }
+    ;
 
     if (topics[topic]) {
-      topics[topic](id, payload, function (id, result, transferables) {
-        postMessage({id, result}, transferables);
-      });
-
+      topics[topic](id, payload, callback);
 
     } else {
       console.warn(name + ': unknown topic', topic);
@@ -187,7 +186,7 @@ if( typeof importScripts === 'function') {
           lon  = seeds[i].lon;
           vec3 = latLonRadToVector3(lat, lon, cfg.radius);
 
-          // over points
+          // over vertices
           for (j=0; j<length; j++) {
 
             u = datagrams.ugrdprs.linearXY(doe, lat, lon);
@@ -206,6 +205,7 @@ if( typeof importScripts === 'function') {
             spcl.phi   -= v * cfg.factor;                   // north-direction
             vec3 = vec3.setFromSpherical(spcl).clone();
             
+            // TODO: optimize: no new objects
             latlon = vector3ToLatLong(vec3, cfg.radius);
             lat = latlon.lat;
             lon = latlon.lon;
@@ -248,7 +248,7 @@ if( typeof importScripts === 'function') {
           preline.positions,
           preline.colors,
           preline.widths,
-          (vectors, colors, widths) => new Multiline.line(idx++, vectors, colors, widths)
+          (vectors, colors, widths) => new Multiline(idx++, vectors, colors, widths)
         );
 
       });
@@ -292,6 +292,7 @@ if( typeof importScripts === 'function') {
           attributes[name] = new type(totalLength);
 
           var 
+            i, source, length,
             pointer     = 0,
             indexOffset = 0,
             positLength = lines[0].attributes['position'].length / 3,
@@ -301,9 +302,8 @@ if( typeof importScripts === 'function') {
           // over lines (n=512)
           H.each(lines, (_, line) => {
 
-            var i,
-              source = line.attributes[name],
-              length = source.length;
+            source = line.attributes[name];
+            length = source.length;
 
             if (name === 'index'){
               for (i=0; i<length; i++) {
@@ -331,7 +331,7 @@ if( typeof importScripts === 'function') {
       // console.log(name + ': combine', id, Date.now() - t0, sectors.reduce(counter, 0));
 
       H.each(sectors, (_, sector) => {
-        H.each(config, (name, _) => {
+        H.each(config, (name) => {
           transferables.push(sector[name].buffer);
         });
       });
@@ -345,3 +345,118 @@ if( typeof importScripts === 'function') {
 
 
 }
+
+
+function Multiline ( idx, vertices, colors, widths ) {
+
+  this.idx       = idx;
+
+  this.index     = [];
+  this.lineIndex = [];
+  this.next      = [];
+  this.positions = [];
+  this.previous  = [];
+  this.side      = [];
+  this.widths    = [];
+  this.colors    = [];
+
+  this.length = vertices.length;
+
+  this.init(vertices, colors, widths);
+  this.process();
+
+
+  // TODO: Needed?
+  this.attributes = {
+    index:     new Uint16Array(  this.index ),   
+    lineIndex: new Float32Array( this.lineIndex ), 
+    next:      new Float32Array( this.next ),      
+    position:  new Float32Array( this.positions ), 
+    previous:  new Float32Array( this.previous ),  
+    side:      new Float32Array( this.side ),      
+    width:     new Float32Array( this.widths ),    
+    colors:    new Float32Array( this.colors ),    
+  }
+
+};
+
+Multiline.prototype = {
+  constructor:  Multiline,
+  compareV3:    function( a, b ) {
+
+    var aa = a * 6, ab = b * 6;
+
+    return (
+      ( this.positions[ aa     ] === this.positions[ ab     ] ) && 
+      ( this.positions[ aa + 1 ] === this.positions[ ab + 1 ] ) && 
+      ( this.positions[ aa + 2 ] === this.positions[ ab + 2 ] )
+    );
+
+  },
+
+  copyV3:       function( a ) {
+
+    var aa = a * 6;
+    return [ this.positions[ aa ], this.positions[ aa + 1 ], this.positions[ aa + 2 ] ];
+
+  },
+
+  init:  function( vertices, colors, widths ) {
+
+    var j, ver, cnt, col, wid, n, len = this.length;
+
+    for( j = 0; j < len; j++ ) {
+
+      ver = vertices[ j ];
+      col = colors[ j ];
+      wid = widths[ j ];
+      cnt = j / vertices.length;
+
+      this.positions.push( ver.x, ver.y, ver.z );
+      this.positions.push( ver.x, ver.y, ver.z );
+      this.lineIndex.push(this.idx + cnt);
+      this.lineIndex.push(this.idx + cnt);
+      this.colors.push(col.r, col.g, col.b);
+      this.colors.push(col.r, col.g, col.b);
+      this.widths.push(wid);
+      this.widths.push(wid);
+      this.side.push(  1 );
+      this.side.push( -1 );
+
+    }
+
+    for( j = 0; j < len - 1; j++ ) {
+      n = j + j;
+      this.index.push( n,     n + 1, n + 2 );
+      this.index.push( n + 2, n + 1, n + 3 );
+    }
+
+  },
+
+  process:      function() {
+
+    var j, v, l = this.positions.length / 6;
+
+    v = this.compareV3( 0, l - 1 ) ? this.copyV3( l - 2 ) : this.copyV3( 0 ) ;
+    this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+    this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+
+    for( j = 0; j < l - 1; j++ ) {
+      v = this.copyV3( j );
+      this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+      this.previous.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+    }
+
+    for( j = 1; j < l; j++ ) {
+      v = this.copyV3( j );
+      this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+      this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+    }
+
+    v = this.compareV3( l - 1, 0 ) ? this.copyV3( 1 ) : this.copyV3( l - 1 ) ;
+    this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+    this.next.push( v[ 0 ], v[ 1 ], v[ 2 ] );
+
+  }
+
+};

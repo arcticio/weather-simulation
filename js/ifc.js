@@ -336,6 +336,8 @@ var IFC = (function () {
         var keys = {
           ' ': SCN.toggleRender,
           's': SCN.logScene,
+          // 'd': SCN.logFullInfo,
+          'd': CFG.Manager.download,
           'g': self.toggleGUI,
           'm': IFC.Hud.toggleMenu,
           't': () => SIM.setSimTime( -1, 'hours'),

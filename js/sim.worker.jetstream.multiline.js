@@ -19,17 +19,8 @@ Multiline.line = function ( idx, vertices, colors, widths ) {
   this.init(vertices, colors, widths);
   this.process();
 
-  // this.attributes = {
-  //   index:     new THREE.BufferAttribute( new Uint16Array(  this.indices ),   1 ),
-  //   lineIndex: new THREE.BufferAttribute( new Float32Array( this.lineIndex ), 1 ),
-  //   next:      new THREE.BufferAttribute( new Float32Array( this.next ),      3 ),
-  //   position:  new THREE.BufferAttribute( new Float32Array( this.positions ), 3 ),
-  //   previous:  new THREE.BufferAttribute( new Float32Array( this.previous ),  3 ),
-  //   side:      new THREE.BufferAttribute( new Float32Array( this.side ),      1 ),
-  //   width:     new THREE.BufferAttribute( new Float32Array( this.widths ),    1 ),
-  //   colors:    new THREE.BufferAttribute( new Float32Array( this.colors ),    3 ),
-  // }
 
+  // TODO: Needed?
   this.attributes = {
     index:     new Uint16Array(  this.index ),   
     lineIndex: new Float32Array( this.lineIndex ), 

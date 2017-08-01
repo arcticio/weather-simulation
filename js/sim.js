@@ -9,7 +9,7 @@ var SIM = (function () {
     image          = $$('.panel.image')[0],  // debug sun
 
     coordsPool     = null, 
-    poolJetStream  = NaN,
+    // poolJetStream  = NaN,
 
     models         = {},
     datagrams      = {}, // all models share GFS data
@@ -35,9 +35,9 @@ var SIM = (function () {
       maxdoe:      NaN,
       fmtDay:      '',
       fmtHour:     '',
-    },
+    }
 
-    unique = 100
+    // unique = 100
 
   ;
 
@@ -61,7 +61,7 @@ var SIM = (function () {
 
       coordsPool = self.coordsPool = new CoordsPool(CFG.Sim.coordspool.amount).generate();
 
-      poolJetStream = new CoordsPool().latlonArray(5000);
+      // poolJetStream = new CoordsPool().latlonArray(5000);
 
       TIM.step('Pool.generate', Date.now() - t0, 'ms', CFG.Sim.coordspool.amount);
 
