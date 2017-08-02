@@ -45,7 +45,7 @@ Antarctica's complex topology + sea ice.
 ![Screenshot](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/2017-06-16-14-23-06.png)
 
 
-| ##Animation  | ##Purpose |
+| ## Animation  | ## Purpose |
 | --- | --- |
 | <img src="https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/hypatia.jetstream.gif" width="360"> | There is a myriad of weather and climate data with the physical parameters needed to describe this planet now, in the past and in the near or far future. Only a subset is actually useful for the general public. Temperature at 2 meters, wind at 10 meters, sea surface level are useful examples helping to plan ahead. An astonishing amount of these data sets are in the public domain or otherwise available without a commercial handshake. <br /><br /> But this project is not not meant to replicate existing visualizations, instead it targets delivering a deeper understanding of processes forming weather and ultimately climate. It's the challenge of combining datasets to new mash-ups without overwhelming the user. A 3D interface does not only add a dimension - it creates deepness in a world where information is mostly as flat as the screenes. <br /><br /> The vastness of Antartica's ice sheet is not common knowledge. Mostly due to the mathematical awkwardness of cutting a sphere around the poles cartographers appreciate maps without the latter. That's how the regions dispapeared from the global hive. <br /><br />   So, what are the essential datasets giving you an advantage? Actually it depends on your intents. Do you want to harvest some extra kilo  watt of your solar energy installation or is it just the umbrellla or not question? |
 
