@@ -5,9 +5,6 @@ Renders current weather parameters onto a 3D sphere
 
   * http://hypatia.arctic.io/YNK/2017-06-15-12-00/2;3;0
 
-![Animated Gif](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/hypatia.jetstream.gif)
-
-
 ## Credits
   
   * https://github.com/spite/codevember-2016
@@ -52,7 +49,11 @@ Antarctica's complex topology + sea ice.
 
 ## Purpose
 
-  There is a myriad of weather and climate data with the physical parameters needed to describe this planet now, in the past and in the near or far future. Only a subset is actually useful for the general public. Temperature at 2 meters, wind at 10 meters, sea surface level are useful examples helping to plan ahead. An astonishing amount of these data sets are in the public domain or otherwise available without a commercial handshake. 
+| Animation  | Purpose |
+| --- | --- |
+| ![Animated Gif](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/hypatia.jetstream.gif) | 
+
+There is a myriad of weather and climate data with the physical parameters needed to describe this planet now, in the past and in the near or far future. Only a subset is actually useful for the general public. Temperature at 2 meters, wind at 10 meters, sea surface level are useful examples helping to plan ahead. An astonishing amount of these data sets are in the public domain or otherwise available without a commercial handshake. 
 
   But this project is not not meant to replicate existing visualizations, instead it targets delivering a deeper understanding of processes forming weather and ultimately climate. It's the challenge of combining datasets to new mash-ups without overwhelming the user. A 3D interface does not only add a dimension - it creates deepness in a world where information is mostly as flat as the screenes.
 
@@ -60,4 +61,6 @@ Antarctica's complex topology + sea ice.
 
   So, what are the essential datasets giving you an advantage? Actually it depends on your intents. Do you want to harvest some extra kilo  watt of your solar energy installation or is it just the umbrellla or not question? 
 
-## 
+|
+
+
