@@ -36,16 +36,43 @@ CFG.Manager = (function () {
 
       if (user.loc_detected) {
         TIM.step('CFG.User', 'lat:', user.latitude, 'lon:', user.longitude, user.country_code, user.country_name);
+      
       } else {
         TIM.step('CFG.User', 'location unknown');
+        
       }
+
+    },
+
+    download: function () {
+
+      var 
+        system = Object.assign({
+
+          version:   VERSION,
+          timestamp: new Date(),
+          location:  location.href,
+          runtime:   '',
+
+        }, {
+
+          User:       CFG.User,
+          Device:     CFG.Device, 
+          Connection: CFG.Connection, 
+
+        }),
+        json   = JSON.stringify(system, null, 2),
+        blob = new Blob([json], {type: 'text/plain;charset=utf-8'})
+      ;
+
+      saveAs(blob, 'hypatia.debug.txt');
 
     },
 
     location: function (response) {
       // called by geojson in HTML
       Object.assign(CFG.User, response);
-      CFG.User.loc_detected = (CFG.User.latitude || CFG.User.longitude);
+      CFG.User.loc_detected = !!(CFG.User.latitude || CFG.User.longitude);
     },
 
     lockOrientation: function (orientation) {
@@ -89,6 +116,7 @@ CFG.Manager = (function () {
     probeFullscreen: function () {
 
       if (screenfull.enabled){
+        CFG.Device.canFullScreen = true;
         var img = document.querySelectorAll('.btnFullscreen')[0];
         img.src = 'images/fullscreen.grey.png';
         img.onclick = function () {
@@ -325,30 +353,6 @@ CFG.Manager = (function () {
       });
 
       return H.Base62.fromNumber(out);
-
-    },
-
-    download: function () {
-
-      var 
-        system = Object.assign({
-
-          version:   VERSION,
-          timestamp: new Date(),
-          location:  location.href,
-          runtime:   '',
-
-        }, {
-
-          User:      CFG.User,
-          Device:    CFG.Device, 
-
-        }),
-        json   = JSON.stringify(system, null, 2),
-        blob = new Blob([json], {type: 'text/plain;charset=utf-8'})
-      ;
-
-      saveAs(blob, 'hypatia.debug.txt');
 
     },
 

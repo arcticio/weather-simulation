@@ -6,11 +6,10 @@ CFG.Preset = {
     Object.assign(CFG.Preset, {
 
       Render:         true,
-      // Animate:        true,
-      // Simulate:       true,
 
       Reload:         () => location.reload(),
       ResetCam:       () => SCN.reset.controller(),
+      Debug:          () => CFG.Manager.download(),
 
       Ambient: { isFolder: true,
         toggle:       true, // CFG.Assets.ambient.visible,

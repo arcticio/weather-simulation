@@ -73,11 +73,11 @@ var H = (function(){
         d.getUTCFullYear(),
         H.padZero(d.getUTCMonth() +1),
         H.padZero(d.getUTCDate()),
-      ].join("-") + " " + [
+      ].join('-') + ' ' + [
         H.padZero(d.getUTCHours()),
         H.padZero(d.getUTCMinutes()),
         H.padZero(d.getUTCSeconds()),
-      ].join(":");
+      ].join(':');
     },
     iso2Day : function (iso) {
       var d = iso.split('-');
@@ -152,11 +152,30 @@ var H = (function(){
       };
 
     },
+    deepClonePrimitives: function (o) {
+
+      var k, v, c = Object.create(null);
+
+      for (k in o) {
+        v = o[k];
+        if (typeof v === 'string' || typeof v === 'boolean' || typeof v === 'number'){
+          c[k] = v;
+
+        } else if (typeof v === 'object') {
+          c[k] = H.deepClonePrimitives(v);
+
+        }
+
+      };
+
+      return c;
+
+    },
     titleCase: function (str) {
       return str.toLowerCase().replace(/\b(\w)/g, s => s.toUpperCase());
     },
     replace:    function (s,f,r){return s.replace(new RegExp(H.escapeRex(f), 'g'), r);},
-    padZero:    function (num, len){len = len || 2; var snum = '0000' + num; return snum.substr(snum.length-2, 2);},
+    padZero:    function (num, len){len = len || 2; var snum = '0000' + num; return snum.substr(snum.length-len, len);},
     mulString:  function (s, l){return new Array(l+1).join(s);},
     escapeRex:  function (s){return s.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');},
     letterRange:function (r){return H.range(r.charCodeAt(0), r.charCodeAt(1)+1).map(function(i){return String.fromCharCode(i);}).join('');},

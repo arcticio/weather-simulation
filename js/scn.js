@@ -36,6 +36,8 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
     comb          = 1,   // 0 = no render, 1 = all frames, 2 = every other, 3 etc 
 
     doRender      = true,
+    doAnimate     = true,
+    doCapture     = false,
 
     extensions    = {},
     assets        = {}
@@ -246,6 +248,36 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
 
     },
 
+    capture: (function () {
+
+      var totalImages = 0, capturedBlobs = [], callback = null;
+
+      return function (param, ondone) {
+
+        // init
+        if (typeof param === 'number') {
+          totalImages = param;
+          callback    = ondone;
+          doCapture   = true;
+          doAnimate   = false;
+          capturedBlobs.length = 0;
+
+        } else {
+          capturedBlobs.push(param);
+          setTimeout(SCN.render, 10);
+        }
+
+        if (capturedBlobs.length === totalImages) {
+          doAnimate   = true;
+          totalImages = 0;
+          doCapture   = false;
+          callback(capturedBlobs);
+          setTimeout(SCN.render, 10);
+        }
+      
+      }
+
+    }()),
     prerender: function () {
       var t0 = Date.now();
       renderer.clear();
@@ -263,7 +295,7 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
         timestamp = performance.now(),
         deltasecs = (timestamp - (lastTimestamp || timestamp)) / 1000; // to secs
 
-      requestAnimationFrame(render);
+      doAnimate && requestAnimationFrame(render);
 
       if ( comb && !(frame % comb) ) {
 
@@ -292,6 +324,9 @@ https://gist.github.com/paulirish/5d52fb081b3570c81e3a
 
           // update Hud
           IFC.Hud.render(renderer);
+
+          // animated GIF w/ HUD
+          doCapture && SCN.capture(canvas.toDataURL('image/png'));
 
         IFC.Hud.performance.end();
 

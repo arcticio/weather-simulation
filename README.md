@@ -5,6 +5,9 @@ Renders current weather parameters onto a 3D sphere
 
   * http://hypatia.arctic.io/YNK/2017-06-15-12-00/2;3;0
 
+![Animated Gif](https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/hypatia.jetstream.gif)
+
+
 ## Credits
   
   * https://github.com/spite/codevember-2016

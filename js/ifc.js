@@ -232,7 +232,59 @@ var IFC = (function () {
       }
 
     },
+    capture: function () {
+
+      var 
+        blob,
+        amount = 60,
+        ondone = function (obj) {
+          if(!obj.error) {
+            blob = H.base64toBlob(obj.image.slice(22), 'image/gif');
+            saveAs(blob, 'hypatia.gif');
+          }
+        }
+
+      SCN.capture(amount, function (images) {
+
+        gifshot.createGIF({
+          gifWidth:   360,
+          gifHeight:  640,
+          interval:   1/60,
+          numFrames:  amount,
+          images:     images.map(blob => {
+            var img = new Image();
+            img.src = blob;
+            return img;
+          })
+        }, ondone);
+
+      });
+
+    },
     events: {
+
+      keydown:     function (event) { 
+
+        var keys = {
+          ' ': SCN.toggleRender,
+          's': SCN.logScene,
+          // 'd': SCN.logFullInfo,
+          'd': CFG.Manager.download,
+          'g': self.toggleGUI,
+          'm': IFC.Hud.toggleMenu,
+          'c': IFC.capture,
+          't': () => SIM.setSimTime( -1, 'hours'),
+          'z': () => SIM.setSimTime(  1, 'hours'),
+        };
+
+        if (keys[event.key]) {
+          keys[event.key]();          
+          console.log(event.key, 'down');
+          return IFC.Tools.eat(event);
+        }
+
+      },
+
       onglobeenter: function () {
         ANI.insert(0, ANI.library.scaleGLobe( 1.0,  800))
         IFC.Hud.spacetime.updateModus('space');
@@ -330,25 +382,6 @@ var IFC = (function () {
       mouseleave:  function () {
         pointer.overScreen = false;
         SCN.setComb(4);
-      },
-      keydown:     function (event) { 
-
-        var keys = {
-          ' ': SCN.toggleRender,
-          's': SCN.logScene,
-          // 'd': SCN.logFullInfo,
-          'd': CFG.Manager.download,
-          'g': self.toggleGUI,
-          'm': IFC.Hud.toggleMenu,
-          't': () => SIM.setSimTime( -1, 'hours'),
-          'z': () => SIM.setSimTime(  1, 'hours'),
-        };
-
-        if (keys[event.key]) {
-          keys[event.key]();          
-          return IFC.Tools.eat(event);
-        }
-
       },
 
       touchstart:  function (event) { 

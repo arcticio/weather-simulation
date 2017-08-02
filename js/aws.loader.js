@@ -179,6 +179,8 @@ var LDR = (function () {
 
     loadTexturesParallel: function () {
 
+      // TODO: no conflation of # of tasks 
+
       var 
         t0 = Date.now(),
         threads = CFG.Device.threads,
@@ -204,7 +206,7 @@ var LDR = (function () {
               },
               function onprogress ( ) {},
               function onerror ( xhr ) {
-                throw(xhr.status + ' ' + xhr.statusText);
+                throw(xhr.status + ' ' + xhr.statusText + '; ' + url);
               }
             );
 

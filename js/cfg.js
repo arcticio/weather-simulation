@@ -37,13 +37,6 @@ var CFG = {
 
   Title:            'Hypatia - Global Weather',
 
-  Camera: {
-    cam:            new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10),
-    pos:            new THREE.Vector3(4, 0, 0),         
-    minRadius:      RADIUS + 0.2,
-    maxRadius:      8,                 
-  },
-
   User: {
     ip:                        '',
     country_code:              '',
@@ -61,23 +54,38 @@ var CFG = {
 
   Device: {
 
+    // System
     browser:                   'unknown',
     platform:                  navigator.platform,
     vendor_webgl:              'unknown',
     renderer_webgl:            'unknown',
-
     threads:                   navigator.hardwareConcurrency || 2,
+    userAgent:                 navigator.userAgent,
+    language:                  navigator.language,
+
+    // display
+    screen:                    H.deepClonePrimitives(screen),
+    window: {
+      width:                   window.innerWidth,
+      height:                  window.innerHeight,
+    },
     devicePixelRatio:          NaN,
 
     // latest scroll event handling
     supportsPassive:           false,
 
-    canMotion:                 false,
+    // Interface
     canVibrate:                navigator.vibrate && location.protocol === 'https:',
+    canFullScreen:             false,
+
+    // Sensors
+    canMotion:                 false,
     canOrientation:            false,
     canUserProximitry:         false,
     canDeviceProximitry:       false,
+    canGeoLocation:            navigator.geolocation && navigator.geolocation.getCurrentPosition,
 
+    // WebGL
     maxvertexuniforms:              NaN,
     max_texture_image_units:        NaN,
     max_texture_size:               NaN,
@@ -92,6 +100,13 @@ var CFG = {
   Connection: {
     secure:                    location.protocol === 'https:',
     bandwidth:                 NaN
+  },
+
+  Camera: {
+    cam:            new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10),
+    pos:            new THREE.Vector3(4, 0, 0),         
+    minRadius:      RADIUS + 0.2,
+    maxRadius:      8,                 
   },
 
   Sim: {
@@ -115,12 +130,20 @@ var CFG = {
 
     // basemaps
 
-    'globe.mask.bottom.512.png':    'images/basemaps/512/globe.mask.bottom.512.png',
-    'globe.mask.top.512.png':       'images/basemaps/512/globe.mask.top.512.png',
-    'globe.mask.left.512.png':      'images/basemaps/512/globe.mask.left.512.png',
-    'globe.mask.right.512.png':     'images/basemaps/512/globe.mask.right.512.png',
-    'globe.mask.front.512.png':     'images/basemaps/512/globe.mask.front.512.png',
-    'globe.mask.back.512.png':      'images/basemaps/512/globe.mask.back.512.png',
+    // debug capture
+    'globe.mask.bottom.512.png':    'images/basemaps/2048/globe.mask.bottom.2048.png',
+    'globe.mask.top.512.png':       'images/basemaps/2048/globe.mask.top.2048.png',
+    'globe.mask.left.512.png':      'images/basemaps/2048/globe.mask.left.2048.png',
+    'globe.mask.right.512.png':     'images/basemaps/2048/globe.mask.right.2048.png',
+    'globe.mask.front.512.png':     'images/basemaps/2048/globe.mask.front.2048.png',
+    'globe.mask.back.512.png':      'images/basemaps/2048/globe.mask.back.2048.png',
+
+    // 'globe.mask.bottom.512.png':    'images/basemaps/512/globe.mask.bottom.512.png',
+    // 'globe.mask.top.512.png':       'images/basemaps/512/globe.mask.top.512.png',
+    // 'globe.mask.left.512.png':      'images/basemaps/512/globe.mask.left.512.png',
+    // 'globe.mask.right.512.png':     'images/basemaps/512/globe.mask.right.512.png',
+    // 'globe.mask.front.512.png':     'images/basemaps/512/globe.mask.front.512.png',
+    // 'globe.mask.back.512.png':      'images/basemaps/512/globe.mask.back.512.png',
 
     'globe.topo.bottom.512.png':    'images/basemaps/512/globe.topo.bottom.512.png',
     'globe.topo.top.512.png':       'images/basemaps/512/globe.topo.top.512.png',

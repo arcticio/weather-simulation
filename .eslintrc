@@ -23,7 +23,7 @@
     "jQuery":          true,
     "$":               true,
     "THREE":           true,
-
+    "gifshot":         true,
     "saveAs":          true,
     "CanvasJS":        true,
     "screenfull":      true,
