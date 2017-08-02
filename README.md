@@ -1,5 +1,6 @@
 # weather-simulation
-Renders current weather parameters onto a 3D sphere
+
+Renders a week of current and future weather parameters onto a 3D sphere
 
 ## Demo
 

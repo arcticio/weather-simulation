@@ -244,14 +244,14 @@ var IFC = (function () {
           }
         }
 
-      SCN.capture(amount, function (images) {
+      SCN.capture(amount, function (blobs) {
 
         gifshot.createGIF({
-          gifWidth:   360,
-          gifHeight:  640,
+          gifWidth:   geometry.width,
+          gifHeight:  geometry.height,
           interval:   1/60,
           numFrames:  amount,
-          images:     images.map(blob => {
+          images:     blobs.map(blob => {
             var img = new Image();
             img.src = blob;
             return img;
