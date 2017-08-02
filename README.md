@@ -52,8 +52,8 @@ Antarctica's complex topology + sea ice.
 
 
 ## Test
-
-<div style="float: left">
+<style> #345 {} </style>
+<div id="345" style="float: left">
   <img style="min-width: 360px" src="https://github.com/arcticio/weather-simulation/raw/master/images/screenshots/hypatia.jetstream.gif" width="360" height="640">
 <div>
 
