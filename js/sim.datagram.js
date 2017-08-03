@@ -260,6 +260,9 @@ SIM.Datagram.prototype = {
             time  = 0, 1, ...
         */
 
+        // on test
+        // doe = H.firstAttr(this.data);
+
         var 
             lon   = (lonin + 180) % 360,
             data  = this.data[doe],
@@ -287,14 +290,15 @@ SIM.Datagram.prototype = {
                 plane[ xi1 + (yi0 * xlen) ] * (    dx) * (1 - dy) + 
                 plane[ xi0 + (yi1 * xlen) ] * (1 - dx) * (    dy) + 
                 plane[ xi1 + (yi1 * xlen) ] * (    dx) * (    dy)
-            );
+            )
+        ;
 
-            if (isNaN(val)){
-                // debugger;
-                console.warn('linearXY', this.data.vari, lat, lon);
-            }
+        if (isNaN(val)){
+            // debugger;
+            console.warn('linearXY', this.data.vari, lat, lon);
+        }
 
-            return val;
+        return val;
 
         ;
 

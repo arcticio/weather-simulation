@@ -15,6 +15,14 @@
 
 if( typeof importScripts === 'function') {
 
+  const 
+    PI     = Math.PI,
+    TAU    = 2 * PI,
+    PI2    = PI / 2,
+    RADIUS = 1.0,
+    DEGRAD = PI / 180.0
+  ;
+
   var 
 
     name = 'jet.worker',
@@ -191,6 +199,7 @@ if( typeof importScripts === 'function') {
 
             u = datagrams.ugrdprs.linearXY(doe, lat, lon);
             v = datagrams.vgrdprs.linearXY(doe, lat, lon);
+            u *= 1.0 / Math.cos(lat * DEGRAD);
 
             speed = Math.hypot(u, v);
             color = new Color().setHSL(cfg.hue, 0.4, speed / 100);

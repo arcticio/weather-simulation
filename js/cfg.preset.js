@@ -7,9 +7,9 @@ CFG.Preset = {
 
       Render:         true,
 
-      Reload:         () => location.reload(),
-      ResetCam:       () => SCN.reset.controller(),
-      Debug:          () => CFG.Manager.download(),
+      Reload:         location.reload,
+      ResetCam:       SCN.reset.controller,
+      Debug:          CFG.Manager.download,
 
       Ambient: { isFolder: true,
         toggle:       true, // CFG.Assets.ambient.visible,

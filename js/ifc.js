@@ -240,7 +240,8 @@ var IFC = (function () {
         ondone = function (obj) {
           if(!obj.error) {
             blob = H.base64toBlob(obj.image.slice(22), 'image/gif');
-            saveAs(blob, 'hypatia.gif');
+            // TODO: insert date here
+            saveAs(blob, 'hypatia.ani.gif');
           }
         }
 

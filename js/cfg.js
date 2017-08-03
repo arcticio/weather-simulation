@@ -12,19 +12,19 @@
 /* GLOBALS */
 
 const 
-  PI      =   Math.PI,
-  TAU     =   2 * PI,
-  PI2     =   PI / 2,
-  RADIUS  =   1.0,    // surface, population
-  LEVEL_0 =   0.000,  // population
-  LEVEL_1 =   0.001,  // basemaps, snpp, rtopo2
-  LEVEL_2 =   0.002,  // sst
-  LEVEL_3 =   0.003,  // seaice
-  LEVEL_4 =   0.004,  // wind10, tmp2m
-  LEVEL_5 =   0.005,  // clouds
-  LEVEL_6 =   0.006,  // jetstream, graticule
-  LEVEL_7 =   0.007,  // atmosphere
-  LEVEL_8 =   0.008,  // atmosphere
+  PI       = Math.PI,
+  TAU      = 2 * PI,
+  PI2      = PI / 2,
+  RADIUS   = 1.0,    // surface, population
+  LEVEL_0  = 0.000,  // population
+  LEVEL_1  = 0.001,  // basemaps, snpp, rtopo2
+  LEVEL_2  = 0.002,  // sst
+  LEVEL_3  = 0.003,  // seaice
+  LEVEL_4  = 0.004,  // wind10, tmp2m
+  LEVEL_5  = 0.005,  // clouds
+  LEVEL_6  = 0.006,  // jetstream, graticule
+  LEVEL_7  = 0.007,  // atmosphere
+  LEVEL_10 = 0.010,  // atmosphere
 
   KELVIN  =   273.15
 ;

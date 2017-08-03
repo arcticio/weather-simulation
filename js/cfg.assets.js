@@ -132,7 +132,7 @@ CFG.Assets = {
       toggleable:      true,
       title:           'atmosphere',
       type:            'mesh.module',
-      radius:          RADIUS + LEVEL_8,
+      radius:          RADIUS + LEVEL_10,
       rotation:        [0, PI2, 0],
       opacity:         0.5,
       material: {
@@ -328,16 +328,21 @@ CFG.Assets = {
         width:     {type: 'Float32Array', itemSize: 1},
       },
       sim: {
-        variable:     'ugrdprs',    // selects in datatime.rane
+        variable:     'ugrdprs',    // selects in datatime.range
         step:         [6, 'hours'],
         dataroot:     'data/gfs/',
         patterns: [
           '[ugrdprs/]YYYY-MM-DD-HH[.ugrdprs.10.dods]',
           '[vgrdprs/]YYYY-MM-DD-HH[.vgrdprs.10.dods]',
         ],
+        // dataroot:     'data/test/',
+        // patterns: [
+        //   '[test02.ugrdprs.10.dods]',
+        //   '[test02.vgrdprs.10.dods]',
+        // ],
         sectors: [
-          [ 89.5, -180,  45.0,  180 ], // top
-          [-45.0, -180, -89.9,  180 ], // bottom
+          [ 89.0, -180,  45.0,  180 ], // top
+          [-45.0, -180, -89.0,  180 ], // bottom
           [ 45.0, -180, -45.0,  -90 ], // left back
           [ 45.0,  -90, -45.0,    0 ], // left front
           [ 45.0,    0, -45.0,   90 ], // right front
