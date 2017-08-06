@@ -7,6 +7,8 @@
 
 */
 
+var CFG = CFG || {};
+
 CFG.Activated = {
   pointer:    true,
   background: true,
@@ -305,6 +307,14 @@ CFG.Assets = {
       title:          'GFS - jetstream at 300hpa',
       type:           'simulation.parallel',
       worker:         'js/sim.worker.jetstream.js',
+      scripts:     [
+                      '../libs/async.js',
+                      'aws.helper.js', 
+                      'aws.tools.js',
+                      'aws.math.js',
+                      'aws.res.js',
+                      'sim.datagram.js',
+      ],
       rotation:       [0, PI, 0],
       radius:         RADIUS + LEVEL_6, 
       opacity:        0.8,
@@ -330,16 +340,16 @@ CFG.Assets = {
       sim: {
         variable:     'ugrdprs',    // selects in datatime.range
         step:         [6, 'hours'],
-        dataroot:     'data/gfs/',
-        patterns: [
-          '[ugrdprs/]YYYY-MM-DD-HH[.ugrdprs.10.dods]',
-          '[vgrdprs/]YYYY-MM-DD-HH[.vgrdprs.10.dods]',
-        ],
-        // dataroot:     'data/test/',
+        // dataroot:     'data/gfs/',
         // patterns: [
-        //   '[test02.ugrdprs.10.dods]',
-        //   '[test02.vgrdprs.10.dods]',
+        //   '[ugrdprs/]YYYY-MM-DD-HH[.ugrdprs.10.dods]',
+        //   '[vgrdprs/]YYYY-MM-DD-HH[.vgrdprs.10.dods]',
         // ],
+        dataroot:     'data/test/',
+        patterns: [
+          'YYYY-MM-DD-HH[.ugrdprs.10.dods]',
+          'YYYY-MM-DD-HH[.vgrdprs.10.dods]',
+        ],
         sectors: [
           [ 89.0, -180,  45.0,  180 ], // top
           [-45.0, -180, -89.0,  180 ], // bottom

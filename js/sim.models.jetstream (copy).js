@@ -35,8 +35,7 @@ SIM.Models.jetstream = (function () {
         t0      = Date.now(),
         threads = CFG.Device.threads,
         tasks   = [],
-        unique  = 100,
-        results = []
+        unique  = 100
       ;
 
       times.moms.forEach( mom => {
@@ -66,7 +65,8 @@ SIM.Models.jetstream = (function () {
               worker.postMessage({id, topic: 'retrieve', payload });
 
               worker.onmessage = function (event) {
-                results.push({mom, result: event.data.result})
+                // console.log('answered', id, Date.now() - t0);
+                self.build(mom, event.data.result);
                 callback();
               };
             
@@ -80,7 +80,6 @@ SIM.Models.jetstream = (function () {
       });
 
       async.parallelLimit(tasks, threads, function () {
-        self.build(results);
         TIM.step('SIM.load', 'jetstream', 't:', threads, 'm:',  times.length, 'ms:', Date.now() - t0);
         onloaded(name, model.obj);
       });
@@ -135,8 +134,6 @@ SIM.Models.jetstream = (function () {
           fragmentShader:  self.shaderFragment(),
 
           uniforms: {
-
-            tex1u: {type: 't', value: null},
 
             opacity:          { type: 'f',    value: cfg.opacity },
             lineWidth:        { type: 'f',    value: cfg.lineWidth },

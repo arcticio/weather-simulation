@@ -39,34 +39,6 @@ IFC.Tools = {
 
   }, 120),
 
-  takeScreenShot: function(){
-
-    // https://developer.mozilla.org/en/DOM/window.open
-    var f = this.getFrame('image/png');
-    var opts = 'menubar=no,scrollbars=no,location=no,status=no,resizable=yes,innerHeight=' + (f.height/2) + ',innerWidth=' + (f.width/2);
-    var win = window.open(f.url, 'screenshot', opts); 
-
-    win.focus();
-    console.log('win.open', win, opts);
-
-  },   
-
-  getFrame :  function(mimetype){ 
-
-    var 
-      cvs    = SCN.renderer.domElement,
-      width  = cvs.width,
-      height = cvs.height;
-
-    return {
-      width, 
-      height,
-      url: cvs.toDataURL(mimetype),
-      num: SCN.frames, 
-    }; 
-
-  },
-
   raycast: function raycast( pointer, intersects ) {
 
     var raycaster = raycaster.setFromCamera( pointer.device, SCN.camera );

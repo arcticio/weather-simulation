@@ -22,9 +22,9 @@ var IFC = (function () {
     modus =    'space',
 
     globe = {
-      scan:     NaN,   // -1 = tiny globe, 1 = big, 0 = little smaller than screen
-      height:   NaN,   // 2 * radius
-      sector:   []
+      scan:         NaN,   // -1 = tiny globe, 1 = big, 0 = little smaller than screen
+      height:       NaN,   // 2 * radius
+      sector:       []
     },
 
     geometry = {            // canvas actually
@@ -47,20 +47,20 @@ var IFC = (function () {
     },
 
     touch = {
-      x:          NaN, 
-      y:          NaN, 
-      px:         NaN, 
-      py:         NaN, 
-      down:       false, 
+      x:             NaN, 
+      y:             NaN, 
+      px:            NaN, 
+      py:            NaN, 
+      down:          false, 
     },
 
     pointer = {
-      device:       mouse,             // assumption
-      overGlobe:    false,
-      overScreen:   false,
-      intersect:    new THREE.Vector3(0, 0, 0),
-      latitude:     NaN,
-      longitude:    NaN,
+      device:        mouse,             // assumption
+      overGlobe:     false,
+      overScreen:    false,
+      intersect:     new THREE.Vector3(0, 0, 0),
+      latitude:      NaN,
+      longitude:     NaN,
     },
 
     raycaster = new THREE.Raycaster()
@@ -200,6 +200,7 @@ var IFC = (function () {
         // [window,    'deviceorientation'], // needs https
         // [window,    'devicemotion'],
         [window,    'resize'],
+        [window,    'unload'],
       
       ], (_, e) => {
         // TODO make touchstart, -move, wheel passive
@@ -232,55 +233,31 @@ var IFC = (function () {
       }
 
     },
-    capture: function () {
-
-      var 
-        blob,
-        amount = 60,
-        ondone = function (obj) {
-          if(!obj.error) {
-            blob = H.base64toBlob(obj.image.slice(22), 'image/gif');
-            // TODO: insert date here
-            saveAs(blob, 'hypatia.ani.gif');
-          }
-        }
-
-      SCN.capture(amount, function (blobs) {
-
-        gifshot.createGIF({
-          gifWidth:   geometry.width,
-          gifHeight:  geometry.height,
-          interval:   1/60,
-          numFrames:  amount,
-          images:     blobs.map(blob => {
-            var img = new Image();
-            img.src = blob;
-            return img;
-          })
-        }, ondone);
-
-      });
-
-    },
     events: {
 
       keydown:     function (event) { 
 
-        var keys = {
-          ' ': SCN.toggleRender,
-          's': SCN.logScene,
-          // 'd': SCN.logFullInfo,
-          'd': CFG.Manager.download,
-          'g': self.toggleGUI,
-          'm': IFC.Hud.toggleMenu,
-          'c': IFC.capture,
-          't': () => SIM.setSimTime( -1, 'hours'),
+        var keymap = {
+
+          'd': CFG.Manager.download,                 // generate/downlaod report
+
+          ' ': SCN.toggleRender,                     // freeze screen
+          's': SCN.logScene,                         // log by traversing scene
+          'g': IFC.toggleGUI,                        // toggle GUI.DAT
+          'm': IFC.Hud.toggleMenu,                   // show buttons
+          'c': IFC.Sharer.capture,                   // renders gif
+          'f': IFC.Sharer.open,                      // opens window
+
+          't': () => SIM.setSimTime( -1, 'hours'),   // 
           'z': () => SIM.setSimTime(  1, 'hours'),
+
+          // 'd': SCN.logFullInfo,
+
         };
 
-        if (keys[event.key]) {
-          keys[event.key]();          
-          console.log(event.key, 'down');
+        if (keymap[event.key]) {
+          keymap[event.key]();          
+          // console.log(event.key, 'down');
           return IFC.Tools.eat(event);
         }
 
@@ -296,6 +273,11 @@ var IFC = (function () {
         IFC.Hud.spacetime.updateModus('time');
         IFC.Hud.performance.selectModus(2);
       },
+
+      unload: function () {
+        IFC.Sharer.dialog && IFC.Sharer.close();
+      },
+      
       resize: function () {
 
         // TODO: Chrome on Android drops last event on leave fullscreen
@@ -432,7 +414,6 @@ var IFC = (function () {
       var 
         cam      = SCN.camera,
         fov      = cam.fov * Math.PI / 180,
-        // height   = 2 * Math.tan( fov / 2 ) * cam.position.length(),
         height   = 2 * Math.tan( fov / 2 ) * cam.radius,
         fraction = CFG.earth.radius * 2 / height
       ;
@@ -454,8 +435,9 @@ var IFC = (function () {
         wasOver = pointer.overGlobe
       ;
       
+      // TODO: exit on no pointer change
+
       intersections.length = 0;
-      // intersections.splice(0, intersections.length);
       raycaster.setFromCamera( pointer.device, SCN.camera );
       SCN.assets.pointer.raycast(raycaster, intersections)
 

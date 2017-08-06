@@ -160,7 +160,7 @@ CFG.Sprites = {
   },
 
 
-  // horizontal 
+  // right side 
 
   fullscreen: {
     type:           'toggle',
@@ -202,7 +202,29 @@ CFG.Sprites = {
       image: 'hud/movie.png'
     },
     onclick: (sprite) => {
-      IFC.Tools.takeScreenShot();
+      IFC.Sharer.takeScreenShot();
+      console.log('sprite.click', sprite.name);
+    },
+  },
+
+  share: {
+    visible:  true,
+    menu:     true,
+    type:     'toggle',
+    toggled:  false,
+    position: {
+      zIndex:     5,
+      top:       300,
+      right:     18,
+      width:     48,
+      height:    48,
+    },
+    material: {
+      opacity: 0.5,
+      image: 'hud/share.png'
+    },
+    onclick: (sprite) => {
+      IFC.Sharer.open();
       console.log('sprite.click', sprite.name);
     },
   },
@@ -214,7 +236,7 @@ CFG.Sprites = {
     toggled:  false,
     position: {
       zIndex:    5,
-      top:     300,
+      top:     360,
       right:    18,
       width:    48,
       height:   48,
@@ -228,6 +250,9 @@ CFG.Sprites = {
       $('#homelink')[0].click();
     },
   },
+
+
+// left top
 
   gear: {
     visible:  true,

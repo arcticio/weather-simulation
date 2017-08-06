@@ -28,20 +28,21 @@ class Dods:
 
 ## JETSTREAM: ugrdprs/vgrdprs
 ## 1°
+## 2017-06-20-00 => 736501.00
 
 # east/west
 ugrdprs = Dods(**dict(
-  filename = "test02.ugrdprs.10.dods",
+  filename = "2017-06-20-00.ugrdprs.10.dods",
   head     = "ugrdprs" + head_1_deg,
   tail     = tail_1_deg,
-  value    = lambda lat, lon: 10.0
+  value    = lambda lat, lon: 0.0
 ))
 
 vgrdprs = Dods(**dict(
-  filename = "test02.vgrdprs.10.dods",
+  filename = "2017-06-20-00.vgrdprs.10.dods",
   head     = "vgrdprs, [1][1][181][360]",
   tail     = tail_1_deg,
-  value    = lambda lat, lon: 0.0
+  value    = lambda lat, lon: 10.0
 ))
 
 
@@ -61,15 +62,14 @@ for data in write_list :
 
   filePointer = open(data.filename, 'w')
   filePointer.truncate()
+
   lines.append(data.head)
 
   for lat in lats_1_deg :
-    
     values = ["[0][0][%s]" % n]
     n = n + 1
     
     for lon in lons_1_deg :
-
       values.append(str(float(data.value(lat, lon))))
 
     lines.append(", ".join(values))

@@ -174,6 +174,7 @@ var CFG = {
     'hud/info.png':                 'images/hud/info.png',
     'hud/movie.png':                'images/hud/movie.1.png',
     'hud/reload.png':               'images/hud/reload.png',
+    'hud/share.png':                'images/hud/share.png',
 
     // Assets
     'hud/mask.png':                 'images/hud/mask.png',
