@@ -1,5 +1,4 @@
 
-// https://github.com/sindresorhus/screenfull.js/
 
 var IFC = (function () {
 

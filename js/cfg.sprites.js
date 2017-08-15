@@ -203,7 +203,6 @@ CFG.Sprites = {
     },
     onclick: (sprite) => {
       IFC.Sharer.takeScreenShot();
-      console.log('sprite.click', sprite.name);
     },
   },
 
@@ -225,7 +224,6 @@ CFG.Sprites = {
     },
     onclick: (sprite) => {
       IFC.Sharer.open();
-      console.log('sprite.click', sprite.name);
     },
   },
 

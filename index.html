@@ -33,12 +33,8 @@
 
   <!-- more: https://gist.github.com/kevinSuttle/1997924 -->
 
-  <script src="js/aws.version.js"></script>
+  <script src="header.js"></script>
   <script type="text/javascript">
-
-    var DEVELOP = 'False' === 'True'   ? true : false;
-    var DEBUG   = 'False'   === 'True' ? true : false;
-    // var ADMIN   = 'False'   === 'True' ? true : false;
 
     var TIM = (function(){
       
@@ -56,15 +52,15 @@
       
     })();
 
-    TIM.step('Hypatia', VERSION);
+    TIM.step('Hypatia', VERSION, DEBUG, DEVEL, ADMIN);
 
   </script>
 
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+
   <script src='js/aws.support.js'></script>
   <script src='timeranges.js'></script>
-
 
   <style>
       

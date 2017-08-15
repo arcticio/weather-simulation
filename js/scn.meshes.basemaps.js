@@ -44,7 +44,8 @@ SCN.Meshes.basemaps = function (id, name, cfg, callback) {
           keyTopo  = `globe.topo.${face}.${resolution}.png`,
           keyGmlc  = `globe.gmlc.${face}.${resolution}.png`,
           uniforms = {
-            opacity: {type: 'f', value: 1.0},
+            // opacity: {type: 'f', value: 1.0},
+            opacity: {type: 'f', value: 0.5},
             facMask: {type: 'f', value: 0.0},
             facTopo: {type: 'f', value: 0.0},
             facGmlc: {type: 'f', value: 1.0},

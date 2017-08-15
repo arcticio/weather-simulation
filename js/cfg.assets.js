@@ -326,6 +326,7 @@ CFG.Assets = {
       hue:            220 / 360, // https://tympanus.net/codrops/css_reference/hsl/
       material: {
         transparent: true,
+        // side:        THREE.DoubleSide
       },
       attributes: {
         colors:    {type: 'Float32Array', itemSize: 3},
@@ -496,8 +497,9 @@ CFG.Assets = {
       color:           new THREE.Color(0xff00ff),
       opacity:         0.8,
       material: {
-        transparent:   true,
-        blending:      THREE.AdditiveBlending,
+        transparent: true,
+        blending:    THREE.AdditiveBlending,
+        side:        THREE.DoubleSide,
       }
     },
 

@@ -13,6 +13,38 @@
 
 --COMMENT--
 
+pyHeader="
+
+## works in root
+
+import sys, hashlib, time
+
+def calcHash () :
+
+  with open('header.js', 'r') as fileHeader :
+      version = fileHeader.readlines()[0]
+      token  = hashlib.md5(version).hexdigest()
+
+  return version, token
+
+version, token = calcHash()
+print token
+# print '  ' + version
+# print '  ' + token
+
+
+with open('dist/header.js', 'w') as fileHeader :
+
+  fileHeader.truncate()
+
+  fileHeader.write(version + '\n')
+  fileHeader.write('var HASH  = \'%s\';\n' % token)
+  fileHeader.write('var DEBUG = \'%s\';\n' % 'false')
+  fileHeader.write('var DEVEL = \'%s\';\n' % 'false')
+  fileHeader.write('var ADMIN = \'%s\';\n' % 'false')
+
+"
+
 pyPack="
 
 ## works in root
@@ -20,14 +52,14 @@ pyPack="
 import sys, hashlib, time
 from bs4 import BeautifulSoup, Tag, NavigableString, Comment
 
-task = sys.argv[1]
+with open('dist/header.js', 'r') as fileHeader :
+    version = fileHeader.readlines()[0]
+
+hash = sys.argv[1]
+task = sys.argv[2]
 
 htmlIndex = 'index.html'
 htmlDist  = 'dist/index.html'
-
-with open('dist/js/aws.version.js', 'r') as myfile :
-    version = myfile.read()
-    hash = hashlib.md5(version).hexdigest()
 
 with open(htmlIndex, 'r') as myfile :
     soup = BeautifulSoup(myfile.read(), 'lxml')
@@ -42,7 +74,7 @@ print
 for tag in tags :
     if tag.has_attr('src') :
         if tag['src'].startswith('%s/' % task) :
-            print '  ' + tag['src']
+            print '    ' + tag['src']
             fileSource = open(tag['src'],'r')
             filePack.write(fileSource.read())
             fileSource.close()
@@ -99,54 +131,78 @@ cd $pathDist
     rm  -f ./js/js.pack.js
     rm  -f ./js/js.pack.min.js
 
+    rm  -f ./js/sim.worker.jetstream.js
+    rm  -f ./js/jetstream.worker.lib.pack.js
+    rm  -f ./js/jetstream.worker.lib.pack.min.js
+
+
+echo "  hashing"
+cd $pathRoot
+
+    # HASH="123456"
+    # python -c "$pyHeader"
+    HASH=$(python -c "$pyHeader")
+
 
 echo "  copy"
 cd $pathRoot
     
-    cp index.html        $pathDist/index.html
-    cp images/favicon.ico       $pathDist/favicon.ico
-    cp timeranges.js     $pathDist/timeranges.js
-    cp js/aws.version.js $pathDist/js/aws.version.js
-    cp js/aws.support.js $pathDist/js/aws.support.js
-    cp css/style.css     $pathDist/css.style.css
+    cp index.html           $pathDist/index.html
+    cp images/favicon.ico   $pathDist/favicon.ico
+    cp timeranges.js        $pathDist/timeranges.js
+    cp js/aws.support.js    $pathDist/js/aws.support.js
+    cp css/style.css        $pathDist/css/style.css
 
+    ## clouds worker
     cp js/sim.models.clouds.worker.js $pathDist/js/sim.models.clouds.worker.js
-    cp js/aws.helper.js $pathDist/js/aws.helper.js
-    cp js/aws.tools.js  $pathDist/js/aws.tools.js
+    cp js/aws.helper.js     $pathDist/js/aws.helper.js
+    cp js/aws.tools.js      $pathDist/js/aws.tools.js
 
-
-echo "  updating version.js"
-
-# cd $pathRoot
-    
-
-
-
+    ## jetstream worker
+    cp js/sim.worker.jetstream.js $pathDist/js/sim.worker.jetstream.js
 
 echo "  packing"
 cd $pathRoot
 
-    python -c "$pyPack" libs
-    python -c "$pyPack" js
+    python -c "$pyPack" $HASH libs
+    python -c "$pyPack" $HASH js
+
+        
+echo "  packing worker lib"
+cd $pathRoot/js
+
+    cat \
+        ../libs/async.js        \
+        aws.helper.js           \
+        aws.tools.js            \
+        aws.math.js             \
+        aws.res.js              \
+        sim.datagram.js         \
+    > ../dist/js/jetstream.worker.lib.pack.js
 
 
 echo "  compressing libs"
 cd $pathDist/js
 
-    java -jar                                      \
-        $compiler                                  \
+    java -jar $compiler                            \
         --compilation_level SIMPLE                 \
         --warning_level     QUIET                  \
         --js                libs.pack.js           \
         --js_output_file    libs.pack.min.js
 
 echo "  compressing js"
-    java -jar                                      \
-        $compiler                                  \
+    java -jar $compiler                            \
         --compilation_level SIMPLE                 \
         --warning_level     QUIET                  \
         --js                js.pack.js             \
         --js_output_file    js.pack.min.js
+
+echo "  compressing jetstream worker"
+    java -jar $compiler                            \
+        --compilation_level SIMPLE                 \
+        --warning_level     QUIET                               \
+        --js                jetstream.worker.lib.pack.js        \
+        --js_output_file    jetstream.worker.lib.pack.min.js
 
 
 

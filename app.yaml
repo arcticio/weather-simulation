@@ -24,7 +24,7 @@ handlers:
 - url: /timeranges.js
   static_files: timeranges.js
   upload: timeranges.js
-  expiration: "5s"
+  expiration: "1h"
 
 - url: /header.js
   static_files: header.js

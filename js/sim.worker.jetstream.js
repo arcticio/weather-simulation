@@ -121,7 +121,7 @@ if( typeof importScripts === 'function') {
 
     retrieve: function (id, payload, callback) {
 
-      var datagramm, vari;
+      var datagramm;
 
       cfg  = payload.cfg;
       doe  = payload.doe;
@@ -134,8 +134,7 @@ if( typeof importScripts === 'function') {
           responses.forEach(function (response) {
 
             datagramm = new SIM.Datagram(response.data);
-            vari = datagramm.vari;
-            datagrams[vari] = datagramm;
+            datagrams[datagramm.vari] = datagramm;
 
           });
 
@@ -159,7 +158,7 @@ if( typeof importScripts === 'function') {
 
       var 
         t0        = Date.now(), 
-        i, j, u, v, speed, width, lat, lon, color, vec3, latlon, positions, widths, colors, seeds,
+        i, j, u, v, speed, width, pool, lat, lon, color, vec3, seeds, positions, widths, colors, seeds,
         sat       = 0.4,
         spcl      = new Spherical(),
         length    = cfg.length,
@@ -171,8 +170,9 @@ if( typeof importScripts === 'function') {
       // over sectors
       prelines = cfg.sim.sectors.map( sector => {
 
-        seeds     = filterPool(sector, cfg.amount);
-        amount    = seeds.length; 
+        seeds     = [];
+        pool      = filterPool(sector, cfg.amount);
+        amount    = pool.length; 
 
         positions = new Array(amount).fill(0).map(filler);
         colors    = new Array(amount).fill(0).map(filler);
@@ -181,9 +181,12 @@ if( typeof importScripts === 'function') {
         // over lines
         for (i=0; i<amount; i++) {
 
-          lat  = seeds[i].lat;
-          lon  = seeds[i].lon;
+          lat  = pool[i].lat;
+          lon  = pool[i].lon;
           vec3 = latLonRadToVector3(lat, lon, cfg.radius);
+
+          // keep start point
+          seeds.push(vec3.x, vec3.y, vec3.z);
 
           // over vertices
           for (j=0; j<length; j++) {
@@ -213,7 +216,7 @@ if( typeof importScripts === 'function') {
 
         }
 
-        return { positions, colors, widths };
+        return { seeds: new Float32Array(seeds), positions, colors, widths };
 
       });
 
@@ -228,20 +231,24 @@ if( typeof importScripts === 'function') {
 
       var 
         t0 = Date.now(),
-        idx = 0,
         counter = (a, b) => a + b.length
       ;
 
       multilines = prelines.map(preline => {
 
-        idx = 0;
+        var 
+          idx = 0,
+          multiline = H.zip(
+            preline.positions,
+            preline.colors,
+            preline.widths,
+            (vectors, colors, widths) => new Multiline(idx++, vectors, colors, widths)
+          )
+        ;
 
-        return H.zip(
-          preline.positions,
-          preline.colors,
-          preline.widths,
-          (vectors, colors, widths) => new Multiline(idx++, vectors, colors, widths)
-        );
+        multiline.seeds = preline.seeds;
+
+        return multiline;
 
       });
 
@@ -255,7 +262,8 @@ if( typeof importScripts === 'function') {
     combine: function (id, payload, callback) { 
 
       var 
-        config = {
+        transferables,
+        attributeTypes = {
           colors:    Float32Array,
           index:     Uint16Array,
           lineIndex: Float32Array,
@@ -268,8 +276,7 @@ if( typeof importScripts === 'function') {
         textures = {
           u: datagrams.ugrdprs.data[doe], 
           v: datagrams.vgrdprs.data[doe], 
-        },
-        transferables = [textures.u.buffer, textures.v.buffer]
+        }
       ;
 
       // debugger;
@@ -277,15 +284,28 @@ if( typeof importScripts === 'function') {
       // over sectors (n=6)
       sectors = multilines.map( lines => {
 
-        var totalLength, attributes = {};
+        var 
+          length, 
+          attributes = {},
+          uniforms   = {
+            seeds: lines.seeds
+          }
+        ;
+
+        delete lines.seeds;
+
+        // prepare attributes
+        H.each(attributeTypes, (name, type) => { 
+          length = lines[0].attributes[name].length * lines.length;
+          attributes[name] = new type(length);
+        });
 
         // over attributes (n=8)
-        H.each(config, (name, type) => {
+        H.each(attributeTypes, (name) => {
 
           // debugger;
 
-          totalLength      = lines[0].attributes[name].length * lines.length;
-          attributes[name] = new type(totalLength);
+          // if (name === 'seeds') { return; }
 
           var 
             i, source, length,
@@ -306,7 +326,7 @@ if( typeof importScripts === 'function') {
                 target[pointer + i] = source[i] + indexOffset;
               }
 
-            } else {
+            } else if (name !== 'seeds') {
               for (i=0; i<length; i++) {
                 target[pointer + i] = source[i];
               }
@@ -319,13 +339,16 @@ if( typeof importScripts === 'function') {
 
         });
 
-        return attributes;
+        return { attributes, uniforms };
 
       });
 
+      // finish transferables
+      transferables = [textures.u.buffer, textures.v.buffer];
       H.each(sectors, (_, sector) => {
-        H.each(config, (name) => {
-          transferables.push(sector[name].buffer);
+        transferables.push(sector.uniforms.seeds.buffer);
+        H.each(attributeTypes, (name) => {
+          transferables.push(sector.attributes[name].buffer);
         });
       });
 

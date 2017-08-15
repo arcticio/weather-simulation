@@ -2,11 +2,13 @@
 SIM.Models.jetstream = (function () {
 
   var 
-    self, cfg, times, poolJetStream, material,
-    model = {
+    self, cfg, times, poolJetStream,
+    unique = 100,
+    does   = {},
+    model  = {
       obj:          new THREE.Object3D(),
     },
-    does = {}
+    materials
   ;
 
   return self = {
@@ -19,7 +21,7 @@ SIM.Models.jetstream = (function () {
 
       poolJetStream = new CoordsPool().latlonArray(5000);
 
-      material = self.material(cfg)
+      // material = self.material(cfg)
 
       times.does.forEach( doe => does[doe] = []);
 
@@ -35,9 +37,13 @@ SIM.Models.jetstream = (function () {
         t0      = Date.now(),
         threads = CFG.Device.threads,
         tasks   = [],
-        unique  = 100,
         results = []
       ;
+
+      function process(worker, data, ondone) {
+        worker.postMessage(data);
+        worker.onmessage = ondone;
+      }
 
       times.moms.forEach( mom => {
 
@@ -46,8 +52,6 @@ SIM.Models.jetstream = (function () {
           task = function (callback) {
 
             var 
-              t1,
-              t0      = Date.now(),
               id      = String(unique++),
               worker  = new Worker(cfg.worker),
               urls    = cfg.sim.patterns.map( (pattern) => '/' + cfg.sim.dataroot + mom.format(pattern)),
@@ -58,19 +62,14 @@ SIM.Models.jetstream = (function () {
               })
             ;
 
-            t1 = Date.now();
-            worker.postMessage({id, topic: 'importScripts', payload: {scripts: cfg.scripts} });
-            worker.onmessage = function () {
+            process(worker, {id, topic: 'importScripts', payload: {scripts: cfg.scripts} }, () => {
 
-              TIM.step('SIM.load', 'jetstream.imports', 'ms:', Date.now() - t1);
-              worker.postMessage({id, topic: 'retrieve', payload });
-
-              worker.onmessage = function (event) {
+              process(worker, {id, topic: 'retrieve', payload }, (event) => {
                 results.push({mom, result: event.data.result})
                 callback();
-              };
-            
-            };            
+              });
+              
+            });
 
           }
         ;
@@ -80,41 +79,69 @@ SIM.Models.jetstream = (function () {
       });
 
       async.parallelLimit(tasks, threads, function () {
+        // debugger;
         self.build(results);
         TIM.step('SIM.load', 'jetstream', 't:', threads, 'm:',  times.length, 'ms:', Date.now() - t0);
         onloaded(name, model.obj);
       });
 
     },
-    build: function (mom, data) {
+    build: function (results) {
 
-      // one mesh for each sector
+      /*
+        one mesh for each sector
+        6 materials with unique static seed set, sharing dynamic uv textures
+        set doe length as uniform (build time)
 
-      var 
-        attribute, geometry, mesh,
-        sectors  = data.sectors,
-        textures = data.textures
-      ;
+        results : []
+          result : 
+            mom : Moment
+            result : {}
+              textures: {u, v}
+              sectors: [1...6]
+                attributes: {colors, ...}
+                uniforms: { seeds }
 
-      H.each(sectors, (_, data) => {
+      */
 
-        geometry = new THREE.BufferGeometry();
+      // prepare materials
 
-        H.each(cfg.attributes, (name, attr) => {
+      // debugger;
 
-          attribute = new THREE.BufferAttribute( data[name], attr.itemSize );
+      materials = H.range(0, 6).map( idx => {
+        return self.material(cfg, results[0].result.sectors[idx].uniforms.seeds);
+      });
 
-          if (name === 'index') {
-            geometry.setIndex( attribute );
+      // over time (moments)
+      H.each(results, (_, result) => {
 
-          } else {
-            geometry.addAttribute( name, attribute );
-          }
+        // over space (sectors)
+        H.each(result.result.sectors, (idx, sector) => {
+
+          var 
+            mesh, 
+            material = materials[idx],
+            geometry = new THREE.BufferGeometry()
+          ;
+
+          H.each(cfg.attributes, (name, attr) => {
+
+            var attribute = new THREE.BufferAttribute( sector.attributes[name], attr.itemSize );
+
+            if (name === 'index') {
+              geometry.setIndex( attribute );
+
+            } else {
+              geometry.addAttribute( name, attribute );
+
+            }
+
+          });
+
+          mesh = new THREE.Mesh( geometry, material );
+          model.obj.add(mesh);
 
         });
-
-        mesh = new THREE.Mesh( geometry, material );
-        model.obj.add(mesh);
 
       });
 
@@ -122,56 +149,159 @@ SIM.Models.jetstream = (function () {
 
     },
 
-    material: function (cfg) {
+    material: function (cfg, seeds) {
 
-        var     
-          pointers = new Array(cfg.amount).fill(0).map( () => Math.random() ),
-          distance = SCN.camera.position.length() - CFG.earth.radius
-        ;
+      var     
+        heads = new Array(cfg.amount).fill(0).map( () => Math.random() ),
+        distance = SCN.camera.position.length() - CFG.earth.radius
+      ;
 
-        return  new THREE.RawShaderMaterial(Object.assign(cfg.material, {
+      return new THREE.RawShaderMaterial(Object.assign(cfg.material, {
 
-          vertexShader:    self.shaderVertex(cfg.amount),
-          fragmentShader:  self.shaderFragment(),
+        vertexShader:    self.shaderVertex(cfg),
+        fragmentShader:  self.shaderFragment(cfg),
 
-          uniforms: {
+        uniforms: {
 
-            tex1u: {type: 't', value: null},
+          opacity:          { type: 'f',    value: cfg.opacity },
+          lineWidth:        { type: 'f',    value: cfg.lineWidth },
+          section:          { type: 'f',    value: cfg.section }, // length of trail in %
+          seeds   :         { type: '3fv',  value: seeds },
 
-            opacity:          { type: 'f',    value: cfg.opacity },
-            lineWidth:        { type: 'f',    value: cfg.lineWidth },
-            section:          { type: 'f',    value: cfg.section }, // length of trail in %
+          // these are updated on demand
+          tex1u:            { type: 't',    value: null },
+          tex1v:            { type: 't',    value: null },
+          tex2u:            { type: 't',    value: null },
+          tex2v:            { type: 't',    value: null },
 
-            // these are updated each step
-            pointers:         { type: '1fv',  value: pointers },
-            distance:         { type: 'f',    value: distance },
+          // these are updated each step
+          heads:            { type: '1fv',  value: heads },
+          distance:         { type: 'f',    value: distance },
 
-          },
+        },
 
-        }));
+      }));
 
     },
 
     onAfterRender: function () {
 
-      var i, 
-        pointers = material.uniforms.pointers.value,
-        distance = SCN.camera.position.length() - CFG.earth.radius,
-        offset   = 1 / cfg.length
-      ;
+      H.each(materials, (_, material) => {
 
-      for (i=0; i<cfg.amount; i++) {
-        pointers[i] = (pointers[i] + offset) % 1;
-      }
+        var i, 
+          heads    = material.uniforms.heads.value,
+          distance = SCN.camera.position.length() - CFG.earth.radius,
+          offset   = 1 / cfg.length
+        ;
 
-      material.uniforms.pointers.needsUpdate = true;
+        for (i=0; i<cfg.amount; i++) {
+          heads[i] = (heads[i] + offset) % 1;
+        }
 
-      material.uniforms.distance.value = distance;
-      material.uniforms.distance.needsUpdate = true;
+        material.uniforms.heads.needsUpdate = true;
+
+        material.uniforms.distance.value = distance;
+        material.uniforms.distance.needsUpdate = true;
+
+
+      });
 
     },
 
-    shaderVertex: function (amount) { return `
+    shaderVertex: function (cfg) { return `
+
+      const int length = ${cfg.length}; // verts per line
+
+      attribute float side;
+      attribute vec3  next;
+      attribute vec3  position;
+      attribute vec3  previous;
+
+      attribute float width;
+      attribute vec3  colors;
+      attribute float lineIndex;
+
+      uniform mat4  projectionMatrix;
+      uniform mat4  modelViewMatrix;
+
+      uniform float distance;
+      uniform float lineWidth;
+      uniform float opacity;
+
+      uniform vec3  seeds[ ${cfg.amount} ];  // start vector for each line
+      uniform float heads[ ${cfg.amount} ];  // heads for each line
+      
+      varying vec4  vColor;
+      varying float vHead, vCounter;
+
+      vec2 dir, dir1, dir2, normal;
+      vec4 offset;
+
+      int linenum;
+
+      vec4 currPos, prevPos, nextPos;
+      vec2 currP, nextP, prevP;
+
+      mat4 matrix;
+
+      void main() {
+
+          matrix  = projectionMatrix * modelViewMatrix;
+          linenum = int(lineIndex);
+
+          // varys for fragment
+          vHead    = heads[linenum];             // get head for this segment
+          vCounter = fract(lineIndex);           // get pos of this segment 
+          vColor   = vec4( colors, opacity );
+
+          // position prepare
+          currPos = vec4(seeds[linenum], 1.0);
+          prevPos = vec4(seeds[linenum], 1.0);
+          nextPos = vec4(seeds[linenum], 1.0);
+
+
+          for( int i = 0; i <= length; i++ ) { 
+            
+            if ( i >= linenum + 1 ) break;
+
+            prevPos = currPos;
+            currPos = nextPos;
+            nextPos = nextPos + vec4(0.9, 0.9, 0.9, 0.0);
+            
+          }
+
+          prevPos = matrix * prevPos;
+          currPos = matrix * currPos;
+          nextPos = matrix * nextPos;
+
+          currPos = matrix * vec4( position, 1.0 );
+          prevPos = matrix * vec4( previous, 1.0 );
+          nextPos = matrix * vec4( next, 1.0 );
+
+          currP = currPos.xy / currPos.w;
+          prevP = prevPos.xy / prevPos.w;
+          nextP = nextPos.xy / nextPos.w;
+
+          if      ( nextP == currP ) { dir = normalize( currP - prevP) ;}
+          else if ( prevP == currP ) { dir = normalize( nextP - currP) ;}
+          else {
+              dir1 = normalize( currP - prevP );
+              dir2 = normalize( nextP - currP );
+              dir  = normalize( dir1  + dir2 );
+          }
+
+          normal  = vec2( -dir.y, dir.x );
+          normal *= lineWidth * width * distance;
+
+          offset = vec4( normal * side, 0.0, 1.0 );
+          currPos.xy += offset.xy;
+
+          gl_Position = currPos;
+
+      }`;
+
+    },
+    shaderVertexXXX: function (amount) { return `
 
       // precision highp float;
 
@@ -191,7 +321,7 @@ SIM.Models.jetstream = (function () {
       uniform float lineWidth;
       uniform float opacity;
 
-      uniform float pointers[  ${amount}  ];  // start for each line
+      uniform float heads[  ${amount}  ];  // start for each line
       
       varying vec4  vColor;
       varying float vHead, vCounter;
@@ -201,7 +331,7 @@ SIM.Models.jetstream = (function () {
 
       void main() {
 
-          vHead     = pointers[int(lineIndex)];   // get head for this segment
+          vHead     = heads[int(lineIndex)];   // get head for this segment
           vCounter  = fract(lineIndex);           // get pos of this segment 
           vColor    = vec4( colors, opacity );
 
@@ -234,17 +364,16 @@ SIM.Models.jetstream = (function () {
       }`;
 
     },
-    shaderFragment: function () { return `
+    shaderFragment: function (cfg) { return `
 
       precision mediump float;
 
-      float alpha  = 0.0;
-
-      uniform float section;   // visible segment length
+      float alpha   = 0.0;
+      float section = ${cfg.section}; // visible segment length
 
       varying vec4  vColor;    // color from attribute, includes uni opacity
-      varying float vHead;     // head of line segment
-      varying float vCounter;  // current position, goes from 0 to 1 
+      varying float vCounter;  // current position, goes from 0 to 1 = whole line/geometry
+      varying float vHead;     // head position of this line, 
 
       void main() {
 
@@ -256,6 +385,7 @@ SIM.Models.jetstream = (function () {
         float pos   = vCounter;
 
         if ( pos > tail && pos < head ) {
+          // 
           alpha = (pos - tail) / section;
 
         } else if ( pos > ( 1.0 - section ) && head < section ) {

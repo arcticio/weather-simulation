@@ -29,6 +29,7 @@ var LDR = (function () {
   
     sequence: function () { return [
 
+      // '', // check previous title
         [ TIM.step, ['LDR.sequence', 'started'] ],   
 
         [ CFG.Preset.init ],
@@ -57,6 +58,10 @@ var LDR = (function () {
       'stage 3',
         self.loadObservations,
 
+      // from here prepare an intro
+        // needs user location
+        // and snpp images 4k
+
       'reaching orbit',
         [ IFC.init ], 
         [ SIM.updateSun ], 
@@ -65,13 +70,22 @@ var LDR = (function () {
         [ SCN.prerender, null, 'may take a while ...' ], 
 
       'recalibrating',
-        [ SCN.render ], 
+        [ SCN.render ], // this activates RAF !!!
+
+      // run intro
+        // zoom out from user location
+        // blend to scene coded in url
 
       'get ready',
         [ IFC.activate ],
         [ IFC.show ],
         [ self.clearInfo ],
         // [ navigator.vibrate.bind(navigator), [200] ], // needs https soon; no edge
+
+        // [ function () {
+        //     SCN.assets.basemaps.visible   = false;
+        //     SCN.assets.atmosphere.visible = false;
+        // } ],
 
       'have fun',
 
@@ -90,7 +104,7 @@ var LDR = (function () {
 
     parse: function (sequence) {
 
-      // generates tasks by reading actions from sequence
+      // generates tasks by reading action items from sequence
       H.each(sequence, (_, item) => {
 
         var subsequence, func, params, info;
@@ -171,7 +185,8 @@ var LDR = (function () {
             TIM.step('LDR.executed', tasks.length, 'tasks', ((Date.now() - t0) / 1000).toFixed(1), 'secs');
             callback();
           }
-        };
+        }
+      ;
 
       async.series(tasks, onfinished);
 
