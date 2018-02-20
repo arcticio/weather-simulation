@@ -30,7 +30,7 @@ import os, sys, re, urllib2
 from gfsmodels import GFS025DegRecent, GFS05DegRecent
 
 pathhome    = os.getcwd() + "/" ## os.path.dirname(os.path.abspath(__file__)) + "/"
-pathdata    = "/home/noiv/Octets/Projects/weather-simulation/data/gfs/"
+pathdata    = "/home/noiv/Projects/weather-simulation/data/gfs/"
 overwrite   = True
 noindicator = True
 checklast   = 1

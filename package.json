@@ -5,11 +5,7 @@
   "repository": "",
   "scripts": {
     "ls": "ls -la",
-    "serve": "http-server -port 8765 -path . ",
-
-    "serve-push": "pushserve --port 8765 --hostname 0.0.0.0 --indexPath ./index.html",
-
-    "serve-proxy": "http-server -p 8765 -c10 --proxy http://nomads.ncep.noaa.gov:9090"
+    "push-serve": "./node_modules/.bin/https-pushstate-server -r . -p 9876 -s -c ./certs/cert.pem -k ./certs/key.pem -d data,styles,images,scripts"
   },
   "pre-commit": [],
   "private": true,
@@ -21,7 +17,6 @@
   "devDependencies": {
     "babel-eslint": "^6.1.2",
     "eslint": "^3.19.0",
-    "http-server": "^0.10.0",
-    "pushserve": "^1.0.2"
+    "https-pushstate-server": "git+ssh://git@github.com/aerofs/https-pushstate-server.git"
   }
 }

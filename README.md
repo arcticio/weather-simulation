@@ -34,6 +34,7 @@ Renders a week of current and future weather parameters onto a 3D sphere
   * [Antarctica Ice Velocity Map](https://nsidc.org/data/docs/measures/nsidc0484_rignot/)
   * [Greenland Ice Sheet Velocity Map](http://nsidc.org/data/docs/measures/nsidc0478_joughin/)
   * [Land Cover (GLCNMO) - Global version - Version 3](https://globalmaps.github.io/glcnmo.html)
+  * [Velocity from Sentinel](http://cryoportal.enveo.at/data/)
 
 ## Current Shots
 
